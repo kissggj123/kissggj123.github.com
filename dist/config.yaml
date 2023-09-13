@@ -1,0 +1,187 @@
+p: &p {type: http, interval: 3600, health-check: {enable: true, url: https://www.gstatic.com/generate_204, interval: 300}}
+gn: &gn {url: 'http://www.gstatic.com/generate_204', interval: 300, filter: '^(?!.*(cloudflare|HK|JP|SG|US|BGP|临时|香港|东京|狮城|爱尔兰|菲律宾|首尔|澳门|台湾|美国|阿联酋|韩国|英国|新加坡|土耳其|南非|印度|德国|日本|俄罗斯|法国|巴西|马来|印尼|泰国|加拿大|瑞士|越南|沙特|以色列|意大利|西班牙|荷兰|智利|阿根廷|澳大利亚|马来西亚|洛杉矶|冰岛|美西|波兰华沙|法兰克福|澳洲|马来|阿姆|比利时|乌克兰|悉尼|企宽)).*(广东|汕尾|珠海|广州|宿迁|广西|河北|湖北|河南|山西|辽宁|吉林|黑龙江|江苏|浙江|安徽|福建|江西|山东|湖南|海南|四川|贵州|云南|陕西|甘肃|青海|内蒙|西藏|宁夏|新疆|北京|天津|上海|重庆|扬州)'}
+gw: &gw {url: 'http://www.gstatic.com/generate_204', interval: 300, filter: '^(?!.*(广东|汕尾|珠海|广州|宿迁|广西|河北|湖北|河南|山西|辽宁|吉林|黑龙江|江苏|浙江|安徽|福建|江西|山东|湖南|海南|四川|贵州|云南|陕西|甘肃|青海|内蒙|西藏|宁夏|新疆|北京|天津|上海|重庆|扬州)).*(cloudflare|HK|JP|SG|US|BGP|临时|香港|东京|狮城|爱尔兰|菲律宾|首尔|澳门|台湾|美国|阿联酋|韩国|英国|新加坡|土耳其|南非|印度|德国|日本|俄罗斯|法国|巴西|马来|印尼|泰国|加拿大|瑞士|越南|沙特|以色列|意大利|西班牙|荷兰|智利|阿根廷|澳大利亚|马来西亚|洛杉矶|冰岛|美西|波兰华沙|法兰克福|澳洲|马来|阿姆|比利时|乌克兰|悉尼|企宽)'}
+
+tproxy-port: 7893
+mixed-port: 8888
+allow-lan: true
+bind-address: "*"
+ipv6: true
+mode: Rule
+log-level: info
+unified-delay: true
+geodata-mode: true
+skip-cert-verify: true
+tcp-concurrent: true
+enable-process: true
+find-process-mode: strict
+global-client-fingerprint: chrome
+external-controller: 0.0.0.0:9090
+external-ui: Dashboard
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+geox-url:
+  geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
+  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+
+sniffer:
+  enable: true
+  sniffing: ['tls', 'http']
+
+tun: 
+  enable: true
+  device: Tun
+  stack: system
+  dns-hijack: ['any:53']
+  auto-route: true
+  auto-detect-interface: true
+  inet6-address: null
+
+dns:
+  enable: true
+  ipv6: true
+  use-hosts: true
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter: ['*.lan', 'connect.rom.miui.com', 'www.msftconnecttest.com', 'localhost.ptlogin2.qq.com', 'xbox.*.microsoft.com', '+.xboxlive.com']
+  fallback-filter: {geoip: true, geoip-code: CN, geosite: ['!CN', 'GFW', 'GREATFIRE']}
+  default-nameserver: ['223.5.5.5', '8.8.8.8']
+  proxy-server-nameserver: ['tls://223.5.5.5', 'tls://8.8.8.8']
+  nameserver: ['tls://223.5.5.5#🎯国内选择']
+  fallback: ['tls://8.8.8.8#🚀国外选择']
+  
+proxies:
+
+proxy-providers:
+  cloudflare: {<<: *p, url: "https://subconverter.do.xn--b6gac.eu.org/sub?target=clash&url=https://cloudflare.chuhe.buzz/sub/d342d11e-d424-4583-b36e-524ab1f0afa4?format=clash&insert=false&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false&new_name=true", path: ./Subscribe/cloudflare.yaml}
+
+proxy-groups:
+  - {name: "🎯国内选择", type: select, <<: *gn, proxies: [DIRECT, PASS]}
+  - {name: "🚀国外选择", type: select, <<: *gw, use: [cloudflare], proxies: [DIRECT, PASS, 🚀自动选择, 🚀负载均衡]}
+  - {name: "✉️通讯节点", type: select, <<: *gw, use: [cloudflare], proxies: [DIRECT, PASS, 🚀自动选择, 🚀负载均衡]}
+  - {name: "🎮游戏节点", type: select, <<: *gw, use: [cloudflare], proxies: [DIRECT, PASS, 🚀自动选择, 🚀负载均衡]}
+  - {name: "📺影视节点", type: select, <<: *gw, use: [cloudflare], proxies: [DIRECT, PASS, 🚀自动选择, 🚀负载均衡]}
+  - {name: "🪙支付节点", type: select, <<: *gw, use: [cloudflare], proxies: [DIRECT, PASS, 🚀自动选择, 🚀负载均衡]}
+  - {name: "🤖OPENAI", type: select, <<: *gw, use: [cloudflare], proxies: [DIRECT, PASS, 🚀自动选择, 🚀负载均衡]}
+  - {name: "🚀自动选择", type: url-test, <<: *gw, tolerance: 50, lazy: true, use: [cloudflare]}
+  - {name: "🚀负载均衡", type: load-balance, <<: *gw, use: [cloudflare]}
+
+rules:
+ # GEOSITE
+ - GEOSITE,chinamobile,DIRECT
+ - GEOSITE,chinaunicom,DIRECT
+ - GEOSITE,chinatelecom,DIRECT
+ - GEOSITE,private,DIRECT
+ - GEOSITE,jd,🎯国内选择
+ - GEOSITE,didi,🎯国内选择
+ - GEOSITE,abc,🎯国内选择
+ - GEOSITE,boc,🎯国内选择
+ - GEOSITE,ccb,🎯国内选择
+ - GEOSITE,icbc,🎯国内选择
+ - GEOSITE,cmb,🎯国内选择
+ - GEOSITE,iqiyi,🎯国内选择
+ - GEOSITE,csdn,🎯国内选择
+ - GEOSITE,oppo,🎯国内选择
+ - GEOSITE,4399,🎯国内选择
+ - GEOSITE,baidu,🎯国内选择
+ - GEOSITE,zhihu,🎯国内选择
+ - GEOSITE,bilibili,🎯国内选择
+ - GEOSITE,aliyun,🎯国内选择
+ - GEOSITE,xiaomi,🎯国内选择
+ - GEOSITE,alibaba,🎯国内选择
+ - GEOSITE,huawei,🎯国内选择
+ - GEOSITE,douban,🎯国内选择
+ - GEOSITE,tencent,🎯国内选择
+ - GEOSITE,dingtalk,🎯国内选择
+ - GEOSITE,meituan,🎯国内选择
+ - GEOSITE,chaoxing,🎯国内选择
+ - GEOSITE,apple-cn,🎯国内选择
+ - GEOSITE,apple@cn,🎯国内选择
+ - GEOSITE,icloud@cn,🎯国内选择
+ - GEOSITE,alibabacloud,🎯国内选择
+ - GEOSITE,chinatelecom,🎯国内选择
+ - GEOSITE,58tongcheng,🎯国内选择
+ - GEOSITE,microsoft@cn,🎯国内选择
+ - GEOSITE,tencent-games,🎯国内选择
+ - GEOSITE,geolocation-cn,🎯国内选择
+ - GEOSITE,CN,🎯国内选择
+ - GEOSITE,twitter,✉️通讯节点
+ - GEOSITE,Discord,✉️通讯节点
+ - GEOSITE,telegram,✉️通讯节点
+ - GEOSITE,facebook,✉️通讯节点
+ - GEOSITE,whatsapp,✉️通讯节点
+ - GEOSITE,googlefcm,✉️通讯节点
+ - GEOSITE,2kgames,🎮游戏节点
+ - GEOSITE,bilibili-game,🎮游戏节点
+ - GEOSITE,blizzard,🎮游戏节点
+ - GEOSITE,curseforge,🎮游戏节点
+ - GEOSITE,cygames,🎮游戏节点
+ - GEOSITE,ea,🎮游戏节点
+ - GEOSITE,epicgames,🎮游戏节点
+ - GEOSITE,garena,🎮游戏节点
+ - GEOSITE,gog,🎮游戏节点
+ - GEOSITE,illusion,🎮游戏节点
+ - GEOSITE,lowiro,🎮游戏节点
+ - GEOSITE,mihoyo,🎮游戏节点
+ - GEOSITE,nintendo,🎮游戏节点
+ - GEOSITE,op,🎮游戏节点
+ - GEOSITE,pandanet,🎮游戏节点
+ - GEOSITE,pinkcore,🎮游戏节点
+ - GEOSITE,playstation,🎮游戏节点
+ - GEOSITE,purikonejp,🎮游戏节点
+ - GEOSITE,riot,🎮游戏节点
+ - GEOSITE,rockstar,🎮游戏节点
+ - GEOSITE,steam,🎮游戏节点
+ - GEOSITE,steamunlocked,🎮游戏节点
+ - GEOSITE,tencent-games,🎮游戏节点
+ - GEOSITE,ubisoft,🎮游戏节点
+ - GEOSITE,xbox,🎮游戏节点
+ - GEOSITE,ynoproject,🎮游戏节点
+ - GEOSITE,category-games,🎮游戏节点
+ - GEOSITE,bbc,📺影视节点
+ - GEOSITE,tiktok,📺影视节点
+ - GEOSITE,netflix,📺影视节点
+ - GEOSITE,youtube,📺影视节点
+ - GEOSITE,paypal,🪙支付节点
+ - GEOSITE,openai,🤖OPENAI
+ - GEOSITE,tor,🚀国外选择
+ - GEOSITE,aws,🚀国外选择
+ - GEOSITE,pixiv,🚀国外选择
+ - GEOSITE,azure,🚀国外选择
+ - GEOSITE,nginx,🚀国外选择
+ - GEOSITE,adobe,🚀国外选择
+ - GEOSITE,taptap,🚀国外选择
+ - GEOSITE,github,🚀国外选择
+ - GEOSITE,docker,🚀国外选择
+ - GEOSITE,debian,🚀国外选择
+ - GEOSITE,python,🚀国外选择
+ - GEOSITE,termux,🚀国外选择
+ - GEOSITE,adblock,🚀国外选择
+ - GEOSITE,openwrt,🚀国外选择
+ - GEOSITE,cloudflare,🚀国外选择
+ - GEOSITE,adblockplus,🚀国外选择
+ - GEOSITE,google,🚀国外选择
+ - GEOSITE,microsoft,🚀国外选择
+ - GEOSITE,geolocation-!cn,🚀国外选择
+ 
+ # GEOIP
+ - GEOIP,private,DIRECT
+ - GEOIP,CN,🎯国内选择
+ - GEOIP,twitter,✉️通讯节点
+ - GEOIP,telegram,✉️通讯节点
+ - GEOIP,facebook,✉️通讯节点
+ - GEOIP,netflix,📺影视节点
+ - GEOIP,fastly,🚀国外选择
+ - GEOIP,google,🚀国外选择
+ - GEOIP,cloudflare,🚀国外选择
+ - GEOIP,cloudfront,🚀国外选择
+ 
+ # MATCH
+ - MATCH,🚀国外选择
+
