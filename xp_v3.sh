@@ -21,9 +21,6 @@ display_title() {
 
 # 显示菜单栏并获取用户选择
 show_menu() {
-    print_developer_info
-    echo "~o( =∩ω∩= )m"
-    display_cat
     echo "1. 开始越狱"
 	echo "2. adb连接"
 	echo "3. adb测试"
@@ -153,6 +150,9 @@ install_app() {
 main() {
 	while true
 	do
+                print_developer_info
+                echo "~o( =∩ω∩= )m"
+                display_cat
 		echo "请选择以下操作："
 		echo "1. 开始越狱"
 		echo "2. adb连接"
