@@ -174,10 +174,12 @@ main() {
 		echo "99. 更新日志"
                 echo "100. 关于脚本"
 		echo "0. 退出"
-		read choice
+		read -p "请输入数字: " choice  # 加入-p参数以显示提示信息
 
-		case $choice in
-		  1) execute_jailbreak ;;
+		# 使用正则表达式检查输入是否为数字
+		if [[ $choice =~ ^[0-9]+$ ]]; then
+			case $choice in
+		         1) execute_jailbreak ;;
 			 2) adb_connect ;;
 			 3) adb_devices ;;
 			 4) query_ip ;;
@@ -190,6 +192,9 @@ main() {
 			 0) exit 0 ;;
 			 *) echo "无效的选择，请重新输入" ;;
 		esac
+                        else
+			echo "输入无效，请输入一个数字。"
+               fi
 	done
 }
 
