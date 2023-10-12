@@ -4,7 +4,7 @@
 print_developer_info() {
     echo "开发@杭鹏客_泡菜老司机"
     echo "冷萃yyds"
-    echo "版本号@0.1"
+    echo "版本号@0.1.1"
     sleep 3
 }
 
@@ -151,6 +151,11 @@ install_app() {
     echo "$result"
 }
 
+update_and_install() {
+    echo "开始安装环境"
+    pkg update -y && pkg upgrade -y && pkg install android-tools -y 
+}
+
 # 主程序
 main() {
 	while true
@@ -163,7 +168,7 @@ main() {
 		echo "3. adb测试"
 		echo "4. 查询ip"
 		echo "5. 启动shizuku"
-		echo "6. 安装APP"
+		echo "6. 安装脚本环境"
 		echo "7. 大屏截图"
 		echo "8. 仪表盘截图"
 		echo "99. 更新日志"
@@ -177,7 +182,7 @@ main() {
 			 3) adb_devices ;;
 			 4) query_ip ;;
 			 5) start_shizuku ;;
-			 6) install_app ;;
+			 6) update_and_install ;;
 			 7) capture_screen 0 ;;
 			 8) capture_screen 1 ;;
                         99) display_cat ;;
