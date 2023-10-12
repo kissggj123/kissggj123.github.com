@@ -84,6 +84,8 @@ case $choice in
     # 仪表盘截屏
     echo "正在执行仪表盘截屏..."
     filename="/sdcard/YumikoToys/screenshot-$(date '+%Y%m%d%H%M%S').png"
+    adb connect 127.0.0.1:5050
+    sleep 3
     adb shell screencap -d 1 -p "$filename"
     echo "截图已保存至 $filename"
     ;;
