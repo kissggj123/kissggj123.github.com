@@ -8,11 +8,12 @@ print_developer_info() {
     sleep 3
 }
 
-# 显示猫咪字符画
+# 显示猫咪字符画及更新日志
 display_cat() {
     echo " /\_/\\"
     echo "( o.o )"
     echo " > ^ <"
+    echo -e "脚本实现了一键越狱功能\n仅供研究学习使用"
     sleep 3
 }
 
@@ -155,6 +156,7 @@ main() {
 	while true
 	do
                 echo "~o( =∩ω∩= )m"
+		echo -e "这是一个操蛋的小鹏越狱工具\n用于获取操蛋的wifi adb功能"
 		echo "请选择以下操作："
 		echo "1. 开始越狱"
 		echo "2. adb连接"
@@ -164,7 +166,7 @@ main() {
 		echo "6. 安装APP"
 		echo "7. 大屏截图"
 		echo "8. 仪表盘截图"
-		echo "99. 彩蛋"
+		echo "99. 更新日志"
                 echo "100. 关于脚本"
 		echo "0. 退出"
 		read choice
