@@ -5,6 +5,7 @@ print_developer_info() {
     echo "开发@杭鹏客_泡菜老司机"
     echo "冷萃yyds"
     echo "版本号@0.1"
+    sleep 3
 }
 
 # 显示猫咪字符画
@@ -12,16 +13,19 @@ display_cat() {
     echo " /\_/\\"
     echo "( o.o )"
     echo " > ^ <"
+    sleep 3
 }
 
 # 显示标题
 display_title() {
     echo "操蛋的小鹏越狱工具"
+    sleep 3
 }
 
 # 显示菜单栏并获取用户选择
 show_menu() {
-    echo "1. 开始越狱"
+        echo "~o( =∩ω∩= )m"
+        echo "1. 开始越狱"
 	echo "2. adb连接"
 	echo "3. adb测试"
 	echo "4. 查询ip"
@@ -29,7 +33,7 @@ show_menu() {
 	echo "6. 安装APP"
 	echo "7. 大屏截图"
 	echo "8. 仪表盘截图"
-	echo "99. 问题反馈"
+	echo "99. 工具信息"
 	echo "0. 退出"
 	read choice
 }
@@ -150,9 +154,7 @@ install_app() {
 main() {
 	while true
 	do
-                print_developer_info
                 echo "~o( =∩ω∩= )m"
-                display_cat
 		echo "请选择以下操作："
 		echo "1. 开始越狱"
 		echo "2. adb连接"
@@ -162,7 +164,8 @@ main() {
 		echo "6. 安装APP"
 		echo "7. 大屏截图"
 		echo "8. 仪表盘截图"
-		echo "99. 问题反馈"
+		echo "99. 彩蛋"
+                echo "100. 关于脚本"
 		echo "0. 退出"
 		read choice
 
@@ -175,6 +178,8 @@ main() {
 			 6) install_app ;;
 			 7) capture_screen 0 ;;
 			 8) capture_screen 1 ;;
+                        99) display_cat ;;
+		       100) print_developer_info ;;
 			 0) exit 0 ;;
 			 *) echo "无效的选择，请重新输入" ;;
 		esac
