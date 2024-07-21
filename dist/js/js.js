@@ -1,2 +1,73 @@
-﻿"use strict";function getHash(){return location.hash?location.hash.substring(1):""}function set(t,o){localStorage["Yumiko搜索_"+t]=o,0==o?(set_url[t]="https://www.baidu.com/s?wd=",set_top[t]=-45,set_left[t]=-100,set_foot[t]=80):1==o?(set_url[t]="https://www.haosou.com/s?q=",set_top[t]=0,set_left[t]=0,set_foot[t]=80):2==o?(set_url[t]="https://cn.bing.com/search?setmkt=zh-cn&setlang=zh-cn&q=",set_top[t]=-72,set_left[t]=-80,set_foot[t]=60):3==o&&(set_url[t]="https://www.google.com/search?q=",set_top[t]=-88,set_left[t]=-145,set_foot[t]=127),need_respond=!0}function change_state(t){0==localStorage.Yumiko搜索_state?localStorage.Yumiko搜索_state=t?-1:1:localStorage.Yumiko搜索_state=0,respond(),0==localStorage.Yumiko搜索_state&&so()}function respond(){var t=$("body").width(),o=$(window).height(),s=$("nav.navbar").height(),e=t/2;0==localStorage.Yumiko搜索_state?(obja.fadeIn("fast").animate({"margin-left":set_left[0],width:e-set_left[0]},"fast"),objb.fadeIn("fast").animate({"margin-left":e+set_left[1],width:e-set_left[1]},"fast"),objProgress[0].style.width="50%",objProgress[1].style.width="50%"):localStorage.Yumiko搜索_state<0?(obja.fadeIn("fast").animate({"margin-left":set_left[0],width:t-set_left[0]},"fast"),objb.fadeOut("fast"),objProgress[0].style.width="75%",objProgress[1].style.width="25%"):(obja.fadeOut("fast"),objb.fadeIn("fast").animate({"margin-left":set_left[1],width:t-set_left[0]},"fast"),objProgress[0].style.width="25%",objProgress[1].style.width="75%"),obja.animate({"margin-top":set_top[0]+s,height:o-set_top[0]-s+set_foot[0]},"fast"),objb.animate({"margin-top":set_top[1]+s,height:o-set_top[1]-s+set_foot[1]},"fast"),need_respond=!1}function so(){if(""!==$.trim(soinput_obj[0].value)){obja[0].src="",objb[0].src="";var t=soinput_obj[0].value,o=encodeURIComponent(t);0==localStorage.Yumiko搜索_state?(obja[0].src=set_url[0]+o,objb[0].src=set_url[1]+o):localStorage.Yumiko搜索_state<0?obja[0].src=set_url[0]+o:objb[0].src=set_url[1]+o,location.hash=t,window.document.title=t+" - Yumiko搜索"}else location.hash="",window.document.title="Yumiko搜索";need_respond&&respond(),objProgress.addClass("progress-bar-striped active"),window.setTimeout(function(){objProgress.removeClass("progress-bar-striped active")},2e3)}if($(window).width()<770){var get_answer=confirm("Yumiko Search是一个聚合性搜索引擎，可以同时对 2 个搜索引擎展开搜索，页面一分为二，充分利用屏幕资源。\n\n然而。。。\n\n你的屏幕实在是太小了，请在电脑或平板上使用Yumiko Search，相信会带给你一份相当棒的体验！\n\nhttps://github.com/kissggj123\n\n----------\n点击[是]，将跳转到必应手机版：");if(get_answer){var hash=getHash();hash?window.location.href="https://cn.bing.com/search?setmkt=zh-cn&setlang=zh-cn&q="+hash:window.location.href="https://cn.bing.com/"}}var soinput_obj=$("#soinput"),objProgress=$("div.progress>div"),obja=$("#a"),objb=$("#b"),obj_autoSO=$("#autoSO"),autoSO=!0,need_respond=!0,obj_list1_buttons=$("td.set-list-1 button"),obj_list2_buttons=$("td.set-list-2 button"),set_url=[],set_top=[0,0],set_left=[0,0],set_foot=[0,0];respond(),void 0===localStorage.Yumiko搜索_autoSO?(localStorage.Yumiko搜索_autoSO=!0,obj_autoSO[0].checked=!0,autoSO=!0):(obj_autoSO[0].checked="true"===localStorage.Yumiko搜索_autoSO,autoSO=obj_autoSO[0].checked),void 0==localStorage.Yumiko搜索_0?(set(0,3),obj_list1_buttons.eq(3).removeClass("btn-info").addClass("btn-danger")):(set(0,localStorage.Yumiko搜索_0),obj_list1_buttons.eq(localStorage.Yumiko搜索_0).removeClass("btn-info").addClass("btn-danger")),void 0==localStorage.Yumiko搜索_1?(set(1,2),obj_list2_buttons.eq(1).removeClass("btn-warning").addClass("btn-success")):(set(1,localStorage.Yumiko搜索_1),obj_list2_buttons.eq(localStorage.Yumiko搜索_1).removeClass("btn-warning").addClass("btn-success")),obj_list1_buttons.click(function(){obj_list1_buttons.removeClass("btn-danger").addClass("btn-info"),$(this).removeClass("btn-info").addClass("btn-danger")}),obj_list2_buttons.click(function(){obj_list2_buttons.removeClass("btn-success").addClass("btn-warning"),$(this).removeClass("btn-warning").addClass("btn-success")}),obj_autoSO.change(function(){localStorage.Yumiko搜索_autoSO=this.checked,autoSO=this.checked}),function(){if(location.hash){var t=getHash();t=decodeURIComponent(t).replace(/\+/g," "),soinput_obj[0].value=t,so()}}(),void 0==localStorage.Yumiko搜索_state&&(localStorage.Yumiko搜索_state=0),$(window).resize(function(){respond()}),soinput_obj.on("input",function(){autoSO&&so()}),$("div.loading").fadeOut("fast");
-//# sourceMappingURL=js.js.map
+function updateTiming() {
+    // 这里写开始日期
+    var startDate = new Date('2024/03/12 00:00:00');
+    var currentDate = new Date();
+    var timestamp = currentDate.getTime();
+    var startstamp = startDate.getTime();
+    var elapsedMilliseconds = timestamp - startstamp;
+
+    // 计算天数，精确到小数点后三位
+    var elapsedDays = elapsedMilliseconds / (1000 * 60 * 60 * 24);
+    var elapsedDaysFormatted = elapsedDays.toFixed(3);
+
+    // 计算小时、分钟和秒
+    var elapsedHours = Math.floor(elapsedMilliseconds / (1000 * 60 * 60));
+    var elapsedMinutes = Math.floor((elapsedMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+    var elapsedSeconds = Math.floor((elapsedMilliseconds % (1000 * 60)) / 1000);
+
+    // 格式化日期
+    function formatDate(date) {
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString().padStart(2, '0');
+        var day = date.getDate().toString().padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    // 计算下一个100天、180天、300天的纪念日
+    function getNextAnniversaryDate(startDate, days) {
+        var nextAnniversaryDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
+        var count = 1; // 纪念日计数
+        while (nextAnniversaryDate < currentDate) {
+            nextAnniversaryDate = new Date(nextAnniversaryDate.getTime() + days * 24 * 60 * 60 * 1000);
+            count++;
+        }
+        return { date: nextAnniversaryDate, count: count };
+    }
+
+    var next100Days = getNextAnniversaryDate(startDate, 100);
+    var next180Days = getNextAnniversaryDate(startDate, 180);
+    var next300Days = getNextAnniversaryDate(startDate, 300);
+
+    var next100DaysFormatted = formatDate(next100Days.date) + `（第${next100Days.count}个100天）`;
+    var next180DaysFormatted = formatDate(next180Days.date) + `（第${next180Days.count}个180天）`;
+    var next300DaysFormatted = formatDate(next300Days.date) + `（第${next300Days.count}个300天）`;
+
+    // 计算下一个一周年纪念日
+    function getNextYearAnniversary(startDate) {
+        var nextYearAnniversaryDate = new Date(startDate);
+        var yearsCount = 1; // 纪念年计数
+        nextYearAnniversaryDate.setFullYear(nextYearAnniversaryDate.getFullYear() + yearsCount);
+        while (nextYearAnniversaryDate < currentDate) {
+            yearsCount++;
+            nextYearAnniversaryDate.setFullYear(nextYearAnniversaryDate.getFullYear() + 1);
+        }
+        return { date: nextYearAnniversaryDate, count: yearsCount };
+    }
+
+    var nextYearAnniversary = getNextYearAnniversary(startDate);
+    var nextYearAnniversaryFormatted = formatDate(nextYearAnniversary.date) + `（第${nextYearAnniversary.count}周年）`;
+
+    // 拼接显示字符串
+    var timingString = 
+        `🐰兔可可已经到来 ${elapsedDaysFormatted}天啦\n` +
+        `🌱下一个100天纪念日是 ${next100DaysFormatted}\n` +
+        `🌿下一个180天纪念日是 ${next180DaysFormatted}\n` +
+        `🍀下一个300天纪念日是 ${next300DaysFormatted}\n` +
+        `🎉下一个一周年纪念日是 ${nextYearAnniversaryFormatted}\n` +
+        `🎂目前已经到来 ${elapsedHours}小时${elapsedMinutes}分钟${elapsedSeconds}秒`;
+
+    document.getElementById('timing').textContent = timingString;
+}
+
+// 每100毫秒更新一次
+setInterval(updateTiming, 100);
