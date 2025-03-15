@@ -2,154 +2,98 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>沪苏小鹏充电站(兔可可修复版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海 & 苏州 小鹏充电站</title>
     <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        #map { height: 90vh; width: 100%; }
-        .info-img { max-width: 200px; margin: 10px 0; }
-        .nav-btns { margin: 10px 0; }
-        .copy-btn { background: #4CAF50; color: white; padding: 5px; }
-        .version { position: fixed; right: 10px; bottom: 5px; color: #666; font-size: 12px; }
+        #map { width: 100%; height: 600px; }
+        .info { font-size: 14px; }
+        .info img { max-width: 100px; margin-top: 5px; display: block; }
+        .copy-btn { margin-top: 5px; cursor: pointer; color: blue; text-decoration: underline; }
+        .nav-btn { cursor: pointer; margin: 5px; padding: 5px 10px; background: lightgray; border: none; }
     </style>
 </head>
 <body>
-<h2>沪苏小鹏充电地图 <button onclick="loadData()">刷新数据</button></h2>
-<div id="map"></div>
-<div class="version">@兔可可 | 版本@舔鸡 5.0.2</div>
-
-<script>
-let map; // 地图实例全局变量
-let currentInfoWindow; // 当前信息窗口
-let allPois = []; // 存储所有充电站数据
-
-// 地图初始化函数
-function initMap(center) {
-    if (!map) {
-        map = new AMap.Map("map", {
-            zoom: 12,
-            center: center || [121.473701, 31.230416] // 默认上海中心
+    <h2>上海 & 苏州 小鹏充电站</h2>
+    <div id="map"></div>
+    <script>
+        var map = new AMap.Map("map", {
+            center: [121.47, 31.23], // 以上海为中心
+            zoom: 11
         });
-    } else {
-        map.setCenter(center);
-    }
-}
-
-// 数据加载主函数
-function loadData() {
-    initMap(); // 确保地图初始化
-    allPois = [];
-    
-    const cities = ['上海', '苏州'];
-    let loadedCities = 0;
-
-    cities.forEach(city => {
-        $.getJSON("https://restapi.amap.com/v3/place/text", {
-            key: "f5be8cdf1391fe2323abc034220d2676",
-            keywords: "小鹏充电",
-            types: "011100|011102|011103|073000|073001|073002",
-            city: city,
-            offset: 50,
-            page: 1,
-            extensions: "all"
-        }, function(data) {
-            if(data.pois && data.pois.length > 0) {
-                allPois = allPois.concat(data.pois);
-                loadedCities++;
-                
-                if(loadedCities === cities.length) {
-                    renderMarkers();
-                }
-            }
-        });
-    });
-}
-
-// 标记渲染函数
-function renderMarkers() {
-    map.clearMap();
-    
-    allPois.forEach(poi => {
-        const marker = new AMap.Marker({
-            position: poi.location.split(','),
-            map: map,
-            content: `<img src="https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png" style="width:25px;">`
-        });
-
-        marker.on('click', () => {
-            if(currentInfoWindow) {
-                currentInfoWindow.close();
-            }
-            currentInfoWindow = createInfoWindow(poi);
-            currentInfoWindow.open(map, marker.getPosition());
-        });
-    });
-
-    // 自动调整视野
-    if(allPois.length > 0) {
-        const bounds = new AMap.Bounds();
-        allPois.forEach(poi => bounds.extend(poi.location.split(',')));
-        map.setBounds(bounds);
-    } else {
-        alert("未找到充电站数据");
-    }
-}
-
-// 创建信息窗口（包含图片翻页功能）
-function createInfoWindow(poi) {
-    let currentPhotoIndex = 0;
-    const photos = poi.photos || [];
-    
-    const updateContent = () => {
-        return `<div>
-            <h4>${poi.name}</h4>
-            <p>地址: <span id="addr">${poi.address}</span> 
-                <button class="copy-btn" onclick="copyAddress('${poi.address}')">复制</button>
-            </p>
-            ${photos.length > 0 ? `
-            <div class="nav-btns">
-                <button ${currentPhotoIndex === 0 ? 'disabled' : ''} 
-                    onclick="switchPhoto(this, -1)">← 上一张</button>
-                <span>${currentPhotoIndex + 1}/${photos.length}</span>
-                <button ${currentPhotoIndex === photos.length - 1 ? 'disabled' : ''} 
-                    onclick="switchPhoto(this, 1)">下一张 →</button>
-            </div>
-            <img class="info-img" src="${photos[currentPhotoIndex]?.url || ''}">
-            ` : ''}
-        </div>`;
-    };
-
-    const infoWindow = new AMap.InfoWindow({
-        content: updateContent()
-    });
-
-    window.switchPhoto = (btn, step) => {
-        const parent = btn.parentElement;
-        currentPhotoIndex = Math.max(0, Math.min(currentPhotoIndex + step, photos.length - 1));
-        parent.querySelector('span').textContent = `${currentPhotoIndex + 1}/${photos.length}`;
-        parent.nextElementSibling.src = photos[currentPhotoIndex].url;
         
-        // 更新按钮状态
-        parent.querySelectorAll('button').forEach((b, i) => {
-            b.disabled = (i === 0 && currentPhotoIndex === 0) || 
-                        (i === 1 && currentPhotoIndex === photos.length - 1);
-        });
-    };
-
-    return infoWindow;
-}
-
-// 地址复制功能
-function copyAddress(addr) {
-    navigator.clipboard.writeText(addr)
-        .then(() => alert('地址已复制'))
-        .catch(() => prompt('手动复制:', addr));
-}
-
-// 页面加载初始化
-$(document).ready(function() {
-    loadData();
-});
-</script>
+        function fetchPOIData(city) {
+            $.getJSON("https://restapi.amap.com/v3/place/text", {
+                key: "f5be8cdf1391fe2323abc034220d2676",
+                city: city,
+                keywords: "小鹏充电",
+                types: "011100|011102|011103|073000|073001|073002",
+                offset: 20,
+                page: 1,
+                extensions: "all",
+                output: "json"
+            }, function(data) {
+                if (data.pois && data.pois.length > 0) {
+                    data.pois.forEach(function(poi) {
+                        var marker = new AMap.Marker({
+                            position: poi.location.split(","),
+                            map: map
+                        });
+                        
+                        var photoIndex = 0;
+                        var photos = poi.photos || [];
+                        
+                        function updatePhotoContent() {
+                            return photos.length > 0 
+                                ? `<img src='${photos[photoIndex].url}' alt='充电站图片'><br>
+                                   <button class='nav-btn' onclick='prevPhoto(${photoIndex}, ${photos.length}, "photo-${poi.id}")'>⬅️ 上一张</button>
+                                   <button class='nav-btn' onclick='nextPhoto(${photoIndex}, ${photos.length}, "photo-${poi.id}")'>➡️ 下一张</button>`
+                                : "";
+                        }
+                        
+                        var content = `<div class='info'>
+                            <strong>${poi.name}</strong><br>
+                            地址: ${poi.address || '未知'}<br>
+                            电话: ${poi.tel || '无'}<br>
+                            <span class='copy-btn' onclick='copyToClipboard("${poi.address}")'>📋 复制地址</span><br>
+                            <div id='photo-${poi.id}'>${updatePhotoContent()}</div>
+                        </div>`;
+                        
+                        var infoWindow = new AMap.InfoWindow({ content: content });
+                        marker.on("click", function() {
+                            infoWindow.open(map, marker.getPosition());
+                        });
+                    });
+                }
+            });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("地址已复制: " + text);
+            }).catch(err => {
+                console.error("复制失败", err);
+            });
+        }
+        
+        function prevPhoto(index, total, id) {
+            if (index > 0) {
+                index--;
+                document.getElementById(id).innerHTML = updatePhotoContent();
+            }
+        }
+        
+        function nextPhoto(index, total, id) {
+            if (index < total - 1) {
+                index++;
+                document.getElementById(id).innerHTML = updatePhotoContent();
+            }
+        }
+        
+        // 获取上海和苏州的数据
+        fetchPOIData("上海");
+        fetchPOIData("苏州");
+    </script>
 </body>
 </html>
