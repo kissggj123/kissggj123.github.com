@@ -1,177 +1,105 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全国小鹏充电站地图</title>
-    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676&plugin=AMap.CitySearch"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>全国小鹏充电站查询</title>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
     <style>
-        #map { width: 100%; height: 600px; }
-        .controls { margin: 10px 0; display: flex; gap: 10px; flex-wrap: wrap; }
-        .info-window { max-width: 250px; }
-        .photo-pagination { margin: 5px 0; display: flex; justify-content: space-between; }
-        .copy-btn { cursor: pointer; color: #1890ff; }
+        #map-container { width: 100%; height: 600px; }
+        .control-panel { margin: 10px; padding: 10px; background: #f5f5f5; }
+        .info-window img { max-width: 200px; margin: 5px 0; }
     </style>
 </head>
 <body>
-    <h2>全国小鹏充电站地图</h2>
-    <div class="controls">
-        <select id="citySelect" style="padding: 5px;">
-            <option value="">-- 选择城市 --</option>
-            <!-- 通过API动态加载城市列表 -->
-        </select>
-        <input type="text" id="searchInput" placeholder="输入城市名称" style="padding: 5px;">
-        <button onclick="searchCity()">🔍 搜索</button>
-        <button onclick="getUserLocation()">📍 获取定位</button>
-        <button onclick="map.zoomIn()">➕</button>
-        <button onclick="map.zoomOut()">➖</button>
+    <div class="control-panel">
+        <input type="text" id="city" placeholder="输入城市名称" style="width:200px">
+        <button onclick="searchPoi()">搜索</button>
+        <button onclick="clearMarkers()">清空</button>
     </div>
-    <div id="map"></div>
+    <div id="map-container"></div>
 
 <script>
-let currentCity = '';
-let currentPage = 1;
-let totalPages = 1;
-let markers = [];
-
-// 初始化地图
-const map = new AMap.Map("map", {
+let map = new AMap.Map('map-container', {
     zoom: 5,
     center: [104.195397, 35.86166]
 });
+let markers = [];
 
-// 动态加载城市列表‌:ml-citation{ref="4" data="citationList"}
-function loadCityList() {
-    new AMap.CitySearch().getLocalCity((status, result) => {
-        if (status === 'complete') {
-            const provinceList = result.provinceList;
-            const select = document.getElementById('citySelect');
-            provinceList.forEach(province => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = province.name;
-                province.districts.forEach(city => {
-                    const option = document.createElement('option');
-                    option.value = city.name;
-                    option.textContent = city.name;
-                    optgroup.appendChild(option);
-                });
-                select.appendChild(optgroup);
-            });
-        }
-    });
-}
-
-// 获取充电站数据
-function fetchPOIData() {
-    clearMarkers();
+// 核心搜索功能‌:ml-citation{ref="2,3" data="citationList"}
+async function searchPoi() {
+    const city = document.getElementById('city').value;
+    const url = `https://restapi.amap.com/v3/place/text?key=YOUR_WEB_KEY&keywords=小鹏充电&city=${city}&types=011100&offset=50`;
     
-    $.getJSON("https://restapi.amap.com/v3/place/text", {
-        key: "f5be8cdf1391fe2323abc034220d2676",
-        city: currentCity,
-        keywords: "小鹏充电",
-        types: "011100|011102|011103|073000|073001|073002",
-        offset: 20,
-        page: currentPage,
-        extensions: "all",
-        citylimit: true,
-        output: "json"
-    }).done(data => {
-        if (data.pois?.length) {
-            totalPages = Math.ceil(data.count / 20);
-            renderMarkers(data.pois);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if(data.pois && data.pois.length > 0) {
+            clearMarkers();
+            data.pois.forEach(poi => createMarker(poi));
         }
-    });
+    } catch(error) {
+        console.error('API请求失败:', error);
+    }
 }
 
-// 渲染标记点
-function renderMarkers(pois) {
-    pois.forEach((poi, index) => {
-        const marker = new AMap.Marker({
-            position: poi.location.split(','),
-            map: map,
-            content: `<div class="marker">${index + 1}</div>`
-        });
-
-        let currentPhotoIndex = 0;
-        const infoWindow = new AMap.InfoWindow({
-            content: createInfoContent(poi, currentPhotoIndex)
-        });
-
-        marker.on('click', () => {
-            infoWindow.open(map, marker.getPosition());
-        });
-        markers.push(marker);
+// 创建地图标记与信息窗口‌:ml-citation{ref="1,4" data="citationList"}
+function createMarker(poi) {
+    const marker = new AMap.Marker({
+        position: poi.location.split(','),
+        map: map
     });
-}
 
-// 创建信息窗口内容
-function createInfoContent(poi, photoIndex) {
-    const photos = poi.photos || [];
-    return `
-        <div class="info-window">
+    // 逆地理编码获取详细信息‌:ml-citation{ref="3,4" data="citationList"}
+    const infoWindow = new AMap.InfoWindow({
+        content: `<div class="info-window">
             <h4>${poi.name}</h4>
-            <p>地址：<span class="copy-btn" onclick="copyAddress('${poi.address}')">${poi.address}</span></p>
-            ${photos.length ? `
-                <div class="photo-pagination">
-                    <button ${photoIndex <= 0 ? 'disabled' : ''} 
-                        onclick="updatePhoto(${poi.id}, ${photoIndex - 1})">←</button>
-                    <span>${photoIndex + 1}/${photos.length}</span>
-                    <button ${photoIndex >= photos.length - 1 ? 'disabled' : ''}
-                        onclick="updatePhoto(${poi.id}, ${photoIndex + 1})">→</button>
-                </div>
-                <img src="${photos[photoIndex]?.url}" style="max-width:200px;">
-            ` : '<p>暂无图片</p>'}
-        </div>
-    `;
-}
-
-// 功能函数
-function updatePhoto(poiId, newIndex) {
-    markers.forEach(marker => {
-        if (marker.getExtData().id === poiId) {
-            marker.setContent(createInfoContent(marker.getExtData(), newIndex));
-        }
+            <p>地址：<span class="copyable">${poi.address}</span></p>
+            <button onclick="copyAddress('${poi.address}')">复制地址</button>
+            <div id="detail-${poi.id}"></div>
+        </div>`
     });
+
+    // 绑定点击事件
+    marker.on('click', () => {
+        getLocationDetails(poi.location, poi.id);
+        infoWindow.open(map, marker.getPosition());
+    });
+    markers.push(marker);
 }
 
-function copyAddress(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('地址已复制：' + text);
-    }).catch(err => console.error(err));
-}
-
-function searchCity() {
-    const city = document.getElementById('searchInput').value;
-    if (city) {
-        currentCity = city;
-        currentPage = 1;
-        fetchPOIData();
-        map.setCity(city);
+// 逆地理编码实现‌:ml-citation{ref="3,4" data="citationList"}
+async function getLocationDetails(location, targetId) {
+    const url = `https://restapi.amap.com/v3/geocode/regeo?key=YOUR_WEB_KEY&location=${location}`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const detailDiv = document.getElementById(`detail-${targetId}`);
+        
+        if(data.regeocode) {
+            detailDiv.innerHTML = `
+                <p>区域：${data.regeocode.addressComponent.district}</p>
+                <p>周边：${data.regeocode.formatted_address}</p>
+                <img src="https://restapi.amap.com/v3/staticmap?location=${location}&zoom=15&size=300*150&key=YOUR_WEB_KEY">
+            `;
+        }
+    } catch(error) {
+        console.error('逆地理编码失败:', error);
     }
 }
 
-function getUserLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-            map.setCenter([pos.coords.longitude, pos.coords.latitude]);
-        }, err => alert("定位失败：" + err.message));
-    } else {
-        alert("浏览器不支持定位功能");
-    }
-}
-
+// 工具函数
 function clearMarkers() {
     markers.forEach(marker => marker.setMap(null));
     markers = [];
 }
 
-// 初始化
-loadCityList();
-document.getElementById('citySelect').addEventListener('change', function() {
-    currentCity = this.value;
-    fetchPOIData();
-});
+function copyAddress(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => alert('地址已复制'))
+        .catch(err => console.error('复制失败:', err));
+}
 </script>
 </body>
 </html>
