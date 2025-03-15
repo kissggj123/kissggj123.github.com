@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全国小鹏充电站</title>
-    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
+    <!-- 使用高德 JSAPI，需添加安全密钥 -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676&plugin=AMap.PlaceSearch"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         #map { width: 100%; height: 600px; }
         .info { font-size: 14px; }
-        .info img { max-width: 100px; margin-top: 5px; display: block; }
-        .copy-btn { margin-top: 5px; cursor: pointer; color: blue; text-decoration: underline; }
-        .nav-btn { cursor: pointer; margin: 5px; padding: 5px 10px; background: lightgray; border: none; }
+        .copy-btn { cursor: pointer; color: blue; text-decoration: underline; }
         .controls { margin-bottom: 10px; }
     </style>
 </head>
@@ -20,75 +19,86 @@
     <p>作者: @兔可可</p>
     <div class="controls">
         <button onclick="fetchPOIData()">加载充电站</button>
-        <button onclick="getUserLocation()">📍 获取当前定位</button>
+        <button onclick="getUserLocation()">📍 获取定位</button>
         <button onclick="map.zoomIn()">➕ 放大</button>
         <button onclick="map.zoomOut()">➖ 缩小</button>
     </div>
     <div id="map"></div>
+
     <script>
         var map = new AMap.Map("map", {
-            center: [121.47, 31.23],
+            center: [116.40, 39.90], // 默认北京中心
             zoom: 11
         });
 
+        // 加载充电站数据（使用 JSONP 跨域）
         function fetchPOIData() {
-            $.getJSON("https://restapi.amap.com/v3/place/text", {
-                key: "f5be8cdf1391fe2323abc034220d2676",
-                keywords: "小鹏充电",
-                types: "011100|011102|011103|073000|073001|073002",
-                offset: 20,
-                page: 1,
-                extensions: "all",
-                output: "json"
-            }).done(function(data) {
-                if (data.info !== "OK") {
-                    console.error("API 返回错误: ", data);
-                    alert("API 请求失败: " + data.info);
-                    return;
-                }
-                
-                map.clearMap();
-                if (data.pois && data.pois.length > 0) {
-                    data.pois.forEach(function(poi) {
-                        var marker = new AMap.Marker({
-                            position: poi.location.split(","),
-                            map: map
-                        });
+            const key = 'f5be8cdf1391fe2323abc034220d2676';
+            const apiUrl = `https://restapi.amap.com/v3/place/text?key=${key}&keywords=小鹏充电&types=011100&offset=20&page=1&extensions=all&output=json`;
 
-                        var content = `<div class='info'>
-                            <strong>${poi.name}</strong><br>
-                            地址: ${poi.address || '未知'}<br>
-                            电话: ${poi.tel || '无'}<br>
-                            <span class='copy-btn' onclick='copyToClipboard("${poi.address}")'>📋 复制地址</span><br>
-                        </div>`;
-
-                        var infoWindow = new AMap.InfoWindow({ content: content });
-                        marker.on("click", function() {
-                            infoWindow.open(map, marker.getPosition());
-                        });
-                    });
-                } else {
-                    alert("未找到充电站信息！");
+            // 使用 JSONP 请求避免跨域问题
+            $.ajax({
+                url: apiUrl,
+                type: 'GET',
+                dataType: 'jsonp',
+                jsonp: 'callback',
+                success: function(data) {
+                    if (data.status === '1') {
+                        updateMap(data.pois);
+                    } else {
+                        alert("API 错误: " + data.info);
+                    }
+                },
+                error: function(err) {
+                    console.error("请求失败:", err);
                 }
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                console.error("请求失败:", textStatus, errorThrown);
-                alert("请求失败: " + textStatus);
             });
         }
 
+        // 更新地图标记
+        function updateMap(pois) {
+            map.clearMap();
+            if (!pois || pois.length === 0) {
+                alert("未找到充电站！");
+                return;
+            }
+
+            pois.forEach(poi => {
+                const marker = new AMap.Marker({
+                    position: poi.location.split(','),
+                    map: map
+                });
+
+                const infoWindow = new AMap.InfoWindow({
+                    content: `<div class="info">
+                        <strong>${poi.name}</strong><br>
+                        地址: ${poi.address || '未知'}<br>
+                        电话: ${poi.tel || '无'}<br>
+                        <span class="copy-btn" onclick="copyToClipboard('${poi.address}')">📋 复制地址</span>
+                    </div>`
+                });
+
+                marker.on('click', () => infoWindow.open(map, marker.getPosition()));
+            });
+        }
+
+        // 获取用户定位
         function getUserLocation() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                map.setCenter([lng, lat]);
-            }, function(error) {
-                alert("获取位置信息失败: " + error.message);
-            });
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    map.setCenter([pos.coords.longitude, pos.coords.latitude]);
+                }, err => {
+                    alert("定位失败: " + err.message);
+                });
+            } else {
+                alert("浏览器不支持定位功能");
+            }
         }
 
+        // 复制地址到剪贴板
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                alert("地址已复制: " + text);
+                alert("已复制: " + text);
             }).catch(err => {
                 console.error("复制失败", err);
             });
