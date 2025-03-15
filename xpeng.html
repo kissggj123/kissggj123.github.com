@@ -18,42 +18,39 @@
 <div id="map"></div>
 <script>
 var map = new AMap.Map("map", {
-    center: [120.373319, 30.258134], // 初始中心点设置为江浙沪大致中心
+    center: [120.5, 31], // 初始中心点设置为江浙沪大致中心
     zoom: 7
 });
 
-// 定义苏州、上海、杭州的边界多边形（需根据实际情况调整坐标）
+// 定义苏州、上海、杭州的边界多边形
 var polygon = new AMap.Polygon({
     path: [
-        [120.5, 32], // 苏州北部某点
-        [122, 32],   // 上海东部某点
-        [122, 30],   // 杭州东部某点
-        [119.5, 30], // 杭州西部某点
-        [119.5, 32]  // 回到苏州北部，形成闭合多边形
+        [120.5, 32],
+        [122, 32],
+        [122, 30],
+        [119.5, 30],
+        [119.5, 32]
     ],
-    strokeColor: "#FF33FF", //线颜色
-    strokeOpacity: 0.2,     //线透明度
-    strokeWeight: 3,        //线宽
-    fillColor: "#1791fc",   //填充色
-    fillOpacity: 0.35       //填充透明度
+    strokeColor: "#FF33FF",
+    strokeOpacity: 0.2,
+    strokeWeight: 3,
+    fillColor: "#1791fc",
+    fillOpacity: 0.35
 });
 map.add(polygon);
 
-// 请求高德API获取充电站数据，使用polygon进行区域搜索
 $.getJSON("https://restapi.amap.com/v3/place/in", {
-    key: "f5be8cdf1391fe2323abc034220d2676",
+    key: "您的API密钥",
     keywords: "小鹏充电",
     types: "011100|011102|011103|073000|073001|073002",
-    polygon: polygon.getPath().map(function(point) {
-        return point.lng + ',' + point.lat;
-    }).join(';'),
+    polygon: polygon.getPath().map(point => point.lng + ',' + point.lat).join(';'),
     extensions: "all",
     output: "json"
 }, function(data) {
     if (data.pois && data.pois.length > 0) {
-        data.pois.forEach(function(poi) {
+        data.pois.forEach(poi => {
             var marker = new AMap.Marker({
-                position: [poi.location.split(","), poi.location.split(",")‌:ml-citation{ref="1" data="citationList"}],
+                position: poi.location.split(",").map(Number),
                 map: map
             });
 
@@ -70,7 +67,7 @@ $.getJSON("https://restapi.amap.com/v3/place/in", {
             content += `</div>`;
 
             var infoWindow = new AMap.InfoWindow({ content: content });
-            marker.on("click", function() {
+            marker.on("click", () => {
                 infoWindow.open(map, marker.getPosition());
             });
         });
@@ -79,7 +76,6 @@ $.getJSON("https://restapi.amap.com/v3/place/in", {
     }
 });
 
-// 复制地址到剪贴板的函数
 function copyAddress(address) {
     var textArea = document.createElement("textarea");
     textArea.value = address;
