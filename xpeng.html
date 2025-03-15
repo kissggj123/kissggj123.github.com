@@ -1,96 +1,98 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>苏州上海杭州小鹏充电站</title>
-<script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<style>
-#map { width: 100%; height: 500px; }
-.info { font-size: 14px; }
-.info img { max-width: 100px; margin-top: 5px; }
-.copy-btn { margin-top: 5px; cursor: pointer; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国小鹏充电站</title>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #map { width: 100%; height: 600px; }
+        .info { font-size: 14px; }
+        .info img { max-width: 100px; margin-top: 5px; display: block; }
+        .copy-btn { margin-top: 5px; cursor: pointer; color: blue; text-decoration: underline; }
+        .nav-btn { cursor: pointer; margin: 5px; padding: 5px 10px; background: lightgray; border: none; }
+        .controls { margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-<h2>苏州、上海、杭州小鹏充电站</h2>
-<div id="map"></div>
-<script>
-var map = new AMap.Map("map", {
-    center: [120.5, 31], // 初始中心点设置为江浙沪大致中心
-    zoom: 7
-});
-
-// 定义苏州、上海、杭州的边界多边形
-var polygon = new AMap.Polygon({
-    path: [
-        [120.5, 32],
-        [122, 32],
-        [122, 30],
-        [119.5, 30],
-        [119.5, 32]
-    ],
-    strokeColor: "#FF33FF",
-    strokeOpacity: 0.2,
-    strokeWeight: 3,
-    fillColor: "#1791fc",
-    fillOpacity: 0.35
-});
-map.add(polygon);
-
-$.getJSON("https://restapi.amap.com/v3/place/in", {
-    key: "您的API密钥",
-    keywords: "小鹏充电",
-    types: "011100|011102|011103|073000|073001|073002",
-    polygon: polygon.getPath().map(point => point.lng + ',' + point.lat).join(';'),
-    extensions: "all",
-    output: "json"
-}, function(data) {
-    if (data.pois && data.pois.length > 0) {
-        data.pois.forEach(poi => {
-            var marker = new AMap.Marker({
-                position: poi.location.split(",").map(Number),
-                map: map
-            });
-
-            var content = `<div class='info'>
-                <strong>${poi.name}</strong><br>
-                地址: ${poi.address || '未知'}<br>
-                电话: ${poi.tel || '无'}<br>
-                <button class='copy-btn' onclick='copyAddress("${poi.address}")'>复制地址</button>
-            `;
-
-            if (poi.photos && poi.photos.length > 0) {
-                content += `<img src='${poi.photos.url}' alt='充电站图片'>`;
-            }
-            content += `</div>`;
-
-            var infoWindow = new AMap.InfoWindow({ content: content });
-            marker.on("click", () => {
-                infoWindow.open(map, marker.getPosition());
-            });
+    <h2>全国小鹏充电站</h2>
+    <p>作者: @兔可可</p>
+    <div class="controls">
+        <button onclick="fetchPOIData()">加载充电站</button>
+        <button onclick="getUserLocation()">📍 获取当前定位</button>
+        <button onclick="map.zoomIn()">➕ 放大</button>
+        <button onclick="map.zoomOut()">➖ 缩小</button>
+    </div>
+    <div id="map"></div>
+    <script>
+        var map = new AMap.Map("map", {
+            center: [121.47, 31.23],
+            zoom: 11
         });
-    } else {
-        alert("未找到充电站信息！");
-    }
-});
 
-function copyAddress(address) {
-    var textArea = document.createElement("textarea");
-    textArea.value = address;
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? '成功' : '失败';
-        alert('地址复制' + msg);
-    } catch (err) {
-        alert('地址复制失败');
-    }
-    document.body.removeChild(textArea);
-}
-</script>
+        function fetchPOIData() {
+            $.getJSON("https://restapi.amap.com/v3/place/text", {
+                key: "f5be8cdf1391fe2323abc034220d2676",
+                keywords: "小鹏充电",
+                types: "011100|011102|011103|073000|073001|073002",
+                offset: 20,
+                page: 1,
+                extensions: "all",
+                output: "json"
+            }).done(function(data) {
+                if (data.info !== "OK") {
+                    console.error("API 返回错误: ", data);
+                    alert("API 请求失败: " + data.info);
+                    return;
+                }
+                
+                map.clearMap();
+                if (data.pois && data.pois.length > 0) {
+                    data.pois.forEach(function(poi) {
+                        var marker = new AMap.Marker({
+                            position: poi.location.split(","),
+                            map: map
+                        });
+
+                        var content = `<div class='info'>
+                            <strong>${poi.name}</strong><br>
+                            地址: ${poi.address || '未知'}<br>
+                            电话: ${poi.tel || '无'}<br>
+                            <span class='copy-btn' onclick='copyToClipboard("${poi.address}")'>📋 复制地址</span><br>
+                        </div>`;
+
+                        var infoWindow = new AMap.InfoWindow({ content: content });
+                        marker.on("click", function() {
+                            infoWindow.open(map, marker.getPosition());
+                        });
+                    });
+                } else {
+                    alert("未找到充电站信息！");
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error("请求失败:", textStatus, errorThrown);
+                alert("请求失败: " + textStatus);
+            });
+        }
+
+        function getUserLocation() {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                map.setCenter([lng, lat]);
+            }, function(error) {
+                alert("获取位置信息失败: " + error.message);
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("地址已复制: " + text);
+            }).catch(err => {
+                console.error("复制失败", err);
+            });
+        }
+    </script>
 </body>
 </html>
