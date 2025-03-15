@@ -3,106 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全国小鹏充电站</title>
-    <!-- 使用高德 JSAPI，需添加安全密钥 -->
-    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676&plugin=AMap.PlaceSearch"></script>
+    <title>全国小鹏充电站地图</title>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676&plugin=AMap.CitySearch"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         #map { width: 100%; height: 600px; }
-        .info { font-size: 14px; }
-        .copy-btn { cursor: pointer; color: blue; text-decoration: underline; }
-        .controls { margin-bottom: 10px; }
+        .controls { margin: 10px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+        .info-window { max-width: 250px; }
+        .photo-pagination { margin: 5px 0; display: flex; justify-content: space-between; }
+        .copy-btn { cursor: pointer; color: #1890ff; }
     </style>
 </head>
 <body>
-    <h2>全国小鹏充电站</h2>
-    <p>作者: @兔可可</p>
+    <h2>全国小鹏充电站地图</h2>
     <div class="controls">
-        <button onclick="fetchPOIData()">加载充电站</button>
+        <select id="citySelect" style="padding: 5px;">
+            <option value="">-- 选择城市 --</option>
+            <!-- 通过API动态加载城市列表 -->
+        </select>
+        <input type="text" id="searchInput" placeholder="输入城市名称" style="padding: 5px;">
+        <button onclick="searchCity()">🔍 搜索</button>
         <button onclick="getUserLocation()">📍 获取定位</button>
-        <button onclick="map.zoomIn()">➕ 放大</button>
-        <button onclick="map.zoomOut()">➖ 缩小</button>
+        <button onclick="map.zoomIn()">➕</button>
+        <button onclick="map.zoomOut()">➖</button>
     </div>
     <div id="map"></div>
 
-    <script>
-        var map = new AMap.Map("map", {
-            center: [116.40, 39.90], // 默认北京中心
-            zoom: 11
+<script>
+let currentCity = '';
+let currentPage = 1;
+let totalPages = 1;
+let markers = [];
+
+// 初始化地图
+const map = new AMap.Map("map", {
+    zoom: 5,
+    center: [104.195397, 35.86166]
+});
+
+// 动态加载城市列表‌:ml-citation{ref="4" data="citationList"}
+function loadCityList() {
+    new AMap.CitySearch().getLocalCity((status, result) => {
+        if (status === 'complete') {
+            const provinceList = result.provinceList;
+            const select = document.getElementById('citySelect');
+            provinceList.forEach(province => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = province.name;
+                province.districts.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.name;
+                    option.textContent = city.name;
+                    optgroup.appendChild(option);
+                });
+                select.appendChild(optgroup);
+            });
+        }
+    });
+}
+
+// 获取充电站数据
+function fetchPOIData() {
+    clearMarkers();
+    
+    $.getJSON("https://restapi.amap.com/v3/place/text", {
+        key: "f5be8cdf1391fe2323abc034220d2676",
+        city: currentCity,
+        keywords: "小鹏充电",
+        types: "011100|011102|011103|073000|073001|073002",
+        offset: 20,
+        page: currentPage,
+        extensions: "all",
+        citylimit: true,
+        output: "json"
+    }).done(data => {
+        if (data.pois?.length) {
+            totalPages = Math.ceil(data.count / 20);
+            renderMarkers(data.pois);
+        }
+    });
+}
+
+// 渲染标记点
+function renderMarkers(pois) {
+    pois.forEach((poi, index) => {
+        const marker = new AMap.Marker({
+            position: poi.location.split(','),
+            map: map,
+            content: `<div class="marker">${index + 1}</div>`
         });
 
-        // 加载充电站数据（使用 JSONP 跨域）
-        function fetchPOIData() {
-            const key = 'f5be8cdf1391fe2323abc034220d2676';
-            const apiUrl = `https://restapi.amap.com/v3/place/text?key=${key}&keywords=小鹏充电&types=011100&offset=20&page=1&extensions=all&output=json`;
+        let currentPhotoIndex = 0;
+        const infoWindow = new AMap.InfoWindow({
+            content: createInfoContent(poi, currentPhotoIndex)
+        });
 
-            // 使用 JSONP 请求避免跨域问题
-            $.ajax({
-                url: apiUrl,
-                type: 'GET',
-                dataType: 'jsonp',
-                jsonp: 'callback',
-                success: function(data) {
-                    if (data.status === '1') {
-                        updateMap(data.pois);
-                    } else {
-                        alert("API 错误: " + data.info);
-                    }
-                },
-                error: function(err) {
-                    console.error("请求失败:", err);
-                }
-            });
+        marker.on('click', () => {
+            infoWindow.open(map, marker.getPosition());
+        });
+        markers.push(marker);
+    });
+}
+
+// 创建信息窗口内容
+function createInfoContent(poi, photoIndex) {
+    const photos = poi.photos || [];
+    return `
+        <div class="info-window">
+            <h4>${poi.name}</h4>
+            <p>地址：<span class="copy-btn" onclick="copyAddress('${poi.address}')">${poi.address}</span></p>
+            ${photos.length ? `
+                <div class="photo-pagination">
+                    <button ${photoIndex <= 0 ? 'disabled' : ''} 
+                        onclick="updatePhoto(${poi.id}, ${photoIndex - 1})">←</button>
+                    <span>${photoIndex + 1}/${photos.length}</span>
+                    <button ${photoIndex >= photos.length - 1 ? 'disabled' : ''}
+                        onclick="updatePhoto(${poi.id}, ${photoIndex + 1})">→</button>
+                </div>
+                <img src="${photos[photoIndex]?.url}" style="max-width:200px;">
+            ` : '<p>暂无图片</p>'}
+        </div>
+    `;
+}
+
+// 功能函数
+function updatePhoto(poiId, newIndex) {
+    markers.forEach(marker => {
+        if (marker.getExtData().id === poiId) {
+            marker.setContent(createInfoContent(marker.getExtData(), newIndex));
         }
+    });
+}
 
-        // 更新地图标记
-        function updateMap(pois) {
-            map.clearMap();
-            if (!pois || pois.length === 0) {
-                alert("未找到充电站！");
-                return;
-            }
+function copyAddress(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('地址已复制：' + text);
+    }).catch(err => console.error(err));
+}
 
-            pois.forEach(poi => {
-                const marker = new AMap.Marker({
-                    position: poi.location.split(','),
-                    map: map
-                });
+function searchCity() {
+    const city = document.getElementById('searchInput').value;
+    if (city) {
+        currentCity = city;
+        currentPage = 1;
+        fetchPOIData();
+        map.setCity(city);
+    }
+}
 
-                const infoWindow = new AMap.InfoWindow({
-                    content: `<div class="info">
-                        <strong>${poi.name}</strong><br>
-                        地址: ${poi.address || '未知'}<br>
-                        电话: ${poi.tel || '无'}<br>
-                        <span class="copy-btn" onclick="copyToClipboard('${poi.address}')">📋 复制地址</span>
-                    </div>`
-                });
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            map.setCenter([pos.coords.longitude, pos.coords.latitude]);
+        }, err => alert("定位失败：" + err.message));
+    } else {
+        alert("浏览器不支持定位功能");
+    }
+}
 
-                marker.on('click', () => infoWindow.open(map, marker.getPosition()));
-            });
-        }
+function clearMarkers() {
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+}
 
-        // 获取用户定位
-        function getUserLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    map.setCenter([pos.coords.longitude, pos.coords.latitude]);
-                }, err => {
-                    alert("定位失败: " + err.message);
-                });
-            } else {
-                alert("浏览器不支持定位功能");
-            }
-        }
-
-        // 复制地址到剪贴板
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert("已复制: " + text);
-            }).catch(err => {
-                console.error("复制失败", err);
-            });
-        }
-    </script>
+// 初始化
+loadCityList();
+document.getElementById('citySelect').addEventListener('change', function() {
+    currentCity = this.value;
+    fetchPOIData();
+});
+</script>
 </body>
 </html>
