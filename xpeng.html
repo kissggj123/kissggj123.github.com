@@ -40,7 +40,13 @@
                 page: 1,
                 extensions: "all",
                 output: "json"
-            }, function(data) {
+            }).done(function(data) {
+                if (data.info !== "OK") {
+                    console.error("API 返回错误: ", data);
+                    alert("API 请求失败: " + data.info);
+                    return;
+                }
+                
                 map.clearMap();
                 if (data.pois && data.pois.length > 0) {
                     data.pois.forEach(function(poi) {
@@ -64,6 +70,9 @@
                 } else {
                     alert("未找到充电站信息！");
                 }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error("请求失败:", textStatus, errorThrown);
+                alert("请求失败: " + textStatus);
             });
         }
 
