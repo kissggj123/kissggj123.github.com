@@ -1,104 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>全国小鹏充电站查询</title>
-    <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
-    <style>
-        #map-container { width: 100%; height: 600px; }
-        .control-panel { margin: 10px; padding: 10px; background: #f5f5f5; }
-        .info-window img { max-width: 200px; margin: 5px 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>附近充电站</title>
+<script src="https://webapi.amap.com/maps?v=2.0&key=YOUR_AMAP_KEY"></script> <!-- 替换YOUR_AMAP_KEY为您的高德API Key -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    #map { width: 100%; height: 500px; }
+    .info { font-size: 14px; }
+    .info img { max-width: 100px; margin-top: 5px; }
+    #search-box { margin-bottom: 10px; }
+</style>
 </head>
 <body>
-    <div class="control-panel">
-        <input type="text" id="city" placeholder="输入城市名称" style="width:200px">
-        <button onclick="searchPoi()">搜索</button>
-        <button onclick="clearMarkers()">清空</button>
-    </div>
-    <div id="map-container"></div>
-
+<h2>附近 10 公里范围内的充电站</h2>
+<div id="search-box">
+    <input type="text" id="search-input" placeholder="输入关键词搜索充电站">
+    <button onclick="searchChargingStations()">搜索</button>
+</div>
+<div id="map"></div>
 <script>
-let map = new AMap.Map('map-container', {
-    zoom: 5,
-    center: [104.195397, 35.86166]
+var map = new AMap.Map("map", {
+    center: [121.318905, 30.745233], // 默认坐标
+    zoom: 13
 });
-let markers = [];
 
-// 核心搜索功能‌:ml-citation{ref="2,3" data="citationList"}
-async function searchPoi() {
-    const city = document.getElementById('city').value;
-    const url = `https://restapi.amap.com/v3/place/text?key=YOUR_WEB_KEY&keywords=小鹏充电&city=${city}&types=011100&offset=50`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if(data.pois && data.pois.length > 0) {
-            clearMarkers();
-            data.pois.forEach(poi => createMarker(poi));
-        }
-    } catch(error) {
-        console.error('API请求失败:', error);
-    }
-}
+var markers = []; // 用于存储标记点
 
-// 创建地图标记与信息窗口‌:ml-citation{ref="1,4" data="citationList"}
-function createMarker(poi) {
-    const marker = new AMap.Marker({
-        position: poi.location.split(','),
-        map: map
-    });
-
-    // 逆地理编码获取详细信息‌:ml-citation{ref="3,4" data="citationList"}
-    const infoWindow = new AMap.InfoWindow({
-        content: `<div class="info-window">
-            <h4>${poi.name}</h4>
-            <p>地址：<span class="copyable">${poi.address}</span></p>
-            <button onclick="copyAddress('${poi.address}')">复制地址</button>
-            <div id="detail-${poi.id}"></div>
-        </div>`
-    });
-
-    // 绑定点击事件
-    marker.on('click', () => {
-        getLocationDetails(poi.location, poi.id);
-        infoWindow.open(map, marker.getPosition());
-    });
-    markers.push(marker);
-}
-
-// 逆地理编码实现‌:ml-citation{ref="3,4" data="citationList"}
-async function getLocationDetails(location, targetId) {
-    const url = `https://restapi.amap.com/v3/geocode/regeo?key=YOUR_WEB_KEY&location=${location}`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const detailDiv = document.getElementById(`detail-${targetId}`);
-        
-        if(data.regeocode) {
-            detailDiv.innerHTML = `
-                <p>区域：${data.regeocode.addressComponent.district}</p>
-                <p>周边：${data.regeocode.formatted_address}</p>
-                <img src="https://restapi.amap.com/v3/staticmap?location=${location}&zoom=15&size=300*150&key=YOUR_WEB_KEY">
-            `;
-        }
-    } catch(error) {
-        console.error('逆地理编码失败:', error);
-    }
-}
-
-// 工具函数
+// 清除地图上的所有标记点
 function clearMarkers() {
-    markers.forEach(marker => marker.setMap(null));
+    markers.forEach(function(marker) {
+        marker.setMap(null);
+    });
     markers = [];
 }
 
-function copyAddress(text) {
-    navigator.clipboard.writeText(text)
-        .then(() => alert('地址已复制'))
-        .catch(err => console.error('复制失败:', err));
+// 搜索充电站
+function searchChargingStations() {
+    var keywords = document.getElementById('search-input').value;
+    if (!keywords) {
+        alert("请输入关键词！");
+        return;
+    }
+
+    clearMarkers(); // 清除之前的标记点
+
+    $.getJSON("https://restapi.amap.com/v3/place/around", {
+        key: "YOUR_AMAP_KEY", // 替换为您的高德API Key
+        location: "121.318905,30.745233", // 默认坐标，也可以改为用户当前位置
+        radius: 10000,
+        keywords: keywords,
+        types: "011100|011102|011103|073000|073001|073002",
+        offset: 20, // 可以根据需要调整每页返回的数量
+        page: 1,
+        extensions: "all",
+        output: "json"
+    }, function(data) {
+        if (data.status === 1 && data.pois && data.pois.length > 0) {
+            data.pois.forEach(function(poi) {
+                var marker = new AMap.Marker({
+                    position: poi.location.split(","),
+                    map: map
+                });
+                markers.push(marker);
+
+                var content = `<div class='info'>
+                    <strong>${poi.name}</strong><br>
+                    地址: ${poi.address || '未知'}<br>
+                    电话: ${poi.tel || '无'}<br>`;
+
+                if (poi.photos && poi.photos.length > 0) {
+                    content += `<img src='${poi.photos.url}' alt='充电站图片'>`;
+                }
+                content += `</div>`;
+
+                var infoWindow = new AMap.InfoWindow({ content: content });
+                marker.on("click", function() {
+                    infoWindow.open(map, marker.getPosition());
+                });
+            });
+        } else {
+            alert("未找到充电站信息！");
+        }
+    }).fail(function() {
+        alert("API 请求失败，请检查网络连接或API Key是否正确！");
+    });
 }
 </script>
 </body>
