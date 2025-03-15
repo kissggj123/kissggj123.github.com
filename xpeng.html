@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>上海 & 苏州 小鹏充电站</title>
+    <title>全国小鹏充电站</title>
     <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
@@ -11,21 +11,29 @@
         .info { font-size: 14px; }
         .info img { max-width: 100px; margin-top: 5px; display: block; }
         .copy-btn { margin-top: 5px; cursor: pointer; color: blue; text-decoration: underline; }
+        .nav-btn { cursor: pointer; margin: 5px; padding: 5px 10px; background: lightgray; border: none; }
+        .controls { margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <h2>上海 & 苏州 小鹏充电站</h2>
+    <h2>全国小鹏充电站</h2>
+    <p>作者: @兔可可</p>
+    <div class="controls">
+        <input type="text" id="searchBox" placeholder="输入关键字搜索">
+        <button onclick="searchLocation()">🔍 搜索</button>
+        <button onclick="map.zoomIn()">➕ 放大</button>
+        <button onclick="map.zoomOut()">➖ 缩小</button>
+    </div>
     <div id="map"></div>
     <script>
         var map = new AMap.Map("map", {
-            center: [121.47, 31.23], // 以上海为中心
-            zoom: 11
+            center: [104.1954, 35.8617], // 以中国中心点为默认
+            zoom: 5
         });
         
-        function fetchPOIData(city) {
+        function fetchPOIData() {
             $.getJSON("https://restapi.amap.com/v3/place/text", {
                 key: "f5be8cdf1391fe2323abc034220d2676",
-                city: city,
                 keywords: "小鹏充电",
                 types: "011100|011102|011103|073000|073001|073002",
                 offset: 20,
@@ -40,16 +48,24 @@
                             map: map
                         });
                         
+                        var photoIndex = 0;
+                        var photos = poi.photos || [];
+                        
+                        function updatePhotoContent() {
+                            return photos.length > 0 
+                                ? `<img src='${photos[photoIndex].url}' alt='充电站图片'><br>
+                                   <button class='nav-btn' onclick='prevPhoto(${photoIndex}, ${photos.length}, "photo-${poi.id}")'>⬅️ 上一张</button>
+                                   <button class='nav-btn' onclick='nextPhoto(${photoIndex}, ${photos.length}, "photo-${poi.id}")'>➡️ 下一张</button>`
+                                : "";
+                        }
+                        
                         var content = `<div class='info'>
                             <strong>${poi.name}</strong><br>
                             地址: ${poi.address || '未知'}<br>
                             电话: ${poi.tel || '无'}<br>
-                            <span class='copy-btn' onclick='copyToClipboard("${poi.address}")'>📋 复制地址</span><br>`;
-                        
-                        if (poi.photos && poi.photos.length > 0) {
-                            content += `<img src='${poi.photos[0].url}' alt='充电站图片'>`;
-                        }
-                        content += `</div>`;
+                            <span class='copy-btn' onclick='copyToClipboard("${poi.address}")'>📋 复制地址</span><br>
+                            <div id='photo-${poi.id}'>${updatePhotoContent()}</div>
+                        </div>`;
                         
                         var infoWindow = new AMap.InfoWindow({ content: content });
                         marker.on("click", function() {
@@ -68,9 +84,29 @@
             });
         }
         
-        // 获取上海和苏州的数据
-        fetchPOIData("上海");
-        fetchPOIData("苏州");
+        function prevPhoto(index, total, id) {
+            if (index > 0) {
+                index--;
+                document.getElementById(id).innerHTML = updatePhotoContent();
+            }
+        }
+        
+        function nextPhoto(index, total, id) {
+            if (index < total - 1) {
+                index++;
+                document.getElementById(id).innerHTML = updatePhotoContent();
+            }
+        }
+        
+        function searchLocation() {
+            var keyword = document.getElementById("searchBox").value;
+            if (keyword) {
+                map.setCity(keyword);
+            }
+        }
+        
+        // 获取全国的充电站数据
+        fetchPOIData();
     </script>
 </body>
 </html>
