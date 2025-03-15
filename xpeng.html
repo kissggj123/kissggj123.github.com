@@ -3,62 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>附近充电站</title>
+    <title>上海 & 苏州 小鹏充电站</title>
     <script src="https://webapi.amap.com/maps?v=2.0&key=f5be8cdf1391fe2323abc034220d2676"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        #map { width: 100%; height: 500px; }
+        #map { width: 100%; height: 600px; }
         .info { font-size: 14px; }
-        .info img { max-width: 100px; margin-top: 5px; }
+        .info img { max-width: 100px; margin-top: 5px; display: block; }
+        .copy-btn { margin-top: 5px; cursor: pointer; color: blue; text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h2>附近 10 公里范围内的充电站</h2>
+    <h2>上海 & 苏州 小鹏充电站</h2>
     <div id="map"></div>
     <script>
         var map = new AMap.Map("map", {
-            center: [121.318905, 30.745233], // 你的小区坐标
-            zoom: 13
+            center: [121.47, 31.23], // 以上海为中心
+            zoom: 11
         });
         
-        // 请求高德 API 获取充电站数据
-        $.getJSON("https://restapi.amap.com/v3/place/around", {
-            key: "f5be8cdf1391fe2323abc034220d2676",
-            location: "121.318905,30.745233",
-            radius: 10000,
-            keywords: "小鹏充电",
-            types: "011100|011102|011103|073000|073001|073002",
-            offset: 10,
-            page: 1,
-            extensions: "all",
-            output: "json"
-        }, function(data) {
-            if (data.pois && data.pois.length > 0) {
-                data.pois.forEach(function(poi) {
-                    var marker = new AMap.Marker({
-                        position: poi.location.split(","),
-                        map: map
+        function fetchPOIData(city) {
+            $.getJSON("https://restapi.amap.com/v3/place/text", {
+                key: "f5be8cdf1391fe2323abc034220d2676",
+                city: city,
+                keywords: "小鹏充电",
+                types: "011100|011102|011103|073000|073001|073002",
+                offset: 20,
+                page: 1,
+                extensions: "all",
+                output: "json"
+            }, function(data) {
+                if (data.pois && data.pois.length > 0) {
+                    data.pois.forEach(function(poi) {
+                        var marker = new AMap.Marker({
+                            position: poi.location.split(","),
+                            map: map
+                        });
+                        
+                        var content = `<div class='info'>
+                            <strong>${poi.name}</strong><br>
+                            地址: ${poi.address || '未知'}<br>
+                            电话: ${poi.tel || '无'}<br>
+                            <span class='copy-btn' onclick='copyToClipboard("${poi.address}")'>📋 复制地址</span><br>`;
+                        
+                        if (poi.photos && poi.photos.length > 0) {
+                            content += `<img src='${poi.photos[0].url}' alt='充电站图片'>`;
+                        }
+                        content += `</div>`;
+                        
+                        var infoWindow = new AMap.InfoWindow({ content: content });
+                        marker.on("click", function() {
+                            infoWindow.open(map, marker.getPosition());
+                        });
                     });
-                    
-                    var content = `<div class='info'>
-                        <strong>${poi.name}</strong><br>
-                        地址: ${poi.address || '未知'}<br>
-                        电话: ${poi.tel || '无'}<br>`;
-                    
-                    if (poi.photos && poi.photos.length > 0) {
-                        content += `<img src='${poi.photos[0].url}' alt='充电站图片'>`;
-                    }
-                    content += `</div>`;
-                    
-                    var infoWindow = new AMap.InfoWindow({ content: content });
-                    marker.on("click", function() {
-                        infoWindow.open(map, marker.getPosition());
-                    });
-                });
-            } else {
-                alert("未找到充电站信息！");
-            }
-        });
+                }
+            });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("地址已复制: " + text);
+            }).catch(err => {
+                console.error("复制失败", err);
+            });
+        }
+        
+        // 获取上海和苏州的数据
+        fetchPOIData("上海");
+        fetchPOIData("苏州");
     </script>
 </body>
 </html>
