@@ -16,6 +16,7 @@
 </head>
 <body>
     <h2>上海 & 苏州 小鹏充电站</h2>
+     <button onclick="getUserLocation()">📍 获取当前定位</button>
     <div id="map"></div>
     <script>
         var map = new AMap.Map("map", {
@@ -66,6 +67,16 @@
                         });
                     });
                 }
+            });
+        }
+
+         function getUserLocation() {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                map.setCenter([lng, lat]);
+            }, function(error) {
+                alert("获取位置信息失败: " + error.message);
             });
         }
         
