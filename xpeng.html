@@ -1,194 +1,193 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>小鹏P7+ 充电损耗计算器</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      margin: 0;
-      font-family: 'Press Start 2P', monospace;
-      background: #111;
+      font-family: 'Courier New', monospace;
+      background-color: #0f111a;
       color: #00ffcc;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
     }
     .container {
-      max-width: 600px;
-      margin: auto;
+      max-width: 500px;
+      margin: 0 auto;
+      background: #1c1f2b;
       padding: 20px;
-      background: #222;
-      border: 4px solid #00ffcc;
-      border-radius: 12px;
-      box-shadow: 0 0 25px #00ffcc;
-    }
-    h2 {
-      text-align: center;
-      color: #00ffff;
-      font-size: 16px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffcc;
     }
     label {
       display: block;
       margin-top: 10px;
-      font-size: 12px;
     }
     input, select {
       width: 100%;
-      padding: 8px;
-      border: 2px solid #00ffcc;
-      background: #000;
+      padding: 6px;
+      margin-top: 5px;
+      background: #111;
+      border: 1px solid #00ffcc;
       color: #00ffcc;
-      font-size: 12px;
-      margin-bottom: 10px;
+      border-radius: 5px;
     }
-    input[type=range] {
-      width: 100%;
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 0;
+      font-size: 0.9rem;
     }
     button {
+      margin-top: 20px;
       width: 100%;
       padding: 10px;
       background: #00ffcc;
-      color: #111;
-      font-family: 'Press Start 2P', monospace;
-      cursor: pointer;
+      color: #000;
+      font-weight: bold;
       border: none;
-    }
-    .result, .error {
-      background: #000;
-      padding: 10px;
-      font-size: 12px;
-      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
     }
     canvas {
-      margin-top: 20px;
+      margin-top: 30px;
+    }
+    .unit-toggle {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-size: 0.9rem;
+    }
+    #copyBtn {
+      background-color: #ffaa00;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🔋 小鹏P7+ 充电损耗计算器</h2>
-    <label>车型选择</label>
+    <h1>⚡ 小鹏P7+ 充电损耗计算器</h1>
+
+    <label for="model">车型</label>
     <select id="model">
-      <option value="60.7">长续航（60.7 度）</option>
-      <option value="76.3">超长续航（76.3 度）</option>
-      <option value="74.9">旗舰（74.9 度）</option>
+      <option value="60.7">长续航（60.7 kWh）</option>
+      <option value="76.3">超长续航（76.3 kWh）</option>
+      <option value="74.9">旗舰（74.9 kWh）</option>
     </select>
 
-    <label>起始电量（%）</label>
-    <input type="number" id="start" value="1" step="0.1" />
-    <input type="range" id="startSlider" min="0" max="100" step="0.1" value="1" oninput="sync('start')" />
+    <label>起始电量 (%)</label>
+    <input type="number" id="start" step="0.1">
 
-    <label>结束电量（%）</label>
-    <input type="number" id="end" value="20" step="0.1" />
-    <input type="range" id="endSlider" min="0" max="100" step="0.1" value="20" oninput="sync('end')" />
+    <label>结束电量 (%)</label>
+    <input type="number" id="end" step="0.1">
 
-    <label>实际充电度数（kWh）</label>
-    <input type="number" id="actual" value="12.5" step="0.01" />
+    <label>实际充电量</label>
+    <input type="number" id="actual" step="0.01">
 
-    <label><input type="checkbox" id="ac"> 开启空调</label>
-    <label><input type="checkbox" id="preheat"> 电池预热</label>
+    <div class="unit-toggle">
+      <label><input type="radio" name="unit" value="kWh" checked> kWh</label>
+      <label style="margin-left: 10px;"><input type="radio" name="unit" value="Wh"> Wh</label>
+    </div>
 
-    <button onclick="calculate()">计算</button>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="ac"> 空调(+4%)</label>
+      <label><input type="checkbox" id="preheat"> 预热(+6%)</label>
+      <label><input type="checkbox" id="cold"> 低温(<5℃)(+5%)</label>
+      <label><input type="checkbox" id="autopilot"> 辅助驾驶(+2%)</label>
+      <label><input type="checkbox" id="load"> 载人/载重(+3%)</label>
+    </div>
 
-    <div id="result" class="result" style="display:none;"></div>
-    <div id="error" class="error"></div>
+    <button onclick="calculate()">计算损耗率</button>
+    <button id="copyBtn" onclick="copyResult()">📋 一键复制结果</button>
 
-    <canvas id="energyChart"></canvas>
+    <p id="result"></p>
+    <canvas id="lossChart" width="400" height="200"></canvas>
   </div>
 
   <script>
-    function sync(id) {
-      const slider = document.getElementById(id + "Slider");
-      const input = document.getElementById(id);
-      input.value = slider.value;
-    }
+    let chartInstance;
+    let lastText = "";
 
     function calculate() {
-      const battery = parseFloat(document.getElementById("model").value);
-      const start = parseFloat(document.getElementById("start").value);
-      const end = parseFloat(document.getElementById("end").value);
-      const actual = parseFloat(document.getElementById("actual").value);
-      const ac = document.getElementById("ac").checked;
-      const preheat = document.getElementById("preheat").checked;
-      const error = document.getElementById("error");
-      const result = document.getElementById("result");
-      result.style.display = 'none';
-      error.textContent = '';
+      const capacity = parseFloat(document.getElementById('model').value);
+      const start = parseFloat(document.getElementById('start').value);
+      const end = parseFloat(document.getElementById('end').value);
+      let actual = parseFloat(document.getElementById('actual').value);
+      const unit = document.querySelector('input[name="unit"]:checked').value;
 
-      if (start >= end || isNaN(start) || isNaN(end) || isNaN(actual)) {
-        error.textContent = "⚠️ 输入无效，请检查数值。";
-        return;
-      }
+      if (unit === 'Wh') actual = actual / 1000;
 
-      const percent = (end - start) / 100;
-      const theoretical = battery * percent;
-      let rawLoss = ((actual / theoretical) - 1) * 100;
+      const deltaPercent = end - start;
+      const theoretical = capacity * deltaPercent / 100;
+      let lossRate = ((actual / theoretical) - 1) * 100;
 
-      let extra = 0;
-      if (ac) extra += 4;
-      if (preheat) extra += 6;
-      if (start < 20) extra += 3;
-      const adjusted = rawLoss + extra;
+      let correction = 0;
+      if (document.getElementById('ac').checked) correction += 4;
+      if (document.getElementById('preheat').checked) correction += 6;
+      if (document.getElementById('cold').checked) correction += 5;
+      if (document.getElementById('autopilot').checked) correction += 2;
+      if (document.getElementById('load').checked) correction += 3;
 
-      result.innerHTML =
-        `理论: ${theoretical.toFixed(2)} kWh<br>` +
-        `实际: ${actual.toFixed(2)} kWh<br>` +
-        `原始损耗: ${rawLoss.toFixed(2)}%<br>` +
-        `拟真损耗: ${adjusted.toFixed(2)}%`;
-      result.style.display = 'block';
+      const totalLoss = lossRate + correction;
 
-      drawChart(start, end, theoretical, actual);
-    }
+      const usageRateTheoretical = theoretical / (deltaPercent / 100);
+      const usageRateActual = actual / (deltaPercent / 100);
 
-    function drawChart(start, end, theoretical, actual) {
-      const ctx = document.getElementById('energyChart').getContext('2d');
-      new Chart(ctx, {
+      const resultText =
+        `理论充电量：${theoretical.toFixed(2)} kWh\n` +
+        `实际充电量：${actual.toFixed(2)} kWh\n` +
+        `基础损耗率：${lossRate.toFixed(2)}%\n` +
+        `修正后总损耗率：${totalLoss.toFixed(2)}%\n` +
+        `理论单位电耗：${usageRateTheoretical.toFixed(2)} kWh/100%\n` +
+        `实际单位电耗：${usageRateActual.toFixed(2)} kWh/100%`;
+
+      document.getElementById('result').innerText = resultText;
+      lastText = resultText;
+
+      const ctx = document.getElementById('lossChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: [start + '%', end + '%'],
-          datasets: [
-            {
-              label: '理论能耗',
-              data: [0, theoretical],
-              borderColor: '#00ffcc',
-              backgroundColor: 'transparent',
-              tension: 0.1
-            },
-            {
-              label: '实际能耗',
-              data: [0, actual],
-              borderColor: '#ff4477',
-              backgroundColor: 'transparent',
-              tension: 0.1
-            }
-          ]
+          labels: ['理论', '实际', '修正后'],
+          datasets: [{
+            label: '损耗率 %',
+            data: [lossRate, lossRate, totalLoss],
+            borderColor: '#00ffcc',
+            backgroundColor: 'rgba(0,255,204,0.2)',
+            fill: true,
+            tension: 0.2
+          }]
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              labels: {
-                color: '#00ffcc',
-                font: {
-                  family: 'Press Start 2P',
-                  size: 10
-                }
-              }
-            }
+          animation: {
+            duration: 1500
           },
           scales: {
-            x: {
-              ticks: {
-                color: '#00ffcc'
-              }
-            },
             y: {
-              ticks: {
-                color: '#00ffcc'
-              }
+              beginAtZero: true
             }
           }
         }
+      });
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(lastText).then(() => {
+        alert("已复制结果到剪贴板，可粘贴到聊天软件中！");
       });
     }
   </script>
