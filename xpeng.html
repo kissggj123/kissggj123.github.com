@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>⚡ 小鹏P7+ 充电损耗计算器</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #0f111a;
+      color: #00ffcc;
+      padding: 10px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    .container {
+      max-width: 550px;
+      margin: 0 auto;
+      background: #1c1f2b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px #00ffcc;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 6px;
+      background: #111;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+      margin-top: 10px;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-size: 0.88rem;
+      gap: 4px;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background: #00ffcc;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+    .unit-toggle {
+      margin-top: 8px;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 0.9rem;
+      gap: 10px;
+    }
+    #copyBtn {
+      background-color: #ffaa00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ 小鹏P7+ 充电损耗计算器</h1>
+
+    <label for="model">车型</label>
+    <select id="model" onchange="updateCValues()">
+      <option value="60.7">长续航（60.7 kWh）</option>
+      <option value="76.3">超长续航（76.3 kWh）</option>
+      <option value="74.9">旗舰（74.9 kWh）</option>
+    </select>
+
+    <label for="charger">充电桩类型</label>
+    <select id="charger">
+      <option value="S5">S5液冷超充（峰值800kW）</option>
+      <option value="S4">S4超级充电桩（峰值400kW）</option>
+      <option value="S2">S2/普通充电桩（90kW）</option>
+    </select>
+
+    <label>起始电量 (%)</label>
+    <input type="number" id="start" step="0.1">
+
+    <label>结束电量 (%)</label>
+    <input type="number" id="end" step="0.1">
+
+    <label>实际充电量</label>
+    <input type="number" id="actual" step="0.01">
+
+    <div class="unit-toggle">
+      <label><input type="radio" name="unit" value="kWh" checked> kWh</label>
+      <label><input type="radio" name="unit" value="Wh"> Wh</label>
+    </div>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="ac"> 空调(+4%)</label>
+      <label><input type="checkbox" id="preheat"> 预热(+6%)</label>
+      <label><input type="checkbox" id="cold"> 低温(<5℃)(+5%)</label>
+      <label><input type="checkbox" id="autopilot"> 辅助驾驶(+2%)</label>
+      <label><input type="checkbox" id="load"> 载重(+3%)</label>
+    </div>
+
+    <button onclick="calculate()">🚗 计算损耗率</button>
+    <button id="copyBtn" onclick="copyResult()">📋 复制结果</button>
+
+    <p id="result"></p>
+    <canvas id="lossChart" width="400" height="200"></canvas>
+  </div>
+
+  <script>
+    let chartInstance;
+    let lastText = "";
+
+    function updateCValues() {
+      const model = document.getElementById("model").value;
+      const chargerSelect = document.getElementById("charger");
+
+      // 所有车型都保留三种桩选项，不做隐藏
+    }
+
+    function calculate() {
+      const capacity = parseFloat(document.getElementById('model').value);
+      const start = parseFloat(document.getElementById('start').value);
+      const end = parseFloat(document.getElementById('end').value);
+      let actual = parseFloat(document.getElementById('actual').value);
+      const unit = document.querySelector('input[name="unit"]:checked').value;
+      const charger = document.getElementById('charger').value;
+      const modelIndex = document.getElementById('model').selectedIndex;
+
+      if (unit === 'Wh') actual = actual / 1000;
+
+      const deltaPercent = end - start;
+      const theoretical = capacity * deltaPercent / 100;
+      let lossRate = ((actual / theoretical) - 1) * 100;
+
+      let correction = 0;
+      if (document.getElementById('ac').checked) correction += 4;
+      if (document.getElementById('preheat').checked) correction += 6;
+      if (document.getElementById('cold').checked) correction += 5;
+      if (document.getElementById('autopilot').checked) correction += 2;
+      if (document.getElementById('load').checked) correction += 3;
+
+      const totalLoss = lossRate + correction;
+
+      // C倍率设定
+      const cRate = (modelIndex === 2) ? 5 : 3; // 旗舰是 5C，其他是 3C
+      const maxPower = capacity * cRate;
+
+      // 充电桩实际限制功率（单位kW）
+      let chargerLimit = 0;
+      if (charger === 'S5') chargerLimit = 800;
+      else if (charger === 'S4') chargerLimit = 400;
+      else if (charger === 'S2') chargerLimit = 90;
+
+      const realChargePower = Math.min(maxPower, chargerLimit);
+      const chargeEnergy = actual;
+      const estimatedTime = (chargeEnergy / realChargePower) * 60; // min
+
+      const resultText =
+        `🔋 理论充电量：${theoretical.toFixed(2)} kWh\n` +
+        `⚡ 实际充电量：${actual.toFixed(2)} kWh\n` +
+        `🧮 基础损耗率：${lossRate.toFixed(2)}%\n` +
+        `🔧 修正后损耗率：${totalLoss.toFixed(2)}%\n` +
+        `📉 理论电耗：${(theoretical / (deltaPercent / 100)).toFixed(2)} kWh/100%\n` +
+        `📈 实际电耗：${(actual / (deltaPercent / 100)).toFixed(2)} kWh/100%\n` +
+        `⏳ 估算充电时间：${estimatedTime.toFixed(1)} 分钟（限于 ${realChargePower} kW）`;
+
+      document.getElementById('result').innerText = resultText;
+      lastText = resultText;
+
+      const ctx = document.getElementById('lossChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['理论损耗', '实际损耗'],
+          datasets: [{
+            label: '损耗率 %',
+            data: [lossRate, totalLoss],
+            backgroundColor: ['#00cccc', '#ff9966']
+          }]
+        },
+        options: {
+          animation: { duration: 1500 },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#00ffcc' },
+              grid: { color: '#333' }
+            },
+            x: {
+              ticks: { color: '#00ffcc' },
+              grid: { color: '#333' }
+            }
+          }
+        }
+      });
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(lastText).then(() => {
+        alert("✅ 已复制结果到剪贴板！");
+      });
+    }
+  </script>
+</body>
+</html>
