@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 小鹏P7 充电计算器 v4.0 Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- Google Fonts: VT323 -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* Global pixel font and retro theme */
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #0f111a;
+            color: #00ffcc;
+        }
+        input, select, button, pre {
+            font-family: 'VT323', monospace;
+        }
+        /* Color hierarchy for UI elements */
+        .title-color { color: #00ffff; }
+        .label-color { color: #00ffaa; }
+        .input-bg { background-color: #1a1d2b; }
+        .input-border { border-color: #00ffcc; }
+        .panel-bg { background-color: rgba(26, 29, 43, 0.7); }
+        .panel-border { border-color: rgba(0, 255, 204, 0.5); }
+        
+        /* Styles for the new data table */
+        .data-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #00ffaa;
+            border-radius: 8px;
+        }
+        .data-table th {
+            background-color: #1a1d2b;
+            color: #ffaa00;
+            position: sticky;
+            top: 0;
+        }
+        .data-table td, .data-table th {
+            padding: 4px 8px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 170, 0.3);
+        }
+        .data-table tr:nth-child(even) {
+            background-color: rgba(0, 255, 204, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto max-w-7xl p-4">
+
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7 充电模拟器</h1>
+            <p class="text-slate-400 mt-2 text-lg">v4.0 Pro - 精准模拟版</p>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+            <!-- Left Panel: Inputs -->
+            <div class="lg:col-span-2 panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg">
+                <div class="space-y-4">
+                    <!-- Model Selection -->
+                    <div>
+                        <label for="model" class="block text-xl label-color mb-1">🚘 车型</label>
+                        <select id="model" class="w-full text-lg input-bg border-2 input-border rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            <option value="60.7" data-c="3" data-volt="400">长续航 (60.7 kWh)</option>
+                            <option value="76.3" data-c="3" data-volt="400">超长续航 (76.3 kWh)</option>
+                            <option value="74.9" data-c="5" data-volt="400">旗舰 (74.9 kWh)</option>
+                        </select>
+                    </div>
+
+                    <!-- SoC Inputs -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="start" class="block text-xl label-color mb-1">📊 起始SoC (%)</label>
+                            <input type="number" id="start" value="20" step="0.001" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                        </div>
+                        <div>
+                            <label for="end" class="block text-xl label-color mb-1">📈 结束SoC (%)</label>
+                            <input type="number" id="end" value="80" step="0.001" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                        </div>
+                    </div>
+                    
+                    <!-- Actual Charge Input -->
+                    <div>
+                        <label for="actual" class="block text-xl label-color mb-1">⚡ 实际充电量 (kWh)</label>
+                        <input type="number" id="actual" value="45" step="0.001" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                    </div>
+
+                    <!-- Charger Selection -->
+                    <div>
+                        <label for="charger" class="block text-xl label-color mb-1">🛠️ 充电桩</label>
+                        <select id="charger" class="w-full text-lg input-bg border-2 input-border rounded-md p-2"></select>
+                    </div>
+                    
+                    <!-- Environment Temp -->
+                    <div>
+                        <label for="temperature" class="block text-xl label-color mb-1">🌡️ 环境温度 (°C)</label>
+                        <input type="number" id="temperature" value="25" step="1" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                    </div>
+
+                    <!-- Condition Modifiers -->
+                    <div>
+                        <label class="block text-xl label-color mb-2">⚙️ 额外因子</label>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="ac" class="h-4 w-4"><span>空调🌬️(+4%)</span></label>
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="preheat" class="h-4 w-4"><span>预热🔥(+6%)</span></label>
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="enableCooling" checked class="h-4 w-4"><span>S5冷却🌀</span></label>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="pt-4">
+                         <button onclick="runSimulation()" class="w-full text-2xl bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-3 rounded-lg transition-all border-b-4 border-cyan-800 active:border-b-0">
+                            开始模拟
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Results -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Result Summary -->
+                <div id="result-container" class="panel-bg p-4 rounded-xl border-2 panel-border hidden">
+                    <pre id="result" class="text-base whitespace-pre-wrap"></pre>
+                </div>
+                
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="socChart"></canvas></div>
+                    <div class="panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="powerChart"></canvas></div>
+                    <div class="md:col-span-2 panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="lossChart"></canvas></div>
+                    <div class="md:col-span-2 panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="tempEffChart"></canvas></div>
+                </div>
+                
+                <!-- Data Table -->
+                <div id="table-container" class="hidden">
+                    <h3 class="text-2xl title-color mb-2">📈 逐分钟模拟数据</h3>
+                    <div class="data-table-container">
+                        <table id="dataTable" class="w-full text-lg">
+                            <thead>
+                                <tr><th>时间(分)</th><th>SoC(%)</th><th>功率(kW)</th><th>电压(V)</th><th>电流(A)</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants & Global State ---
+        let charts = {};
+        
+        // --- DOM Elements ---
+        const ui = {
+            model: document.getElementById('model'),
+            charger: document.getElementById('charger'),
+            startSoC: document.getElementById('start'),
+            endSoC: document.getElementById('end'),
+            actualKWh: document.getElementById('actual'),
+            temperature: document.getElementById('temperature'),
+            enableCooling: document.getElementById('enableCooling'),
+            ac: document.getElementById('ac'),
+            preheat: document.getElementById('preheat'),
+            resultContainer: document.getElementById('result-container'),
+            resultText: document.getElementById('result'),
+            tableContainer: document.getElementById('table-container'),
+            dataTableBody: document.querySelector('#dataTable tbody'),
+        };
+
+        // --- Chart.js Global Config ---
+        Chart.defaults.font.family = "'VT323', monospace";
+        Chart.defaults.font.size = 16;
+        Chart.defaults.color = '#00ffcc';
+
+        const chartOptionsTemplate = (title) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, color: '#00ffff', font: { size: 22 } },
+                legend: { display: false }
+            },
+            scales: {
+                x: { ticks: { color: '#00ffaa' }, grid: { color: 'rgba(0, 255, 170, 0.2)' } },
+                y: { ticks: { color: '#00ffaa' }, grid: { color: 'rgba(0, 255, 170, 0.2)' }, beginAtZero: true }
+            }
+        });
+
+        // --- Core Simulation Logic ---
+        function runSimulation() {
+            // 1. Get all inputs
+            const startSoC = parseFloat(ui.startSoC.value);
+            const endSoC = parseFloat(ui.endSoC.value);
+            const actualKWh = parseFloat(ui.actualKWh.value);
+            const temp = parseFloat(ui.temperature.value);
+
+            const modelOption = ui.model.selectedOptions[0];
+            const batteryCapacity = parseFloat(modelOption.value);
+            const maxCRate = parseFloat(modelOption.dataset.c);
+            const voltage = parseFloat(modelOption.dataset.volt);
+            
+            const chargerPower = parseFloat(ui.charger.value);
+            
+            if (isNaN(startSoC) || isNaN(endSoC) || startSoC >= endSoC) {
+                alert("错误: 请输入有效的起止SoC。");
+                return;
+            }
+
+            // 2. Run minute-by-minute simulation
+            const batteryMaxPower = batteryCapacity * maxCRate;
+            const sessionMaxPower = Math.min(chargerPower, batteryMaxPower);
+            
+            let currentSoC = startSoC;
+            let totalTimeMinutes = 0;
+            let chargedKWh = 0;
+            const simulationData = [];
+
+            while (currentSoC < endSoC) {
+                totalTimeMinutes++;
+                
+                // Calculate dynamic power based on SoC and cooling
+                let powerDropFactor = 1.0;
+                if (currentSoC > 80) powerDropFactor = 0.4;
+                else if (currentSoC > 60) powerDropFactor = 0.7;
+                
+                if (ui.enableCooling.checked) {
+                    powerDropFactor += 0.15; // S5 cooling improves power retention
+                }
+                
+                const currentPower = sessionMaxPower * powerDropFactor;
+                const kWhInMinute = currentPower / 60;
+                const socIncrease = (kWhInMinute / batteryCapacity) * 100;
+                
+                chargedKWh += kWhInMinute;
+                currentSoC += socIncrease;
+
+                const currentVoltage = voltage + (currentSoC / 100 * 50); // Simplified voltage rise
+                const currentAmps = (currentPower * 1000) / currentVoltage;
+
+                simulationData.push({
+                    minute: totalTimeMinutes,
+                    soc: currentSoC,
+                    power: currentPower,
+                    voltage: currentVoltage,
+                    amps: currentAmps,
+                });
+                
+                if (totalTimeMinutes > 300) break; // Safety break
+            }
+            
+            // 3. Calculate final results
+            const theoreticalKWh = batteryCapacity * (endSoC - startSoC) / 100;
+            let finalChargedKWh = isNaN(actualKWh) ? chargedKWh : actualKWh;
+
+            let extraLossFactor = 1.0;
+            if (ui.ac.checked) extraLossFactor += 0.04;
+            if (ui.preheat.checked) extraLossFactor += 0.06;
+
+            const tempEff = getTempEfficiency(temp);
+            const totalLossKWh = (finalChargedKWh / tempEff) * extraLossFactor - theoreticalKWh;
+            const overallEfficiency = (theoreticalKWh / ((finalChargedKWh / tempEff) * extraLossFactor)) * 100;
+
+            // 4. Update UI
+            ui.resultText.textContent = `
+--- 充电报告 (模拟) ---
+充电时长: ${totalTimeMinutes} 分钟
+理论需充: ${theoreticalKWh.toFixed(3)} kWh
+实际消耗: ${finalChargedKWh.toFixed(3)} kWh
+总计损耗: ${totalLossKWh.toFixed(3)} kWh (含环境/额外因子)
+综合效率: ${overallEfficiency.toFixed(2)} %
+            `;
+            ui.resultContainer.classList.remove('hidden');
+
+            displaySimulationTable(simulationData);
+            updateAllCharts(simulationData, { theoreticalKWh, totalLossKWh });
+        }
+
+        function getTempEfficiency(temp) {
+            // Efficiency peaks at 22C, parabolic drop-off
+            return 1 - (0.02 + Math.pow(temp - 22, 2) * 0.0005);
+        }
+
+        // --- UI & Chart Update Functions ---
+        function displaySimulationTable(data) {
+            ui.dataTableBody.innerHTML = '';
+            data.forEach(d => {
+                const row = `
+                    <tr>
+                        <td>${d.minute}</td>
+                        <td>${d.soc.toFixed(2)}</td>
+                        <td>${d.power.toFixed(2)}</td>
+                        <td>${d.voltage.toFixed(1)}</td>
+                        <td>${d.amps.toFixed(1)}</td>
+                    </tr>
+                `;
+                ui.dataTableBody.innerHTML += row;
+            });
+            ui.tableContainer.classList.remove('hidden');
+        }
+
+        function updateAllCharts(data, results) {
+            destroyAllCharts();
+            const labels = data.map(d => d.minute);
+            
+            // SoC Chart with dynamic colors
+            const socData = data.map(d => d.soc);
+            const socCtx = document.getElementById('socChart').getContext('2d');
+            charts.soc = new Chart(socCtx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'SoC',
+                        data: socData,
+                        borderColor: (ctx) => {
+                            const value = ctx.p0.parsed.y;
+                            if (value > 80) return '#ff3366'; // Red
+                            if (value > 60) return '#ffaa00'; // Yellow
+                            return '#00ffcc'; // Green
+                        },
+                        borderWidth: 3,
+                        tension: 0.1,
+                        pointRadius: 0
+                    }]
+                },
+                options: chartOptionsTemplate('🔋 SoC 变化曲线')
+            });
+
+            // Power Chart
+            const powerData = data.map(d => d.power);
+            const powerCtx = document.getElementById('powerChart').getContext('2d');
+            charts.power = new Chart(powerCtx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Power',
+                        data: powerData,
+                        borderColor: '#ffaa00',
+                        backgroundColor: 'rgba(255, 170, 0, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: chartOptionsTemplate('⚡ 充电功率曲线')
+            });
+            
+            // Loss Chart
+            const lossCtx = document.getElementById('lossChart').getContext('2d');
+            charts.loss = new Chart(lossCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['有效充电', '总损耗'],
+                    datasets: [{
+                        data: [results.theoreticalKWh, results.totalLossKWh],
+                        backgroundColor: ['#00ffcc', '#ff3366'],
+                        borderColor: '#0f111a',
+                        borderWidth: 6
+                    }]
+                },
+                options: {...chartOptionsTemplate('📉 电量损耗分布'), plugins: { legend: { display: true } }}
+            });
+            
+            // Temperature Efficiency Chart
+            const tempCtx = document.getElementById('tempEffChart').getContext('2d');
+            const temps = Array.from({ length: 11 }, (_, i) => i * 5 - 10); // -10C to 40C
+            const effs = temps.map(t => getTempEfficiency(t) * 100);
+            charts.temp = new Chart(tempCtx, {
+                type: 'bar',
+                data: {
+                    labels: temps.map(t => `${t}°C`),
+                    datasets: [{
+                        label: '效率 (%)',
+                        data: effs,
+                        backgroundColor: '#66ccff'
+                    }]
+                },
+                options: chartOptionsTemplate('🌡️ 气温对效率影响')
+            });
+        }
+        
+        function destroyAllCharts() {
+            Object.values(charts).forEach(chart => chart.destroy());
+        }
+
+        // --- Initial Setup ---
+        function init() {
+            const modelSelect = document.getElementById('model');
+            const chargerSelect = document.getElementById('charger');
+            const S5_LIMIT = 500, S4_LIMIT = 480, S2_LIMIT = 120;
+            
+            function setupChargerOptions() {
+                const selectedOption = modelSelect.selectedOptions[0];
+                const capacity = parseFloat(selectedOption.value);
+                const maxC = parseFloat(selectedOption.dataset.c);
+                chargerSelect.innerHTML = "";
+                const chargers = [
+                    { name: `S5 (液冷)`, power: Math.min(S5_LIMIT, capacity * maxC) },
+                    { name: `S4 (超充)`, power: Math.min(S4_LIMIT, capacity * maxC) },
+                    { name: "S2 (快充)", power: S2_LIMIT },
+                    { name: "第三方快充", power: 90 },
+                    { name: "家用桩", power: 7 }
+                ];
+                chargers.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.power;
+                    opt.textContent = `${c.name} - ${c.power.toFixed(0)} kW`;
+                    chargerSelect.appendChild(opt);
+                });
+            }
+            
+            modelSelect.addEventListener('change', setupChargerOptions);
+            setupChargerOptions();
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
