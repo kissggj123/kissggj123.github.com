@@ -81,158 +81,158 @@
       margin-top: 20px;
       height: 180px;
     }
+    #coolingToggle {
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🔋 小鹏P7+ 充电损耗计算器</h1>
-
-    <label for="model">🚘 车型</label>
-    <select id="model" onchange="updateChargerOptions()">
-      <option value="60.7">长续航（60.7 kWh）</option>
-      <option value="76.3">超长续航（76.3 kWh）</option>
-      <option value="74.9">旗舰（74.9 kWh）</option>
-    </select>
-
-    <label>📊 起始电量 (%)</label>
-    <input type="number" id="start" step="0.001">
-
-    <label>📈 结束电量 (%)</label>
-    <input type="number" id="end" step="0.001">
-
-    <label>⚡ 实际充电量</label>
-    <input type="number" id="actual" step="0.001">
-
-    <div class="unit-toggle">
-      <label><input type="radio" name="unit" value="kWh" checked> kWh</label>
-      <label style="margin-left: 10px;"><input type="radio" name="unit" value="Wh"> Wh</label>
-    </div>
-
-    <div class="charge-type">
-      <label>🛠️ 充电桩类型</label>
-      <select id="charger"></select>
-    </div>
-
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="ac"> 空调🌬️(+4%)</label>
-      <label><input type="checkbox" id="preheat"> 预热🔥(+6%)</label>
-      <label><input type="checkbox" id="cold"> 低温❄️(<5℃)(+5%)</label>
-      <label><input type="checkbox" id="autopilot"> 辅助驾驶🧠(+2%)</label>
-      <label><input type="checkbox" id="load"> 载人/载重🚚(+3%)</label>
-    </div>
-
-    <button onclick="calculate()">📎 计算损耗与时间</button>
-    <button id="copyBtn" onclick="copyResult()">📋 一键复制结果</button>
-
+    <label id="coolingToggle">
+      <input type="checkbox" id="enableCooling" checked>
+      启用 S5 冷却系统模拟 🌀
+    </label>
     <p id="result"></p>
     <canvas id="lossChart" width="400" height="200"></canvas>
     <canvas id="effChart" width="400" height="180"></canvas>
     <canvas id="tempChart" width="400" height="180"></canvas>
     <canvas id="gauge" width="400" height="180"></canvas>
+    <canvas id="ivChart" width="400" height="180"></canvas>
+    <canvas id="socChart" width="400" height="180"></canvas>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gaugeJS/dist/gauge.min.js"></script>
   <script>
-    const chargerSpecs = {
-      'S5': { voltage: 1000, current: 800, power: 800 },
-      'S4': { voltage: 720, current: 670, power: 480 },
-      'S2': { voltage: 500, current: 180, power: 90 }
-    };
-
-    function updateChargerOptions() {
-      const model = document.getElementById("model").value;
-      const charger = document.getElementById("charger");
-      charger.innerHTML = "";
-
-      charger.innerHTML += `<option value="S5">S5 液冷超充</option>`;
-      charger.innerHTML += `<option value="S4">S4 超充</option>`;
-      charger.innerHTML += `<option value="S2">S2 普通桩</option>`;
-    }
-
-    function getMaxC(model) {
-      return model === '74.9' ? 5 : 3;
-    }
-
-    function simulateChargingDecay(power, socStart, socEnd) {
-      const data = [];
-      const socSteps = 20;
-      const decayFactor = 0.98;
-      let currentPower = power;
-      for (let i = 0; i <= socSteps; i++) {
-        const soc = socStart + (socEnd - socStart) * i / socSteps;
-        // S5冷却模拟：当SOC超过80%，降速更明显
-        if (soc > 80) currentPower *= 0.96;
-        data.push({ soc: soc.toFixed(1), power: currentPower });
-        currentPower *= decayFactor;
+    function simulateIVChart(power, voltage, minutes) {
+      const ctx = document.getElementById('ivChart').getContext('2d');
+      const currentData = [], voltageData = [], time = [];
+      for (let i = 0; i <= minutes; i++) {
+        const decay = Math.pow(0.98, i);
+        const p = power * decay;
+        const v = voltage * (0.98 + 0.02 * Math.random());
+        const c = p / v;
+        time.push(i);
+        currentData.push(c.toFixed(1));
+        voltageData.push(v.toFixed(1));
       }
-      return data;
-    }
-
-    function simulateTempEfficiencyChart() {
-      const ctx = document.getElementById('tempChart').getContext('2d');
       new Chart(ctx, {
         type: 'line',
         data: {
-          labels: [-10, 0, 5, 10, 15, 20, 25, 30, 35],
-          datasets: [{
-            label: '效率衰减系数',
-            data: [0.7, 0.75, 0.8, 0.88, 0.95, 1.0, 1.0, 0.98, 0.95],
-            borderColor: '#ffaa00',
-            backgroundColor: 'rgba(255,170,0,0.2)',
-            tension: 0.3
-          }]
+          labels: time,
+          datasets: [
+            { label: '电流 (A)', data: currentData, borderColor: '#00ffff', yAxisID: 'y1' },
+            { label: '电压 (V)', data: voltageData, borderColor: '#ffaa00', yAxisID: 'y2' }
+          ]
         },
         options: {
+          responsive: true,
           plugins: {
-            title: {
-              display: true,
-              text: '🌡️ 气温对充电效率的影响',
-              color: '#00ffcc'
-            },
+            title: { display: true, text: '📉 电流/电压随时间变化', color: '#00ffcc' },
             legend: { labels: { color: '#fff' } }
           },
           scales: {
-            x: { ticks: { color: '#fff' } },
-            y: { ticks: { color: '#fff' }, min: 0.6, max: 1.1 }
+            x: { ticks: { color: '#fff' }, title: { display: true, text: '分钟' } },
+            y1: { type: 'linear', position: 'left', ticks: { color: '#00ffff' } },
+            y2: { type: 'linear', position: 'right', ticks: { color: '#ffaa00' }, grid: { drawOnChartArea: false } }
           }
         }
       });
     }
 
-    function drawGauge(percent) {
-      const opts = {
-        angle: 0,
-        lineWidth: 0.3,
-        radiusScale: 1,
-        pointer: {
-          length: 0.6,
-          strokeWidth: 0.035,
-          color: '#00ffcc'
+    function drawSoCChart(startSoC, maxC, duration) {
+      const ctx = document.getElementById('socChart').getContext('2d');
+      const socData = [], coolingData = [], time = [];
+      let soc = startSoC;
+      const coolingEnabled = document.getElementById('enableCooling')?.checked;
+      let temp = 25;
+      for (let i = 0; i <= duration; i++) {
+        soc += (100 - startSoC) / duration;
+        socData.push(soc.toFixed(1));
+        time.push(i);
+        if (coolingEnabled) {
+          const heatLoad = (soc > 70 ? 1.5 : soc > 30 ? 1 : 0.5) * maxC;
+          temp += heatLoad * 0.05;
+        }
+        coolingData.push(temp.toFixed(1));
+      }
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: time,
+          datasets: [
+            {
+              label: 'SoC (%)',
+              data: socData,
+              borderColor: function(context) {
+                const value = context.raw;
+                return value < 30 ? '#00ff00' : value < 70 ? '#ffff00' : '#ff0000';
+              },
+              borderWidth: 2,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              label: '冷却负载温升 (°C)',
+              data: coolingData,
+              borderColor: '#66ccff',
+              borderDash: [5, 5],
+              pointRadius: 0,
+              fill: false
+            }
+          ]
         },
-        limitMax: false,
-        limitMin: false,
-        colorStart: '#6F6EA0',
-        colorStop: '#C0C0DB',
-        strokeColor: '#eeeeee',
-        generateGradient: true,
-        highDpiSupport: true
-      };
-      const target = document.getElementById('gauge');
-      const gauge = new Gauge(target).setOptions(opts);
-      gauge.maxValue = 100;
-      gauge.setMinValue(0);
-      gauge.animationSpeed = 50;
-      gauge.set(percent);
+        options: {
+          plugins: {
+            title: { display: true, text: '🔋 电量 (SoC) 与 S5 冷却温升', color: '#00ffcc' },
+            legend: { labels: { color: '#fff' } }
+          },
+          scales: {
+            x: { ticks: { color: '#fff' }, title: { display: true, text: '分钟' } },
+            y: { ticks: { color: '#fff' }, min: 0, max: 120 }
+          }
+        }
+      });
     }
 
-    function copyResult() {
-      navigator.clipboard.writeText(document.getElementById("result").innerText)
-        .then(() => alert("📋 已复制结果到剪贴板！"));
+    function simulateEfficiencyByTemp(tempRange = [-10, 0, 10, 20, 30, 40]) {
+      const ctx = document.getElementById('tempChart').getContext('2d');
+      const efficiency = tempRange.map(t => 95 - Math.abs(t - 25) * 0.5);
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: tempRange.map(t => `${t}°C`),
+          datasets: [{
+            label: '效率 (%)',
+            data: efficiency,
+            borderColor: '#00ccff',
+            backgroundColor: 'rgba(0,204,255,0.2)'
+          }]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: '🌡️ 气温对充电效率影响', color: '#00ffcc' },
+            legend: { labels: { color: '#fff' } }
+          },
+          scales: {
+            x: { ticks: { color: '#fff' } },
+            y: { ticks: { color: '#fff' }, min: 80, max: 100 }
+          }
+        }
+      });
     }
 
-    updateChargerOptions();
-    simulateTempEfficiencyChart();
-    drawGauge(60); // 示例电量动画，可替换为动态计算值
+    function estimateChargeTime(startSoC, endSoC, batteryCapacity, maxPower) {
+      const delta = (endSoC - startSoC) / 100 * batteryCapacity;
+      const avgPower = maxPower * 0.85;
+      const timeHrs = delta / avgPower;
+      return (timeHrs * 60).toFixed(1);
+    }
+
+    document.getElementById('enableCooling')?.addEventListener('change', () => drawSoCChart(20, 3, 30));
+    simulateIVChart(480, 720, 30);
+    drawSoCChart(20, 3, 30);
+    simulateEfficiencyByTemp();
   </script>
 </body>
 </html>
