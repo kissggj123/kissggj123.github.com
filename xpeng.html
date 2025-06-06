@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⚡小鹏P7+ 充电损耗计算器</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -15,226 +15,224 @@
     }
     h1 {
       text-align: center;
+      font-size: 2rem;
+      color: #00ffff;
     }
     .container {
-      max-width: 580px;
+      max-width: 540px;
       margin: auto;
-      background: #1c1f2b;
+      background: #1a1d2b;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 12px #00ffcc;
     }
-    label, input, select {
-      display: block;
+    label {
       margin-top: 10px;
+      display: block;
+      color: #ccffff;
+    }
+    input, select {
       width: 100%;
-      padding: 6px;
+      padding: 8px;
       background: #111;
       border: 1px solid #00ffcc;
       color: #00ffcc;
-      border-radius: 4px;
+      border-radius: 5px;
+      margin-top: 5px;
     }
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       margin-top: 10px;
     }
     .checkbox-group label {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+    }
+    .unit-toggle {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 1rem;
     }
     button {
-      margin-top: 15px;
+      margin-top: 20px;
       padding: 10px;
       width: 100%;
-      background: #00ffcc;
+      background-color: #00ffcc;
       color: black;
       font-weight: bold;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    #copyBtn { background: #ffaa00; }
-    canvas { margin-top: 20px; background: #222; border-radius: 10px; }
+    #copyBtn {
+      background-color: #ffaa00;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+    .charge-type {
+      margin-top: 10px;
+    }
+    #gauge {
+      margin-top: 20px;
+      height: 180px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🔋 小鹏P7+ 充电损耗计算器</h1>
 
-    <label>车型</label>
+    <label for="model">🚘 车型</label>
     <select id="model" onchange="updateChargerOptions()">
       <option value="60.7">长续航（60.7 kWh）</option>
       <option value="76.3">超长续航（76.3 kWh）</option>
       <option value="74.9">旗舰（74.9 kWh）</option>
     </select>
 
-    <label>起始电量 (%)</label>
-    <input type="number" id="start" step="0.1" />
+    <label>📊 起始电量 (%)</label>
+    <input type="number" id="start" step="0.001">
 
-    <label>结束电量 (%)</label>
-    <input type="number" id="end" step="0.1" />
+    <label>📈 结束电量 (%)</label>
+    <input type="number" id="end" step="0.001">
 
-    <label>实际充电量</label>
-    <input type="number" id="actual" step="0.01" />
+    <label>⚡ 实际充电量</label>
+    <input type="number" id="actual" step="0.001">
 
-    <label>单位</label>
-    <div>
-      <label><input type="radio" name="unit" value="kWh" checked /> kWh</label>
-      <label style="margin-left:10px;"><input type="radio" name="unit" value="Wh" /> Wh</label>
+    <div class="unit-toggle">
+      <label><input type="radio" name="unit" value="kWh" checked> kWh</label>
+      <label style="margin-left: 10px;"><input type="radio" name="unit" value="Wh"> Wh</label>
     </div>
 
-    <label>充电桩</label>
-    <select id="charger"></select>
+    <div class="charge-type">
+      <label>🛠️ 充电桩类型</label>
+      <select id="charger"></select>
+    </div>
 
     <div class="checkbox-group">
       <label><input type="checkbox" id="ac"> 空调🌬️(+4%)</label>
       <label><input type="checkbox" id="preheat"> 预热🔥(+6%)</label>
-      <label><input type="checkbox" id="cold"> 低温❄️(+5%)</label>
-      <label><input type="checkbox" id="autopilot"> 辅助🧠(+2%)</label>
-      <label><input type="checkbox" id="load"> 载重🚚(+3%)</label>
+      <label><input type="checkbox" id="cold"> 低温❄️(<5℃)(+5%)</label>
+      <label><input type="checkbox" id="autopilot"> 辅助驾驶🧠(+2%)</label>
+      <label><input type="checkbox" id="load"> 载人/载重🚚(+3%)</label>
     </div>
 
     <button onclick="calculate()">📎 计算损耗与时间</button>
-    <button id="copyBtn" onclick="copyResult()">📋 复制结果</button>
+    <button id="copyBtn" onclick="copyResult()">📋 一键复制结果</button>
 
-    <pre id="result"></pre>
-    <canvas id="socChart" width="480" height="220"></canvas>
+    <p id="result"></p>
+    <canvas id="lossChart" width="400" height="200"></canvas>
+    <canvas id="effChart" width="400" height="180"></canvas>
+    <canvas id="tempChart" width="400" height="180"></canvas>
+    <canvas id="gauge" width="400" height="180"></canvas>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/gaugeJS/dist/gauge.min.js"></script>
   <script>
-    let socChart;
+    const chargerSpecs = {
+      'S5': { voltage: 1000, current: 800, power: 800 },
+      'S4': { voltage: 720, current: 670, power: 480 },
+      'S2': { voltage: 500, current: 180, power: 90 }
+    };
 
     function updateChargerOptions() {
-      const model = parseFloat(document.getElementById("model").value);
+      const model = document.getElementById("model").value;
       const charger = document.getElementById("charger");
       charger.innerHTML = "";
-      if (model === 74.9) {
-        charger.innerHTML += `<option value="5">S5 液冷超充（最高 5C）</option>`;
-        charger.innerHTML += `<option value="4">S4 超充（最高 4C）</option>`;
-      } else {
-        charger.innerHTML += `<option value="3">S5 液冷超充（最高 3C）</option>`;
-        charger.innerHTML += `<option value="2">S4 超充（最高 2C）</option>`;
+
+      charger.innerHTML += `<option value="S5">S5 液冷超充</option>`;
+      charger.innerHTML += `<option value="S4">S4 超充</option>`;
+      charger.innerHTML += `<option value="S2">S2 普通桩</option>`;
+    }
+
+    function getMaxC(model) {
+      return model === '74.9' ? 5 : 3;
+    }
+
+    function simulateChargingDecay(power, socStart, socEnd) {
+      const data = [];
+      const socSteps = 20;
+      const decayFactor = 0.98;
+      let currentPower = power;
+      for (let i = 0; i <= socSteps; i++) {
+        const soc = socStart + (socEnd - socStart) * i / socSteps;
+        // S5冷却模拟：当SOC超过80%，降速更明显
+        if (soc > 80) currentPower *= 0.96;
+        data.push({ soc: soc.toFixed(1), power: currentPower });
+        currentPower *= decayFactor;
       }
-      charger.innerHTML += `<option value="1.5">S2 普通桩（1.5C）</option>`;
+      return data;
     }
 
-    updateChargerOptions();
-
-    function copyResult() {
-      navigator.clipboard.writeText(document.getElementById('result').innerText);
-    }
-
-    function calculate() {
-      const capacity = parseFloat(document.getElementById('model').value);
-      const start = parseFloat(document.getElementById('start').value);
-      const end = parseFloat(document.getElementById('end').value);
-      let actual = parseFloat(document.getElementById('actual').value);
-      const cRate = parseFloat(document.getElementById('charger').value);
-      const unit = document.querySelector('input[name="unit"]:checked').value;
-      if (unit === 'Wh') actual = actual / 1000;
-
-      const deltaSOC = end - start;
-      const theoretical = capacity * deltaSOC / 100;
-
-      let factor = 1;
-      if (ac.checked) factor *= 1.04;
-      if (preheat.checked) factor *= 1.06;
-      if (cold.checked) factor *= 1.05;
-      if (autopilot.checked) factor *= 1.02;
-      if (load.checked) factor *= 1.03;
-
-      const corrected = actual * factor;
-      const lossRate = ((corrected / theoretical) - 1) * 100;
-
-      const peakPower = Math.min(cRate * capacity, getRealLimit(cRate));
-      const timeHour = actual / peakPower;
-
-      const resultText =
-        `理论充电量: ${theoretical.toFixed(2)} kWh\n` +
-        `实际输入电量: ${actual.toFixed(2)} kWh\n` +
-        `叠加修正后: ×${factor.toFixed(3)} = ${corrected.toFixed(2)} kWh\n` +
-        `损耗率: ${lossRate.toFixed(2)}%\n` +
-        `估算充电时间: ${(timeHour * 60).toFixed(1)} 分钟\n` +
-        `峰值功率: ${peakPower.toFixed(1)} kW\n`;
-
-      document.getElementById("result").innerText = resultText;
-
-      drawSoCCurve(start, end, capacity, cRate, peakPower);
-    }
-
-    function getRealLimit(cRate) {
-      switch (cRate) {
-        case 5: return 800;
-        case 4: return 480;
-        case 3: return 400;
-        case 2: return 300;
-        case 1.5: return 90;
-        default: return 100;
-      }
-    }
-
-    function drawSoCCurve(start, end, capacity, cRate, peakPower) {
-      const points = [];
-      const voltages = [];
-      const currents = [];
-      const colors = [];
-
-      const steps = 20;
-      for (let i = 0; i <= steps; i++) {
-        const soc = start + (end - start) * (i / steps);
-        const socRatio = soc / 100;
-        const power = peakPower * (1 - 0.5 * Math.pow(socRatio, 1.5)); // 模拟功率衰减
-        const voltage = 600 + 200 * socRatio;
-        const current = power * 1000 / voltage;
-
-        points.push(soc.toFixed(1));
-        voltages.push(voltage.toFixed(0));
-        currents.push(current.toFixed(0));
-
-        const color = soc < 40 ? '#00ff66' : soc < 80 ? '#ffff33' : '#ff3333';
-        colors.push(color);
-      }
-
-      const ctx = document.getElementById("socChart").getContext("2d");
-      if (socChart) socChart.destroy();
-      socChart = new Chart(ctx, {
-        type: "line",
+    function simulateTempEfficiencyChart() {
+      const ctx = document.getElementById('tempChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
         data: {
-          labels: points,
+          labels: [-10, 0, 5, 10, 15, 20, 25, 30, 35],
           datasets: [{
-            label: "功率 (kW)",
-            data: points.map((soc, i) => (currents[i] * voltages[i] / 1000).toFixed(1)),
-            borderColor: function(context) {
-              return colors[context.dataIndex];
-            },
-            borderWidth: 2,
-            fill: false,
-            pointBackgroundColor: colors,
+            label: '效率衰减系数',
+            data: [0.7, 0.75, 0.8, 0.88, 0.95, 1.0, 1.0, 0.98, 0.95],
+            borderColor: '#ffaa00',
+            backgroundColor: 'rgba(255,170,0,0.2)',
             tension: 0.3
           }]
         },
         options: {
           plugins: {
-            legend: { display: true },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const i = context.dataIndex;
-                  return `⚡功率: ${context.formattedValue} kW, 🔌电流: ${currents[i]} A, 🔋电压: ${voltages[i]} V`;
-                }
-              }
-            }
+            title: {
+              display: true,
+              text: '🌡️ 气温对充电效率的影响',
+              color: '#00ffcc'
+            },
+            legend: { labels: { color: '#fff' } }
           },
           scales: {
-            x: { title: { display: true, text: '电量 SoC (%)' } },
-            y: { title: { display: true, text: '功率 (kW)' }, min: 0 }
+            x: { ticks: { color: '#fff' } },
+            y: { ticks: { color: '#fff' }, min: 0.6, max: 1.1 }
           }
         }
       });
     }
+
+    function drawGauge(percent) {
+      const opts = {
+        angle: 0,
+        lineWidth: 0.3,
+        radiusScale: 1,
+        pointer: {
+          length: 0.6,
+          strokeWidth: 0.035,
+          color: '#00ffcc'
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#6F6EA0',
+        colorStop: '#C0C0DB',
+        strokeColor: '#eeeeee',
+        generateGradient: true,
+        highDpiSupport: true
+      };
+      const target = document.getElementById('gauge');
+      const gauge = new Gauge(target).setOptions(opts);
+      gauge.maxValue = 100;
+      gauge.setMinValue(0);
+      gauge.animationSpeed = 50;
+      gauge.set(percent);
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(document.getElementById("result").innerText)
+        .then(() => alert("📋 已复制结果到剪贴板！"));
+    }
+
+    updateChargerOptions();
+    simulateTempEfficiencyChart();
+    drawGauge(60); // 示例电量动画，可替换为动态计算值
   </script>
 </body>
 </html>
