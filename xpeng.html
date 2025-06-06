@@ -1,287 +1,433 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>⚡小鹏P7+ 充电损耗计算器</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'VT323', monospace;
-      background-color: #0f111a;
-      color: #00ffcc;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      font-size: 2.4rem;
-      color: #00ffff;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #1a1d2a;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px #00ffcc;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-size: 1.2rem;
-      color: #00ffaa;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      font-size: 1.2rem;
-      background: #10121a;
-      border: 1px solid #00ffcc;
-      color: #00ffcc;
-      border-radius: 5px;
-      margin-top: 5px;
-    }
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .checkbox-group label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 1rem;
-    }
-    .unit-toggle {
-      margin-top: 10px;
-      display: flex;
-      justify-content: flex-end;
-      font-size: 1.1rem;
-      color: #ffaa00;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px;
-      font-size: 1.2rem;
-      width: 100%;
-      background-color: #00ffcc;
-      color: black;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #copyBtn {
-      background-color: #ffaa00;
-    }
-    canvas {
-      margin-top: 20px;
-      background-color: #0f111a;
-      border-radius: 8px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 小鹏P7+ 充电损耗计算器 v3.0</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts for retro theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to achieve the retro-futuristic theme */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .retro-font {
+            font-family: 'VT323', monospace;
+        }
+        /* Custom styles for Chart.js tooltips and legends */
+        .chart-legend-color {
+            color: #94a3b8; /* slate-400 */
+        }
+        .chart-title-color {
+            color: #e2e8f0; /* slate-200 */
+        }
+        .chart-axis-color {
+            color: #94a3b8; /* slate-400 */
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h1>🔋 小鹏P7+ 充电损耗计算器</h1>
+<body class="bg-slate-900 text-slate-300 antialiased">
 
-    <label for="model">🚘 车型</label>
-    <select id="model" onchange="updateChargerOptions()">
-      <option value="60.7" data-c="3">长续航（60.7 kWh）</option>
+    <div class="container mx-auto max-w-3xl p-4 md:p-6">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="retro-font text-4xl md:text-5xl font-bold text-cyan-400 tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
+            <p class="text-slate-400 mt-2">整合版 v3.0 - 精准计算损耗与效率</p>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+            <!-- Left Panel: Inputs & Controls -->
+            <div class="lg:col-span-2 bg-slate-800/50 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                <div class="space-y-5">
+                    <!-- Model Selection -->
+                    <div>
+                        <label for="model" class="block text-sm font-medium text-cyan-300 mb-1">🚘 车型</label>
+                        <select id="model" class="w-full bg-slate-900 border border-slate-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                             <option value="60.7" data-c="3">长续航（60.7 kWh）</option>
       <option value="76.3" data-c="3">超长续航（76.3 kWh）</option>
       <option value="74.9" data-c="5">旗舰（74.9 kWh）</option>
-    </select>
+                        </select>
+                    </div>
 
-    <label>📊 起始电量 (%)</label>
-    <input type="number" id="start" step="0.001">
+                    <!-- SoC Inputs -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="start" class="block text-sm font-medium text-cyan-300 mb-1">📊 起始电量 (%)</label>
+                            <input type="number" id="start" value="20" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="end" class="block text-sm font-medium text-cyan-300 mb-1">📈 结束电量 (%)</label>
+                            <input type="number" id="end" value="80" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+                    </div>
 
-    <label>📈 结束电量 (%)</label>
-    <input type="number" id="end" step="0.001">
+                    <!-- Actual Charge Input -->
+                    <div>
+                        <label for="actual" class="block text-sm font-medium text-cyan-300 mb-1">⚡ 实际充电量 (kWh)</label>
+                        <input type="number" id="actual" value="55" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                    </div>
 
-    <label>⚡ 实际充电量</label>
-    <input type="number" id="actual" step="0.001">
+                    <!-- Charger Selection -->
+                    <div>
+                        <label for="charger" class="block text-sm font-medium text-cyan-300 mb-1">🛠️ 充电桩类型</label>
+                        <select id="charger" class="w-full bg-slate-900 border border-slate-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"></select>
+                    </div>
 
-    <div class="unit-toggle">
-      <label><input type="radio" name="unit" value="kWh" checked> kWh</label>
-      <label style="margin-left: 10px;"><input type="radio" name="unit" value="Wh"> Wh</label>
+                    <!-- Condition Modifiers -->
+                    <div>
+                        <label class="block text-sm font-medium text-cyan-300 mb-2">⚙️ 额外损耗因子</label>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="ac" class="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-500 focus:ring-cyan-500"><span>空调🌬️(+4%)</span></label>
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="preheat" class="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-500 focus:ring-cyan-500"><span>预热🔥(+6%)</span></label>
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="cold" class="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-500 focus:ring-cyan-500"><span>低温❄️(+5%)</span></label>
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="autopilot" class="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-500 focus:ring-cyan-500"><span>智驾🧠(+2%)</span></label>
+                             <label class="flex items-center space-x-2"><input type="checkbox" id="load" class="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-500 focus:ring-cyan-500"><span>载人🚚(+3%)</span></label>
+                            <label class="flex items-center space-x-2"><input type="checkbox" id="enableCooling" checked class="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-500 focus:ring-cyan-500"><span>S5冷却🌀</span></label>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="pt-4 space-y-3">
+                         <button onclick="calculate()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-cyan-500/50">
+                            📎 计算损耗与效率
+                        </button>
+                        <button id="copyBtn" onclick="copyResult()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-amber-500/50">
+                            📋 一键复制结果
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Results & Charts -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Result Text -->
+                <div id="result-container" class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 hidden">
+                    <pre id="result" class="text-sm whitespace-pre-wrap font-mono"></pre>
+                </div>
+                 <div id="toast" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0">📋 结果已复制！</div>
+
+
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700"><canvas id="lossChart"></canvas></div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700"><canvas id="effChart"></canvas></div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700"><canvas id="ivChart"></canvas></div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700"><canvas id="socChart"></canvas></div>
+                    <div class="md:col-span-2 bg-slate-800/50 p-4 rounded-xl border border-slate-700"><canvas id="tempChart"></canvas></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <label>🛠️ 充电桩类型</label>
-    <select id="charger"></select>
+    <script>
+        // --- Constants and Global Variables ---
+        const S5_LIMIT_KW = 500;
+        const S4_LIMIT_KW = 480;
+        const S2_LIMIT_KW = 120;
+        let charts = {}; // Object to hold all chart instances
+        let lastResultText = "";
 
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="ac"> 空调🌬️(+4%)</label>
-      <label><input type="checkbox" id="preheat"> 预热🔥(+6%)</label>
-      <label><input type="checkbox" id="cold"> 低温❄️(<5℃)(+5%)</label>
-      <label><input type="checkbox" id="autopilot"> 辅助驾驶🧠(+2%)</label>
-      <label><input type="checkbox" id="load"> 载人🚚(+3%)</label>
-    </div>
+        // --- DOM Element References ---
+        const modelSelect = document.getElementById("model");
+        const chargerSelect = document.getElementById("charger");
+        const enableCoolingCheckbox = document.getElementById("enableCooling");
 
-    <button onclick="calculate()">📎 计算损耗与效率</button>
-    <button id="copyBtn" onclick="copyResult()">📋 一键复制结果</button>
+        // --- Chart Configuration ---
+        const chartOptionsTemplate = (title, displayLegend = false) => ({
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                title: { display: true, text: title, color: '#e2e8f0', font: { size: 16 } },
+                legend: { display: displayLegend, labels: { color: '#94a3b8' } }
+            },
+            scales: {
+                x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(100, 116, 139, 0.2)' } },
+                y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(100, 116, 139, 0.2)' }, beginAtZero: true }
+            }
+        });
 
-    <p id="result"></p>
-    <canvas id="lossChart" height="180"></canvas>
-    <canvas id="effChart" height="180"></canvas>
-    <canvas id="tempChart" height="180"></canvas>
-  </div>
+        // --- Core Functions ---
 
-  <script>
-    const S5_LIMIT = 800; // kW
-    const S4_LIMIT = 400;
-    const S2_LIMIT = 90;
+        /**
+         * Updates the available charger options based on the selected car model.
+         */
+        function updateChargerOptions() {
+            const selectedOption = modelSelect.selectedOptions[0];
+            const capacity = parseFloat(selectedOption.value);
+            const maxC = parseFloat(selectedOption.dataset.c);
+            const voltage = parseFloat(selectedOption.dataset.volt);
+            
+            chargerSelect.innerHTML = "";
 
-    function updateChargerOptions() {
-      const modelSelect = document.getElementById("model");
-      const maxC = parseFloat(modelSelect.selectedOptions[0].dataset.c);
-      const capacity = parseFloat(modelSelect.value);
-      const charger = document.getElementById("charger");
-      charger.innerHTML = "";
+            const chargers = [
+                { name: `S5（液冷超充 ${voltage}V）`, power: Math.min(S5_LIMIT_KW, capacity * maxC) },
+                { name: `S4（超充 ${voltage}V）`, power: Math.min(S4_LIMIT_KW, capacity * maxC) },
+                { name: "S2（普通快充）", power: S2_LIMIT_KW },
+                { name: "第三方快充", power: 90 },
+                { name: "家用充电桩", power: 7 }
+            ];
 
-      const chargers = [
-        { name: "S5（液冷超充）", power: Math.min(S5_LIMIT, capacity * maxC) },
-        { name: "S4 超充", power: Math.min(S4_LIMIT, capacity * maxC) },
-        { name: "S2（普通单枪）", power: Math.min(S2_LIMIT, capacity * maxC) },
-      ];
-
-      chargers.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.power;
-        opt.textContent = `${c.name}（${c.power.toFixed(0)} kW）`;
-        charger.appendChild(opt);
-      });
-    }
-
-    let lossChart, effChart, tempChart, lastText = "";
-
-    function calculate() {
-      const capacity = parseFloat(document.getElementById('model').value);
-      const start = parseFloat(document.getElementById('start').value);
-      const end = parseFloat(document.getElementById('end').value);
-      let actual = parseFloat(document.getElementById('actual').value);
-      const unit = document.querySelector('input[name="unit"]:checked').value;
-
-      if (unit === 'Wh') actual /= 1000;
-
-      const delta = end - start;
-      const theoretical = capacity * delta / 100;
-
-      let factor = 1;
-      if (ac.checked) factor *= 1.04;
-      if (preheat.checked) factor *= 1.06;
-      if (cold.checked) factor *= 1.05;
-      if (autopilot.checked) factor *= 1.02;
-      if (load.checked) factor *= 1.03;
-
-      const corrected = actual * factor;
-      const lossRate = ((corrected / theoretical) - 1) * 100;
-      const power = parseFloat(document.getElementById("charger").value);
-
-      // 模拟S5冷却策略
-      let chargeMinutes = 0;
-      let soc = start;
-      let socPoints = [], voltPoints = [], ampPoints = [];
-
-      while (soc < end) {
-        const socRatio = soc / 100;
-        let effPower = power;
-
-        if (power > 400 && socRatio > 0.6) effPower *= 0.85;
-        if (power > 400 && socRatio > 0.8) effPower *= 0.6;
-
-        const charged = (effPower / 60) / capacity * 100;
-        soc += charged;
-        socPoints.push(soc);
-        voltPoints.push(300 + socRatio * 300);
-        ampPoints.push((effPower * 1000) / voltPoints.at(-1));
-        chargeMinutes++;
-      }
-
-      const result = 
-        `📌 理论电量：${theoretical.toFixed(3)} kWh\n` +
-        `📌 实际电量：${actual.toFixed(3)} kWh\n` +
-        `📌 修正因子：×${factor.toFixed(3)}\n` +
-        `📉 损耗率：${lossRate.toFixed(2)}%\n` +
-        `🕓 模拟充电时长：${chargeMinutes} 分钟`;
-
-      document.getElementById("result").innerText = result;
-      lastText = result;
-
-      // 损耗图
-      if (lossChart) lossChart.destroy();
-      lossChart = new Chart(lossChart = document.getElementById('lossChart').getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: ['理论使用', '损耗'],
-          datasets: [{ data: [theoretical, corrected - theoretical], backgroundColor: ['#00ffcc', '#ff3366'] }]
-        },
-        options: {
-          plugins: { title: { display: true, text: '电量损耗分布', color: '#00ffcc' }, legend: { labels: { color: '#fff' } } }
+            chargers.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.power;
+                opt.textContent = `${c.name} - ${c.power.toFixed(0)} kW`;
+                chargerSelect.appendChild(opt);
+            });
         }
-      });
+        
+        /**
+         * Main function to perform all calculations and update the UI.
+         */
+        function calculate() {
+            // 1. Get all input values
+            const capacity = parseFloat(modelSelect.value);
+            const startSoC = parseFloat(document.getElementById('start').value);
+            const endSoC = parseFloat(document.getElementById('end').value);
+            const actualKWh = parseFloat(document.getElementById('actual').value);
+            const chargerPower = parseFloat(chargerSelect.value);
+            
+            if (isNaN(capacity) || isNaN(startSoC) || isNaN(endSoC) || isNaN(actualKWh) || startSoC >= endSoC) {
+                alert("请输入有效的数值，并确保起始电量小于结束电量。");
+                return;
+            }
 
-      // 效率图
-      const rateTheory = theoretical / (delta / 100);
-      const rateActual = actual / (delta / 100);
+            // 2. Calculate core metrics
+            const deltaSoC = endSoC - startSoC;
+            const theoreticalKWh = capacity * deltaSoC / 100;
+            
+            let factor = 1.0;
+            if (document.getElementById('ac').checked) factor += 0.04;
+            if (document.getElementById('preheat').checked) factor += 0.06;
+            if (document.getElementById('cold').checked) factor += 0.05;
+            if (document.getElementById('autopilot').checked) factor += 0.02;
+            if (document.getElementById('load').checked) factor += 0.03;
 
-      if (effChart) effChart.destroy();
-      effChart = new Chart(effChart = document.getElementById('effChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: ['理论单位电耗', '实际单位电耗'],
-          datasets: [{
-            label: '单位电耗 (kWh/100%)',
-            data: [rateTheory, rateActual],
-            backgroundColor: ['#00ccff', '#ffaa00']
-          }]
-        },
-        options: {
-          plugins: {
-            title: { display: true, text: '单位电耗效率对比', color: '#00ccff' },
-            legend: { display: false }
-          },
-          scales: {
-            x: { ticks: { color: '#fff' } },
-            y: { beginAtZero: true, ticks: { color: '#fff' } }
-          }
+            const totalLossKWh = actualKWh - theoreticalKWh;
+            const lossRate = (totalLossKWh / theoreticalKWh) * 100;
+            const overallEfficiency = (theoreticalKWh / actualKWh) * 100;
+            const chargeTimeMinutes = (actualKWh / chargerPower) * 60 * (1 / 0.85); // Assume 85% avg efficiency for time est.
+
+            // 3. Update result text display
+            lastResultText = `
+    --- 充电报告 ---
+    理论充电量: ${theoreticalKWh.toFixed(2)} kWh
+    实际充电量: ${actualKWh.toFixed(2)} kWh
+    总计损耗量: ${totalLossKWh.toFixed(2)} kWh
+    ------------------
+    充电损耗率: ${lossRate.toFixed(2)} %
+    综合充电效率: ${overallEfficiency.toFixed(2)} %
+    预估充电时长: ${chargeTimeMinutes.toFixed(0)} 分钟
+    额外损耗因子: x${factor.toFixed(2)}
+    `;
+            document.getElementById('result').innerText = lastResultText;
+            document.getElementById('result-container').classList.remove('hidden');
+
+            // 4. Update all charts
+            updateLossChart(theoreticalKWh, totalLossKWh);
+            updateEfficiencyChart(capacity, actualKWh / (deltaSoC / 100));
+            updateIVChart(chargerPower, parseFloat(modelSelect.selectedOptions[0].dataset.volt), chargeTimeMinutes);
+            updateSoCChart(startSoC, endSoC, chargeTimeMinutes);
+            updateTempEfficiencyChart();
         }
-      });
 
-      // 温度效率图
-      if (tempChart) tempChart.destroy();
-      const temps = Array.from({length: 41}, (_, i) => i - 10);
-      const effs = temps.map(t => t < 0 ? 0.92 : t > 25 ? 1.02 : 0.95 + t * 0.003);
-      tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: temps,
-          datasets: [{
-            label: '充电效率',
-            data: effs,
-            fill: false,
-            borderColor: '#00ffff'
-          }]
-        },
-        options: {
-          plugins: {
-            title: { display: true, text: '🌡️ 温度 vs 充电效率', color: '#00ffff' },
-            legend: { labels: { color: '#fff' } }
-          },
-          scales: {
-            x: { ticks: { color: '#fff' }, title: { display: true, text: '气温 (°C)', color: '#fff' } },
-            y: { beginAtZero: true, ticks: { color: '#fff' } }
-          }
+        /**
+         * Copies the result text to the clipboard.
+         */
+        function copyResult() {
+            if (!lastResultText) return;
+            // Use a temporary textarea to enable copying
+            const textArea = document.createElement("textarea");
+            textArea.value = lastResultText;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0');
+                setTimeout(() => toast.classList.add('opacity-0'), 2000);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
         }
-      });
-    }
 
-    function copyResult() {
-      navigator.clipboard.writeText(lastText).then(() => alert("📋 已复制结果！"));
-    }
+        // --- Chart Update Functions ---
 
-    updateChargerOptions();
-  </script>
+        /**
+         * Destroys an existing chart if it exists.
+         * @param {string} chartId - The key of the chart in the `charts` object.
+         */
+        function destroyChart(chartId) {
+            if (charts[chartId]) {
+                charts[chartId].destroy();
+            }
+        }
+
+        function updateLossChart(theoretical, loss) {
+            destroyChart('loss');
+            const ctx = document.getElementById('lossChart').getContext('2d');
+            charts['loss'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['有效充电', '充电损耗'],
+                    datasets: [{
+                        data: [theoretical, loss],
+                        backgroundColor: ['#14b8a6', '#f97316'], // teal-500, orange-500
+                        borderColor: '#1e293b', // slate-800
+                        borderWidth: 4
+                    }]
+                },
+                options: chartOptionsTemplate('⚡ 电量损耗分布', true)
+            });
+        }
+
+        function updateEfficiencyChart(theoreticalRate, actualRate) {
+            destroyChart('eff');
+            const ctx = document.getElementById('effChart').getContext('2d');
+            charts['eff'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['理论单位电耗', '实际单位电耗'],
+                    datasets: [{
+                        label: '单位电耗 (kWh/%)',
+                        data: [theoreticalRate, actualRate],
+                        backgroundColor: ['#22d3ee', '#facc15'], // cyan-400, yellow-400
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptionsTemplate('📊 单位电耗效率对比')
+            });
+        }
+        
+        function updateIVChart(powerKW, voltage, minutes) {
+             destroyChart('iv');
+             const ctx = document.getElementById('ivChart').getContext('2d');
+             const time = Array.from({ length: Math.min(60, Math.ceil(minutes)) }, (_, i) => i);
+             const currentData = [];
+             const voltageData = [];
+
+             time.forEach(i => {
+                const socRatio = i / minutes;
+                let currentPower = powerKW;
+                // Simulate power drop-off at high SoC
+                if (socRatio > 0.8) currentPower *= 0.5;
+                else if (socRatio > 0.6) currentPower *= 0.8;
+                
+                const currentVoltage = voltage * (0.98 + (socRatio * 0.04)); // Voltage rises slightly
+                const currentAmps = (currentPower * 1000) / currentVoltage;
+                
+                currentData.push(currentAmps);
+                voltageData.push(currentVoltage);
+             });
+
+             const options = chartOptionsTemplate('📉 模拟电流 / 电压曲线');
+             options.scales.y1 = { type: 'linear', position: 'left', ticks: { color: '#22d3ee' }, title: { display: true, text: '电流 (A)', color: '#22d3ee' } };
+             options.scales.y2 = { type: 'linear', position: 'right', ticks: { color: '#f59e0b' }, grid: { drawOnChartArea: false }, title: { display: true, text: '电压 (V)', color: '#f59e0b' } };
+             delete options.scales.y; // Remove default y-axis
+
+             charts['iv'] = new Chart(ctx, {
+                 type: 'line',
+                 data: {
+                     labels: time,
+                     datasets: [
+                         { label: '电流 (A)', data: currentData, borderColor: '#22d3ee', yAxisID: 'y1', tension: 0.3, fill: false },
+                         { label: '电压 (V)', data: voltageData, borderColor: '#f59e0b', yAxisID: 'y2', tension: 0.3, fill: false }
+                     ]
+                 },
+                 options
+             });
+        }
+        
+        function updateSoCChart(startSoC, endSoC, duration) {
+            destroyChart('soc');
+            const ctx = document.getElementById('socChart').getContext('2d');
+            const time = Array.from({ length: Math.ceil(duration) + 1 }, (_, i) => i);
+            const socData = [];
+            const coolingData = [];
+            const coolingEnabled = enableCoolingCheckbox.checked;
+
+            let tempRise = 0;
+            time.forEach(i => {
+                const progress = i / duration;
+                const soc = startSoC + (endSoC - startSoC) * progress;
+                socData.push(soc.toFixed(1));
+
+                if (coolingEnabled) {
+                    const heatLoad = (soc > 80 ? 1.5 : soc > 50 ? 1 : 0.5);
+                    tempRise += heatLoad * 0.15 * (Math.random() * 0.4 + 0.8);
+                    coolingData.push(tempRise.toFixed(1));
+                }
+            });
+            
+            const datasets = [{
+                label: 'SoC (%)', data: socData, borderColor: '#6ee7b7', // emerald-300
+                tension: 0.1, fill: true, backgroundColor: 'rgba(52, 211, 153, 0.1)'
+            }];
+            if (coolingEnabled) {
+                datasets.push({
+                    label: '模拟温升 (°C)', data: coolingData, borderColor: '#f87171', // red-400
+                    borderDash: [5, 5], tension: 0.3, fill: false
+                });
+            }
+
+            charts['soc'] = new Chart(ctx, {
+                type: 'line',
+                data: { labels: time, datasets },
+                options: chartOptionsTemplate('🔋 SoC 与 S5 冷却温升模拟', true)
+            });
+        }
+        
+        function updateTempEfficiencyChart() {
+            destroyChart('temp');
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            const temps = Array.from({ length: 11 }, (_, i) => i * 5 - 10); // -10 to 40
+            const effs = temps.map(t => 98 - Math.pow(t - 22, 2) * 0.05); // Parabolic curve peaking at 22°C
+
+            charts['temp'] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: temps.map(t => `${t}°C`),
+                    datasets: [{
+                        label: '充电效率 (%)',
+                        data: effs,
+                        fill: true,
+                        borderColor: '#818cf8', // indigo-400
+                        backgroundColor: 'rgba(129, 140, 248, 0.2)',
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptionsTemplate('🌡️ 模拟温度对充电效率影响')
+            });
+        }
+
+
+        // --- Event Listeners and Initial Setup ---
+        window.addEventListener('load', () => {
+            updateChargerOptions();
+            // Initially, trigger a calculation with default values to populate charts
+            calculate(); 
+        });
+
+        modelSelect.addEventListener('change', updateChargerOptions);
+        enableCoolingCheckbox.addEventListener('change', () => {
+             // Recalculate to update the SoC chart with/without cooling data
+            if(document.getElementById('result').innerText) {
+                 calculate();
+            }
+        });
+
+    </script>
 </body>
 </html>
