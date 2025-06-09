@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.1.1 - 福尔摩斯垂耳兔 (Sherlock Lop)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for data visualization - Loaded at the end of body for performance -->
@@ -98,9 +98,8 @@
             --progress-text: #ffffff;
             --cooling-color: #00bcd4;
             --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%);
-            --gemini-button-hover-bg: linear-gradient(45deg, #5000cc 0%, #8800cc 100%);
+            --gemini-button-hover-bg': linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
             --gemini-button-border: #bb00ff;
-            --pixel-rabbit-icon-fill: currentColor; /* Inherit color from text-color */
             --pixel-rabbit-shadow-color: rgba(0, 0, 0, 0.6);
         }
 
@@ -128,14 +127,16 @@
         /* Randomly moving pixel rabbit */
         #wandering-rabbit {
             position: fixed;
-            width: 64px;
-            height: 64px;
+            width: 72px; /* Slightly larger for "bolder" look */
+            height: 72px; /* Maintain aspect ratio */
             z-index: 100;
             pointer-events: none;
             transition: left 1s ease-in-out, top 1s ease-in-out;
             fill: var(--pixel-rabbit-icon-fill); /* Use CSS variable for fill */
-            filter: drop-shadow(0 0 8px var(--pixel-rabbit-shadow-color)); /* Use CSS variable for shadow */
+            filter: drop-shadow(0 0 15px var(--pixel-rabbit-shadow-color)); /* Enhanced shadow for "bolder" look */
         }
+
+        /* Removed .rabbit-dropping and .rabbit-dropping.fade-out CSS rules */
 
         /* Button styling using CSS variables */
         .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-accent, .btn-gemini {
@@ -273,8 +274,8 @@
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.1.1 - 福尔摩斯垂耳兔 (Sherlock Lop)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 福尔摩斯（Sherlock Holmes）象征着侦探的细致入微和逻辑推理能力，代表了计算器在分析和优化充电数据方面的精确性；垂耳兔（Lop）则寓意着温柔、平静和易于亲近，代表了用户界面的友好和易用性。此命名旨在突出应用程序的智能分析与用户体验的融合。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 爱丽丝（Alice from Wonderland）象征着好奇、探索和适应新环境的能力，代表了计算器在功能扩展和用户体验上的持续探索；跳跃兔（Jumper Rabbit）则寓意着应用程序的轻快、活跃和高效，以及在复杂计算中展现出的敏捷性。此命名旨在传达不断创新、追求卓越和提供愉悦体验的理念。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -705,7 +706,6 @@
                 '--button-accent-border': '#ff4500',
                 '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
                 '--changelog-text-color': '#444444',
-                '--changelog-border-color': 'var(--button-secondary-border)',
                 '--changelog-h-color': 'var(--title-color)',
                 '--changelog-h-border': 'var(--label-color)',
                 '--progress-bg': 'var(--title-color)',
@@ -730,7 +730,8 @@
         }
 
         /**
-         * 显示加载指示器。
+         * Displays the loading indicator.
+         * @param {string} message - The message to display in the loading indicator.
          */
         function showLoadingIndicator(message = "正在计算和绘制图表...") {
             ui.loadingIndicator.querySelector('p').textContent = message;
@@ -738,26 +739,26 @@
         }
 
         /**
-         * 隐藏加载指示器。
+         * Hides the loading indicator.
          */
         function hideLoadingIndicator() {
             ui.loadingIndicator.style.display = 'none';
         }
 
         /**
-         * 生成指定范围内的随机浮点数。
-         * @param {number} min - 最小值。
-         * @param {number} max - 最大值。
-         * @returns {number} 随机浮点数。
+         * Generates a random float within a specified range.
+         * @param {number} min - The minimum value.
+         * @param {number} max - The maximum value.
+         * @returns {number} A random float.
          */
         function getRandomFloat(min, max) {
             return Math.random() * (max - min) + min;
         }
 
         /**
-         * 将总秒数格式化为可读的时间字符串（例如：“1 小时 30 分 45 秒”）。
-         * @param {number} totalSeconds - 总时间（秒）。
-         * @returns {string} 格式化的时间字符串。
+         * Formats total seconds into a human-readable time string (e.g., "1 小时 30 分 45 秒").
+         * @param {number} totalSeconds - The total time in seconds.
+         * @returns {string} The formatted time string.
          */
         function formatChargeTime(totalSeconds) {
             if (totalSeconds === Infinity) return "无法充电";
@@ -777,8 +778,8 @@
         }
 
         /**
-         * 自定义警告函数，取代原生的 alert()。
-         * @param {string} message - 警告消息。
+         * Displays a custom alert modal instead of the native alert().
+         * @param {string} message - The message to display.
          */
         function showCustomAlert(message) {
             const alertModal = document.createElement('div');
@@ -793,7 +794,7 @@
         }
 
         /**
-         * 切换日间和夜间主题，并随机选择配色。
+         * Toggles between day and night themes, randomly selecting a color palette.
          */
         function toggleTheme() {
             const isDayMode = document.body.classList.contains('day-mode');
@@ -801,8 +802,8 @@
         }
 
         /**
-         * 设置主题（日间或夜间）并更新按钮文本及随机配色。
-         * @param {boolean} enableDayMode - true 表示日间模式，false 表示夜间模式。
+         * Sets the theme (day or night) and updates button text and random color palette.
+         * @param {boolean} enableDayMode - True for day mode, false for night mode.
          */
         function setTheme(enableDayMode) {
             if (enableDayMode) {
@@ -818,17 +819,17 @@
                 const randomPalette = nightModePalettes[Math.floor(Math.random() * nightModePalettes.length)];
                 applyColorPalette(randomPalette);
             }
-            // 切换主题后立即更新 Chart.js 默认颜色
+            // Update Chart.js default colors immediately after theme switch
             Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-            // 重新计算并重绘图表以应用新主题颜色
+            // Recalculate and redraw charts to apply new theme colors
             if (lastResultText) { 
                 calculate(); 
             }
         }
         
         /**
-         * 根据 ID 销毁单个 Chart.js 实例。
-         * @param {string} chartId - 图表 ID。
+         * Destroys a single Chart.js instance by its ID.
+         * @param {string} chartId - The ID of the chart to destroy.
          */
         function destroyChart(chartId) {
             if (charts[chartId] && typeof charts[chartId].destroy === 'function') {
@@ -838,7 +839,7 @@
         }
 
         /**
-         * 销毁所有现有 Chart.js 实例。
+         * Destroys all existing Chart.js instances.
          */
         function destroyAllCharts() { 
             Object.keys(charts).forEach(chartId => destroyChart(chartId));
@@ -846,24 +847,27 @@
         }
 
         /**
-         * 根据 SoC 衰减和冷却情况估算实际充电时间。
-         * 此算法已根据用户提供的所有 LFP 和 NCM 模型的实际数据进行了优化。
-         * 系数表示每个 SoC 区域内，平均功率占会话最大功率的比例。
-         * 返回总时间（秒）。
-         * @param {number} startSoC - 起始 SoC (%)。
-         * @param {number} endSoC - 结束 SoC (%)。
-         * @param {number} batteryCapacity - 电池容量 (kWh)。
-         * @param {number} sessionMaxPower - 充电会话的最大功率 (kW)。
-         * @param {boolean} isCoolingEnabled - 是否启用 S5 冷却。
-         * @param {number} maxCRate - 所选车型的 C 倍率（例如：3 表示 3C，5 表示 5C）。
-         * @returns {number} 估算时间（秒）。如果有效功率为零，则返回 Infinity。
+         * Estimates realistic charging time based on SoC decay and cooling status.
+         * This algorithm is optimized based on actual data provided by the user for all LFP and NCM models.
+         * Factors represent the average power ratio relative to the session's maximum power within each SoC zone.
+         * Returns total time in seconds.
+         * @param {number} startSoC - Starting SoC (%).
+         * @param {number} endSoC - Ending SoC (%).
+         * @param {number} batteryCapacity - Battery capacity (kWh).
+         * @param {number} sessionMaxPower - Maximum power for the charging session (kW).
+         * @param {boolean} isCoolingEnabled - True if S5 cooling is enabled.
+         * @param {number} maxCRate - C-rate of the selected model (e.g., 3 for 3C, 5 for 5C).
+         * @param {boolean} isHomeCharger - True if it's a home charger.
+         * @returns {number} Estimated time in seconds. Returns Infinity if effective power is zero.
          */
-        function estimateRealisticChargeTime(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate) {
+        function estimateRealisticChargeTime(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate, isHomeCharger) {
             let socZones;
 
-            // 根据 C 倍率和特定电池容量为 LFP 特性定义 SoC 区域和功率因子
-            // LFP 电池通常具有较高的初始功率保持率，然后是更明显的下降。
-            if (maxCRate === 5) { // 旗舰版 (74.9 kWh, 5C) 模型因子 (LFP)
+            // For home chargers, power is stable and does not decay with SoC.
+            if (isHomeCharger) {
+                // Simplified "zone" for home charger with constant power.
+                socZones = [{ upto: 100, factor: 1.0 }]; 
+            } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (LFP)
                 if (isCoolingEnabled) {
                     socZones = [
                         { upto: 2, factor: 0.99 },
@@ -876,7 +880,7 @@
                         { upto: 95, factor: 0.25 },
                         { upto: 100, factor: 0.10 }
                     ];
-                } else { // 无冷却 - 因子略低
+                } else { // No cooling - slightly lower factors
                     socZones = [
                         { upto: 2, factor: 0.95 },
                         { upto: 10, factor: 0.92 },
@@ -889,10 +893,8 @@
                         { upto: 100, factor: 0.04 }
                     ];
                 }
-            } else if (maxCRate === 3) { // 长/超长续航 (3C) 模型因子 (LFP)
-                // Note: The carMaxAchievablePower will be capped at 265kW for both 3C models
-                // So factors are now adjusted based on that potential max power.
-                if (batteryCapacity === 60.7) { // 60.7 kWh 3C 的特定因子
+            } else if (maxCRate === 3) { // Long/Super Long Range (3C) model factors (LFP)
+                if (batteryCapacity === 60.7) { // Specific factors for 60.7 kWh 3C
                     if (isCoolingEnabled) {
                         socZones = [
                             { upto: 2, factor: 0.99 }, 
@@ -906,7 +908,7 @@
                             { upto: 98, factor: 0.10 }, 
                             { upto: 100, factor: 0.04 } 
                         ];
-                    } else { // 无冷却
+                    } else { // No cooling
                         socZones = [
                             { upto: 2, factor: 0.95 },
                             { upto: 10, factor: 0.90 },
@@ -920,7 +922,7 @@
                             { upto: 100, factor: 0.015 }
                         ];
                     }
-                } else if (batteryCapacity === 76.3) { // 76.3 kWh 3C 的特定因子 - 优化区域 (Updated based on user data)
+                } else if (batteryCapacity === 76.3) { // Specific factors for 76.3 kWh 3C - Optimized regions
                     if (isCoolingEnabled) {
                         socZones = [
                             { upto: 2, factor: 0.99 },
@@ -934,7 +936,7 @@
                             { upto: 98, factor: 0.07 },
                             { upto: 100, factor: 0.02 }
                         ];
-                    } else { // 无冷却
+                    } else { // No cooling
                         socZones = [
                             { upto: 2, factor: 0.95 },
                             { upto: 10, factor: 0.92 },
@@ -948,7 +950,7 @@
                             { upto: 100, factor: 0.015 }
                         ];
                     }
-                } else { // 3C 的备用因子（当前选项不应该发生）
+                } else { // Fallback factors for 3C (should not occur with current options)
                     socZones = [
                         { upto: 15, factor: 0.65 },
                         { upto: 60, factor: 0.60 },
@@ -963,7 +965,7 @@
                     }
                 }
             } else {
-                // 默认或备用因子（当前选项不应该发生）
+                // Default or fallback factors (should not occur with current options)
                 socZones = [
                     { upto: 60, factor: 0.85 },
                     { upto: 80, factor: 0.55 },
@@ -988,10 +990,11 @@
 
                 const socInThisSegment = segmentEnd - segmentStart;
                 
-                const effectivePower = sessionMaxPower * zone.factor;
+                // If home charger, effective power is constant sessionMaxPower, no decay factor.
+                const effectivePower = isHomeCharger ? sessionMaxPower : sessionMaxPower * zone.factor;
                 
                 if (effectivePower <= 0) { 
-                    console.warn("有效功率为零或负，无法估算此区域的充电时间。");
+                    console.warn("Effective power is zero or negative, cannot estimate charge time for this region.");
                     return Infinity; 
                 }
                 
@@ -1003,21 +1006,21 @@
         }
 
         /**
-         * 根据所选车型的 C 倍率填充充电桩选择下拉菜单。
+         * Populates the charger selection dropdown based on the selected car model's C-rate.
          */
         function updateChargerOptions() {
             const selectedOption = ui.model.selectedOptions[0];
-            const capacity = parseFloat(selectedOption.value);
-            const maxCRate = parseFloat(selectedOption.dataset.c);
+            // const capacity = parseFloat(selectedOption.value); // Not directly used here, but kept for context
+            // const maxCRate = parseFloat(selectedOption.dataset.c); // Not directly used here, but kept for context
             
             ui.charger.innerHTML = "";
 
             const chargers = [
-                { name: `S5（液冷超充）「未优化」`, power: S5_LIMIT_KW },
-                { name: `S4（超充）「已部分优化」`, power: S4_LIMIT_KW },
-                { name: "S2（普通快充）「未优化」", power: S2_LIMIT_KW },
-                { name: "第三方快充「未优化」", power: THIRD_PARTY_LIMIT_KW, note: " (通常80-120 kW)" },
-                { name: "家用充电桩「未优化」", power: HOME_CHARGER_KW } 
+                { name: `S5（液冷超充）`, power: S5_LIMIT_KW },
+                { name: `S4（超充）`, power: S4_LIMIT_KW },
+                { name: "S2（普通快充）", power: S2_LIMIT_KW },
+                { name: "第三方快充", power: THIRD_PARTY_LIMIT_KW, note: " (通常80-120 kW)" },
+                { name: "家用充电桩", power: HOME_CHARGER_KW } 
             ];
 
             chargers.forEach(c => {
@@ -1029,15 +1032,15 @@
         }
         
         /**
-         * 主计算函数，计算结果并更新所有图表。
+         * Main calculation function that computes results and updates all charts.
          */
         function calculate() {
-            showLoadingIndicator(); // 在开始时显示加载指示器
+            showLoadingIndicator(); // Show loading indicator at the start
 
-            // 使用短超时以允许加载指示器在繁重计算之前渲染
+            // Use a short timeout to allow the loading indicator to render before heavy calculations
             setTimeout(() => {
                 try {
-                    // --- 输入验证和自动填充 ---
+                    // --- Input Validation and Autofill ---
                     let startSoC = parseFloat(ui.startSoC.value);
                     let endSoC = parseFloat(ui.endSoC.value);
                     let actualKWh = parseFloat(ui.actualKWh.value);
@@ -1058,22 +1061,22 @@
 
                     const capacity = parseFloat(ui.model.value);
 
-                    // 自动填充和验证 startSoC
+                    // Autofill and validate startSoC
                     if (isNaN(startSoC) || startSoC < 0 || startSoC >= 100) {
                         startSoC = getRandomFloat(10, 30);
                         ui.startSoC.value = startSoC.toFixed(2);
                     }
 
-                    // 自动填充和验证 endSoC
+                    // Autofill and validate endSoC
                     if (isNaN(endSoC) || endSoC <= startSoC || endSoC > 100) {
-                        endSoC = Math.min(100, startSoC + getRandomFloat(50, 70)); // 确保 endSoC > startSoC 且最大为 100
+                        endSoC = Math.min(100, startSoC + getRandomFloat(50, 70)); // Ensure endSoC > startSoC and max 100
                         ui.endSoC.value = endSoC.toFixed(2);
                     }
 
-                    // 根据所选 SoC 范围的理论值自动填充和验证 actualKWh
+                    // Autofill and validate actualKWh based on theoretical value for selected SoC range
                     if (isNaN(actualKWh) || actualKWh <= 0) {
                         const theoreticalForRange = capacity * ((endSoC - startSoC) / 100);
-                        actualKWh = theoreticalForRange * getRandomFloat(1.05, 1.15); // 添加一个小的损耗因子进行随机填充
+                        actualKWh = theoreticalForRange * getRandomFloat(1.05, 1.15); // Add a small loss factor for random fill
                         ui.actualKWh.value = actualKWh.toFixed(3);
                     }
 
@@ -1087,17 +1090,16 @@
                     // Determine if the selected charger is a home charger
                     const isHomeCharger = selectedChargerNominalPower === HOME_CHARGER_KW;
 
-                    // 确定汽车可以接受的最大功率，考虑其 C 倍率和特定车型
-                    // 根据用户反馈，调整 3C 车型的理论可达功率上限，使其在低电量时能拉到更高电流
+                    // Determine the maximum power the car can accept, considering its C-rate and specific model
                     let carMaxAchievablePower = capacity * maxCRate; 
                     if (maxCRate == 5) {
-                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 335); // P7+ 5C 的观察到的实际最大值上限
+                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 335); // Observed practical max for P7+ 5C
                     } else if (maxCRate == 3) { 
-                        // 将 3C 车型的功率上限统一提高到 265kW，以满足低电量 330A（约 264kW）的需求
+                        // Increase 3C models' power cap to 265kW to accommodate 330A (approx 264kW) at low SoC
                         carMaxAchievablePower = Math.min(carMaxAchievablePower, 265); 
                     }
 
-                    // 确定站点的总共享可用功率
+                    // Determine the total shared available power at the station
                     let stationTotalSharedPower;
                     if (selectedChargerNominalPower === S5_LIMIT_KW) {
                         stationTotalSharedPower = S5_LIMIT_KW;
@@ -1107,23 +1109,25 @@
                         stationTotalSharedPower = selectedChargerNominalPower;
                     }
 
-                    // 计算每个车辆在站点可用的有效功率，并考虑非均衡分配因子
+                    // Calculate the effective power available per vehicle at the station, considering uneven distribution factor
                     let effectiveStationPowerPerVehicle;
-                    if (selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) {
+                    if (isHomeCharger) { // For home charger, power is not shared or affected by other vehicles at a station
+                        effectiveStationPowerPerVehicle = HOME_CHARGER_KW;
+                    } else if (selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) {
                         effectiveStationPowerPerVehicle = stationTotalSharedPower / numTotalVehicles;
-                        // 如果同站占用车辆数量大于2，引入额外影响因子，模拟非均衡分配导致的效率下降
+                        // If number of vehicles sharing the station is greater than 2, introduce an additional impact factor
                         if (numTotalVehicles > 2) {
-                            effectiveStationPowerPerVehicle *= 0.9; // 10% 的额外损耗因子
+                            effectiveStationPowerPerVehicle *= 0.9; // 10% additional loss factor due to uneven distribution
                         }
-                        // 应用特定流氓BMS惩罚
+                        // Apply specific rogue BMS penalty
                         if (rogueBMSCount > 0) {
-                            effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                            effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                         }
                     } else {
-                        effectiveStationPowerPerVehicle = selectedChargerNominalPower; // 对于S2或第三方充电桩，通常是单桩功率，不进行站点共享分配
-                        // 应用特定流氓BMS惩罚
+                        effectiveStationPowerPerVehicle = selectedChargerNominalPower; // For S2 or third-party chargers, usually single-stall power, no station sharing distribution
+                        // Apply specific rogue BMS penalty
                         if (rogueBMSCount > 0) {
-                            effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                            effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                         }
                     }
 
@@ -1131,14 +1135,14 @@
                     // This is because the car will only draw what the slow charger can provide.
                     const sessionMaxPower = isHomeCharger ? HOME_CHARGER_KW : Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
 
-                    let chargeTimeSeconds = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate));
+                    let chargeTimeSeconds = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger);
                     
                     let extraLossFactor = 1.0;
                     const activeLossFactors = [];
                     if (ui.ac.checked) { extraLossFactor += 0.04; activeLossFactors.push('空调🌬️'); }
                     if (ui.preheat.checked) { extraLossFactor += 0.06; activeLossFactors.push('预热🔥'); }
                     if (ui.cold.checked) { extraLossFactor += 0.05; activeLossFactors.push('低温❄️'); }
-                    if (ui.hot.checked) { extraLossFactor += 0.07; activeLossFactors.push('高温酷热☀️'); } // Reverted to +7% from 3.8.11
+                    if (ui.hot.checked) { extraLossFactor += 0.07; activeLossFactors.push('高温酷热☀️'); } 
                     if (ui.autopilot.checked) { extraLossFactor += 0.02; activeLossFactors.push('智驾🧠'); }
                     if (ui.load.checked) { extraLossFactor += 0.03; activeLossFactors.push('载人🚚'); }
 
@@ -1190,55 +1194,58 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                         lossRate: lossRate,
                         overallEfficiency: overallEfficiency,
                         chargerTypeName: chargerTypeName,
-                        totalVehiclesAtStation: numTotalVehicles, // Changed to total vehicles
-                        rogueBMSCount: rogueBMSCount, // New field for LLM
+                        totalVehiclesAtStation: numTotalVehicles, 
+                        rogueBMSCount: rogueBMSCount, 
                         activeLossFactors: activeLossFactors,
                         isCoolingEnabled: ui.enableCooling.checked
                     };
 
                     const detailedData = generateDetailedData(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt), isHomeCharger);
-                    displayDetailedTable(detailedData); // Show detailed table
-                    ui.tableContainer.classList.remove('hidden'); // Ensure table container is visible
-                    ui.smartAdviceContainer.classList.add('hidden'); // Hide smart advice until requested
+                    displayDetailedTable(detailedData); 
+                    ui.tableContainer.classList.remove('hidden'); 
+                    ui.smartAdviceContainer.classList.add('hidden'); 
 
                     destroyAllCharts(); 
 
                     updateLossChart(theoreticalKWh, totalLossKWh);
                     updateEfficiencyChart(theoreticalKWhPerPercent, actualKWhPerPercent); 
-                    updateIVChart(sessionMaxPower, isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt), calculatedChartDurationMinutes, isHomeCharger, startSoC, endSoC); // Pass startSoC, endSoC for IV chart simulation
+                    updateIVChart(sessionMaxPower, isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt), calculatedChartDurationMinutes, isHomeCharger, startSoC, endSoC); 
                     updateSoCChart(startSoC, endSoC, calculatedChartDurationMinutes);
                     updateTempEfficiencyChart();
 
                 } catch (error) {
-                    console.error("计算过程中发生错误:", error);
-                    showCustomAlert(`计算过程中发生错误: ${error.message}. 请检查输入。`);
+                    console.error("Error during calculation:", error);
+                    showCustomAlert(`Error during calculation: ${error.message}. Please check your inputs or contact the developer.`);
                 } finally {
-                    hideLoadingIndicator(); // 始终隐藏加载指示器
+                    hideLoadingIndicator(); // Always hide loading indicator
                 }
-            }, 100); // 延迟一小段时间，以允许加载指示器显示
+            }, 100); // Small delay to allow loading indicator to show
         }
         
         /**
-         * 为每 1% SoC 生成充电电流、电压和功率的详细报告数据。
-         * @param {number} startSoC - 起始 SoC。
-         * @param {number} endSoC - 结束 SoC。
-         * @param {number} batteryCapacity - 电池容量。
-         * @param {number} sessionMaxPower - 会话最大功率。
-         * @param {boolean} isCoolingEnabled - 是否启用冷却。
-         * @param {number} maxCRate - 最大 C 倍率。
-         * @param {number} platformVoltage - 平台电压（对于家充，此值应为 220）。
-         * @param {boolean} isHomeCharger - 是否为家用充电桩。
-         * @returns {Array<Object>} 包含每个 SoC 点的功率、电流、电压的数据。
+         * Generates detailed report data for charge current, voltage, and power per 1% SoC.
+         * @param {number} startSoC - Starting SoC.
+         * @param {number} endSoC - Ending SoC.
+         * @param {number} batteryCapacity - Battery capacity.
+         * @param {number} sessionMaxPower - Max power for the session.
+         * @param {boolean} isCoolingEnabled - Is cooling enabled.
+         * @param {number} maxCRate - Max C-rate.
+         * @param {number} platformVoltage - Platform voltage (220 for home charger).
+         * @param {boolean} isHomeCharger - Is it a home charger.
+         * @returns {Array<Object>} Array of data points with SoC, power, voltage, and amps.
          */
         function generateDetailedData(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate, platformVoltage, isHomeCharger) {
             const data = [];
-            const socStep = 1; // Changed to 1% SoC step
-            let currentSoC = Math.floor(startSoC); // Start from floor for 1% step
+            const socStep = 1; 
+            let currentSoC = Math.floor(startSoC); 
             let currentZoneIndex = 0;
 
             let socZonesModel;
-            // The `socZonesModel` here must match the logic in `estimateRealisticChargeTime`
-            if (maxCRate === 5) { // 旗舰版 (74.9 kWh, 5C) 模型因子 (LFP)
+            // For home chargers, power is stable and does not decay with SoC.
+            if (isHomeCharger) {
+                // Simplified "zone" for home charger with constant power.
+                socZonesModel = [{ upto: 100, factor: 1.0 }]; 
+            } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (LFP)
                 if (isCoolingEnabled) {
                     socZonesModel = [
                         { upto: 2, factor: 0.99 },
@@ -1251,7 +1258,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                         { upto: 95, factor: 0.25 },
                         { upto: 100, factor: 0.10 }
                     ];
-                } else { // 无冷却 - 因子略低
+                } else { // No cooling - slightly lower factors
                     socZonesModel = [
                         { upto: 2, factor: 0.95 },
                         { upto: 10, factor: 0.92 },
@@ -1264,8 +1271,8 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                         { upto: 100, factor: 0.04 }
                     ];
                 }
-            } else if (maxCRate === 3) { // 长/超长续航 (3C) 模型因子 (LFP)
-                if (batteryCapacity === 60.7) { // 60.7 kWh 3C 的特定因子
+            } else if (maxCRate === 3) { // Long/Super Long Range (3C) model factors (LFP)
+                if (batteryCapacity === 60.7) { // Specific factors for 60.7 kWh 3C
                     if (isCoolingEnabled) {
                         socZonesModel = [
                             { upto: 2, factor: 0.99 }, 
@@ -1279,7 +1286,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                             { upto: 98, factor: 0.10 }, 
                             { upto: 100, factor: 0.04 } 
                         ];
-                    } else { // 无冷却
+                    } else { // No cooling
                         socZonesModel = [
                             { upto: 2, factor: 0.95 },
                             { upto: 10, factor: 0.90 },
@@ -1293,7 +1300,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                             { upto: 100, factor: 0.015 }
                         ];
                     }
-                } else if (batteryCapacity === 76.3) { // 76.3 kWh 3C 的特定因子 - 优化区域 (Updated based on user data)
+                } else if (batteryCapacity === 76.3) { // Specific factors for 76.3 kWh 3C - Optimized regions
                     if (isCoolingEnabled) {
                         socZonesModel = [
                             { upto: 2, factor: 0.99 },
@@ -1307,7 +1314,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                             { upto: 98, factor: 0.07 },
                             { upto: 100, factor: 0.02 }
                         ];
-                    } else { // 无冷却
+                    } else { // No cooling
                         socZonesModel = [
                             { upto: 2, factor: 0.95 },
                             { upto: 10, factor: 0.92 },
@@ -1321,7 +1328,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                             { upto: 100, factor: 0.015 }
                         ];
                     }
-                } else { // 3C 的备用因子（当前选项不应该发生）
+                } else { // Fallback for 3C (should not occur)
                     socZonesModel = [
                         { upto: 15, factor: 0.65 },
                         { upto: 60, factor: 0.60 },
@@ -1336,7 +1343,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                     }
                 }
             } else {
-                // 默认或备用因子（当前选项不应该发生）
+                // Default or fallback factors (should not occur)
                 socZonesModel = [
                     { upto: 60, factor: 0.85 },
                     { upto: 80, factor: 0.55 },
@@ -1366,15 +1373,17 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                     const currentZone = socZonesModel[currentZoneIndex];
                     
                     if (!currentZone || typeof currentZone.factor === 'undefined') {
-                        console.error("错误：在 SoC 区间", currentSoC, "处发现无效的充电区域数据或因子。", "Index:", currentZoneIndex, "Zone Model Length:", socZonesModel.length, "Current Zone:", currentZone);
+                        console.error("Error: Invalid charging zone data or factor found at SoC segment", currentSoC, ". Index:", currentZoneIndex, "Zone Model Length:", socZonesModel.length, "Current Zone:", currentZone);
                         canProcessSoC = false;
                     } else {
-                        effectivePowerAtSoC = sessionMaxPower * currentZone.factor;
+                        // If home charger, effective power is constant sessionMaxPower, no decay factor.
+                        effectivePowerAtSoC = isHomeCharger ? sessionMaxPower : sessionMaxPower * currentZone.factor;
+
                         if (effectivePowerAtSoC <= 0) {
                             canProcessSoC = false;
                         } else {
                             if (isHomeCharger) {
-                                simulatedVoltageAtSoC = HOME_CHARGER_VOLTAGE;
+                                simulatedVoltageAtSoC = HOME_CHARGER_VOLTAGE; // Fixed 220V for home charger
                             } else {
                                 const simulatedSoCForVoltage = currentSoC + (socStep / 2); // Use midpoint for voltage simulation
                                 if (simulatedSoCForVoltage < 20) {
@@ -1401,8 +1410,8 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
         }
 
         /**
-         * 显示详细数据表格。
-         * @param {Array<Object>} data - 包含 SoC、功率、电压、电流的数据。
+         * Displays the detailed data table.
+         * @param {Array<Object>} data - Data containing SoC, power, voltage, and current.
          */
         function displayDetailedTable(data) {
             const tableHead = document.querySelector('#dataTable thead');
@@ -1416,7 +1425,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
         }
 
         /**
-         * 快速估算充电时间。
+         * Quickly estimates charging time.
          */
         function quickEstimate() {
             const capacity = parseFloat(ui.model.value);
@@ -1437,7 +1446,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             const end = parseFloat(ui.quickEnd.value);
 
             if (isNaN(start) || isNaN(end) || start >= end || capacity <= 0 || selectedChargerNominalPower <= 0 || isNaN(numTotalVehicles)) {
-                showCustomAlert("输入无效。请检查起始和结束电量，并确保起始电量小于结束电量。");
+                showCustomAlert("Invalid input. Please check start and end SoC, and ensure start SoC is less than end SoC.");
                 ui.quickResult.textContent = "输入无效";
                 return;
             }
@@ -1462,21 +1471,23 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             }
 
             let effectiveStationPowerPerVehicle;
-            if (selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) {
+            if (isHomeCharger) { // For home charger, power is not shared or affected by other vehicles at a station
+                effectiveStationPowerPerVehicle = HOME_CHARGER_KW;
+            } else if (selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) {
                 effectiveStationPowerPerVehicle = stationTotalSharedPower / numTotalVehicles;
-                // 如果同站占用车辆数量大于2，引入额外影响因子，模拟非均衡分配导致的效率下降
+                // If number of vehicles sharing the station is greater than 2, introduce an additional impact factor
                 if (numTotalVehicles > 2) {
-                    effectiveStationPowerPerVehicle *= 0.9; // 10% 的额外损耗因子
+                    effectiveStationPowerPerVehicle *= 0.9; // 10% additional loss factor due to uneven distribution
                 }
-                // 应用特定流氓BMS惩罚
+                // Apply specific rogue BMS penalty
                 if (rogueBMSCount > 0) {
-                    effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                    effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                 }
             } else {
-                effectiveStationPowerPerVehicle = selectedChargerNominalPower; // 对于S2或第三方充电桩，通常是单桩功率，不进行站点共享分配
-                // 应用特定流氓BMS惩罚
+                effectiveStationPowerPerVehicle = selectedChargerNominalPower; // For S2 or third-party chargers, usually single-stall power, no station sharing distribution
+                // Apply specific rogue BMS penalty
                 if (rogueBMSCount > 0) {
-                    effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                    effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                 }
             }
             
@@ -1484,7 +1495,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             const sessionMaxPower = isHomeCharger ? HOME_CHARGER_KW : Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
 
 
-            let timeSeconds = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate));
+            let timeSeconds = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger);
             
             let extraLossFactor = 1.0;
             if (ui.ac.checked) extraLossFactor += 0.04;
@@ -1499,17 +1510,17 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
         }
 
         /**
-         * 调用 API 获取智能充电建议。
+         * Calls the Gemini API to get smart charging advice.
          */
         async function getSmartChargingAdvice() {
             if (!window.lastCalculatedData) { 
-                showCustomAlert("请先计算充电报告以获取智能建议。");
+                showCustomAlert("Please calculate a charging report first to get smart advice.");
                 return;
             }
 
             showLoadingIndicator("正在生成智能充电建议...");
             ui.smartAdviceContainer.classList.remove('hidden');
-            ui.smartAdvice.textContent = "AI 正在思考中，请稍候..."; // Clear previous advice and show loading message
+            ui.smartAdvice.textContent = "AI is thinking, please wait..."; // Clear previous advice and show loading message
 
             try {
                 const {
@@ -1519,29 +1530,29 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 } = window.lastCalculatedData; 
 
                 const prompt = `
-你是一个专业的电动汽车充电专家，请根据以下小鹏P7+的充电数据和情境，为车主提供针对性的充电建议。
-车型: ${modelName}
-平台电压: ${platformVoltage}V
-起始电量: ${startSoC.toFixed(2)}%
-结束电量: ${endSoC.toFixed(2)}%
-拟真估算时长: ${formattedChargeTime}
-理论充电量: ${theoreticalKWh.toFixed(3)} kWh
-实际充电量: ${actualKWh.toFixed(3)} kWh
-总计损耗量: ${totalLossKWh.toFixed(3)} kWh
-充电损耗率: ${lossRate.toFixed(2)} %
-综合充电效率: ${overallEfficiency.toFixed(2)} %
-充电桩类型: ${chargerTypeName}
-同站占用充电桩总数 (含本车): ${totalVehiclesAtStation}
-其中BMS流氓车型数量: ${rogueBMSCount}
-额外损耗因子: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : '无'}
-S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
+You are an expert in electric vehicle charging. Based on the following charging data and scenario for Xpeng P7+, please provide specific charging recommendations for the owner.
+Vehicle Model: ${modelName}
+Platform Voltage: ${platformVoltage}V
+Starting SoC: ${startSoC.toFixed(2)}%
+Ending SoC: ${endSoC.toFixed(2)}%
+Estimated Duration: ${formattedChargeTime}
+Theoretical Charge Amount: ${theoreticalKWh.toFixed(3)} kWh
+Actual Charge Amount: ${actualKWh.toFixed(3)} kWh
+Total Loss Amount: ${totalLossKWh.toFixed(3)} kWh
+Charging Loss Rate: ${lossRate.toFixed(2)} %
+Overall Charging Efficiency: ${overallEfficiency.toFixed(2)} %
+Charger Type: ${chargerTypeName}
+Total Occupied Chargers at Station (including this vehicle): ${totalVehiclesAtStation}
+Number of BMS Rogue Models: ${rogueBMSCount}
+Additional Loss Factors: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : 'None'}
+S5 Cooling Enabled: ${isCoolingEnabled ? 'Yes' : 'No'}
 
-请从以下几个方面给出至少3条、不超过5条的建议，每条建议不超过50字：
-1. 如何进一步优化充电效率或速度。
-2. 针对当前充电情境的建议（如长时间充电、特定SOC区间的建议）。
-3. 关于电池健康或充电习惯的通用建议。
-4. 如果存在显著损耗，提出可能原因和规避建议。
-请用简体中文回答，建议以点列形式呈现，并保持专业且易懂的语气。
+Please provide at least 3 but no more than 5 recommendations from the following aspects, with each recommendation not exceeding 50 characters:
+1. How to further optimize charging efficiency or speed.
+2. Recommendations for the current charging scenario (e.g., long charging times, specific SoC range recommendations).
+3. General advice on battery health or charging habits.
+4. If there is significant loss, suggest possible causes and mitigation advice.
+Please answer in Simplified Chinese, present the recommendations as bullet points, and maintain a professional and easy-to-understand tone.
 `;
                 
                 let chatHistory = [];
@@ -1559,8 +1570,8 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    console.error("API Error:", errorData); // Log the full error response
-                    throw new Error(`API错误: ${response.status} ${response.statusText} - ${errorData.error ? errorData.error.message : '未知错误'}`);
+                    console.error("Gemini API Error:", errorData); // Log the full error response
+                    throw new Error(`API error: ${response.status} ${response.statusText} - ${errorData.error ? errorData.error.message : 'Unknown error'}`);
                 }
 
                 const result = await response.json();
@@ -1571,19 +1582,19 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                     const text = result.candidates[0].content.parts[0].text;
                     ui.smartAdvice.textContent = text;
                 } else {
-                    ui.smartAdvice.textContent = "未能获取智能建议。请稍后重试或调整输入。";
-                    console.error("LLM响应结构异常:", result);
+                    ui.smartAdvice.textContent = "Could not get smart advice. Please try again later or adjust your input.";
+                    console.error("LLM response structure anomaly:", result);
                 }
             } catch (error) {
-                console.error("调用 API 时发生错误:", error);
-                ui.smartAdvice.textContent = `获取建议失败: ${error.message}`;
+                console.error("Error calling Gemini API:", error);
+                ui.smartAdvice.textContent = `Failed to get advice: ${error.message}`;
             } finally {
                 hideLoadingIndicator();
             }
         }
 
         /**
-         * 将结果文本复制到剪贴板并显示 toast 通知。
+         * Copies the result text to the clipboard and shows a toast notification.
          */
         function copyResult() {
             if (!lastResultText) return;
@@ -1600,51 +1611,51 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                 toast.classList.remove('opacity-0');
                 setTimeout(() => toast.classList.add('opacity-0'), 2000); 
             } catch (err) {
-                console.error('无法复制内容:', err); 
-                showCustomAlert('复制失败，请手动复制。');
+                console.error('Failed to copy content:', err); 
+                showCustomAlert('Copy failed, please copy manually.');
             } finally {
                 document.body.removeChild(tempTextArea); 
             }
         }
 
         /**
-         * 切换更新日志模态框的可见性。
-         * @param {boolean} show - true 表示显示，false 表示隐藏。
+         * Toggles the visibility of the changelog modal.
+         * @param {boolean} show - True to show, false to hide.
          */
         function toggleChangelogModal(show) { 
             document.getElementById('changelog-modal').classList.toggle('hidden', !show); 
         }
 
         /**
-         * 切换文档的全屏幕模式。
+         * Toggles fullscreen mode for the document.
          */
         function toggleFullscreen() {
             const docElem = document.documentElement;
             const requestFn = docElem.requestFullscreen ||
-                              docElem.webkitRequestFullscreen || /* Safari */
-                              docElem.mozRequestFullScreen ||    /* Firefox */
-                              docElem.msRequestFullscreen;       /* IE/Edge */
+                              docElem.webkitRequestFullscreen || 
+                              docElem.mozRequestFullScreen ||    
+                              docElem.msRequestFullscreen;       
 
             if (requestFn) {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-                    requestFn.call(docElem).catch(err => showCustomAlert(`无法进入全屏幕: ${err.message}`));
+                    requestFn.call(docElem).catch(err => showCustomAlert(`Could not enter fullscreen: ${err.message}`));
                 } else {
                     const exitFn = document.exitFullscreen ||
-                                   document.webkitExitFullscreen || /* Safari */
-                                   document.mozCancelFullScreen ||    /* Firefox */
-                                   document.msExitFullscreen;       /* IE/Edge */
+                                   document.webkitExitFullscreen || 
+                                   document.mozCancelFullScreen ||    
+                                   document.msExitFullscreen;       
                     if (exitFn) {
-                        exitFn.call(document).catch(err => showCustomAlert(`无法退出全屏幕: ${err.message}`));
+                        exitFn.call(document).catch(err => showCustomAlert(`Could not exit fullscreen: ${err.message}`));
                     } else {
-                        showCustomAlert("您的浏览器或当前环境不支持退出全屏幕模式。");
+                        showCustomAlert("Your browser or current environment does not support exiting fullscreen mode.");
                     }
                 }
             } else {
-                showCustomAlert("您的浏览器或当前环境不支持全屏幕模式。");
+                showCustomAlert("Your browser or current environment does not support fullscreen mode.");
             }
         }
         
-        // --- Chart 配置默认值 ---
+        // --- Chart Configuration Defaults ---
         Chart.defaults.font.family = "'VT323', monospace";
         Chart.defaults.font.size = 16;
         Object.defineProperty(Chart.defaults, 'color', {
@@ -1652,7 +1663,7 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
             set: () => {}
         });
 
-        // --- Chart 选项模板 ---
+        // --- Chart Options Template ---
         const chartOptionsTemplate = (title, displayLegend = false) => ({
             responsive: true,
             maintainAspectRatio: true,
@@ -1715,14 +1726,14 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         // --- Chart Update Functions ---
 
         /**
-         * 更新损耗分布图（环形图）。
-         * @param {number} theoretical - 理论 kWh。
-         * @param {number} loss - 总损耗 kWh。
+         * Updates the loss distribution chart (doughnut chart).
+         * @param {number} theoretical - Theoretical kWh.
+         * @param {number} loss - Total loss kWh.
          */
         function updateLossChart(theoretical, loss) {
             destroyChart('loss');
             const ctx = document.getElementById('lossChart').getContext('2d');
-            if (!ctx) { console.error("未找到损耗图上下文！"); return; }
+            if (!ctx) { console.error("Loss chart context not found!"); return; }
 
             charts['loss'] = new Chart(ctx, {
                 type: 'doughnut',
@@ -1732,7 +1743,7 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                         data: [theoretical, loss],
                         backgroundColor: [
                             getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
-                            '#ff3366' /* 损耗用红色（固定为常用警告色） */
+                            '#ff3366' /* Fixed red for loss */
                         ],
                         borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-color').includes('linear-gradient') ? 'transparent' : getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim(),
                         borderWidth: 4
@@ -1743,14 +1754,14 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         }
 
         /**
-         * 更新效率比较图（条形图）。
-         * @param {number} theoreticalRate - 每 1% SoC 的理论 kWh。
-         * @param {number} actualRate - 每 1% SoC 的实际 kWh。
+         * Updates the efficiency comparison chart (bar chart).
+         * @param {number} theoreticalRate - Theoretical kWh per 1% SoC.
+         * @param {number} actualRate - Actual kWh per 1% SoC.
          */
         function updateEfficiencyChart(theoreticalRate, actualRate) {
             destroyChart('eff');
             const ctx = document.getElementById('effChart').getContext('2d');
-            if (!ctx) { console.error("未找到效率图上下文！"); return; }
+            if (!ctx) { console.error("Efficiency chart context not found!"); return; }
 
             charts['eff'] = new Chart(ctx, {
                 type: 'bar',
@@ -1759,11 +1770,11 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                     datasets: [{
                         label: '单位电耗 (kWh/%)',
                         backgroundColor: [
-                             getComputedStyle(document.documentElement).getPropertyValue('--button-primary-bg').split('), ')[0].replace('linear-gradient(45deg, ', '') || '#00bfff', /* 使用主按钮渐变的起始颜色 */
-                             getComputedStyle(document.documentElement).getPropertyValue('--button-secondary-bg').split('), ')[0].replace('linear-gradient(45deg, ', '') || '#ff9900', /* 使用辅助按钮渐变的起始颜色 */
+                             getComputedStyle(document.documentElement).getPropertyValue('--button-primary-bg').split('), ')[0].replace('linear-gradient(45deg, ', '') || '#00bfff', 
+                             getComputedStyle(document.documentElement).getPropertyValue('--button-secondary-bg').split('), ')[0].replace('linear-gradient(45deg, ', '') || '#ff9900', 
                         ],
                         data: [theoreticalRate, actualRate],
-                        borderRadius: 8, /* 更多圆角 */
+                        borderRadius: 8, 
                         borderWidth: 2,
                         borderColor: getComputedStyle(document.documentElement).getPropertyValue('--panel-border').trim()
                     }]
@@ -1773,18 +1784,18 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         }
         
         /**
-         * 更新模拟电流/电压图（折线图）。
-         * @param {number} powerKW - 会话最大功率 (kW)。
-         * @param {number} nominalVoltage - 电池名义电压（例如 800V 或 220V）。
-         * @param {number} minutes - 总充电时长（分钟，保证 > 0）。
-         * @param {boolean} isHomeCharger - 是否为家用充电桩。
-         * @param {number} startSoC - 起始 SoC (用于模拟电压波动)。
-         * @param {number} endSoC - 结束 SoC (用于模拟电压波动)。
+         * Updates the simulated current/voltage chart (line chart).
+         * @param {number} powerKW - Max session power (kW).
+         * @param {number} nominalVoltage - Nominal battery voltage (e.g., 800V or 220V).
+         * @param {number} minutes - Total charge duration in minutes (must be > 0).
+         * @param {boolean} isHomeCharger - True if it's a home charger.
+         * @param {number} startSoC - Starting SoC (for simulating voltage fluctuations).
+         * @param {number} endSoC - Ending SoC (for simulating voltage fluctuations).
          */
         function updateIVChart(powerKW, nominalVoltage, minutes, isHomeCharger, startSoC, endSoC) {
             destroyChart('iv');
             const ctx = document.getElementById('ivChart').getContext('2d');
-            if (!ctx) { console.error("未找到 IV 图上下文！"); return; }
+            if (!ctx) { console.error("IV chart context not found!"); return; }
 
             const totalDurationSeconds = minutes * 60;
             const maxPoints = 100;
@@ -1793,37 +1804,33 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
             const currentData = [], voltageData = [];
 
             timeLabels.forEach((_, index) => {
-                const s = index * intervalSeconds;
-                const progressRatio = s / totalDurationSeconds; 
                 let currentPower = powerKW; 
-                
-                // Simulate power tapering for the IV chart (more aggressive drop than actual charge time model)
-                // For home charger, power is constant, no tapering.
-                if (!isHomeCharger) {
+                let currentVoltage; 
+
+                if (isHomeCharger) {
+                    currentPower = HOME_CHARGER_KW; // Home charger power is constant
+                    currentVoltage = HOME_CHARGER_VOLTAGE; // Fixed 220V for home charger
+                } else {
+                    const s = index * intervalSeconds;
+                    const progressRatio = s / totalDurationSeconds; 
+                    // Simulate power tapering for the IV chart (more aggressive drop than actual charge time model)
                     if (progressRatio > 0.8) currentPower *= 0.4;
                     else if (progressRatio > 0.6) currentPower *= 0.6;
                     else if (progressRatio > 0.3) currentPower *= 0.8;
-                }
 
-                let currentVoltage; 
-                if (isHomeCharger) {
-                    currentVoltage = nominalVoltage; // Fixed 220V for home charger
-                } else {
                     const simulatedSoC = startSoC + (endSoC - startSoC) * progressRatio;
-                    if (simulatedSoC < 20) { // Very low SoC, potentially lower voltage due to high current demand
-                        currentVoltage = nominalVoltage * getRandomFloat(0.970, 0.990); // e.g., 776V - 792V for 800V nominal
-                    } else if (simulatedSoC < 50) { // Low to mid SoC
-                        currentVoltage = nominalVoltage * getRandomFloat(0.985, 1.005); // e.g., 788V - 804V
-                    } else { // Mid to high SoC, more stable voltage
-                        currentVoltage = nominalVoltage * getRandomFloat(0.995, 1.015); // e.g., 796V - 812V
+                    if (simulatedSoC < 20) {
+                        currentVoltage = nominalVoltage * getRandomFloat(0.970, 0.990);
+                    } else if (simulatedSoC < 50) {
+                        currentVoltage = nominalVoltage * getRandomFloat(0.985, 1.005);
+                    } else {
+                        currentVoltage = nominalVoltage * getRandomFloat(0.995, 1.015);
                     }
-                    // Clamp within a reasonable 800V platform range, e.g., 750V-850V
                     currentVoltage = Math.max(750, Math.min(850, currentVoltage));
                 }
 
                 if (currentPower <= 0) {
                     // If current power is zero or negative, skip this point (current and voltage would be invalid)
-                    // No 'continue' needed here, as we are simply not pushing data for this step.
                 } else {
                     const estimatedCurrent = (currentPower * 1000) / currentVoltage;
                     currentData.push(estimatedCurrent);
@@ -1879,15 +1886,15 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         }
         
         /**
-         * 更新 SoC 和 S5 冷却温度模拟图（折线图）。
-         * @param {number} startSoC - 起始 SoC (%)。
-         * @param {number} endSoC - 结束 SoC (%)。
-         * @param {number} durationMinutes - 总充电时长（分钟，保证 > 0）。
+         * Updates the SoC and S5 cooling temperature simulation chart (line chart).
+         * @param {number} startSoC - Starting SoC (%).
+         * @param {number} endSoC - Ending SoC (%).
+         * @param {number} durationMinutes - Total charge duration in minutes (must be > 0).
          */
         function updateSoCChart(startSoC, endSoC, durationMinutes) {
             destroyChart('soc');
             const ctx = document.getElementById('socChart').getContext('2d');
-            if (!ctx) { console.error("未找到 SoC 图上下文！"); return; }
+            if (!ctx) { console.error("SoC chart context not found!"); return; }
 
             const totalDurationSeconds = durationMinutes * 60;
             const maxPoints = 100;
@@ -1916,10 +1923,11 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                     label: 'SoC (%)', 
                     data: socData, 
                     borderColor: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(), 
-                    tension: 0.3, 
+                    tension: 0.1, /* Lower tension for a slightly straighter line as per user's implied request for directness */
                     fill: true, 
                     backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--panel-border').includes('rgba') ? getComputedStyle(document.documentElement).getPropertyValue('--panel-border').replace(/[^,]+(?=\)$)/, '0.15)') : getComputedStyle(document.documentElement).getPropertyValue('--panel-border').trim() + '33',
-                    pointRadius: 2 ,
+                    pointRadius: 0, /* Removed point radius as per user's implied request for smoother curve */
+                    borderWidth: 3, /* Increased border width for "bolder" line as per user's request */
                     segment: {
                         borderColor: c => {
                             const y = c.p1.parsed.y;
@@ -1965,14 +1973,14 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         }
         
         /**
-         * 更新温度与充电效率图（折线图）。
+         * Updates the temperature vs. charging efficiency chart (line chart).
          */
         function updateTempEfficiencyChart() {
             destroyChart('temp');
             const ctx = document.getElementById('tempChart').getContext('2d');
-            if (!ctx) { console.error("未找到温度图上下文！"); return; }
+            if (!ctx) { console.error("Temperature chart context not found!"); return; }
 
-            const temps = Array.from({ length: 11 }, (_, i) => i * 5 - 10); // -10°C 到 40°C
+            const temps = Array.from({ length: 11 }, (_, i) => i * 5 - 10); // -10°C to 40°C
             const effs = temps.map(t => {
                 const efficiency = 98 - Math.pow(t - 22, 2) * 0.05;
                 return Math.max(80, efficiency); 
@@ -2007,6 +2015,8 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
             }
         });
 
+        // Removed droppingsPool, MAX_DROPPINGS, currentDroppingIndex, lastDropTime, DROP_INTERVAL_MS.
+
         // Initialize UI and calculate on page load
         window.addEventListener('load', () => {
             updateChargerOptions();
@@ -2027,6 +2037,13 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
             if (ui.changelogModalBtn) ui.changelogModalBtn.addEventListener('click', () => toggleChangelogModal(true));
             if (ui.fullscreenToggleBtn) ui.fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
             if (ui.themeToggleBtn) ui.themeToggleBtn.addEventListener('click', toggleTheme);
+
+            // Set initial rabbit position and start animation
+            const initialX = Math.random() * (window.innerWidth - 72); // Adjusted for new rabbit size
+            const initialY = Math.random() * (window.innerHeight - 72); // Adjusted for new rabbit size
+            wanderingRabbit.style.left = `${initialX}px`;
+            wanderingRabbit.style.top = `${initialY}px`;
+            animateRabbit();
         });
 
         document.addEventListener('copy', (e) => {
@@ -2037,60 +2054,101 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         });
 
         // --- Wandering Rabbit Animation Logic ---
-        const wanderingRabbit = document.createElement('div');
-        wanderingRabbit.id = 'wandering-rabbit';
-        document.body.appendChild(wanderingRabbit);
+        const wanderingRabbit = document.getElementById('wandering-rabbit');
 
-        let targetX = Math.random() * (window.innerWidth - 64); 
-        let targetY = Math.random() * (window.innerHeight - 64);
-        let currentX = Math.random() * (window.innerWidth - 64);
-        let currentY = Math.random() * (window.innerHeight - 64);
-
-        wanderingRabbit.style.left = `${currentX}px`;
-        wanderingRabbit.style.top = `${currentY}px`;
+        let targetX = Math.random() * (window.innerWidth - 72); // Adjusted for new rabbit size
+        let targetY = Math.random() * (window.innerHeight - 72); // Adjusted for new rabbit size
+        let currentX = parseFloat(wanderingRabbit.style.left || '0');
+        let currentY = parseFloat(wanderingRabbit.style.top || '0');
 
         function animateRabbit() {
-            const speed = 2;
+            const speed = 2; // Pixels per frame
+            
+            // Store previous position before updating (no longer used for droppings, but good for debugging if needed)
+            const prevX = currentX; 
+            const prevY = currentY;
+
             const distanceX = targetX - currentX;
             const distanceY = targetY - currentY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            if (distance < speed || distance > 500) {
+            if (distance < speed || distance > 500) { // If very close or too far (reset target)
                 currentX = targetX;
                 currentY = targetY;
-                targetX = Math.random() * (window.innerWidth - 64);
-                targetY = Math.random() * (window.innerHeight - 64);
+                targetX = Math.random() * (window.innerWidth - 72); // Adjusted for new rabbit size
+                targetY = Math.random() * (window.innerHeight - 72); // Adjusted for new rabbit size
             } else {
                 currentX += (distanceX / distance) * speed;
                 currentY += (distanceY / distance) * speed;
             }
 
-            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 64));
-            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 64));
+            // Clamp position to window bounds
+            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 72)); // Adjusted for new rabbit size
+            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 72)); // Adjusted for new rabbit size
 
             wanderingRabbit.style.left = `${currentX}px`;
             wanderingRabbit.style.top = `${currentY}px`;
+
+            // Removed all chocolate dropping logic.
 
             requestAnimationFrame(animateRabbit);
         }
 
-        window.addEventListener('load', () => {
-            animateRabbit();
-        });
-
         window.addEventListener('resize', () => {
-            currentX = Math.min(Math.max(0, currentX), window.innerWidth - 64);
-            currentY = Math.min(Math.max(0, currentY), window.innerHeight - 64);
+            currentX = Math.min(Math.max(0, currentX), window.innerWidth - 72); // Adjusted for new rabbit size
+            currentY = Math.min(Math.max(0, currentY), window.innerHeight - 72); // Adjusted for new rabbit size
             wanderingRabbit.style.left = `${currentX}px`;
             wanderingRabbit.style.top = `${currentY}px`;
 
-            targetX = Math.random() * (window.innerWidth - 64);
-            targetY = Math.random() * (window.innerHeight - 64);
+            targetX = Math.random() * (window.innerWidth - 72); // Adjusted for new rabbit size
+            targetY = Math.random() * (window.innerHeight - 72); // Adjusted for new rabbit size
         });
 
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</h4>
+                <ul>
+                    <li>新功能：
+                        <ul>
+                            <li>SoC曲线视图增强：SoC曲线在图表区域显示时，线条现在更粗，并且移除了点标记，视觉上更平滑和直接。</li>
+                            <li>兔子动画优化：漫游的像素兔子不再在身后留下“巧克力豆”轨迹，使其移动动画更加简洁。</li>
+                            <li>兔子视觉增强：兔子本身的图标略微放大，并增加了更强的发光效果，使其在页面上更显眼。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“爱丽丝跳跃兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h4>v4.1.3 - 约翰加州兔 (John Californian)</h4>
+                <ul>
+                    <li>新功能：
+                        <ul>
+                            <li>SoC曲线视图: 在图表区域新增SoC曲线视图，直观展示充电过程中电量随时间的变化。</li>
+                            <li>兔子漫游与“留痕”: 一只像素兔子会在网页中随机移动，并在其身后留下像素化的“巧克力豆”轨迹，增加页面趣味性。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“约翰加州兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h4>v4.1.2 - 卢克野兔 (Luke Jackrabbit)</h4>
+                <ul>
+                    <li>充电逻辑优化：
+                        <ul>
+                            <li>优化了家用充电桩（慢充）的功率计算模型，现在模拟时功率将保持稳定，不再随SoC衰减，更符合实际慢充特性。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“卢克野兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
+                </ul>
                 <h4>v4.1.1 - 福尔摩斯垂耳兔 (Sherlock Lop)</h4>
                 <ul>
                     <li>版本代号更新：
