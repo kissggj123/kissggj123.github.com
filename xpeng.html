@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v3.6.5</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v3.6.7</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for data visualization -->
@@ -165,9 +165,7 @@
         #changelog-modal-content ul { list-style-type: '⚡ '; padding-left: 1.5rem; margin-top: 0.5rem; }
 
         /* Chart.js overrides to use CSS variables */
-        .chart-legend-color { color: var(--text-color); }
-        .chart-title-color { color: var(--title-color); }
-        .chart-axis-color { color: var(--label-color); }
+        /* These are handled dynamically in chartOptionsTemplate and updates for better theme integration */
     </style>
 </head>
 <body class="antialiased">
@@ -177,8 +175,8 @@
         <!-- Header -->
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v3.6.5 - 崔妮蒂安哥拉兔 (Trinity Angora)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 90年代欧美电影人物名与兔子种类之融合 */</p>
+            <p class="text-slate-400 mt-2 text-lg">v3.6.7 - 尼奥荷兰兔 (Neo Dutch)</p>
+            <p class="text-sm text-slate-500 mt-1">/* "尼奥"取自90年代电影《黑客帝国》中的救世主，象征变革与洞察；"荷兰兔"则以其独特的面部标记和紧凑体型而闻名，代表精巧与效率。*/</p>
             <p class="text-sm text-slate-500 mt-1">由 CanguroMIO 呈现</p>
         </header>
 
@@ -214,7 +212,14 @@
                         </div>
                         <div>
                             <label for="charger" class="block text-lg label-color mb-1">🛠️ 充电桩类型</label>
-                            <select id="charger" class="w-full text-lg input-bg border-2 input-border rounded-md p-2"></select>
+                            <select id="charger" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                                <!-- Options populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="numSharingVehicles" class="block text-lg label-color mb-1">🚗 同站占用充电桩数量</label>
+                            <input type="number" id="numSharingVehicles" value="1" min="1" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                            <p class="text-xs text-slate-500 mt-1">（例如：S4/S5站点的总功率会根据占用车辆数平均分配）</p>
                         </div>
                         <div>
                             <label class="block text-lg label-color mb-2">⚙️ 额外损耗因子</label>
@@ -283,36 +288,35 @@
         </div>
     </div>
     
-<div id="changelog-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 hidden" onclick="toggleChangelogModal(false)">
-    <div id="changelog-modal-content" class="max-w-2xl w-full p-6 rounded-2xl border-2 border-amber-400 shadow-lg relative" onclick="event.stopPropagation()">
-        <button onclick="toggleChangelogModal(false)" class="absolute top-4 right-4 text-2xl text-red-500">&times;</button>
-        <h4>v3.6.5 - 崔妮蒂安哥拉兔 (Trinity Angora)</h4>
-        <ul>
-            <li>命名: 采用更多元化的版本命名规则（90年代欧美电影人物名与更多兔子种类之融合），并在版本号下方增加简短解释。</li>
-            <li>核心优化: 进一步校准了算法，使其在不同 SoC 区间，尤其是高 SoC 阶段，能更紧密地拟合用户提供的真实充电数据。</li>
-        </ul>
-        <h4>v3.6.4 - 阿诺垂耳兔 (Arnie Lop)</h4>
-        <ul>
-            <li>核心优化: 算法内部改进，基于用户提供的真实数据，大幅校准了不同 C 率车型（3C 和 5C）在各个 SoC 区间的拟真充电时间估算算法，使结果更精准。</li>
-            <li>新功能: 新增“高温酷热☀️(+7%)”额外损耗因子，考虑中国南方等炎热地区充电环境对效率的影响。</li>
-            <li>命名: 采用新的版本命名规则（90年代欧美电影人物名和兔子种类二次融合）。</li>
-        </ul>
-        <h4>v3.6.3 - 莱昂垂耳兔 (Leon Lop)</h4>
-        <ul>
-            <li>核心优化: 充电估算算法内部改进，时间计算现在精确到秒，报告显示时间也包含秒数。</li>
-            <li>新功能: 新增“充电过程详细估算”区域，展示每 0.25% SoC 区间的电流、电压和功率估算值，让您对充电过程有更精细的了解。</li>
-            <li>命名: 采用新的版本命名规则（90年代欧美电影人物名和兔子种类二次融合）。</li>
-        </ul>
+    <div id="changelog-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 hidden" onclick="toggleChangelogModal(false)">
+        <div id="changelog-modal-content" class="max-w-2xl w-full p-6 rounded-2xl border-2 border-amber-400 shadow-lg relative" onclick="event.stopPropagation()">
+            <button onclick="toggleChangelogModal(false)" class="absolute top-4 right-4 text-2xl text-red-500">&times;</button>
+            <h4>v3.6.7 - 尼奥荷兰兔 (Neo Dutch)</h4>
+            <ul>
+                <li>核心优化: 算法内部改进，基于用户提供的真实数据，进一步校准了不同 C 率车型（3C 和 5C）在各个 SoC 区间的拟真充电时间估算算法，使结果更精准。</li>
+                <li>新功能: 新增“同站占用充电桩数量”输入项，模拟充电站功率分流情况，使估算更贴近实际多车共享充电场景。</li>
+                <li>命名: 采用新的版本命名规则（90年代欧美电影人物名与兔子种类二次融合），并在版本号下方增加简短解释。</li>
+            </ul>
+            <h4>v3.6.6 - 伊森侏儒兔 (Ethan Dwarf)</h4>
+            <ul>
+                <li>新功能: 针对移动端优化图表数据点查看效果，工具提示更易触发和显示。</li>
+                <li>界面优化: 优化日间模式下的字体表现，确保在明亮主题下仍保持清晰可读。</li>
+                <li>命名: 采用新的版本命名规则（90年代欧美电影人物名与兔子种类二次融合），并在版本号下方增加简短解释。</li>
+            </ul>
+            <h4>v3.6.5 - 崔妮蒂安哥拉兔 (Trinity Angora)</h4>
+            <ul>
+                <li>命名: 采用更多元化的版本命名规则（90年代欧美电影人物名与更多兔子种类之融合），并在版本号下方增加简短解释。</li>
+                <li>核心优化: 进一步校准了算法，使其在不同 SoC 区间，尤其是高 SoC 阶段，能更紧密地拟合用户提供的真实充电数据。</li>
+            </ul>
+        </div>
     </div>
-</div>
-
 
     <script>
         // --- Constants and Global Variables ---
-        const S5_LIMIT_KW = 800; // S5 charger theoretical limit
-        const S4_LIMIT_KW = 480; // S4 charger theoretical limit
-        const S2_LIMIT_KW = 90;  // S2 charger limit
-        const THIRD_PARTY_LIMIT_KW = 120; // Generic third-party fast charger limit
+        const S5_LIMIT_KW = 800; // S5 charger theoretical limit (total station power)
+        const S4_LIMIT_KW = 480; // S4 charger theoretical limit (total station power)
+        const S2_LIMIT_KW = 90;  // S2 charger limit (per stall, typically not shared at station level)
+        const THIRD_PARTY_LIMIT_KW = 120; // Generic third-party fast charger limit (per stall)
         let charts = {}; // Object to hold Chart instances
         let lastResultText = "";
 
@@ -320,6 +324,7 @@
         const ui = {
             model: document.getElementById("model"),
             charger: document.getElementById("charger"),
+            numSharingVehicles: document.getElementById("numSharingVehicles"), // New UI element
             enableCooling: document.getElementById("enableCooling"),
             startSoC: document.getElementById("start"),
             endSoC: document.getElementById("end"),
@@ -364,7 +369,31 @@
                     labels: { 
                         color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#00ffcc' 
                     } 
+                },
+                tooltip: { // Optimize tooltip interaction for mobile
+                    mode: 'index', // Show tooltip for all datasets at the hovered x-index
+                    intersect: false, // Don't require exact intersection with data point
+                    callbacks: { // Customize tooltip title/label for better readability
+                        title: function(context) {
+                            // Assumes x-axis labels are formatted time strings
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y.toFixed(2);
+                            }
+                            return label;
+                        }
+                    }
                 }
+            },
+            hover: { // Align hover behavior with tooltip behavior
+                mode: 'index',
+                intersect: false
             },
             scales: { 
                 x: { 
@@ -431,29 +460,29 @@
             // Define SoC zones and power factors based on C-rate
             if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors
                 socZones = [
-                    { upto: 15, factor: 0.52 }, // slight adjustment based on observed data
-                    { upto: 60, factor: 0.48 }, // slight adjustment
-                    { upto: 80, factor: 0.32 }, // slight adjustment
-                    { upto: 95, factor: 0.16 }, // slight adjustment
-                    { upto: 100, factor: 0.05 } 
-                ];
-                if (isCoolingEnabled) {
-                    socZones[1].factor = 0.55; 
-                    socZones[2].factor = 0.40; 
-                    socZones[3].factor = 0.25; 
-                }
-            } else if (maxCRate === 3) { // Long/Super Long Range (60.7 kWh / 76.3 kWh, 3C) model factors
-                socZones = [
-                    { upto: 15, factor: 0.58 }, // slight adjustment
-                    { upto: 60, factor: 0.53 }, // slight adjustment
-                    { upto: 80, factor: 0.38 }, // slight adjustment
-                    { upto: 95, factor: 0.20 }, // slight adjustment
+                    { upto: 15, factor: 0.55 }, 
+                    { upto: 60, factor: 0.50 }, 
+                    { upto: 80, factor: 0.35 }, 
+                    { upto: 95, factor: 0.18 }, 
                     { upto: 100, factor: 0.06 } 
                 ];
                 if (isCoolingEnabled) {
-                    socZones[1].factor = 0.63; 
+                    socZones[1].factor = 0.58; 
                     socZones[2].factor = 0.43; 
-                    socZones[3].factor = 0.28; 
+                    socZones[3].factor = 0.30; 
+                }
+            } else if (maxCRate === 3) { // Long/Super Long Range (60.7 kWh / 76.3 kWh, 3C) model factors
+                socZones = [
+                    { upto: 15, factor: 0.60 }, 
+                    { upto: 60, factor: 0.55 }, 
+                    { upto: 80, factor: 0.40 }, 
+                    { upto: 95, factor: 0.22 }, 
+                    { upto: 100, factor: 0.07 } 
+                ];
+                if (isCoolingEnabled) {
+                    socZones[1].factor = 0.65; 
+                    socZones[2].factor = 0.48; 
+                    socZones[3].factor = 0.33; 
                 }
             } else {
                 // Default or fallback factors (shouldn't happen with current model options)
@@ -527,11 +556,12 @@
             const startSoC = parseFloat(ui.startSoC.value);
             const endSoC = parseFloat(ui.endSoC.value);
             const actualKWh = parseFloat(ui.actualKWh.value);
-            const chargerPower = parseFloat(ui.charger.value);
+            const selectedChargerNominalPower = parseFloat(ui.charger.value);
+            const numSharingVehicles = Math.max(1, parseInt(ui.numSharingVehicles.value) || 1); // Ensure at least 1
 
             // Input validation
-            if (isNaN(capacity) || isNaN(startSoC) || isNaN(endSoC) || isNaN(actualKWh) || startSoC >= endSoC || capacity <= 0 || chargerPower <= 0) {
-                showCustomAlert("请输入有效的数值，并确保起始电量小于结束电量，电池容量和充电桩功率大于零。");
+            if (isNaN(capacity) || isNaN(startSoC) || isNaN(endSoC) || isNaN(actualKWh) || startSoC >= endSoC || capacity <= 0 || selectedChargerNominalPower <= 0 || isNaN(numSharingVehicles)) {
+                showCustomAlert("请输入有效的数值，并确保起始电量小于结束电量，电池容量、充电桩功率和共享车辆数大于零。");
                 return;
             }
 
@@ -543,8 +573,23 @@
                 carMaxAchievablePower = Math.min(carMaxAchievablePower, 230); // Cap at observed practical max for P7+ 3C (around 225-230kW)
             }
 
-            // The actual maximum power for this charging session (limited by charger or car)
-            const sessionMaxPower = Math.min(chargerPower, carMaxAchievablePower);
+            // Determine the total power available at the station for sharing
+            let stationTotalSharedPower;
+            if (selectedChargerNominalPower === S5_LIMIT_KW) {
+                stationTotalSharedPower = S5_LIMIT_KW;
+            } else if (selectedChargerNominalPower === S4_LIMIT_KW) {
+                stationTotalSharedPower = S4_LIMIT_KW;
+            } else {
+                // For S2, Third-Party, Home chargers, assume the selected power is per stall and not significantly shared.
+                stationTotalSharedPower = selectedChargerNominalPower * numSharingVehicles; // Treat nominal power as per-stall limit if no central shared power
+            }
+
+            // Calculate effective power available per vehicle at the station
+            const effectiveStationPowerPerVehicle = stationTotalSharedPower / numSharingVehicles;
+
+            // The actual maximum power for this charging session (limited by car or shared station power)
+            const sessionMaxPower = Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
+
 
             // Estimate charge time in seconds using the refined algorithm
             let chargeTimeSeconds = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate));
@@ -621,25 +666,25 @@
             let socZones;
             if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors
                 socZones = [
-                    { upto: 15, factor: 0.52 }, 
-                    { upto: 60, factor: 0.48 }, 
-                    { upto: 80, factor: 0.32 }, 
-                    { upto: 95, factor: 0.16 }, 
-                    { upto: 100, factor: 0.05 }
-                ];
-                if (isCoolingEnabled) {
-                    socZones[1].factor = 0.55; socZones[2].factor = 0.40; socZones[3].factor = 0.25;
-                }
-            } else if (maxCRate === 3) { // Long/Super Long Range (60.7 kWh / 76.3 kWh, 3C) model factors
-                socZones = [
-                    { upto: 15, factor: 0.58 }, 
-                    { upto: 60, factor: 0.53 }, 
-                    { upto: 80, factor: 0.38 }, 
-                    { upto: 95, factor: 0.20 }, 
+                    { upto: 15, factor: 0.55 }, 
+                    { upto: 60, factor: 0.50 }, 
+                    { upto: 80, factor: 0.35 }, 
+                    { upto: 95, factor: 0.18 }, 
                     { upto: 100, factor: 0.06 }
                 ];
                 if (isCoolingEnabled) {
-                    socZones[1].factor = 0.63; socZones[2].factor = 0.43; socZones[3].factor = 0.28;
+                    socZones[1].factor = 0.58; socZones[2].factor = 0.43; socZones[3].factor = 0.30;
+                }
+            } else if (maxCRate === 3) { // Long/Super Long Range (60.7 kWh / 76.3 kWh, 3C) model factors
+                socZones = [
+                    { upto: 15, factor: 0.60 }, 
+                    { upto: 60, factor: 0.55 }, 
+                    { upto: 80, factor: 0.40 }, 
+                    { upto: 95, factor: 0.22 }, 
+                    { upto: 100, factor: 0.07 }
+                ];
+                if (isCoolingEnabled) {
+                    socZones[1].factor = 0.65; socZones[2].factor = 0.48; socZones[3].factor = 0.33;
                 }
             } else {
                  socZones = [
@@ -666,7 +711,7 @@
 
                 if (nextSoC > currentSoC) {
                     detailedReportContent += 
-                        `${currentSoC.toFixed(2).padStart(8)}%~${nextSoC.toFixed(2).padStart(4)}% | ` + // Adjusted padding
+                        `${currentSoC.toFixed(2).padStart(8)}%~${nextSoC.toFixed(2).padStart(4)}% | ` + 
                         `${effectivePowerKW.toFixed(2).padStart(12)} kW | ` +
                         `${estimatedCurrentA.toFixed(2).padStart(11)} A | ` +
                         `${estimatedVoltage.toFixed(2).padStart(11)} V\n`;
@@ -682,11 +727,12 @@
         function quickEstimate() {
             const capacity = parseFloat(ui.model.value);
             const { c: maxCRate } = ui.model.selectedOptions[0].dataset;
-            const chargerPower = parseFloat(ui.charger.value);
+            const selectedChargerNominalPower = parseFloat(ui.charger.value);
+            const numSharingVehicles = Math.max(1, parseInt(ui.numSharingVehicles.value) || 1); // Ensure at least 1
             const start = parseFloat(ui.quickStart.value);
             const end = parseFloat(ui.quickEnd.value);
 
-            if (isNaN(start) || isNaN(end) || start >= end || capacity <= 0 || chargerPower <= 0) {
+            if (isNaN(start) || isNaN(end) || start >= end || capacity <= 0 || selectedChargerNominalPower <= 0 || isNaN(numSharingVehicles)) {
                 ui.quickResult.textContent = "输入无效";
                 return;
             }
@@ -697,7 +743,17 @@
             } else if (maxCRate == 3) {
                  carMaxAchievablePower = Math.min(carMaxAchievablePower, 230);
             }
-            const sessionMaxPower = Math.min(chargerPower, carMaxAchievablePower);
+            
+            let stationTotalSharedPower;
+            if (selectedChargerNominalPower === S5_LIMIT_KW) {
+                stationTotalSharedPower = S5_LIMIT_KW;
+            } else if (selectedChargerNominalPower === S4_LIMIT_KW) {
+                stationTotalSharedPower = S4_LIMIT_KW;
+            } else {
+                stationTotalSharedPower = selectedChargerNominalPower * numSharingVehicles;
+            }
+            const effectiveStationPowerPerVehicle = stationTotalSharedPower / numSharingVehicles;
+            const sessionMaxPower = Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
 
             let timeSeconds = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate));
             
@@ -1055,7 +1111,7 @@
         // --- Event Listeners and Initial Setup ---
 
         // Attach change listeners to input elements that should trigger a recalculation
-        ['model', 'charger', 'enableCooling', 'ac', 'preheat', 'cold', 'hot', 'autopilot', 'load', 'start', 'end', 'actual'].forEach(id => {
+        ['model', 'charger', 'numSharingVehicles', 'enableCooling', 'ac', 'preheat', 'cold', 'hot', 'autopilot', 'load', 'start', 'end', 'actual'].forEach(id => {
             const element = document.getElementById(id);
             if (element) {
                 element.addEventListener('change', calculate);
