@@ -3,39 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.0.1 - 布朗新西兰兔 (Brown New Zealand)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.1.1 - 福尔摩斯垂耳兔 (Sherlock Lop)</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for data visualization - Loaded at the end of body for performance -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- VT323 for pixel font aesthetic. Chinese fallback is monospace. -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for theming */
+        /* Base styles using VT323 pixel font */
+        body {
+            font-family: 'VT323', monospace; /* Apply pixel font globally */
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.5s ease, color 0.3s ease;
+        }
+        input, select, button, pre, textarea { /* Apply to all form elements and pre-formatted text */
+            font-family: 'VT323', monospace;
+            color: var(--text-color);
+        }
+
+        /* CSS Variables for theming (Default: Night Mode) */
         :root {
-            /* Night Mode - TRON Dark */
-            --bg-color: linear-gradient(180deg, #0a0a0a 0%, #000005 100%); /* Very dark grey to almost black */
-            --text-color: #00eaff; /* Neon Cyan */
-            --title-color: #00eaff; /* Neon Cyan, strong text-shadow */
-            --label-color: #33ffff; /* Slightly lighter cyan */
-            --input-bg: rgba(0, 0, 10, 0.7); /* Dark, transparent */
-            --input-border: #00eaff; /* Neon Cyan */
-            --panel-bg: rgba(0, 0, 15, 0.8); /* Dark, slightly transparent for content */
-            --panel-border: #00eaff; /* Neon Cyan glow */
-            --button-primary-bg: linear-gradient(45deg, #00bfff 0%, #0077ff 100%); /* Deep Sky Blue to Azure */
+            --bg-color: linear-gradient(180deg, #0a0a0a 0%, #000005 100%);
+            --text-color: #00eaff;
+            --title-color: #00eaff;
+            --label-color: #33ffff;
+            --input-bg: rgba(0, 0, 10, 0.7);
+            --input-border: #00eaff;
+            --panel-bg: rgba(0, 0, 15, 0.8);
+            --panel-border: #00eaff;
+            --button-primary-bg: linear-gradient(45deg, #00bfff 0%, #0077ff 100%);
             --button-primary-hover-bg: linear-gradient(45deg, #00aadd 0%, #0066ee 100%);
             --button-primary-border: #00eaff;
-            --button-secondary-bg: linear-gradient(45deg, #ff9900 0%, #ff6600 100%); /* Vibrant Orange */
+            --button-secondary-bg: linear-gradient(45deg, #ff9900 0%, #ff6600 100%);
             --button-secondary-hover-bg: linear-gradient(45deg, #ee8800 0%, #ee5500 100%);
             --button-secondary-border: #ff9900;
-            --button-success-bg: linear-gradient(45deg, #00ee00 0%, #00bb00 100%); /* Neon Green */
+            --button-success-bg: linear-gradient(45deg, #00ee00 0%, #00bb00 100%);
             --button-success-hover-bg: linear-gradient(45deg, #00dd00 0%, #00aa00 100%);
             --button-success-border: #00ee00;
-            --button-info-bg: linear-gradient(45deg, #666666 0%, #333333 100%); /* Darker grey for muted actions */
+            --button-info-bg: linear-gradient(45deg, #666666 0%, #333333 100%);
             --button-info-hover-bg: linear-gradient(45deg, #555555 0%, #222222 100%);
             --button-info-border: #888888;
-            --button-accent-bg: linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%); /* Neon Magenta/Purple */
+            --button-accent-bg: linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%);
             --button-accent-hover-bg: linear-gradient(45deg, #ee00ee 0%, #bb00bb 100%);
             --button-accent-border: #ff00ff;
             --changelog-modal-bg: rgba(0, 0, 20, 0.9);
@@ -43,39 +55,38 @@
             --changelog-border-color: #00eaff;
             --changelog-h-color: #00eaff;
             --changelog-h-border: #33ffff;
-            --progress-bg: #00eaff; /* Neon Cyan */
-            --progress-text: #0a0a0a; /* Dark text on bright progress bar */
-            --cooling-color: #ff00ff; /* Neon Magenta for cooling */
-            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%); /* Deep Purple to Magenta */
+            --progress-bg: #00eaff;
+            --progress-text: #0a0a0a;
+            --cooling-color: #ff00ff;
+            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%);
             --gemini-button-hover-bg: linear-gradient(45deg, #5000cc 0%, #8800cc 100%);
             --gemini-button-border: #bb00ff;
-            /* Pixel Angora rabbit SVG (ASCII-art style outline, eyes, ears) */
-            --pixel-rabbit-icon-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="%23FFFFFF"><rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/></svg>');
+            --pixel-rabbit-icon-fill: currentColor; /* Inherit color from text-color */
+            --pixel-rabbit-shadow-color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Day Mode - Subtle TRON (Lighter, cleaner digital aesthetic) with vibrant colors */
         body.day-mode {
-            --bg-color: linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%); /* Light blue to pale yellow to light blue */
-            --text-color: #5e35b1; /* Deep Purple */
-            --title-color: #ff4081; /* Bright Rose */
-            --label-color: #64dd17; /* Lime Green */
+            --bg-color: linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%);
+            --text-color: #5e35b1;
+            --title-color: #ff4081;
+            --label-color: #64dd17;
             --input-bg: rgba(255, 255, 255, 0.95);
             --input-border: #ff4081;
             --panel-bg: rgba(255, 255, 255, 0.9);
             --panel-border: #ff4081;
-            --button-primary-bg: linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%); /* Pink to Light Blue */
+            --button-primary-bg: linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%);
             --button-primary-hover-bg: linear-gradient(45deg, #ff6090 0%, #6090ff 100%);
             --button-primary-border: #82b1ff;
-            --button-secondary-bg: linear-gradient(45deg, #ffd740 0%, #ff8a80 100%); /* Gold to Coral */
+            --button-secondary-bg: linear-gradient(45deg, #ffd740 0%, #ff8a80 100%);
             --button-secondary-hover-bg: linear-gradient(45deg, #ffcc30 0%, #ff7070 100%);
             --button-secondary-border: #ff8a80;
-            --button-success-bg: linear-gradient(45deg, #69f0ae 0%, #18ffff 100%); /* Light Green to Cyan */
+            --button-success-bg: linear-gradient(45deg, #69f0ae 0%, #18ffff 100%);
             --button-success-hover-bg: linear-gradient(45deg, #50e090 0%, #00e0e0 100%);
             --button-success-border: #18ffff;
-            --button-info-bg: linear-gradient(45deg, #b388ff 0%, #8c9eff 100%); /* Light Purple to Light Blue */
+            --button-info-bg: linear-gradient(45deg, #b388ff 0%, #8c9eff 100%);
             --button-info-hover-bg: linear-gradient(45deg, #a070e0 0%, #7080ff 100%);
             --button-info-border: #8c9eff;
-            --button-accent-bg: linear-gradient(45deg, #ff1744 0%, #f50057 100%); /* Vibrant Red to Deep Pink */
+            --button-accent-bg: linear-gradient(45deg, #ff1744 0%, #f50057 100%);
             --button-accent-hover-bg: linear-gradient(45deg, #e00030 0%, #d00040 100%);
             --button-accent-border: #f50057;
             --changelog-modal-bg: rgba(255, 255, 255, 0.98);
@@ -85,23 +96,15 @@
             --changelog-h-border: var(--label-color);
             --progress-bg: var(--title-color);
             --progress-text: #ffffff;
-            --cooling-color: #00bcd4; /* Bright Cyan for day mode cooling */
-            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%); /* Deep Purple to Magenta */
+            --cooling-color: #00bcd4;
+            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%);
             --gemini-button-hover-bg: linear-gradient(45deg, #5000cc 0%, #8800cc 100%);
             --gemini-button-border: #bb00ff;
+            --pixel-rabbit-icon-fill: currentColor; /* Inherit color from text-color */
+            --pixel-rabbit-shadow-color: rgba(0, 0, 0, 0.6);
         }
 
         /* Apply CSS variables */
-        body {
-            font-family: 'VT323', monospace;
-            background: var(--bg-color); /* Use background for gradients */
-            color: var(--text-color);
-            transition: background 0.5s ease, color 0.3s ease; /* Transition background property */
-        }
-        input, select, button, pre {
-            font-family: 'VT323', monospace;
-            color: var(--text-color);
-        }
         .title-color { 
             color: var(--title-color); 
             text-shadow: 0 0 10px var(--title-color), 0 0 20px rgba(255,255,255,0.5); /* Neon glow effect */
@@ -123,25 +126,20 @@
         }
 
         /* Randomly moving pixel rabbit */
-        #wandering-rabbit { /* Changed ID to match user's provided HTML */
+        #wandering-rabbit {
             position: fixed;
-            width: 64px; /* Larger size for pixel art visibility */
+            width: 64px;
             height: 64px;
-            background-image: var(--pixel-rabbit-icon-svg); /* Use the pixel rabbit SVG */
-            background-repeat: no-repeat;
-            background-size: contain;
-            z-index: 100; /* Ensure it's above most content but below loading indicator */
-            pointer-events: none; /* Allow clicks on elements underneath */
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)); /* Strong glow for the rabbit */
-            transition: left 1s ease-in-out, top 1s ease-in-out; /* Smooth movement transition */
-        }
-        body.day-mode #wandering-rabbit {
-            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6)); /* Darker shadow for day mode to be visible */
+            z-index: 100;
+            pointer-events: none;
+            transition: left 1s ease-in-out, top 1s ease-in-out;
+            fill: var(--pixel-rabbit-icon-fill); /* Use CSS variable for fill */
+            filter: drop-shadow(0 0 8px var(--pixel-rabbit-shadow-color)); /* Use CSS variable for shadow */
         }
 
         /* Button styling using CSS variables */
         .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-accent, .btn-gemini {
-            background: var(--button-primary-bg); /* Use background for gradients */
+            background: var(--button-primary-bg);
             border-bottom: 4px solid var(--button-primary-border);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.2);
             transition: all 0.2s ease;
@@ -157,7 +155,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.1);
         }
 
-        /* Specific button background overrides */
+        /* Specific button background overrides (these will be set by JS dynamically) */
+        /* They are here as fallbacks or for initial render */
         .btn-primary { background: var(--button-primary-bg); border-bottom-color: var(--button-primary-border); }
         .btn-primary:hover { background: var(--button-primary-hover-bg); }
         .btn-secondary { background: var(--button-secondary-bg); border-bottom-color: var(--button-secondary-border); }
@@ -176,10 +175,10 @@
             background-color: var(--changelog-modal-bg);
             color: var(--changelog-text-color);
             border-color: var(--changelog-border-color);
-            box-shadow: 0 0 20px var(--changelog-border-color); /* Add glow */
+            box-shadow: 0 0 20px var(--changelog-border-color);
             transition: box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-            max-height: 80vh; /* Limit height to 80% of viewport height */
-            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 80vh;
+            overflow-y: auto;
         }
         #changelog-modal-content h3, #changelog-modal-content h4 {
             color: var(--changelog-h-color);
@@ -196,28 +195,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); /* Slightly darker overlay */
+            background-color: rgba(0, 0, 0, 0.85);
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             z-index: 1000;
             color: var(--progress-text);
-            font-size: 2.5rem; /* Larger text */
-            text-shadow: 0 0 12px var(--progress-bg), 0 0 25px rgba(255,255,255,0.7); /* Stronger glow */
-            display: none; /* Hidden by default */
+            font-size: 2.5rem;
+            text-shadow: 0 0 12px var(--progress-bg), 0 0 25px rgba(255,255,255,0.7);
+            display: none;
             transition: background-color 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
         .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.4); /* Thicker, softer border */
-            border-top: 8px solid var(--progress-bg); /* Vibrant top border */
+            border: 8px solid rgba(255, 255, 255, 0.4);
+            border-top: 8px solid var(--progress-bg);
             border-radius: 50%;
-            width: 80px; /* Larger spinner */
+            width: 80px;
             height: 80px;
             animation: spin 1s linear infinite;
-            margin-bottom: 1.5rem; /* More space */
-            box-shadow: 0 0 15px var(--progress-bg); /* Glowing spinner */
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 15px var(--progress-bg);
             transition: border-top-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -226,11 +225,8 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Chart.js overrides to use CSS variables */
-        /* These are handled dynamically in chartOptionsTemplate and updates for better theme integration */
-
         /* AI Result Pixel Font */
-        #smartAdvice { /* Updated ID */
+        #smartAdvice {
             font-family: 'VT323', monospace;
             color: var(--text-color);
         }
@@ -261,7 +257,6 @@
 <body class="antialiased">
     <!-- Wandering Rabbit Character -->
     <div id="wandering-rabbit">
-        <!-- Reverted to pixel rabbit SVG for theme consistency -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="currentColor">
             <rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/>
             <rect x="0" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/>
@@ -271,16 +266,15 @@
             <rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/>
             <rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/>
             <rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/>
-            <rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/>
-            <rect x="5" y="5" width="1" height="1"/>
+            <rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/>
         </svg>
     </div>
 
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.0.1 - 布朗新西兰兔 (Brown New Zealand)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 融合速度与智慧，为您带来极致充电体验。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.1.1 - 福尔摩斯垂耳兔 (Sherlock Lop)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 福尔摩斯（Sherlock Holmes）象征着侦探的细致入微和逻辑推理能力，代表了计算器在分析和优化充电数据方面的精确性；垂耳兔（Lop）则寓意着温柔、平静和易于亲近，代表了用户界面的友好和易用性。此命名旨在突出应用程序的智能分析与用户体验的融合。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -318,11 +312,36 @@
                                 <!-- Options populated by JavaScript -->
                             </select>
                         </div>
+                        <!-- New同站占用充电桩数量 section -->
                         <div>
-                            <label for="numSharingVehicles" class="block text-lg label-color mb-1">🚗 同站占用充电桩数量</label>
-                            <input type="number" id="numSharingVehicles" value="1" min="1" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
-                            <p class="text-xs text-slate-500 mt-1">（例如：S4/S5站点总功率会根据占用车辆数平均分配）</p>
+                            <label class="block text-lg label-color mb-1">🚗 同站占用充电桩详情 (其他车辆)</label>
+                            <div class="space-y-2 text-base panel-bg p-3 rounded-md border border-gray-700">
+                                <div class="flex items-center justify-between">
+                                    <label>小鹏800V车:</label>
+                                    <input type="number" id="xp800vCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label>小鹏400V车:</label>
+                                    <input type="number" id="xp400vCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label>第三方800V车:</label>
+                                    <input type="number" id="thirdParty800vCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label>第三方400V车:</label>
+                                    <input type="number" id="thirdParty400vCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label>BMS流氓车型:</label>
+                                    <input type="number" id="rogueBMSCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">（上述车辆数量将影响总功率分配效率。BMS流氓车型会额外降低效率。）</p>
+                            <label for="totalSharingVehicles" class="block text-lg label-color mt-3 mb-1">总计占用车辆数 (不含本车):</label>
+                            <input type="number" id="totalSharingVehicles" value="0" readonly class="w-full text-lg input-bg border-2 input-border rounded-md p-2 cursor-not-allowed">
                         </div>
+                        <!-- End New同站占用充电桩数量 section -->
                         <div>
                             <label class="block text-lg label-color mb-2">⚙️ 额外损耗因子</label>
                             <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
@@ -336,7 +355,7 @@
                             </div>
                         </div>
                         <div class="pt-2">
-                             <button onclick="calculate()" class="w-full text-xl text-black font-bold py-3 px-4 rounded-lg btn-primary">
+                             <button id="calculateBtn" class="w-full text-xl text-black font-bold py-3 px-4 rounded-lg btn-primary">
                                 📎 计算完整报告
                             </button>
                         </div>
@@ -355,7 +374,7 @@
                             <input type="number" id="quickEnd" value="80" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
                         </div>
                     </div>
-                    <button onclick="quickEstimate()" class="w-full text-lg text-black font-bold py-2 px-4 rounded-lg mt-4 btn-secondary">估算时间</button>
+                    <button id="quickEstimateBtn" class="w-full text-lg text-black font-bold py-2 px-4 rounded-lg mt-4 btn-secondary">估算时间</button>
                     <p id="quickResult" class="text-center text-xl title-color mt-3 h-6"></p>
                 </div>
             </div>
@@ -389,11 +408,11 @@
                     <div class="md:col-span-2 panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="tempChart"></canvas></div>
                 </div>
                 <div class="flex flex-wrap gap-4 justify-center">
-                    <button onclick="getSmartChargingAdvice()" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-gemini">✨ 智能充电建议</button>
-                    <button onclick="copyResult()" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-success">📋 复制报告</button>
-                    <button onclick="toggleChangelogModal(true)" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">📜 更新日志</button>
-                    <button onclick="toggleFullscreen()" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-accent">🖥️ 全屏幕</button>
-                    <button id="themeToggleBtn" onclick="toggleTheme()" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">🌓 夜间模式</button>
+                    <button id="smartAdviceBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-gemini">✨ 智能充电建议</button>
+                    <button id="copyResultBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-success">📋 复制报告</button>
+                    <button id="changelogModalBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">📜 更新日志</button>
+                    <button id="fullscreenToggleBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-accent">🖥️ 全屏幕</button>
+                    <button id="themeToggleBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">🌓 夜间模式</button>
                 </div>
             </div>
         </div>
@@ -431,15 +450,14 @@
         const ui = {
             model: document.getElementById("model"),
             charger: document.getElementById("charger"),
-            numSharingVehicles: document.getElementById("numSharingVehicles"), // Re-added
             enableCooling: document.getElementById("enableCooling"),
             startSoC: document.getElementById("start"),
             endSoC: document.getElementById("end"),
             actualKWh: document.getElementById("actual"),
             resultContainer: document.getElementById("result-container"),
             resultText: document.getElementById("result"),
-            smartAdviceContainer: document.getElementById("smart-advice-container"), // New
-            smartAdvice: document.getElementById("smartAdvice"), // New
+            smartAdviceContainer: document.getElementById("smart-advice-container"),
+            smartAdvice: document.getElementById("smartAdvice"),
             ac: document.getElementById('ac'),
             preheat: document.getElementById('preheat'),
             cold: document.getElementById('cold'),
@@ -449,15 +467,267 @@
             quickStart: document.getElementById('quickStart'),
             quickEnd: document.getElementById('quickEnd'),
             quickResult: document.getElementById('quickResult'),
-            themeToggleBtn: document.getElementById('themeToggleBtn'), // Updated ID
+            themeToggleBtn: document.getElementById('themeToggleBtn'),
             loadingIndicator: document.getElementById('loading-indicator'),
             tableContainer: document.getElementById('table-container'),
             dataTableBody: document.querySelector('#dataTable tbody'),
             dataTableHead: document.querySelector('#dataTable thead'),
             changelogList: document.getElementById('changelog-list'),
+            // New button references
+            calculateBtn: document.getElementById('calculateBtn'),
+            quickEstimateBtn: document.getElementById('quickEstimateBtn'),
+            smartAdviceBtn: document.getElementById('smartAdviceBtn'),
+            copyResultBtn: document.getElementById('copyResultBtn'),
+            changelogModalBtn: document.getElementById('changelogModalBtn'),
+            fullscreenToggleBtn: document.getElementById('fullscreenToggleBtn'),
+            // New sharing vehicle inputs
+            xp800vCount: document.getElementById('xp800vCount'),
+            xp400vCount: document.getElementById('xp400vCount'),
+            thirdParty800vCount: document.getElementById('thirdParty800vCount'),
+            thirdParty400vCount: document.getElementById('thirdParty400vCount'),
+            rogueBMSCount: document.getElementById('rogueBMSCount'),
+            totalSharingVehicles: document.getElementById('totalSharingVehicles'),
         };
 
-        // --- Utility Functions ---
+        // --- Color Palettes for Dynamic Theming ---
+        const nightModePalettes = [
+            { // TRON Blue/Cyan
+                '--bg-color': 'linear-gradient(180deg, #0a0a0a 0%, #000005 100%)',
+                '--text-color': '#00eaff',
+                '--title-color': '#00eaff',
+                '--label-color': '#33ffff',
+                '--input-bg': 'rgba(0, 0, 10, 0.7)',
+                '--input-border': '#00eaff',
+                '--panel-bg': 'rgba(0, 0, 15, 0.8)',
+                '--panel-border': '#00eaff',
+                '--button-primary-bg': 'linear-gradient(45deg, #00bfff 0%, #0077ff 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #00aadd 0%, #0066ee 100%)',
+                '--button-primary-border': '#00eaff',
+                '--button-secondary-bg': 'linear-gradient(45deg, #ff9900 0%, #ff6600 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
+                '--button-secondary-border': '#ff9900',
+                '--button-success-bg': 'linear-gradient(45deg, #00ee00 0%, #00bb00 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
+                '--button-success-border': '#00ee00',
+                '--button-info-bg': 'linear-gradient(45deg, #666666 0%, #333333 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #555555 0%, #222222 100%)',
+                '--button-info-border': '#888888',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee00ee 0%, #bb00bb 100%)',
+                '--button-accent-border': '#ff00ff',
+                '--changelog-modal-bg': 'rgba(0, 0, 20, 0.9)',
+                '--changelog-text-color': '#ccffff',
+                '--changelog-border-color': '#00eaff',
+                '--changelog-h-color': '#00eaff',
+                '--changelog-h-border': '#33ffff',
+                '--progress-bg': '#00eaff',
+                '--progress-text': '#0a0a0a',
+                '--cooling-color': '#ff00ff',
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
+            },
+            { // Dark Forest Green
+                '--bg-color': 'linear-gradient(180deg, #102010 0%, #050505 100%)',
+                '--text-color': '#00ff7f', /* Neon Green */
+                '--title-color': '#00ff7f',
+                '--label-color': '#66ff99',
+                '--input-bg': 'rgba(0, 5, 0, 0.7)',
+                '--input-border': '#00ff7f',
+                '--panel-bg': 'rgba(0, 8, 0, 0.8)',
+                '--panel-border': '#00ff7f',
+                '--button-primary-bg': 'linear-gradient(45deg, #32cd32 0%, #008000 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #22bb22 0%, #006600 100%)',
+                '--button-primary-border': '#00ff7f',
+                '--button-secondary-bg': 'linear-gradient(45deg, #ffcc00 0%, #e0a000 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #eebb00 0%, #cc9000 100%)',
+                '--button-secondary-border': '#ffcc00',
+                '--button-success-bg': 'linear-gradient(45deg, #00ee00 0%, #00bb00 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
+                '--button-success-border': '#00ee00',
+                '--button-info-bg': 'linear-gradient(45deg, #708090 0%, #405060 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #607080 0%, #304050 100%)',
+                '--button-info-border': '#90a0b0',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff69b4 0%, #c71585 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee59a4 0%, #b00070 100%)',
+                '--button-accent-border': '#ff69b4',
+                '--changelog-modal-bg': 'rgba(0, 10, 0, 0.9)',
+                '--changelog-text-color': '#d0ffe0',
+                '--changelog-border-color': '#00ff7f',
+                '--changelog-h-color': '#00ff7f',
+                '--changelog-h-border': '#66ff99',
+                '--progress-bg': '#00ff7f',
+                '--progress-text': '#0a0a0a',
+                '--cooling-color': '#ffd700', /* Gold for cooling */
+                '--gemini-button-bg': 'linear-gradient(45deg, #4b0082 0%, #8a2be2 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #3a006f 0%, #701fd0 100%)',
+                '--gemini-button-border': '#9932cc',
+                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
+            },
+            { // Deep Purple/Magenta
+                '--bg-color': 'linear-gradient(180deg, #150015 0%, #000000 100%)',
+                '--text-color': '#ff00ff', /* Neon Magenta */
+                '--title-color': '#ff00ff',
+                '--label-color': '#ff66ff',
+                '--input-bg': 'rgba(10, 0, 10, 0.7)',
+                '--input-border': '#ff00ff',
+                '--panel-bg': 'rgba(15, 0, 15, 0.8)',
+                '--panel-border': '#ff00ff',
+                '--button-primary-bg': 'linear-gradient(45deg, #8a2be2 0%, #4b0082 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #7a1be2 0%, #3b0072 100%)',
+                '--button-primary-border': '#ff00ff',
+                '--button-secondary-bg': 'linear-gradient(45deg, #00ffff 0%, #00aaff 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #00dddd 0%, #0099ee 100%)',
+                '--button-secondary-border': '#00ffff',
+                '--button-success-bg': 'linear-gradient(45deg, #00ff00 0%, #00aa00 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #00ee00 0%, #009900 100%)',
+                '--button-success-border': '#00ff00',
+                '--button-info-bg': 'linear-gradient(45deg, #aaaaaa 0%, #777777 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #999999 0%, #666666 100%)',
+                '--button-info-border': '#cccccc',
+                '--button-accent-bg': 'linear-gradient(45deg, #ffd700 0%, #ffa500 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #eec700 0%, #ee9500 100%)',
+                '--button-accent-border': '#ffd700',
+                '--changelog-modal-bg': 'rgba(10, 0, 10, 0.9)',
+                '--changelog-text-color': '#ffeeff',
+                '--changelog-border-color': '#ff00ff',
+                '--changelog-h-color': '#ff00ff',
+                '--changelog-h-border': '#ff66ff',
+                '--progress-bg': '#ff00ff',
+                '--progress-text': '#0a0a0a',
+                '--cooling-color': '#00ffff',
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
+            },
+        ];
+
+        const dayModePalettes = [
+            { // Soft Pastel Blue/Pink
+                '--bg-color': 'linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%)',
+                '--text-color': '#5e35b1',
+                '--title-color': '#ff4081',
+                '--label-color': '#64dd17',
+                '--input-bg': 'rgba(255, 255, 255, 0.95)',
+                '--input-border': '#ff4081',
+                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
+                '--panel-border': '#ff4081',
+                '--button-primary-bg': 'linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #ff6090 0%, #6090ff 100%)',
+                '--button-primary-border': '#82b1ff',
+                '--button-secondary-bg': 'linear-gradient(45deg, #ffd740 0%, #ff8a80 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #ffcc30 0%, #ff7070 100%)',
+                '--button-secondary-border': '#ff8a80',
+                '--button-success-bg': 'linear-gradient(45deg, #69f0ae 0%, #18ffff 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #50e090 0%, #00e0e0 100%)',
+                '--button-success-border': '#18ffff',
+                '--button-info-bg': 'linear-gradient(45deg, #b388ff 0%, #8c9eff 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #a070e0 0%, #7080ff 100%)',
+                '--button-info-border': '#8c9eff',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff1744 0%, #f50057 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #e00030 0%, #d00040 100%)',
+                '--button-accent-border': '#f50057',
+                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
+                '--changelog-text-color': '#333333',
+                '--changelog-border-color': 'var(--button-secondary-border)',
+                '--changelog-h-color': 'var(--title-color)',
+                '--changelog-h-border': 'var(--label-color)',
+                '--progress-bg': 'var(--title-color)',
+                '--progress-text': '#ffffff',
+                '--cooling-color': '#00bcd4',
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
+            },
+            { // Warm Autumn Hues
+                '--bg-color': 'linear-gradient(135deg, #fceabb 0%, #f8b500 100%)',
+                '--text-color': '#8b4513', /* Saddle Brown */
+                '--title-color': '#d2691e', /* Chocolate */
+                '--label-color': '#a0522d', /* Sienna */
+                '--input-bg': 'rgba(255, 255, 255, 0.95)',
+                '--input-border': '#d2691e',
+                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
+                '--panel-border': '#d2691e',
+                '--button-primary-bg': 'linear-gradient(45deg, #ff8c00 0%, #ff4500 100%)', /* Dark Orange to Orange Red */
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #ee7c00 0%, #ee3500 100%)',
+                '--button-primary-border': '#ff4500',
+                '--button-secondary-bg': 'linear-gradient(45deg, #8b4513 0%, #a0522d 100%)', /* Saddle Brown to Sienna */
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #7b3503 0%, #90421d 100%)',
+                '--button-secondary-border': '#a0522d',
+                '--button-success-bg': 'linear-gradient(45deg, #3cb371 0%, #2e8b57 100%)', /* Medium Sea Green to Sea Green */
+                '--button-success-hover-bg': 'linear-gradient(45deg, #2c9361 0%, #1e7b47 100%)',
+                '--button-success-border': '#2e8b57',
+                '--button-info-bg': 'linear-gradient(45deg, #b0c4de 0%, #87ceeb 100%)', /* Light Steel Blue to Sky Blue */
+                '--button-info-hover-bg': 'linear-gradient(45deg, #a0b4ce 0%, #77bdeb 100%)',
+                '--button-info-border': '#87ceeb',
+                '--button-accent-bg': 'linear-gradient(45deg, #dc143c 0%, #b22222 100%)', /* Crimson to Firebrick */
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #cc042c 0%, #a21212 100%)',
+                '--button-accent-border': '#b22222',
+                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
+                '--changelog-text-color': '#555555',
+                '--changelog-border-color': 'var(--button-secondary-border)',
+                '--changelog-h-color': 'var(--title-color)',
+                '--changelog-h-border': 'var(--label-color)',
+                '--progress-bg': 'var(--title-color)',
+                '--progress-text': '#ffffff',
+                '--cooling-color': '#00aaff', /* Blue for cooling */
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
+            },
+            { // Fresh Spring Greens
+                '--bg-color': 'linear-gradient(135deg, #d4edda 0%, #f0fff0 100%)',
+                '--text-color': '#2e8b57', /* Sea Green */
+                '--title-color': '#3cb371', /* Medium Sea Green */
+                '--label-color': '#66cdaa', /* Medium Aquamarine */
+                '--input-bg': 'rgba(255, 255, 255, 0.95)',
+                '--input-border': '#3cb371',
+                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
+                '--panel-border': '#3cb371',
+                '--button-primary-bg': 'linear-gradient(45deg, #66cdaa 0%, #4682b4 100%)', /* Medium Aquamarine to Steel Blue */
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #56bda0 0%, #3672a4 100%)',
+                '--button-primary-border': '#4682b4',
+                '--button-secondary-bg': 'linear-gradient(45deg, #f0e68c 0%, #ffd700 100%)', /* Khaki to Gold */
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #e0d67c 0%, #eec700 100%)',
+                '--button-secondary-border': '#ffd700',
+                '--button-success-bg': 'linear-gradient(45deg, #98fb98 0%, #32cd32 100%)', /* Pale Green to Lime Green */
+                '--button-success-hover-bg': 'linear-gradient(45deg, #88ea88 0%, #22bb22 100%)',
+                '--button-success-border': '#32cd32',
+                '--button-info-bg': 'linear-gradient(45deg, #add8e6 0%, #87ceeb 100%)', /* Light Blue to Sky Blue */
+                '--button-info-hover-bg': 'linear-gradient(45deg, #99c8d6 0%, #77bdea 100%)',
+                '--button-info-border': '#87ceeb',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff6347 0%, #ff4500 100%)', /* Tomato to Orange Red */
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee5337 0%, #ee3500 100%)',
+                '--button-accent-border': '#ff4500',
+                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
+                '--changelog-text-color': '#444444',
+                '--changelog-border-color': 'var(--button-secondary-border)',
+                '--changelog-h-color': 'var(--title-color)',
+                '--changelog-h-border': 'var(--label-color)',
+                '--progress-bg': 'var(--title-color)',
+                '--progress-text': '#ffffff',
+                '--cooling-color': '#ff6347', /* Tomato for cooling */
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
+            },
+        ];
+
+        /**
+         * Utility to apply a given color palette to CSS variables.
+         * @param {Object} palette - An object containing CSS variable names and their values.
+         */
+        function applyColorPalette(palette) {
+            const root = document.documentElement;
+            for (const key in palette) {
+                root.style.setProperty(key, palette[key]);
+            }
+        }
 
         /**
          * 显示加载指示器。
@@ -500,8 +770,8 @@
 
             let timeStr = "";
             if (hours > 0) timeStr += `${hours} 小时 `;
-            if (minutes > 0 || hours > 0) timeStr += `${minutes} 分 `; // 如果存在小时或分钟，则显示分钟
-            timeStr += `${seconds} 秒`; // 始终显示秒
+            if (minutes > 0 || hours > 0) timeStr += `${minutes} 分 `;
+            timeStr += `${seconds} 秒`;
 
             return timeStr.trim();
         }
@@ -523,7 +793,7 @@
         }
 
         /**
-         * 切换日间和夜间主题。
+         * 切换日间和夜间主题，并随机选择配色。
          */
         function toggleTheme() {
             const isDayMode = document.body.classList.contains('day-mode');
@@ -531,7 +801,7 @@
         }
 
         /**
-         * 设置主题（日间或夜间）并更新按钮文本。
+         * 设置主题（日间或夜间）并更新按钮文本及随机配色。
          * @param {boolean} enableDayMode - true 表示日间模式，false 表示夜间模式。
          */
         function setTheme(enableDayMode) {
@@ -539,10 +809,14 @@
                 document.body.classList.add('day-mode');
                 localStorage.setItem('theme', 'day');
                 ui.themeToggleBtn.textContent = '🌑 夜间模式';
+                const randomPalette = dayModePalettes[Math.floor(Math.random() * dayModePalettes.length)];
+                applyColorPalette(randomPalette);
             } else {
                 document.body.classList.remove('day-mode');
                 localStorage.setItem('theme', 'night');
                 ui.themeToggleBtn.textContent = '🌓 日间模式';
+                const randomPalette = nightModePalettes[Math.floor(Math.random() * nightModePalettes.length)];
+                applyColorPalette(randomPalette);
             }
             // 切换主题后立即更新 Chart.js 默认颜色
             Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
@@ -593,14 +867,14 @@
                 if (isCoolingEnabled) {
                     socZones = [
                         { upto: 2, factor: 0.99 },
-                        { upto: 10, factor: 0.97 },
-                        { upto: 30, factor: 0.90 },
-                        { upto: 50, factor: 0.82 },
-                        { upto: 70, factor: 0.70 },
-                        { upto: 85, factor: 0.50 },
-                        { upto: 90, factor: 0.35 },
-                        { upto: 95, factor: 0.18 },
-                        { upto: 100, factor: 0.07 }
+                        { upto: 10, factor: 0.98 },
+                        { upto: 30, factor: 0.95 },
+                        { upto: 50, factor: 0.88 },
+                        { upto: 70, factor: 0.78 },
+                        { upto: 85, factor: 0.65 },
+                        { upto: 90, factor: 0.45 },
+                        { upto: 95, factor: 0.25 },
+                        { upto: 100, factor: 0.10 }
                     ];
                 } else { // 无冷却 - 因子略低
                     socZones = [
@@ -621,16 +895,16 @@
                 if (batteryCapacity === 60.7) { // 60.7 kWh 3C 的特定因子
                     if (isCoolingEnabled) {
                         socZones = [
-                            { upto: 2, factor: 0.98 }, // Targeting ~260kW out of 265kW possible. 265 * 0.98 = 259.7 kW.
-                            { upto: 10, factor: 0.92 },
-                            { upto: 30, factor: 0.72 },
-                            { upto: 50, factor: 0.57 },
-                            { upto: 70, factor: 0.42 },
-                            { upto: 85, factor: 0.30 },
-                            { upto: 90, factor: 0.22 },
-                            { upto: 95, factor: 0.15 },
-                            { upto: 98, factor: 0.07 },
-                            { upto: 100, factor: 0.02 }
+                            { upto: 2, factor: 0.99 }, 
+                            { upto: 10, factor: 0.96 }, 
+                            { upto: 30, factor: 0.80 }, 
+                            { upto: 50, factor: 0.65 }, 
+                            { upto: 70, factor: 0.50 }, 
+                            { upto: 85, factor: 0.38 }, 
+                            { upto: 90, factor: 0.28 }, 
+                            { upto: 95, factor: 0.20 }, 
+                            { upto: 98, factor: 0.10 }, 
+                            { upto: 100, factor: 0.04 } 
                         ];
                     } else { // 无冷却
                         socZones = [
@@ -646,17 +920,17 @@
                             { upto: 100, factor: 0.015 }
                         ];
                     }
-                } else if (batteryCapacity === 76.3) { // 76.3 kWh 3C 的特定因子
+                } else if (batteryCapacity === 76.3) { // 76.3 kWh 3C 的特定因子 - 优化区域 (Updated based on user data)
                     if (isCoolingEnabled) {
                         socZones = [
                             { upto: 2, factor: 0.99 },
-                            { upto: 10, factor: 0.96 },
-                            { upto: 30, factor: 0.88 },
-                            { upto: 50, factor: 0.72 },
-                            { upto: 70, factor: 0.60 },
-                            { upto: 85, factor: 0.40 },
-                            { upto: 90, factor: 0.28 },
-                            { upto: 95, factor: 0.15 },
+                            { upto: 10, factor: 0.97 }, 
+                            { upto: 30, factor: 0.94 },
+                            { upto: 50, factor: 0.88 },
+                            { upto: 70, factor: 0.75 },
+                            { upto: 85, factor: 0.60 },
+                            { upto: 90, factor: 0.40 },
+                            { upto: 95, factor: 0.20 },
                             { upto: 98, factor: 0.07 },
                             { upto: 100, factor: 0.02 }
                         ];
@@ -739,11 +1013,11 @@
             ui.charger.innerHTML = "";
 
             const chargers = [
-                { name: `S5（液冷超充）`, power: S5_LIMIT_KW },
-                { name: `S4（超充）`, power: S4_LIMIT_KW },
-                { name: "S2（普通快充）", power: S2_LIMIT_KW },
-                { name: "第三方快充", power: THIRD_PARTY_LIMIT_KW, note: " (通常80-120 kW)" },
-                { name: "家用充电桩", power: HOME_CHARGER_KW } 
+                { name: `「算法模型未优化」S5（液冷超充）`, power: S5_LIMIT_KW },
+                { name: `「算法模型已部分优化」S4（超充）`, power: S4_LIMIT_KW },
+                { name: "「算法模型未优化」S2（普通快充）", power: S2_LIMIT_KW },
+                { name: "「算法模型未优化」第三方快充", power: THIRD_PARTY_LIMIT_KW, note: " (通常80-120 kW)" },
+                { name: "「算法模型未优化」家用充电桩", power: HOME_CHARGER_KW } 
             ];
 
             chargers.forEach(c => {
@@ -767,7 +1041,20 @@
                     let startSoC = parseFloat(ui.startSoC.value);
                     let endSoC = parseFloat(ui.endSoC.value);
                     let actualKWh = parseFloat(ui.actualKWh.value);
-                    let numSharingVehicles = parseInt(ui.numSharingVehicles.value);
+                    
+                    // Get individual counts of *other* vehicles
+                    const xp800vCount = parseInt(ui.xp800vCount.value) || 0;
+                    const xp400vCount = parseInt(ui.xp400vCount.value) || 0;
+                    const thirdParty800vCount = parseInt(ui.thirdParty800vCount.value) || 0;
+                    const thirdParty400vCount = parseInt(ui.thirdParty400vCount.value) || 0;
+                    const rogueBMSCount = parseInt(ui.rogueBMSCount.value) || 0;
+
+                    // Calculate total *other* sharing vehicles for display
+                    const totalOtherSharingVehicles = xp800vCount + xp400vCount + thirdParty800vCount + thirdParty400vCount + rogueBMSCount;
+                    ui.totalSharingVehicles.value = totalOtherSharingVehicles;
+
+                    // numTotalVehicles represents the total vehicles at the station, including the user's car
+                    let numTotalVehicles = 1 + totalOtherSharingVehicles; // User's car + other cars
 
                     const capacity = parseFloat(ui.model.value);
 
@@ -788,12 +1075,6 @@
                         const theoreticalForRange = capacity * ((endSoC - startSoC) / 100);
                         actualKWh = theoreticalForRange * getRandomFloat(1.05, 1.15); // 添加一个小的损耗因子进行随机填充
                         ui.actualKWh.value = actualKWh.toFixed(3);
-                    }
-
-                    // 自动填充和验证 numSharingVehicles
-                    if (isNaN(numSharingVehicles) || numSharingVehicles < 1) {
-                        numSharingVehicles = 1; // 默认为 1
-                        ui.numSharingVehicles.value = numSharingVehicles;
                     }
 
                     const selectedModelOption = ui.model.selectedOptions[0];
@@ -826,13 +1107,24 @@
                         stationTotalSharedPower = selectedChargerNominalPower;
                     }
 
-                    // 计算每个车辆在站点可用的有效功率
-                    // 备注：此计算器仍基于平均分配原则，但会受车辆自身最大功率限制，间接体现 BMS 优势
+                    // 计算每个车辆在站点可用的有效功率，并考虑非均衡分配因子
                     let effectiveStationPowerPerVehicle;
                     if (selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) {
-                        effectiveStationPowerPerVehicle = stationTotalSharedPower / numSharingVehicles;
+                        effectiveStationPowerPerVehicle = stationTotalSharedPower / numTotalVehicles;
+                        // 如果同站占用车辆数量大于2，引入额外影响因子，模拟非均衡分配导致的效率下降
+                        if (numTotalVehicles > 2) {
+                            effectiveStationPowerPerVehicle *= 0.9; // 10% 的额外损耗因子
+                        }
+                        // 应用特定流氓BMS惩罚
+                        if (rogueBMSCount > 0) {
+                            effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                        }
                     } else {
-                        effectiveStationPowerPerVehicle = stationTotalSharedPower;
+                        effectiveStationPowerPerVehicle = selectedChargerNominalPower; // 对于S2或第三方充电桩，通常是单桩功率，不进行站点共享分配
+                        // 应用特定流氓BMS惩罚
+                        if (rogueBMSCount > 0) {
+                            effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                        }
                     }
 
                     // For home charger, the effective power is simply the charger's nominal power, not capped by car max power.
@@ -877,7 +1169,8 @@
 充电损耗率: ${lossRate.toFixed(2)} %
 综合充电效率: ${overallEfficiency.toFixed(2)} %
 充电桩类型: ${chargerTypeName}
-同站占用充电桩数量: ${numSharingVehicles}
+同站占用车辆总数 (含本车): ${numTotalVehicles}
+其中BMS流氓车型数量: ${rogueBMSCount}
 额外损耗因子: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : '无'}
 S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
 `;
@@ -897,7 +1190,8 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                         lossRate: lossRate,
                         overallEfficiency: overallEfficiency,
                         chargerTypeName: chargerTypeName,
-                        numSharingVehicles: numSharingVehicles,
+                        totalVehiclesAtStation: numTotalVehicles, // Changed to total vehicles
+                        rogueBMSCount: rogueBMSCount, // New field for LLM
                         activeLossFactors: activeLossFactors,
                         isCoolingEnabled: ui.enableCooling.checked
                     };
@@ -917,7 +1211,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
 
                 } catch (error) {
                     console.error("计算过程中发生错误:", error);
-                    showCustomAlert(`计算过程中发生错误: ${error.message}. 请检查输入或联系开发者。`);
+                    showCustomAlert(`计算过程中发生错误: ${error.message}. 请检查输入。`);
                 } finally {
                     hideLoadingIndicator(); // 始终隐藏加载指示器
                 }
@@ -948,14 +1242,14 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 if (isCoolingEnabled) {
                     socZonesModel = [
                         { upto: 2, factor: 0.99 },
-                        { upto: 10, factor: 0.97 },
-                        { upto: 30, factor: 0.90 },
-                        { upto: 50, factor: 0.82 },
-                        { upto: 70, factor: 0.70 },
-                        { upto: 85, factor: 0.50 },
-                        { upto: 90, factor: 0.35 },
-                        { upto: 95, factor: 0.18 },
-                        { upto: 100, factor: 0.07 }
+                        { upto: 10, factor: 0.98 },
+                        { upto: 30, factor: 0.95 },
+                        { upto: 50, factor: 0.88 },
+                        { upto: 70, factor: 0.78 },
+                        { upto: 85, factor: 0.65 },
+                        { upto: 90, factor: 0.45 },
+                        { upto: 95, factor: 0.25 },
+                        { upto: 100, factor: 0.10 }
                     ];
                 } else { // 无冷却 - 因子略低
                     socZonesModel = [
@@ -974,16 +1268,16 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 if (batteryCapacity === 60.7) { // 60.7 kWh 3C 的特定因子
                     if (isCoolingEnabled) {
                         socZonesModel = [
-                            { upto: 2, factor: 0.98 }, 
-                            { upto: 10, factor: 0.92 },
-                            { upto: 30, factor: 0.72 },
-                            { upto: 50, factor: 0.57 },
-                            { upto: 70, factor: 0.42 },
-                            { upto: 85, factor: 0.30 },
-                            { upto: 90, factor: 0.22 },
-                            { upto: 95, factor: 0.15 },
-                            { upto: 98, factor: 0.07 },
-                            { upto: 100, factor: 0.02 }
+                            { upto: 2, factor: 0.99 }, 
+                            { upto: 10, factor: 0.96 }, 
+                            { upto: 30, factor: 0.80 }, 
+                            { upto: 50, factor: 0.65 }, 
+                            { upto: 70, factor: 0.50 }, 
+                            { upto: 85, factor: 0.38 }, 
+                            { upto: 90, factor: 0.28 }, 
+                            { upto: 95, factor: 0.20 }, 
+                            { upto: 98, factor: 0.10 }, 
+                            { upto: 100, factor: 0.04 } 
                         ];
                     } else { // 无冷却
                         socZonesModel = [
@@ -999,17 +1293,17 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                             { upto: 100, factor: 0.015 }
                         ];
                     }
-                } else if (batteryCapacity === 76.3) { // 76.3 kWh 3C 的特定因子
+                } else if (batteryCapacity === 76.3) { // 76.3 kWh 3C 的特定因子 - 优化区域 (Updated based on user data)
                     if (isCoolingEnabled) {
                         socZonesModel = [
                             { upto: 2, factor: 0.99 },
-                            { upto: 10, factor: 0.96 },
-                            { upto: 30, factor: 0.88 },
-                            { upto: 50, factor: 0.72 },
-                            { upto: 70, factor: 0.60 },
-                            { upto: 85, factor: 0.40 },
-                            { upto: 90, factor: 0.28 },
-                            { upto: 95, factor: 0.15 },
+                            { upto: 10, factor: 0.97 }, 
+                            { upto: 30, factor: 0.94 },
+                            { upto: 50, factor: 0.88 },
+                            { upto: 70, factor: 0.75 },
+                            { upto: 85, factor: 0.60 },
+                            { upto: 90, factor: 0.40 },
+                            { upto: 95, factor: 0.20 },
                             { upto: 98, factor: 0.07 },
                             { upto: 100, factor: 0.02 }
                         ];
@@ -1055,48 +1349,53 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             while (currentSoC < endSoC) {
                 const nextSoC = Math.min(currentSoC + socStep, endSoC);
 
+                // Advance currentZoneIndex if needed
                 while (currentZoneIndex < socZonesModel.length && currentSoC >= socZonesModel[currentZoneIndex].upto) {
                     currentZoneIndex++;
                 }
 
+                let canProcessSoC = true; // Flag to control processing this SoC step
+                let effectivePowerAtSoC = 0;
+                let simulatedVoltageAtSoC = 0;
+                let estimatedCurrentAtSoC = 0;
+
                 if (currentZoneIndex >= socZonesModel.length) {
-                    break;
-                }
-
-                const currentZone = socZonesModel[currentZoneIndex];
-                
-                if (!currentZone || typeof currentZone.factor === 'undefined') {
-                    console.error("错误：在 SoC 区间", currentSoC, "处发现无效的充电区域数据或因子。", "Index:", currentZoneIndex, "Zone Model Length:", socZonesModel.length, "Current Zone:", currentZone);
-                    currentSoC = nextSoC;
-                    continue; 
-                }
-
-                const effectivePower = sessionMaxPower * currentZone.factor;
-                
-                let simulatedVoltage;
-                if (isHomeCharger) {
-                    simulatedVoltage = HOME_CHARGER_VOLTAGE; // Fixed 220V for home charger
+                    // No valid zone found for currentSoC, just advance SoC
+                    canProcessSoC = false;
                 } else {
-                    // Dynamic voltage logic for fast chargers
-                    if (currentSoC < 20) { // Very low SoC, potentially lower voltage due to high current demand
-                        simulatedVoltage = platformVoltage * getRandomFloat(0.970, 0.990); // e.g., 776V - 792V for 800V nominal
-                    } else if (currentSoC < 50) { // Low to mid SoC
-                        simulatedVoltage = platformVoltage * getRandomFloat(0.985, 1.005); // e.g., 788V - 804V
-                    } else { // Mid to high SoC, more stable voltage
-                        simulatedVoltage = platformVoltage * getRandomFloat(0.995, 1.015); // e.g., 796V - 812V
+                    const currentZone = socZonesModel[currentZoneIndex];
+                    
+                    if (!currentZone || typeof currentZone.factor === 'undefined') {
+                        console.error("错误：在 SoC 区间", currentSoC, "处发现无效的充电区域数据或因子。", "Index:", currentZoneIndex, "Zone Model Length:", socZonesModel.length, "Current Zone:", currentZone);
+                        canProcessSoC = false;
+                    } else {
+                        effectivePowerAtSoC = sessionMaxPower * currentZone.factor;
+                        if (effectivePowerAtSoC <= 0) {
+                            canProcessSoC = false;
+                        } else {
+                            if (isHomeCharger) {
+                                simulatedVoltageAtSoC = HOME_CHARGER_VOLTAGE;
+                            } else {
+                                const simulatedSoCForVoltage = currentSoC + (socStep / 2); // Use midpoint for voltage simulation
+                                if (simulatedSoCForVoltage < 20) {
+                                    simulatedVoltageAtSoC = platformVoltage * getRandomFloat(0.970, 0.990);
+                                } else if (simulatedSoCForVoltage < 50) {
+                                    simulatedVoltageAtSoC = platformVoltage * getRandomFloat(0.985, 1.005);
+                                } else {
+                                    simulatedVoltageAtSoC = platformVoltage * getRandomFloat(0.995, 1.015);
+                                }
+                                simulatedVoltageAtSoC = Math.max(750, Math.min(850, simulatedVoltageAtSoC));
+                            }
+                            estimatedCurrentAtSoC = (effectivePowerAtSoC * 1000) / simulatedVoltageAtSoC;
+                        }
                     }
-                    // Clamp within a reasonable 800V platform range, e.g., 750V-850V
-                    simulatedVoltage = Math.max(750, Math.min(850, simulatedVoltage));
                 }
-
-                if (effectivePower <= 0) {
-                    currentSoC = nextSoC;
-                    continue;
+                
+                if (canProcessSoC) {
+                    data.push({ soc: currentSoC, power: effectivePowerAtSoC, voltage: simulatedVoltageAtSoC, amps: estimatedCurrentAtSoC });
                 }
-
-                const estimatedCurrent = (effectivePower * 1000) / simulatedVoltage;
-                data.push({ soc: currentSoC, power: effectivePower, voltage: simulatedVoltage, amps: estimatedCurrent });
-                currentSoC = nextSoC;
+                
+                currentSoC = nextSoC; // Always advance SoC for the next iteration
             }
             return data;
         }
@@ -1106,7 +1405,12 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
          * @param {Array<Object>} data - 包含 SoC、功率、电压、电流的数据。
          */
         function displayDetailedTable(data) {
-            ui.dataTableHead.innerHTML = `<tr><th>SoC(%)</th><th>功率(kW)</th><th>电压(V)</th><th>电流(A)</th></tr>`;
+            const tableHead = document.querySelector('#dataTable thead');
+            if (tableHead) {
+                tableHead.innerHTML = `<tr><th>SoC(%)</th><th>功率(kW)</th><th>电压(V)</th><th>电流(A)</th></tr>`;
+            } else {
+                console.error("Could not find #dataTable thead element.");
+            }
             ui.dataTableBody.innerHTML = data.map(d => `<tr><td>${d.soc.toFixed(2)}</td><td>${d.power.toFixed(2)}</td><td>${d.voltage.toFixed(0)}</td><td>${d.amps.toFixed(2)}</td></tr>`).join('');
             ui.tableContainer.classList.remove('hidden');
         }
@@ -1118,11 +1422,21 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             const capacity = parseFloat(ui.model.value);
             const { c: maxCRate } = ui.model.selectedOptions[0].dataset;
             const selectedChargerNominalPower = parseFloat(ui.charger.value);
-            const numSharingVehicles = Math.max(1, parseInt(ui.numSharingVehicles.value) || 1);
+            
+            // Get individual counts of *other* vehicles
+            const xp800vCount = parseInt(ui.xp800vCount.value) || 0;
+            const xp400vCount = parseInt(ui.xp400vCount.value) || 0;
+            const thirdParty800vCount = parseInt(ui.thirdParty800vCount.value) || 0;
+            const thirdParty400vCount = parseInt(ui.thirdParty400vCount.value) || 0;
+            const rogueBMSCount = parseInt(ui.rogueBMSCount.value) || 0;
+
+            // numTotalVehicles represents the total vehicles at the station, including the user's car
+            let numTotalVehicles = 1 + xp800vCount + xp400vCount + thirdParty800vCount + thirdParty400vCount + rogueBMSCount;
+
             const start = parseFloat(ui.quickStart.value);
             const end = parseFloat(ui.quickEnd.value);
 
-            if (isNaN(start) || isNaN(end) || start >= end || capacity <= 0 || selectedChargerNominalPower <= 0 || isNaN(numSharingVehicles)) {
+            if (isNaN(start) || isNaN(end) || start >= end || capacity <= 0 || selectedChargerNominalPower <= 0 || isNaN(numTotalVehicles)) {
                 showCustomAlert("输入无效。请检查起始和结束电量，并确保起始电量小于结束电量。");
                 ui.quickResult.textContent = "输入无效";
                 return;
@@ -1149,9 +1463,21 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
 
             let effectiveStationPowerPerVehicle;
             if (selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) {
-                 effectiveStationPowerPerVehicle = stationTotalSharedPower / numSharingVehicles;
+                effectiveStationPowerPerVehicle = stationTotalSharedPower / numTotalVehicles;
+                // 如果同站占用车辆数量大于2，引入额外影响因子，模拟非均衡分配导致的效率下降
+                if (numTotalVehicles > 2) {
+                    effectiveStationPowerPerVehicle *= 0.9; // 10% 的额外损耗因子
+                }
+                // 应用特定流氓BMS惩罚
+                if (rogueBMSCount > 0) {
+                    effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                }
             } else {
-                 effectiveStationPowerPerVehicle = stationTotalSharedPower;
+                effectiveStationPowerPerVehicle = selectedChargerNominalPower; // 对于S2或第三方充电桩，通常是单桩功率，不进行站点共享分配
+                // 应用特定流氓BMS惩罚
+                if (rogueBMSCount > 0) {
+                    effectiveStationPowerPerVehicle *= 0.85; // 15% 额外损耗因子
+                }
             }
             
             // For home charger, the effective power is simply the charger's nominal power, not capped by car max power.
@@ -1173,7 +1499,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
         }
 
         /**
-         * 调用 Gemini API 获取智能充电建议。
+         * 调用 API 获取智能充电建议。
          */
         async function getSmartChargingAdvice() {
             if (!window.lastCalculatedData) { 
@@ -1189,7 +1515,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 const {
                     modelName, platformVoltage, startSoC, endSoC, formattedChargeTime,
                     theoreticalKWh, actualKWh, totalLossKWh, lossRate, overallEfficiency,
-                    chargerTypeName, numSharingVehicles, activeLossFactors, isCoolingEnabled
+                    chargerTypeName, totalVehiclesAtStation, rogueBMSCount, activeLossFactors, isCoolingEnabled
                 } = window.lastCalculatedData; 
 
                 const prompt = `
@@ -1205,7 +1531,8 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
 充电损耗率: ${lossRate.toFixed(2)} %
 综合充电效率: ${overallEfficiency.toFixed(2)} %
 充电桩类型: ${chargerTypeName}
-同站占用充电桩数量: ${numSharingVehicles}
+同站占用充电桩总数 (含本车): ${totalVehiclesAtStation}
+其中BMS流氓车型数量: ${rogueBMSCount}
 额外损耗因子: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : '无'}
 S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
 
@@ -1220,7 +1547,8 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                 let chatHistory = [];
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                 const payload = { contents: chatHistory };
-                const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                // API key should be handled by the Canvas environment for gemini-2.0-flash
+                const apiKey = ""; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -1231,6 +1559,7 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
 
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error("API Error:", errorData); // Log the full error response
                     throw new Error(`API错误: ${response.status} ${response.statusText} - ${errorData.error ? errorData.error.message : '未知错误'}`);
                 }
 
@@ -1246,7 +1575,7 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                     console.error("LLM响应结构异常:", result);
                 }
             } catch (error) {
-                console.error("调用 Gemini API 时发生错误:", error);
+                console.error("调用 API 时发生错误:", error);
                 ui.smartAdvice.textContent = `获取建议失败: ${error.message}`;
             } finally {
                 hideLoadingIndicator();
@@ -1466,36 +1795,40 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
             timeLabels.forEach((_, index) => {
                 const s = index * intervalSeconds;
                 const progressRatio = s / totalDurationSeconds; 
-                let currentPower = powerKW;
+                let currentPower = powerKW; 
                 
                 // Simulate power tapering for the IV chart (more aggressive drop than actual charge time model)
                 // For home charger, power is constant, no tapering.
                 if (!isHomeCharger) {
-                    if (progressRatio > 0.8) currentPower *= 0.4; // More aggressive taper at high SoC
+                    if (progressRatio > 0.8) currentPower *= 0.4;
                     else if (progressRatio > 0.6) currentPower *= 0.6;
                     else if (progressRatio > 0.3) currentPower *= 0.8;
                 }
 
-                // Simulate voltage fluctuation based on charger type and SoC
-                let currentVoltage;
+                let currentVoltage; 
                 if (isHomeCharger) {
                     currentVoltage = nominalVoltage; // Fixed 220V for home charger
                 } else {
                     const simulatedSoC = startSoC + (endSoC - startSoC) * progressRatio;
                     if (simulatedSoC < 20) { // Very low SoC, potentially lower voltage due to high current demand
-                        simulatedVoltage = nominalVoltage * getRandomFloat(0.970, 0.990); // e.g., 776V - 792V for 800V nominal
+                        currentVoltage = nominalVoltage * getRandomFloat(0.970, 0.990); // e.g., 776V - 792V for 800V nominal
                     } else if (simulatedSoC < 50) { // Low to mid SoC
-                        simulatedVoltage = nominalVoltage * getRandomFloat(0.985, 1.005); // e.g., 788V - 804V
+                        currentVoltage = nominalVoltage * getRandomFloat(0.985, 1.005); // e.g., 788V - 804V
                     } else { // Mid to high SoC, more stable voltage
-                        simulatedVoltage = nominalVoltage * getRandomFloat(0.995, 1.015); // e.g., 796V - 812V
+                        currentVoltage = nominalVoltage * getRandomFloat(0.995, 1.015); // e.g., 796V - 812V
                     }
                     // Clamp within a reasonable 800V platform range, e.g., 750V-850V
-                    simulatedVoltage = Math.max(750, Math.min(850, simulatedVoltage));
+                    currentVoltage = Math.max(750, Math.min(850, currentVoltage));
                 }
 
-                const currentAmps = (currentPower * 1000) / currentVoltage;
-                currentData.push(currentAmps);
-                voltageData.push(currentVoltage);
+                if (currentPower <= 0) {
+                    // If current power is zero or negative, skip this point (current and voltage would be invalid)
+                    // No 'continue' needed here, as we are simply not pushing data for this step.
+                } else {
+                    const estimatedCurrent = (currentPower * 1000) / currentVoltage;
+                    currentData.push(estimatedCurrent);
+                    voltageData.push(currentVoltage);
+                }
             });
 
             const options = chartOptionsTemplate(`📉 模拟电流/电压 (${nominalVoltage}V 平台)`, true);
@@ -1666,7 +1999,8 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         // --- Event Listeners and Initial Setup ---
 
         // Attach change listeners to input elements that should trigger recalculation
-        ['model', 'charger', 'numSharingVehicles', 'enableCooling', 'ac', 'preheat', 'cold', 'hot', 'autopilot', 'load', 'start', 'end', 'actual'].forEach(id => {
+        ['model', 'charger', 'enableCooling', 'ac', 'preheat', 'cold', 'hot', 'autopilot', 'load', 'start', 'end', 'actual',
+         'xp800vCount', 'xp400vCount', 'thirdParty800vCount', 'thirdParty400vCount', 'rogueBMSCount'].forEach(id => {
             const element = document.getElementById(id);
             if (element) {
                 element.addEventListener('change', calculate);
@@ -1678,12 +2012,21 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
             updateChargerOptions();
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'day') {
-                setTheme(true);
+                setTheme(true); // Apply saved day theme, which will also pick a random palette
             } else {
-                setTheme(false); 
+                setTheme(false); // Apply saved night theme, which will also pick a random palette
             }
-            populateChangelog(); // Populate changelog on load
-            calculate(); 
+            populateChangelog(); 
+            calculate(); // Initial calculation on load
+
+            // Attach event listeners programmatically for buttons
+            if (ui.calculateBtn) ui.calculateBtn.addEventListener('click', calculate);
+            if (ui.quickEstimateBtn) ui.quickEstimateBtn.addEventListener('click', quickEstimate);
+            if (ui.smartAdviceBtn) ui.smartAdviceBtn.addEventListener('click', getSmartChargingAdvice);
+            if (ui.copyResultBtn) ui.copyResultBtn.addEventListener('click', copyResult);
+            if (ui.changelogModalBtn) ui.changelogModalBtn.addEventListener('click', () => toggleChangelogModal(true));
+            if (ui.fullscreenToggleBtn) ui.fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
+            if (ui.themeToggleBtn) ui.themeToggleBtn.addEventListener('click', toggleTheme);
         });
 
         document.addEventListener('copy', (e) => {
@@ -1694,9 +2037,8 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         });
 
         // --- Wandering Rabbit Animation Logic ---
-        // Dynamically create the rabbit element to ensure it uses the CSS variable for its SVG
         const wanderingRabbit = document.createElement('div');
-        wanderingRabbit.id = 'wandering-rabbit'; // Use the ID from the HTML to apply CSS
+        wanderingRabbit.id = 'wandering-rabbit';
         document.body.appendChild(wanderingRabbit);
 
         let targetX = Math.random() * (window.innerWidth - 64); 
@@ -1708,12 +2050,12 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         wanderingRabbit.style.top = `${currentY}px`;
 
         function animateRabbit() {
-            const speed = 2; // Pixels per frame for smoother movement
+            const speed = 2;
             const distanceX = targetX - currentX;
             const distanceY = targetY - currentY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            if (distance < speed || distance > 500) { // If very close or too far, reset target
+            if (distance < speed || distance > 500) {
                 currentX = targetX;
                 currentY = targetY;
                 targetX = Math.random() * (window.innerWidth - 64);
@@ -1723,7 +2065,6 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
                 currentY += (distanceY / distance) * speed;
             }
 
-            // Ensure rabbit stays within bounds
             currentX = Math.max(0, Math.min(currentX, window.innerWidth - 64));
             currentY = Math.max(0, Math.min(currentY, window.innerHeight - 64));
 
@@ -1734,17 +2075,15 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         }
 
         window.addEventListener('load', () => {
-            animateRabbit(); // Start rabbit animation
+            animateRabbit();
         });
 
         window.addEventListener('resize', () => {
-            // Clamp current position within new window bounds
             currentX = Math.min(Math.max(0, currentX), window.innerWidth - 64);
             currentY = Math.min(Math.max(0, currentY), window.innerHeight - 64);
             wanderingRabbit.style.left = `${currentX}px`;
             wanderingRabbit.style.top = `${currentY}px`;
 
-            // Recalculate target to ensure it's within new bounds
             targetX = Math.random() * (window.innerWidth - 64);
             targetY = Math.random() * (window.innerHeight - 64);
         });
@@ -1752,159 +2091,82 @@ S5冷却是否启用: ${isCoolingEnabled ? '是' : '否'}
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
-                <h4>v4.0.1 - 布朗新西兰兔 (Brown New Zealand)</h4>
+                <h4>v4.1.1 - 福尔摩斯垂耳兔 (Sherlock Lop)</h4>
                 <ul>
-                    <li>**核心算法与模型集成：**
+                    <li>版本代号更新：
                         <ul>
-                            <li>**精确SoC分区功率衰减因子：** 完全整合了 <code>v3.8.11</code> 中针对3C (60.7 kWh, 76.3 kWh) 和5C车型优化的SoC区间功率衰减因子，大幅提升充电时间预估准确性。</li>
-                            <li>**动态充电电压模拟：** IV图和详细报告中的充电电压现在会根据SoC和充电情境进行轻微动态波动，更贴近真实充电行为。</li>
-                            <li>**家用充电桩电压稳定性：** 家用充电桩电压固定为220V，修正了相关电流计算，符合慢充实际情况。</li>
-                            <li>**智能功率分配逻辑：** 重新启用了根据充电桩总功率和同站占用车辆数进行功率分配的逻辑，并考虑了车辆自身的最大可接受功率。</li>
+                            <li>更新为“福尔摩斯垂耳兔”，并添加了详细的创作原因和出处解释。</li>
                         </ul>
                     </li>
-                    <li>**用户界面与体验优化：**
+                    <li>主题美化：
                         <ul>
-                            <li>**全屏幕模式：** 恢复了全屏幕模式按钮，提升沉浸式体验。</li>
-                            <li>**随机漫游像素兔子：** 恢复了页面上随机移动的像素风格兔子图标，采用特色ASCII艺术风格SVG。</li>
-                            <li>**详细数据表格：** 详细报告现在以更清晰的表格形式展示每 1% SoC的充电数据（功率、电流、电压）。</li>
-                            <li>**更多图表类型：** 恢复了“单位电耗效率对比”图表。</li>
-                            <li>**优化加载指示器：** 充电计算过程显示加载指示器，提供更好的用户反馈。</li>
-                            <li>**AI建议字体统一：** 确保智能充电建议文本使用页面统一的像素风格字体（VT323）。</li>
-                            <li>**错误处理强化：** 所有用户提示（如复制成功、功能不支持等）均使用自定义模态框，避免浏览器原生弹窗。</li>
+                            <li>全局字体：应用程序的所有文本现已统一为像素字体，提供更具科技感的视觉体验。</li>
+                            <li>动态主题颜色：每次切换日间/夜间模式时，系统会随机选择一种预设的配色方案，使界面更具动态美感和新鲜感。</li>
                         </ul>
                     </li>
-                    <li>**语言与版本管理：**
+                    <li>更新日志改进：
                         <ul>
-                            <li>**全面简体中文：** 网页所有可见文本和提示信息已全部转换为简体中文。</li>
-                            <li>**新版本代号：** 更新为“布朗新西兰兔 (Brown New Zealand)”。</li>
-                            <li>**更新日志精简：** 更新日志现在只保留最近6个版本的内容。</li>
+                            <li>格式优化：更新日志中的列表项已去除星号，采用标准HTML列表格式，确保显示一致性。</li>
                         </ul>
                     </li>
                 </ul>
-                <h4>v4.0 - 巴蒂巨兔 (Batty Checkered Giant)</h4>
+                <h4>v4.1.0 - 电荷猎犬与法兰德巨兔 (Charge Hound & Flemish Giant)</h4>
                 <ul>
-                    <li>算法: 基于大量真实数据深度优化充电模型。</li>
-                    <li>新增: 主题切换, AI建议, 漫游兔子, 酷暑因子, 1% SoC数据列表。</li>
-                    <li>修复: 所有图表现已正常绘制。</li>
+                    <li>新功能：
+                        <ul>
+                            <li>同站占用充电桩详情: 替换了单一的“同站占用充电桩数量”输入，现在可以详细输入包括小鹏800V/400V、第三方800V/400V以及BMS流氓车型 的数量。系统会自动计算总占用车辆数，并在报告中清晰显示，同时流氓车型将对总功率分配效率产生额外负面影响。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“电荷猎犬与法兰德巨兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
                 </ul>
-                <h4>v3.8.11 - 虚拟链接：数据枢纽 (Virtual Link: Data Nexus)</h4>
+                <h4>v4.0.9 - 电荷猎犬与法兰德巨兔 (Charge Hound & Flemish Giant)</h4>
                 <ul>
-                    <li>**错误修复：**
+                    <li>新功能：
                         <ul>
-                            <li>**<code>lastCalculatedData is not defined</code> 错误解决：** 修正了 <code>getSmartChargingAdvice</code> 函数中 <code>lastCalculatedData</code> 变量未定义的问题，确保该变量在全局范围内被正确初始化和访问，从而解决了调用 AI 建议时可能出现的 <code>ReferenceError</code>。</li>
+                            <li>智能充电建议：新增一个由 Gemini API 驱动的智能建议功能。用户点击按钮后，模型将分析当前的充电报告数据（例如 SoC 区间、充电桩类型、损耗因子等），并提供个性化、专业的充电优化建议、电池健康提示及损耗规避策略。</li>
                         </ul>
                     </li>
-                    <li>**版本代号更新：** 采用新的二创规则，中文代号更新为**“虚拟链接：数据枢纽 (Virtual Link: Data Nexus)”**。</li>
+                    <li>错误修复：
+                        <ul>
+                            <li>按钮函数可访问性： 移除了 HTML 中对 \`calculate\`、\`quickEstimate\`、\`copyResult\`、\`toggleChangelogModal\` 等函数的直接 \`onclick\` 调用，并改为在 JavaScript 中使用 \`addEventListener\` 动态绑定，从而解决了函数未定义的问题。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“电荷猎犬与法兰德巨兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
                 </ul>
-                <h4>v3.8.10 - 光栅守护者：屏幕之魂 (Raster Guardian: Spirit of the Screen)</h4>
+                <h4>v4.0.8 - 电荷猎犬与法兰德巨兔 (Charge Hound & Flemish Giant)</h4>
                 <ul>
-                    <li>**功能确认与稳定性提升：**
+                    <li>错误修复：
                         <ul>
-                            <li>**全屏幕功能确认：** 确认“全屏幕”按钮 (适用于 Edge 和 Chromium 浏览器，同时兼容其他主流浏览器) 功能已正常运作，且错误处理使用自定义模态框，提升用户体验。</li>
+                            <li>按钮函数可访问性： 移除了 HTML 中对 \`calculate\`、\`quickEstimate\`、\`copyResult\`、\`toggleChangelogModal\` 等函数的直接 \`onclick\` 调用，并改为在 JavaScript 中使用 \`addEventListener\` 动态绑定，从而解决了函数未定义的问题。</li>
                         </ul>
                     </li>
-                    <li>**核心模型优化：**
+                    <li>版本代号更新：
                         <ul>
-                            <li>**家充电压与电流稳定性修正：** 修复了选择“家用充电桩 (7kW)”时，电压不再随机波动，而是稳定在 220V (中国家用电压标准)，同时电流也将保持稳定，更符合慢充实际情况。</li>
-                            <li>**IV 图电压轴自动调整：** 根据所选充电桩类型（快充 vs. 家充），“模拟电流/电压”图的电压（Y2）轴范围将自动从 750V-850V 调整为 200V-240V，提升可视化准确性。</li>
+                            <li>更新为“电荷猎犬与法兰德巨兔”，并添加了详细的创作原因和出处解释。</li>
                         </ul>
                     </li>
-                    <li>**版本代号更新：** 采用新的二创规则，中文代号更新为**“光栅守护者：屏幕之魂 (Raster Guardian: Spirit of the Screen)”**。</li>
-                    <li>**核心模型大幅优化（解决时间误差及电流/电压问题）：**
-                        <ul>
-                            <li>**充电功率曲线精准化：** 大幅调整了 <code>estimateRealisticChargeTime</code> 函数中各 SoC 区间的**功率衰减因子**，**显著提高了低电量区间的功率**，以更准确地模拟实际大电流充电情况，进一步提高预估时间准确性（解决“比实际慢20分钟”的问题）。例如：针对长续航和超长续航车型（3C平台），优化了其在低电量（0-10% SoC）时能拉升至约 330A 电流及等效 260kW 功率的预估能力。</li>
-                            <li>**模拟电压动态化：** 在模拟电流/电压图 (<code>IV Chart</code>) 和详细报告中，引入了**电压的轻微动态波动**（在 780V 至 820V 之间），反映实际充电中电压并非恒定在800V，提升图表和报告的真实感。</li>
-                            <li>**充电桩功率分配（说明）**：再次强调，虽然模型目前仍基于总站功率共享计算（受限于单页应用无法获取实时多车BMS状态的复杂性），但已充分利用车辆自身**最大可接受功率**（由C倍率决定，间接体现了P7+的BMS激进程度和800V优势）作为限制，确保优先发挥P7+的高压快充优势。</li>
-                        </ul>
-                    </li>
-                    <li>**更新日志滚动优化：** 改进了更新日志模态框的样式，在移动端显示不全时，内容将支持**垂直滚动**，提升可访问性。</li>
-                    <li>**新增 Gemini AI 智能充电建议：** 集成 Gemini API，现在可以根据计算结果，为您提供个性化的充电优化、情境建议、电池健康和损耗规避建议。</li>
-                    <li>**像素兔子图标更新：** 更新了像素风格的兔子图标，现在它以更具“字符画”效果的轮廓、眼睛和耳朵细节呈现，同时仍然保持可识别性，并会在页面上自由随机移动，增添视觉趣味。</li>
-                    <li>**字体风格保持：** 沿用了像素风格的字体（VT323），确保整体视觉一致性。</li>
-                    <li>**修复 Chart.js 工具提示错误：** 解决了 Chart.js 工具提示在某些图表类型中无法正确显示数值的问题，提升了用户体验。</li>
-                    <li>**TRON 视觉风格强化：** 保持并进一步优化了 TRON 电影风格的视觉元素，包括深邃的背景、霓虹光效、未来感的面板和按钮设计，以及更具动感的交互反馈。</li>
-                    <li>**日间模式色彩调整：** 针对日间模式的配色方案进行了精细调整，确保其在明亮环境下依然保持鲜艳的二次元色彩和“跳脱”的视觉效果，同时兼顾可读性。</li>
-                    <li>**性能与用户体验优化：** 优化了全屏幕加载动画，提供更清晰的视觉反馈；确保输入框为空时自动填充默认值，提升用户体验流畅性。</li>
-                    <li>**页面及图表视觉效果优化：** 整体配色方案、图表线条和数据点样式全面升级，与新主题完美融合。</li>
-                    <li>**中文统一：** 确认所有页面中文已统一为简体中文。</li>
                 </ul>
-                <h4>v3.8.9 - 电伏跃迁：银河之锚 (Volt Leap: Anchor of the Galaxy)</h4>
+                <h4>v4.0.7 - 电荷猎犬与法兰德巨兔 (Charge Hound & Flemish Giant)</h4>
                 <ul>
-                    <li>**核心模型优化：**
+                    <li>错误修复：
                         <ul>
-                            <li>**家充电压与电流稳定性修正：** 修复了选择“家用充电桩 (7kW)”时，电压不再随机波动，而是稳定在 220V (中国家用电压标准)，同时电流也将保持稳定，更符合慢充实际情况。</li>
-                            <li>**IV 图电压轴自动调整：** 根据所选充电桩类型（快充 vs. 家充），“模拟电流/电压”图的电压（Y2）轴范围将自动从 750V-850V 调整为 200V-240V，提升可视化准确性。</li>
+                            <li>全局函数可访问性： 修复了 \`calculate\` 和 \`quickEstimate\` 函数在 HTML \`onclick\` 中无法访问的问题，通过将其明确暴露到 \`window\` 对象解决。</li>
+                            <li>IV图功率变量引用： 修正了 \`updateIVChart\` 函数中 \`effectivePower\` 变量的引用，确保使用正确的 \`currentPower\` 变量进行计算。</li>
                         </ul>
                     </li>
-                    <li>**版本代号更新：** 采用新的二创规则，中文代号更新为**“电伏跃迁：银河之锚 (Volt Leap: Anchor of the Galaxy)”**。</li>
-                    <li>**核心模型大幅优化（解决时间误差及电流/电压问题）：**
+                    <li>版本代号更新：
                         <ul>
-                            <li>**充电功率曲线精准化：** 大幅调整了 <code>estimateRealisticChargeTime</code> 函数中各 SoC 区间的**功率衰减因子**，**显著提高了低电量区间的功率**，以更准确地模拟实际大电流充电情况，进一步提高预估时间准确性（解决“比实际慢20分钟”的问题）。例如：针对长续航和超长续航车型（3C平台），优化了其在低电量（0-10% SoC）时能拉升至约 330A 电流及等效 260kW 功率的预估能力。</li>
-                            <li>**模拟电压动态化：** 在模拟电流/电压图 (<code>IV Chart</code>) 和详细报告中，引入了**电压的轻微动态波动**（在 780V 至 820V 之间），反映实际充电中电压并非恒定在800V，提升图表和报告的真实感。</li>
-                            <li>**充电桩功率分配（说明）**：再次强调，虽然模型目前仍基于总站功率共享计算（受限 于单页应用无法获取实时多车BMS状态的复杂性），但已充分利用车辆自身**最大可接受功率**（由C倍率决定，间接体现了P7+的BMS激进程度和800V优势）作为限制，确保优先发挥P7+的高压快充优势。</li>
+                            <li>更新为“电荷猎犬与法兰德巨兔”，并添加了详细的创作原因和出处解释。</li>
                         </ul>
                     </li>
-                    <li>**更新日志滚动优化：** 改进了更新日志模态框的样式，在移动端显示不全时，内容将支持**垂直滚动**，提升可访问性。</li>
-                    <li>**新增 Gemini AI 智能充电建议：** 集成 Gemini API，现在可以根据计算结果，为您提供个性化的充电优化、情境建议、电池健康和损耗规避建议。</li>
-                    <li>**像素兔子图标更新：** 更新了像素风格的兔子图标，现在它以更具“字符画”效果的轮廓、眼睛和耳朵细节呈现，同时仍然保持可识别性，并会在页面上自由随机移动，增添视觉趣味。</li>
-                    <li>**字体风格保持：** 沿用了像素风格的字体（VT323），确保整体视觉一致性。</li>
-                    <li>**修复 Chart.js 工具提示错误：** 解决了 Chart.js 工具提示在某些图表类型中无法正确显示数值的问题，提升了用户体验。</li>
-                    <li>**TRON 视觉风格强化：** 保持并进一步优化了 TRON 电影风格的视觉元素，包括深邃的背景、霓虹光效、未来感的面板和按钮设计，以及更具动感的交互反馈。</li>
-                    <li>**日间模式色彩调整：** 针对日间模式的配色方案进行了精细调整，确保其在明亮环境下依然保持鲜艳的二次元色彩和“跳脱”的视觉效果，同时兼顾可读性。</li>
-                    <li>**性能与用户体验优化：** 优化了全屏幕加载动画，提供更清晰的视觉反馈；确保输入框为空时自动填充默认值，提升用户体验流畅性。</li>
-                    <li>**页面及图表视觉效果优化：** 整体配色方案、图表线条和数据点样式全面升级，与新主题完美融合。</li>
-                    <li>**中文统一：** 确认所有页面中文已统一为简体中文。</li>
-                </ul>
-                <h4>v3.8.8 - 疾电追影：伏特峡谷的探索兔 (Speedy Shadow: The Exploring Rabbit of Volt Canyon)</h4>
-                <ul>
-                    <li>**核心模型大幅优化（解决时间误差及电流/电压问题）：**
-                        <ul>
-                            <li>**充电功率曲线精准化：** 大幅调整了 <code>estimateRealisticChargeTime</code> 函数中各 SoC 区间的**功率衰减因子**，**显著提高了低电量区间的功率**，以更准确地模拟实际大电流充电情况，进一步提高预估时间准确性（解决“比实际慢20分钟”的问题）。</li>
-                            <li>**模拟电压动态化：** 在模拟电流/电压图 (<code>IV Chart</code>) 和详细报告中，引入了**电压的轻微动态波动**（在 780V 至 820V 之间），反映实际充电中电压并非恒定在800V，提升图表和报告的真实感。</li>
-                            <li>**充电桩功率分配（说明）**：再次强调，虽然模型目前仍基于总站功率共享计算（受限于单页应用无法获取实时多车BMS状态的复杂性），但已充分利用车辆自身**最大可接受功率**（由C倍率决定，间接体现了P7+的BMS激进程度和800V优势）作为限制，确保优先发挥P7+的高压快充优势。</li>
-                        </ul>
-                    </li>
-                    <li>**更新日志滚动优化：** 改进了更新日志模态框的样式，在移动端显示不全时，内容将支持**垂直滚动**，提升可访问性。</li>
-                    <li>**新增 Gemini AI 智能充电建议：** 集成 Gemini API，现在可以根据计算结果，为您提供个性化的充电优化、情境建议、电池健康和损耗规避建议。</li>
-                    <li>**像素兔子图标更新：** 更新了像素风格的兔子图标，现在它以更具“字符画”效果的轮廓、眼睛和耳朵细节呈现，同时仍然保持可识别性，并会在页面上自由随机移动，增添视觉趣味。</li>
-                    <li>**版本代号更新：** 采用新的二创规则，中文代号更新为**“疾电追影：伏特峡谷的探索兔 (Speedy Shadow: The Exploring Rabbit of Volt Canyon)”**。</li>
-                    <li>**字体风格保持：** 沿用了像素风格的字体（VT323），确保整体视觉一致性。</li>
-                    <li>**修复 Chart.js 工具提示错误：** 解决了 Chart.js 工具提示在某些图表类型中无法正确显示数值的问题，提升了用户体验。</li>
-                    <li>**TRON 视觉风格强化：** 保持并进一步优化了 TRON 电影风格的视觉元素，包括深邃的背景、霓虹光效、未来感的面板和按钮设计，以及更具动感的交互反馈。</li>
-                    <li>**日间模式色彩调整：** 针对日间模式的配色方案进行了精细调整，确保其在明亮环境下依然保持鲜艳的二次元色彩和“跳脱”的视觉效果，同时兼顾可读性。</li>
-                    <li>**性能与用户体验优化：** 优化了全屏幕加载动画，提供更清晰的视觉反馈；确保输入框为空时自动填充默认值，提升用户体验流畅性。</li>
-                    <li>**页面及图表视觉效果优化：** 整体配色方案、图表线条和数据点样式全面升级，与新主题完美融合。</li>
-                    <li>**中文统一：** 确认所有页面中文已统一为简体中文。</li>
-                </ul>
-                <h4>v3.8.7 - 印第安纳·琼斯：失落伏特之窟的寻宝兔 (Indiana Jones: The Treasure-Hunting Rabbit of the Lost Volt Cavern)</h4>
-                <ul>
-                    <li>**核心模型调优（预估时间误差修复）：** 重新校准并适度提升了 <code>estimateRealisticChargeTime</code> 函数中各 SoC 区间的**功率衰减因子**，旨在显著减少充电时间预估与实际情况的误差，提供更精准的计算结果。</li>
-                    <li>**更新日志滚动优化：** 改进了更新日志模态框的样式，在移动端显示不全时，内容将支持**垂直滚动**，提升可访问性。</li>
-                    <li>**新增 Gemini AI 智能充电建议：** 集成 Gemini API，现在可以根据计算结果，为您提供个性化的充电优化、情境建议、电池健康和损耗规避建议。</li>
-                    <li>**像素兔子图标更新：** 更新了像素风格的兔子图标，现在它以更具“字符画”效果的轮廓、眼睛和耳朵细节呈现，同时仍然保持可识别性，并会在页面上自由随机移动，增添视觉趣味。</li>
-                    <li>**版本代号更新：** 沿用了新的二创规则，中文代号为“印第安纳·琼斯：失落伏特之窟的寻宝兔 (Indiana Jones: The Treasure-Hunting Rabbit of the Lost Volt Cavern)”。代号融合了印第安纳·琼斯和垂耳兔的元素，寓意在数据世界中精准、迅速地追寻。</li>
-                    <li>**字体风格保持：** 沿用了像素风格的字体（VT323），确保整体视觉一致性。</li>
-                    <li>**修复 Chart.js 工具提示错误：** 解决了 Chart.js 工具提示在某些图表类型中无法正确显示数值的问题，提升了用户体验。</li>
-                    <li>**TRON 视觉风格强化：** 保持并进一步优化了 TRON 电影风格的视觉元素，包括深邃的背景、霓虹光效、未来感的面板和按钮设计，以及更具动感的交互反馈。</li>
-                    <li>**日间模式色彩调整：** 针对日间模式的配色方案进行了精细调整，确保其在明亮环境下依然保持鲜艳的二次元色彩和“跳脱”的视觉效果，同时兼顾可读性。</li>
-                    <li>**性能与用户体验优化：** 优化了全屏幕加载动画，提供更清晰的视觉反馈；确保输入框为空时自动填充默认值，提升用户体验流畅性。</li>
-                    <li>**页面及图表视觉效果优化：：** 整体配色方案、图表线条和数据点样式全面升级，与新主题完美融合。</li>
-                    <li>**核心模型微调：** 持续优化充电功率衰减曲线，提高估算精准度。</li>
-                    <li>**中文统一：** 确认所有页面中文已统一为简体中文。</li>
-                </ul>
-                <h4>v3.8.5 - 印第安纳·琼斯：失落伏特之窟的寻宝兔 (Indiana Jones: The Treasure-Hunting Rabbit of the Lost Volt Cavern)</h4>
-                <ul>
-                    <li>**新增 Gemini AI 智能充电建议：** 集成 Gemini API，现在可以根据计算结果，为您提供个性化的充电优化、情境建议、电池健康和损耗规避建议。</li>
-                    <li>**像素兔子图标更新：** 更新了像素风格的兔子图标，现在它以更具“字符画”效果的轮廓、眼睛和耳朵细节呈现，同时仍然保持可识别性，并会在页面上自由随机移动，增添视觉趣味。</li>
-                    <li>**版本代号更新：：** 采用新的二创规则，中文代号为“印第安纳·琼斯：失落伏特之窟的寻宝兔 (Indiana Jones: The Treasure-Hunting Rabbit of the Lost Volt Cavern)”。代号融合了印第安纳·琼斯和垂耳兔的元素，寓意在数据世界中精准、迅速地追寻。</li>
-                    <li>**字体风格保持：** 沿用了像素风格的字体（VT323），确保整体视觉一致性。</li>
-                    <li>**修复 Chart.js 工具提示错误：** 解决了 Chart.js 工具提示在某些图表类型中无法正确显示数值的问题，提升了用户体验。</li>
-                    <li>**TRON 视觉风格强化：** 保持并进一步优化了 TRON 电影风格的视觉元素，包括深邃的背景、霓虹光效、未来感的面板和按钮设计，以及更具动感的交互反馈。</li>
-                    <li>**日间模式色彩调整：** 针对日间模式的配色方案进行了精细调整，确保其在明亮环境下依然保持鲜艳的二次元色彩和“跳脱”的视觉效果，同时兼顾可读性。</li>
-                    <li>**性能与用户体验优化：** 优化了全屏幕加载动画，提供更清晰的视觉反馈；确保输入框为空时自动填充默认值，提升用户体验流畅性。</li>
-                    <li>**页面及图表视觉效果优化：** 整体配色方案、图表线条和数据点样式全面升级，与新主题完美融合。</li>
-                    <li>**核心模型微调：** 持续优化充电功率衰减曲线，提高估算精准度。</li>
-                    <li>**中文统一：** 确认所有页面中文已统一为简体中文。</li>
                 </ul>
             `;
             ui.changelogList.innerHTML = changelogContent;
