@@ -337,40 +337,40 @@
             ui.quickResult.textContent = `≈ ${formatChargeTime(time)}`;
         }
         
-        async function getAISuggestions() {
-            if (!lastResultText) { alert("请先计算一份报告。"); return; }
-            ui.aiBtn.disabled = true;
-            ui.aiBtn.innerText = "思考中...";
-            ui.aiPanel.classList.remove('hidden');
-            ui.aiResult.innerText = "正在连接至 Gemini AI...";
+  async function getAISuggestions() {
+        if (!lastResultText) { alert("请先计算一份报告。"); return; }
+        ui.aiBtn.disabled = true;
+        ui.aiBtn.innerText = "思考中...";
+        ui.aiPanel.classList.remove('hidden');
+        ui.aiResult.innerText = "正在连接至 Gemini AI...";
+        
+        const prompt = `基于以下小鹏P7的充电报告，请提供一些简洁、实用的充电建议和分析，语言风格要像一个懂车的朋友。报告内容：\n${lastResultText}`;
+        
+        try {
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             
-            const prompt = `基于以下小鹏P7的充电报告，请提供一些简洁、实用的充电建议和分析，语言风格要像一个懂车的朋友。报告内容：\n${lastResultText}`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`API 请求失败，状态码: ${response.status}`);
             
-            try {
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+            const result = await response.json();
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            ui.aiResult.innerText = text || "未能从 AI 获得有效建议，请稍后再试。";
 
-                if (!response.ok) throw new Error(`API 请求失败，状态码: ${response.status}`);
-                
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                ui.aiResult.innerText = text || "未能从 AI 获得有效建议，请稍后再试。";
-
-            } catch (error) {
-                console.error("AI suggestion error:", error);
-                ui.aiResult.innerText = `连接 AI 时出错: ${error.message}`;
-            } finally {
-                ui.aiBtn.disabled = false;
-                ui.aiBtn.innerText = "🤖 AI建议";
-            }
+        } catch (error) {
+            console.error("AI suggestion error:", error);
+            ui.aiResult.innerText = `连接 AI 时出错: ${error.message}`;
+        } finally {
+            ui.aiBtn.disabled = false;
+            ui.aiBtn.innerText = "🤖 AI建议";
         }
+    }
 
         function generateDetailedData(start, end, capacity, maxPower, isCooling, voltage) {
             const data = [];
