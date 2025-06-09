@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小鹏P7+ 充电计算器 v3.9.2 - 狄卡契克巨兔</title>
+    <title>小鹏P7+ 充电计算器 v3.9.3 - 罗伊安哥拉</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,7 @@
             --bg-panel: rgba(18, 25, 50, 0.6);
             --border-neon: #00e5ff; /* 青色 */
             --border-neon-alt: #ff00ff; /* 洋红色 */
-            --text-primary: #e0e0e0;
+            --text-primary: #00e5ff; /* v3.9.3 更新：字体改为TRON蓝色，提升可读性 */
             --text-neon-cyan: #00e5ff;
             --text-neon-green: #39ff14;
             --text-neon-pink: #ff00ff;
@@ -32,12 +32,12 @@
             /* 图表颜色 */
             --chart-grid-color: rgba(0, 229, 255, 0.2);
             --chart-tick-color: #a0a0a0;
-            --chart-color-1: #00e5ff; /* 青色 */
-            --chart-color-2: #ff00ff; /* 洋红色 */
-            --chart-color-3: #39ff14; /* 绿色 */
-            --chart-color-4: #f8f8f2;  /* 白色 */
-            --chart-color-5: #ffca28; /* 黄色 */
-            --chart-color-6: #9e6eff; /* 紫色 */
+            --chart-color-1: #00e5ff;
+            --chart-color-2: #ff00ff;
+            --chart-color-3: #39ff14;
+            --chart-color-4: #f8f8f2;
+            --chart-color-5: #ffca28;
+            --chart-color-6: #9e6eff;
 
             /* 像素/字符画兔子 SVG (夜间模式) */
             --bunny-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect fill='%2300e5ff' x='1' y='1' width='1' height='2'/%3E%3Crect fill='%2300e5ff' x='6' y='1' width='1' height='2'/%3E%3Crect fill='%23e0e0e0' x='2' y='3' width='4' height='3'/%3E%3Crect fill='%23ff00ff' x='3' y='4' width='1' height='1'/%3E%3Crect fill='%23ff00ff' x='5' y='4' width='1' height='1'/%3E%3C/svg%3E");
@@ -45,14 +45,14 @@
 
         /* 二次元彩色跳脱风格 - 日间模式 */
         .light-mode {
-            --bg-dark: #f0f8ff; /* AliceBlue - 非常浅的蓝 */
+            --bg-dark: #f0f8ff;
             --bg-panel: rgba(255, 255, 255, 0.85);
             --border-neon: #ff4081; /* 亮粉色 */
             --border-neon-alt: #7b1fa2; /* 深紫色 */
-            --text-primary: #333333;
-            --text-neon-cyan: #007bff; /* 鲜艳蓝 */
-            --text-neon-green: #28a745; /* 鲜艳绿 */
-            --text-neon-pink: #f50057; /* 亮深粉 */
+            --text-primary: #5e35b1; /* v3.9.3 更新：字体改为二次元紫色，更活泼 */
+            --text-neon-cyan: #007bff;
+            --text-neon-green: #28a745;
+            --text-neon-pink: #f50057;
             --shadow-neon: 0 0 10px rgba(255, 64, 129, 0.6);
             --button-bg: rgba(0, 123, 255, 0.1);
             --button-hover-bg: rgba(0, 123, 255, 0.2);
@@ -61,12 +61,12 @@
             /* 图表颜色 - 日间 */
             --chart-grid-color: rgba(0, 0, 0, 0.08);
             --chart-tick-color: #495057;
-            --chart-color-1: #1e88e5; /* 蓝色 */
-            --chart-color-2: #d81b60; /* 粉色 */
-            --chart-color-3: #43a047; /* 绿色 */
-            --chart-color-4: #5e35b1; /* 紫色 */
-            --chart-color-5: #fdd835; /* 黄色 */
-            --chart-color-6: #fb8c00; /* 橙色 */
+            --chart-color-1: #1e88e5;
+            --chart-color-2: #d81b60;
+            --chart-color-3: #43a047;
+            --chart-color-4: #5e35b1;
+            --chart-color-5: #fdd835;
+            --chart-color-6: #fb8c00;
 
             /* 像素/字符画兔子 SVG (日间模式) */
             --bunny-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect fill='%23007bff' x='1' y='1' width='1' height='2'/%3E%3Crect fill='%23007bff' x='6' y='1' width='1' height='2'/%3E%3Crect fill='%23495057' x='2' y='3' width='4' height='3'/%3E%3Crect fill='%23f50057' x='3' y='4' width='1' height='1'/%3E%3Crect fill='%23f50057' x='5' y='4' width='1' height='1'/%3E%3C/svg%3E");
@@ -185,8 +185,8 @@
     <!-- 标题与控制按钮 -->
     <header class="text-center mb-8">
         <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">⚡ 小鹏P7+ 充电计算器 🔋</h1>
-        <p class="text-slate-400 mt-2 text-xl neon-text-pink">v3.9.2 - 狄卡契克巨兔 (Deckard Checkered Giant)</p>
-        <p class="text-sm text-slate-500 mt-1">/* 融合《银翼杀手》主角 Deckard 与契克巨兔，象征在数据世界中对精准的不懈追寻。 */</p>
+        <p class="text-slate-400 mt-2 text-xl neon-text-pink">v3.9.3 - 罗伊安哥拉 (Roy Angora)</p>
+        <p class="text-sm text-slate-500 mt-1">/* 融合《银翼杀手》核心复制人罗伊与安哥拉兔，象征科技与生命感的视觉平衡。 */</p>
     </header>
 
     <main class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -195,7 +195,7 @@
             <h2 class="text-2xl neon-text-pink border-b border-b-[var(--border-neon-alt)] pb-2">🔌 充电参数设定</h2>
             
             <div>
-                <label for="car-model" class="block mb-1 neon-text">🚗 车辆型号 (800V平台):</label>
+                <label for="car-model" class="block mb-1">🚗 车辆型号 (800V平台):</label>
                 <select id="car-model" class="w-full p-2 rounded-md">
                     <option value="long_range">长续航 (60.7 kWh, 3C)</option>
                     <option value="super_long_range">超长续航 (76.3 kWh, 3C)</option>
@@ -204,7 +204,7 @@
             </div>
 
             <div>
-                <label for="charger-type" class="block mb-1 neon-text">⛽ 充电桩类型:</label>
+                <label for="charger-type" class="block mb-1">⛽ 充电桩类型:</label>
                 <select id="charger-type" class="w-full p-2 rounded-md">
                     <option value="s5_super_plus">S5 液冷超充 (720kW 站)</option>
                     <option value="s4_super">S4 超充 (480kW 站)</option>
@@ -216,19 +216,19 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label for="start-soc" class="block mb-1 neon-text">📉 起始电量 (%):</label>
+                    <label for="start-soc" class="block mb-1">📉 起始电量 (%):</label>
                     <input type="number" id="start-soc" min="0" max="100" class="w-full p-2 rounded-md">
                 </div>
                 <div>
-                    <label for="end-soc" class="block mb-1 neon-text">📈 目标电量 (%):</label>
+                    <label for="end-soc" class="block mb-1">📈 目标电量 (%):</label>
                     <input type="number" id="end-soc" min="0" max="100" class="w-full p-2 rounded-md">
                 </div>
                 <div>
-                    <label for="charged-kwh" class="block mb-1 neon-text">⚡ 实际充电量 (kWh):</label>
+                    <label for="charged-kwh" class="block mb-1">⚡ 实际充电量 (kWh):</label>
                     <input type="number" id="charged-kwh" step="0.1" class="w-full p-2 rounded-md" placeholder="选填，精算损耗">
                 </div>
                 <div>
-                    <label for="station-occupancy" class="block mb-1 neon-text">🔢 同站占用桩数:</label>
+                    <label for="station-occupancy" class="block mb-1">🔢 同站占用桩数:</label>
                     <input type="number" id="station-occupancy" min="1" class="w-full p-2 rounded-md">
                 </div>
             </div>
@@ -290,13 +290,17 @@
             <button id="close-changelog-btn" class="absolute top-4 right-4 text-2xl neon-text-pink">×</button>
             <h2 class="text-2xl neon-text-pink mb-4">📜 更新日志</h2>
             <div class="modal-content pr-4 text-base space-y-4">
-                <p class="neon-text-green">本次为一次重要的细节修复与体验优化更新，旨在完善视觉表现和核心算法的平滑度。</p>
+                <p class="neon-text-green">一个持续迭代，追求精准与美学的充电模拟器项目。</p>
+                
+                <div class="space-y-2">
+                    <h3 class="text-xl neon-text-cyan">v3.9.3 - 罗伊安哥拉 (Roy Angora)</h3>
+                    <p class="ml-4">视觉修复：夜间模式字体统一为TRON蓝色，日间模式统一为二次元紫色，提升可读性与风格感。</p>
+                </div>
                 
                 <div class="space-y-2">
                     <h3 class="text-xl neon-text-cyan">v3.9.2 - 狄卡契克巨兔 (Deckard Checkered Giant)</h3>
                     <p class="ml-4">模型优化：基于大量真实充电数据，精校各SOC区间的功率因子，大幅提升全段估算准确性。</p>
                     <p class="ml-4">UI优化：界面融入更多Emoji，更新标题格式，增强视觉友好度。</p>
-                    <p class="ml-4">图表整合：恢复并优化了v3.8.9的所有图表类型，并加入详细充电过程列表。</p>
                 </div>
                 
                 <div class="space-y-2">
@@ -308,17 +312,11 @@
                 <div class="space-y-2">
                     <h3 class="text-xl neon-text-cyan">v3.9.0 - 崔尼蒂垂耳兔 (Trinity Holland Lop)</h3>
                     <p class="ml-4">核心模型与功能整合，统一版本命名规范。</p>
-                    <p class="ml-4">精准功率曲线，模拟330A/260kW峰值。</p>
                 </div>
                 
                 <div class="space-y-2">
                     <h3 class="text-xl neon-text-cyan">v3.8.9 - 电伏跃迁：银河之锚</h3>
                     <p class="ml-4">核心模型优化：修正家充电压与电流稳定性。</p>
-                </div>
-                
-                <div class="space-y-2">
-                    <h3 class="text-xl neon-text-cyan">v3.8.8 - 疾电追影：伏特峡谷的探索兔</h3>
-                    <p class="ml-4">核心模型大幅优化，解决时间误差及电流/电压问题。</p>
                 </div>
             </div>
         </div>
@@ -438,26 +436,24 @@
                 const effectiveMaxPower = sessionMaxPower;
 
                 // 3. 定义充电功率曲线 (socZones) - v3.9.2 基于真实数据校准
-                // 分析：真实数据显示，即使是3C车型，在低电量也能达到260kW+峰值，然后功率衰减曲线比之前模型更平滑，但在高SOC时衰减更剧烈。
-                // 5C车型峰值可达330kW+，平台期更长。
                 let socZones;
                 if (carModel.chargeRate === '5C') { // 旗舰 (5C)
                      socZones = [
-                        { soc: 10, factor: 0.99, tempRise: 6 }, // 对应 331kW 峰值
-                        { soc: 40, factor: 0.90, tempRise: 9 }, // 强劲的功率平台
-                        { soc: 70, factor: 0.70, tempRise: 7 },
-                        { soc: 85, factor: 0.50, tempRise: 5 },
-                        { soc: 95, factor: 0.25, tempRise: 3 },
-                        { soc: 100, factor: 0.10, tempRise: 1.5 }
+                        { soc: 10, factor: 0.99 },
+                        { soc: 40, factor: 0.90 },
+                        { soc: 70, factor: 0.70 },
+                        { soc: 85, factor: 0.50 },
+                        { soc: 95, factor: 0.25 },
+                        { soc: 100, factor: 0.10 }
                     ];
                 } else { // 长续航/超长续航 (3C)
                      socZones = [
-                        { soc: 15, factor: 0.98, tempRise: 5 },  // 对应 260kW+ 峰值
-                        { soc: 50, factor: 0.85, tempRise: 8 },  // 更平滑的中段衰减
-                        { soc: 80, factor: 0.60, tempRise: 6 },  // 80%后衰减加快
-                        { soc: 90, factor: 0.40, tempRise: 4 },
-                        { soc: 97, factor: 0.20, tempRise: 2 },  // 97%后剧烈衰减
-                        { soc: 100, factor: 0.08, tempRise: 1 }
+                        { soc: 15, factor: 0.98 },
+                        { soc: 50, factor: 0.85 },
+                        { soc: 80, factor: 0.60 },
+                        { soc: 90, factor: 0.40 },
+                        { soc: 97, factor: 0.20 },
+                        { soc: 100, factor: 0.08 }
                     ];
                 }
                 
@@ -491,12 +487,10 @@
                     }
                     lastSoc = socEndOfZone;
                 }
-                // Add final point
                  const lastZone = socZones.find(z => endSoc <= z.soc) || socZones[socZones.length-1];
                  const finalPower = effectiveMaxPower * lastZone.factor;
                  const finalVoltage = 770 + (endSoc / 100) * 50;
                  chargeProfile.push({ soc: endSoc, power: finalPower, current: (finalPower * 1000) / finalVoltage, voltage: finalVoltage });
-
 
                 // 5. 计算损耗
                 const baseLoss = 0.08;
@@ -580,7 +574,7 @@
                 const r = lastCalculationResult;
                 const hours = Math.floor(r.totalTimeMinutes / 60);
                 const minutes = Math.round(r.totalTimeMinutes % 60);
-                let report = `--- 小鹏P7+ 充电报告 (v3.9.2) ---\n\n`;
+                let report = `--- 小鹏P7+ 充电报告 (v3.9.3) ---\n\n`;
                 report += `[充电设定]\n车型: ${r.carModel.name}\n充电桩: ${r.charger.name}\n充电区间: ${r.startSoc}% -> ${r.endSoc}%\n\n`;
                 report += `[核心结果]\n预计总耗时: ${hours} 小时 ${minutes} 分钟\n充入电池电量: ${r.energyAddedKwh.toFixed(2)} kWh\n峰值充电功率: ${r.effectiveMaxPower.toFixed(0)} kW\n\n`;
                 report += `[损耗分析]\n预估总损耗: ${r.totalLossKwh.toFixed(2)} kWh\n基础损耗 (8%): ${(r.energyAddedKwh / (1 - r.baseLoss) - r.energyAddedKwh).toFixed(2)} kWh\n`;
