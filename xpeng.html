@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.1.5 - 像素画家兔 (Pixel Painter Rabbit)</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for data visualization - Loaded at the end of body for performance -->
@@ -136,7 +136,25 @@
             filter: drop-shadow(0 0 15px var(--pixel-rabbit-shadow-color)); /* Enhanced shadow for "bolder" look */
         }
 
-        /* Removed .rabbit-dropping and .rabbit-dropping.fade-out CSS rules */
+        /* Rabbit Droppings (Chocolate Beans) */
+        .rabbit-dropping {
+            position: absolute;
+            width: 6px; /* Pixelated size */
+            height: 6px;
+            background-color: #4a2c2a; /* Chocolate brown */
+            border-radius: 1px; /* Slightly rounded pixel look */
+            transform: scale(1);
+            opacity: 1;
+            transition: transform 2s ease-out, opacity 2s ease-out; /* Fade and shrink over 2 seconds */
+            z-index: 99; /* Below rabbit, above background */
+            pointer-events: none; /* Don't interfere with clicks */
+            box-shadow: 0 0 2px rgba(0,0,0,0.5); /* Small shadow */
+        }
+
+        .rabbit-dropping.fade-out {
+            transform: scale(0.2);
+            opacity: 0;
+        }
 
         /* Button styling using CSS variables */
         .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-accent, .btn-gemini {
@@ -274,8 +292,8 @@
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 爱丽丝（Alice from Wonderland）象征着好奇、探索和适应新环境的能力，代表了计算器在功能扩展和用户体验上的持续探索；跳跃兔（Jumper Rabbit）则寓意着应用程序的轻快、活跃和高效，以及在复杂计算中展现出的敏捷性。此命名旨在传达不断创新、追求卓越和提供愉悦体验的理念。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.1.5 - 像素画家兔 (Pixel Painter Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 像素（Pixel）代表了数字世界中的基本单位，象征着应用程序精确、细致的计算能力；画家（Painter）则寓意着创造力、视觉化和对细节的把控，呼应了SoC曲线的直观呈现和兔子轨迹的趣味性。此命名旨在强调应用程序在数据可视化和用户体验上的创新与精细。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -1184,7 +1202,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                     // Store all relevant data for LLM call
                     window.lastCalculatedData = { 
                         modelName,
-                        platformVoltage: isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt),
+                        platformVoltage: isHomeCharger ? HOME_CHARC_VOLTAGE : parseFloat(volt),
                         startSoC: startSoC,
                         endSoC: endSoC,
                         formattedChargeTime: formatChargeTime(chargeTimeSeconds),
@@ -1886,7 +1904,7 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         }
         
         /**
-         * Updates the SoC and S5 cooling temperature simulation chart (line chart).
+         * Updates the SoC chart (line chart).
          * @param {number} startSoC - Starting SoC (%).
          * @param {number} endSoC - Ending SoC (%).
          * @param {number} durationMinutes - Total charge duration in minutes (must be > 0).
@@ -1901,21 +1919,12 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
             const intervalSeconds = totalDurationSeconds > maxPoints ? Math.round(totalDurationSeconds / maxPoints) : 1; 
             const timeLabels = Array.from({ length: Math.floor(totalDurationSeconds / intervalSeconds) + 1 }, (_, i) => formatChargeTime(i * intervalSeconds));
             const socData = [];
-            const coolingData = []; 
-            const coolingEnabled = ui.enableCooling.checked;
 
-            let tempRise = 0; 
             timeLabels.forEach((_, index) => {
                 const s = index * intervalSeconds;
                 const progress = s / totalDurationSeconds;
                 const soc = startSoC + (endSoC - startSoC) * progress;
                 socData.push(soc); 
-
-                if (coolingEnabled) {
-                    const heatLoad = (soc > 80 ? 1.5 : soc > 50 ? 1 : 0.5);
-                    tempRise += heatLoad * 0.15 * (Math.random() * 0.4 + 0.8) * (intervalSeconds / 60); 
-                    coolingData.push(tempRise); 
-                }
             });
             
             const datasets = [
@@ -1923,11 +1932,11 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
                     label: 'SoC (%)', 
                     data: socData, 
                     borderColor: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(), 
-                    tension: 0.1, /* Lower tension for a slightly straighter line as per user's implied request for directness */
+                    tension: 0.1, /* Lower tension for a slightly straighter line */
                     fill: true, 
                     backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--panel-border').includes('rgba') ? getComputedStyle(document.documentElement).getPropertyValue('--panel-border').replace(/[^,]+(?=\)$)/, '0.15)') : getComputedStyle(document.documentElement).getPropertyValue('--panel-border').trim() + '33',
-                    pointRadius: 0, /* Removed point radius as per user's implied request for smoother curve */
-                    borderWidth: 3, /* Increased border width for "bolder" line as per user's request */
+                    pointRadius: 0, /* Removed point radius for smoother curve */
+                    borderWidth: 3, /* Increased border width for "bolder" line */
                     segment: {
                         borderColor: c => {
                             const y = c.p1.parsed.y;
@@ -1938,29 +1947,11 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
                     }
                 }
             ];
-            if (coolingEnabled) {
-                datasets.push({
-                    label: '模拟温升 (°C)', 
-                    data: coolingData, 
-                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--cooling-color').trim(),
-                    borderDash: [5, 5], 
-                    tension: 0.4, 
-                    fill: false,
-                    pointRadius: 2, 
-                    yAxisID: 'yTemp' 
-                });
-            }
 
-            const options = chartOptionsTemplate('🔋 SoC 与 S5 冷却温升模拟', true);
-            if (coolingEnabled) {
-                options.scales.yTemp = { 
-                    type: 'linear', 
-                    position: 'right', 
-                    ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--cooling-color').trim() }, 
-                    grid: { drawOnChartArea: false }, 
-                    title: { display: true, text: '模拟温升 (°C)', color: getComputedStyle(document.documentElement).getPropertyValue('--cooling-color').trim() } 
-                };
-            }
+            const options = chartOptionsTemplate('🔋 SoC 变化曲线', true);
+            // Ensure y-axis title is correct for SoC only
+            options.scales.y.title = { display: true, text: 'SoC (%)', color: getComputedStyle(document.documentElement).getPropertyValue('--label-color').trim() };
+
 
             charts['soc'] = new Chart(ctx, { 
                 type: 'line', 
@@ -2015,7 +2006,11 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
             }
         });
 
-        // Removed droppingsPool, MAX_DROPPINGS, currentDroppingIndex, lastDropTime, DROP_INTERVAL_MS.
+        const droppingsPool = [];
+        const MAX_DROPPINGS = 70; // Max number of droppings visible at once
+        let currentDroppingIndex = 0;
+        let lastDropTime = 0;
+        const DROP_INTERVAL_MS = 150; // Drop a chocolate bean every X milliseconds
 
         // Initialize UI and calculate on page load
         window.addEventListener('load', () => {
@@ -2037,6 +2032,14 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
             if (ui.changelogModalBtn) ui.changelogModalBtn.addEventListener('click', () => toggleChangelogModal(true));
             if (ui.fullscreenToggleBtn) ui.fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
             if (ui.themeToggleBtn) ui.themeToggleBtn.addEventListener('click', toggleTheme);
+
+            // Initialize droppings pool
+            for (let i = 0; i < MAX_DROPPINGS; i++) {
+                const dropping = document.createElement('div');
+                dropping.className = 'rabbit-dropping';
+                document.body.appendChild(dropping);
+                droppingsPool.push(dropping);
+            }
 
             // Set initial rabbit position and start animation
             const initialX = Math.random() * (window.innerWidth - 72); // Adjusted for new rabbit size
@@ -2064,7 +2067,7 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         function animateRabbit() {
             const speed = 2; // Pixels per frame
             
-            // Store previous position before updating (no longer used for droppings, but good for debugging if needed)
+            // Store previous position before updating
             const prevX = currentX; 
             const prevY = currentY;
 
@@ -2089,7 +2092,21 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
             wanderingRabbit.style.left = `${currentX}px`;
             wanderingRabbit.style.top = `${currentY}px`;
 
-            // Removed all chocolate dropping logic.
+            // Drop chocolate beans
+            if (performance.now() - lastDropTime > DROP_INTERVAL_MS) {
+                const dropping = droppingsPool[currentDroppingIndex];
+                // Adjust to center under rabbit slightly (72px rabbit, 6px dropping)
+                dropping.style.left = `${prevX + (72 - 6) / 2}px`; 
+                dropping.style.top = `${prevY + (72 - 6) / 2 + 10}px`;  // Slightly offset down from center
+                
+                // Force reflow to restart animation
+                dropping.classList.remove('fade-out');
+                void dropping.offsetWidth; // Trigger reflow
+                dropping.classList.add('fade-out');
+
+                currentDroppingIndex = (currentDroppingIndex + 1) % MAX_DROPPINGS;
+                lastDropTime = performance.now();
+            }
 
             requestAnimationFrame(animateRabbit);
         }
@@ -2107,6 +2124,20 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v4.1.5 - 像素画家兔 (Pixel Painter Rabbit)</h4>
+                <ul>
+                    <li>新功能：
+                        <ul>
+                            <li>SoC曲线视图独立化：SoC曲线图现在将完全专注于电量变化，线条更粗，移除了点标记，视觉效果更平滑。</li>
+                            <li>兔子轨迹“绘画”回归：漫游的像素兔子将重新在身后留下像素化的“巧克力豆”轨迹，为页面增添动态趣味。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“像素画家兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
+                </ul>
                 <h4>v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</h4>
                 <ul>
                     <li>新功能：
