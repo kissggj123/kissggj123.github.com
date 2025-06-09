@@ -1,723 +1,542 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小鹏P7+ 充电计算器 v3.9.4 - 威利喜马拉雅</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.0.1 - 布朗新西兰兔</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Google Fonts: VT323 -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* --- 核心 CSS 变量 --- */
+        /* Global pixel font and base styles */
         :root {
-            /* 字体 */
-            --font-main: 'VT323', monospace;
-            
-            /* TRON 风格 - 夜间模式 (默认) */
-            --bg-dark: #0d0e1b;
-            --bg-panel: rgba(18, 25, 50, 0.6);
-            --border-neon: #00e5ff; /* 青色 */
-            --border-neon-alt: #ff00ff; /* 洋红色 */
-            --text-primary: #e0e0e0;
-            --text-neon-cyan: #00e5ff;
-            --text-neon-green: #39ff14;
-            --text-neon-pink: #ff00ff;
-            --shadow-neon: 0 0 5px var(--border-neon), 0 0 10px var(--border-neon), 0 0 15px var(--border-neon-alt);
-            --button-bg: rgba(0, 229, 255, 0.1);
-            --button-hover-bg: rgba(0, 229, 255, 0.3);
-            --input-bg: rgba(0, 0, 0, 0.4);
-
-            /* 图表颜色 (夜间) */
-            --chart-grid-color: rgba(0, 229, 255, 0.2);
-            --chart-tick-color: #a0a0a0; /* v3.9.4 修复关键: 图表字体使用专用灰色，更清晰 */
-            --chart-color-1: #00e5ff;
-            --chart-color-2: #ff00ff;
-            --chart-color-3: #39ff14;
-            --chart-color-4: #f8f8f2;
-            --chart-color-5: #ffca28;
-            --chart-color-6: #9e6eff;
-
-            /* 像素/字符画兔子 SVG (夜间模式) */
-            --bunny-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect fill='%2300e5ff' x='1' y='1' width='1' height='2'/%3E%3Crect fill='%2300e5ff' x='6' y='1' width='1' height='2'/%3E%3Crect fill='%23e0e0e0' x='2' y='3' width='4' height='3'/%3E%3Crect fill='%23ff00ff' x='3' y='4' width='1' height='1'/%3E%3Crect fill='%23ff00ff' x='5' y='4' width='1' height='1'/%3E%3C/svg%3E");
+            /* Night Mode (TRON) - Default */
+            --bg-color: #0f111a;
+            --text-color: #00ffcc;
+            --title-color: #00ffff;
+            --label-color: #00ffaa;
+            --panel-bg: rgba(26, 29, 43, 0.7);
+            --panel-border: rgba(0, 255, 204, 0.5);
+            --input-bg: #1a1d2b;
+            --input-border: #00ffcc;
+            --button-primary-bg: #00ffff;
+            --button-primary-text: #000;
         }
 
-        /* 二次元彩色跳脱风格 - 日间模式 */
-        .light-mode {
-            --bg-dark: #f0f8ff;
-            --bg-panel: rgba(255, 255, 255, 0.85);
-            --border-neon: #ff4081; /* 亮粉色 */
-            --border-neon-alt: #7b1fa2; /* 深紫色 */
-            --text-primary: #333333;
-            --text-neon-cyan: #007bff;
-            --text-neon-green: #28a745;
-            --text-neon-pink: #f50057;
-            --shadow-neon: 0 0 10px rgba(255, 64, 129, 0.6);
-            --button-bg: rgba(0, 123, 255, 0.1);
-            --button-hover-bg: rgba(0, 123, 255, 0.2);
-            --input-bg: rgba(255, 255, 255, 0.7);
-
-            /* 图表颜色 - 日间 */
-            --chart-grid-color: rgba(0, 0, 0, 0.08);
-            --chart-tick-color: #495057; /* v3.9.4 修复关键: 图表字体使用专用暗色 */
-            --chart-color-1: #1e88e5;
-            --chart-color-2: #d81b60;
-            --chart-color-3: #43a047;
-            --chart-color-4: #5e35b1;
-            --chart-color-5: #fdd835;
-            --chart-color-6: #fb8c00;
-
-            /* 像素/字符画兔子 SVG (日间模式) */
-            --bunny-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect fill='%23007bff' x='1' y='1' width='1' height='2'/%3E%3Crect fill='%23007bff' x='6' y='1' width='1' height='2'/%3E%3Crect fill='%23495057' x='2' y='3' width='4' height='3'/%3E%3Crect fill='%23f50057' x='3' y='4' width='1' height='1'/%3E%3Crect fill='%23f50057' x='5' y='4' width='1' height='1'/%3E%3C/svg%3E");
+        .day-mode {
+            /* Day Mode (Anime) */
+            --bg-color: #f0f8ff;
+            --text-color: #2c3e50;
+            --title-color: #ff69b4;
+            --label-color: #3498db;
+            --panel-bg: rgba(255, 255, 255, 0.8);
+            --panel-border: rgba(255, 105, 180, 0.7);
+            --input-bg: #eaf2f8;
+            --input-border: #3498db;
+            --button-primary-bg: #ff69b4;
+            --button-primary-text: #fff;
         }
 
         body {
-            font-family: var(--font-main);
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
+            font-family: 'VT323', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             transition: background-color 0.5s, color 0.5s;
         }
+        input, select, button, pre { font-family: 'VT323', monospace; }
+        .title-color { color: var(--title-color); }
+        .label-color { color: var(--label-color); }
+        .input-bg { background-color: var(--input-bg); }
+        .input-border { border-color: var(--input-border); }
+        .panel-bg { background-color: var(--panel-bg); }
+        .panel-border { border-color: var(--panel-border); }
+        .button-primary { background-color: var(--button-primary-bg); color: var(--button-primary-text); }
 
-        .panel {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-neon);
-            box-shadow: var(--shadow-neon);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        /* Wandering Rabbit */
+        #wandering-rabbit {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 1s linear;
         }
 
-        .title-color { color: var(--text-neon-cyan); }
-        .neon-text-green { color: var(--text-neon-green); }
-        .neon-text-pink { color: var(--text-neon-pink); }
-        
-        input, select, button {
-            font-family: var(--font-main);
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-neon-alt);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
-        input:focus, select:focus {
-            outline: none; border-color: var(--border-neon);
-            box-shadow: var(--shadow-neon);
-        }
-        button { background-color: var(--button-bg); border-color: var(--border-neon); }
-        button:hover { background-color: var(--button-hover-bg); box-shadow: var(--shadow-neon); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        input[type="checkbox"] { accent-color: var(--border-neon-alt); }
-
-        @keyframes random-move {
-            0%, 100% { transform: translate(var(--x1), var(--y1)); } 10% { transform: translate(var(--x2), var(--y2)); }
-            20% { transform: translate(var(--x3), var(--y3)); } 30% { transform: translate(var(--x4), var(--y4)); }
-            40% { transform: translate(var(--x5), var(--y5)); } 50% { transform: translate(var(--x6), var(--y6)); }
-            60% { transform: translate(var(--x7), var(--y7)); } 70% { transform: translate(var(--x8), var(--y8)); }
-            80% { transform: translate(var(--x9), var(--y9)); } 90% { transform: translate(var(--x10), var(--y10)); }
-        }
-        .pixel-bunny {
-            position: fixed; width: 48px; height: 48px;
-            background-image: var(--bunny-svg); background-size: contain;
-            background-repeat: no-repeat; z-index: 1000;
-            animation: random-move 30s infinite alternate; image-rendering: pixelated;
-            pointer-events: none; bottom: 10px; right: 10px;
-        }
-        
-        .modal-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 2000; opacity: 0; visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal-backdrop.show { opacity: 1; visibility: visible; }
-        .modal-content { max-height: 80vh; overflow-y: auto; }
-
-        .toast-notification {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            padding: 1rem 2rem; border-radius: 0.5rem; opacity: 0;
-            visibility: hidden; transition: opacity 0.5s, visibility 0.5s, transform 0.5s;
-            z-index: 3000;
-        }
-        .toast-notification.show { opacity: 1; visibility: visible; transform: translate(-50%, 10px); }
-
-        .loading-indicator {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); z-index: 4000; display: none;
-        }
-        .loader {
-            border: 4px solid rgba(255,255,255,0.2); border-left-color: var(--border-neon);
-            border-radius: 50%; width: 50px; height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Modal and Table Styles */
+        .modal-content { background-color: var(--input-bg); color: var(--text-color); }
+        .modal-content h3, .modal-content h4 { color: var(--title-color); border-bottom-color: var(--input-border); }
+        #changelog-list { max-height: 40vh; overflow-y: auto; }
+        .data-table-container { max-height: 300px; overflow-y: auto; border: 2px solid var(--label-color); border-radius: 8px; }
+        .data-table th { position: sticky; top: 0; background-color: var(--input-bg); color: #ffaa00; }
+        .data-table td, .data-table th { padding: 4px 8px; text-align: center; border: 1px solid var(--panel-border); }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="antialiased">
+    <!-- Wandering Rabbit Character -->
+    <div id="wandering-rabbit">
+        <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 10C30 10 15 30 15 50S25 85 40 90V70h-5c-2.21 0-4-1.79-4-4s1.79-4 4-4h5v-5c0-8.28 6.72-15 15-15s15 6.72 15 15v5h5c2.21 0 4 1.79 4 4s-1.79 4-4 4h-5v20c15-5 25-25 25-40S70 10 50 10zm-5-8c0-2.21-1.79-4-4-4s-4 1.79-4 4v8c0 2.21 1.79 4 4 4s4-1.79 4-4v-8zm10 0c0-2.21 1.79-4 4-4s4 1.79 4 4v8c0 2.21-1.79 4-4 4s-4-1.79-4-4v-8z"/></svg>
+    </div>
 
-    <div id="pixel-bunny" class="pixel-bunny"></div>
+    <div class="container mx-auto max-w-7xl p-4 md:p-6">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
+            <p class="mt-2 text-lg" style="color: var(--label-color);">v4.0.1 - 布朗新西兰兔 (Brown New Zealand)</p>
+            <p class="text-xs text-slate-500 mt-1">/* 灵感源自《回到未来》的布朗博士与新西兰兔，象征对技术细节的精准修复与完善。 */</p>
+            <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
+        </header>
 
-    <!-- 标题与控制按钮 -->
-    <header class="text-center mb-8">
-        <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">⚡ 小鹏P7+ 充电计算器 🔋</h1>
-        <p class="mt-2 text-xl neon-text-pink">v3.9.4 - 威利喜马拉雅 (Willy Himalayan)</p>
-        <p class="text-xs text-slate-500 mt-1">/* 融合《查理和巧克力工厂》的威利·旺卡与喜马拉雅兔，象征对颜色细节的精准修复。 */</p>
-    </header>
-
-    <main class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <!-- 左侧：输入面板 (2/5宽度) -->
-        <section id="input-panel" class="panel p-6 rounded-xl lg:col-span-2 space-y-4">
-            <h2 class="text-2xl neon-text-pink border-b border-b-[var(--border-neon-alt)] pb-2">🔌 充电参数设定</h2>
-            
-            <div>
-                <label for="car-model" class="block mb-1">🚗 车辆型号 (800V平台):</label>
-                <select id="car-model" class="w-full p-2 rounded-md">
-                    <option value="long_range">长续航 (60.7 kWh, 3C)</option>
-                    <option value="super_long_range">超长续航 (76.3 kWh, 3C)</option>
-                    <option value="flagship">旗舰 (74.9 kWh, 5C)</option>
-                </select>
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <!-- Left Panel -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg">
+                    <!-- Main controls -->
+                    <div class="space-y-4">
+                         <div>
+                            <label for="model" class="block text-lg label-color mb-1">🚘 车型 (800V平台)</label>
+                            <select id="model" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                                <option value="60.7" data-c="3" data-volt="800">长续航 (60.7 kWh)</option>
+                                <option value="76.3" data-c="3" data-volt="800">超长续航 (76.3 kWh)</option>
+                                <option value="74.9" data-c="5" data-volt="800">旗舰 (74.9 kWh)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="start" class="block text-lg label-color mb-1">📊 起始电量 (%)</label>
+                                <input type="number" id="start" value="20" step="0.001" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                            </div>
+                            <div>
+                                <label for="end" class="block text-lg label-color mb-1">📈 结束电量 (%)</label>
+                                <input type="number" id="end" value="80" step="0.001" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="actual" class="block text-lg label-color mb-1">⚡ 实际充电量 (kWh)</label>
+                            <input type="number" id="actual" value="45" step="0.001" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
+                        </div>
+                        <div>
+                            <label for="charger" class="block text-lg label-color mb-1">🛠️ 充电桩类型</label>
+                            <select id="charger" class="w-full text-lg input-bg border-2 input-border rounded-md p-2"></select>
+                        </div>
+                        <div>
+                            <label class="block text-lg label-color mb-2">⚙️ 额外损耗因子</label>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-base">
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="ac"><span>空调🌬️(+4%)</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="preheat"><span>预热🔥(+6%)</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="cold"><span>低温❄️(+5%)</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="hot"><span>酷暑☀️(+3%)</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="autopilot"><span>智驾🧠(+2%)</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="load"><span>载人🚚(+3%)</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="enableCooling" checked><span>S5冷却🌀</span></label>
+                            </div>
+                        </div>
+                        <div class="pt-2">
+                            <button onclick="calculate()" class="w-full text-xl button-primary font-bold py-3 px-4 rounded-lg border-b-4 border-cyan-800 active:border-b-0">📎 计算完整报告</button>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Quick Estimator -->
+                <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg">
+                    <h3 class="text-xl title-color mb-3 border-b border-cyan-700 pb-2">⏱️ 快速时间估算</h3>
+                     <div class="grid grid-cols-2 gap-4">
+                        <div><label for="quickStart" class="block text-lg label-color mb-1">起始(%)</label><input type="number" id="quickStart" value="20" class="w-full text-lg input-bg border-2 input-border rounded-md p-2"></div>
+                        <div><label for="quickEnd" class="block text-lg label-color mb-1">结束(%)</label><input type="number" id="quickEnd" value="80" class="w-full text-lg input-bg border-2 input-border rounded-md p-2"></div>
+                    </div>
+                    <button onclick="quickEstimate()" class="w-full text-lg bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-4 rounded-lg mt-4 border-b-4 border-amber-800 active:border-b-0">估算时间</button>
+                    <p id="quickResult" class="text-center text-xl title-color mt-3 h-6"></p>
+                </div>
             </div>
 
-            <div>
-                <label for="charger-type" class="block mb-1">⛽ 充电桩类型:</label>
-                <select id="charger-type" class="w-full p-2 rounded-md">
-                    <option value="s5_super_plus">S5 液冷超充 (720kW 站)</option>
-                    <option value="s4_super">S4 超充 (480kW 站)</option>
-                    <option value="s2_fast">S2 快充 (90kW 桩)</option>
-                    <option value="third_party_fast">第三方快充 (120kW 桩)</option>
-                    <option value="home_charger">家用充电桩 (7kW 桩)</option>
-                </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="start-soc" class="block mb-1">📉 起始电量 (%):</label>
-                    <input type="number" id="start-soc" min="0" max="100" class="w-full p-2 rounded-md">
+            <!-- Right Panel -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- AI Suggestion Area -->
+                <div id="ai-suggestion-panel" class="panel-bg p-4 rounded-xl border-2 panel-border hidden">
+                    <h3 class="text-xl title-color mb-2">🤖 Gemini AI 充电建议</h3>
+                    <pre id="ai-result" class="text-base whitespace-pre-wrap h-24 overflow-y-auto"></pre>
                 </div>
-                <div>
-                    <label for="end-soc" class="block mb-1">📈 目标电量 (%):</label>
-                    <input type="number" id="end-soc" min="0" max="100" class="w-full p-2 rounded-md">
+                <!-- Main Result -->
+                <div id="result-container" class="panel-bg p-4 rounded-xl border-2 panel-border hidden"><pre id="result" class="text-base whitespace-pre-wrap"></pre></div>
+                <!-- Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="socChart"></canvas></div>
+                    <div class="panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="ivChart"></canvas></div>
+                    <div class="panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="lossChart"></canvas></div>
+                    <div class="panel-bg p-4 rounded-xl border-2 panel-border"><canvas id="tempChart"></canvas></div>
                 </div>
-                <div>
-                    <label for="charged-kwh" class="block mb-1">⚡ 实际充电量 (kWh):</label>
-                    <input type="number" id="charged-kwh" step="0.1" class="w-full p-2 rounded-md" placeholder="选填，精算损耗">
+                <!-- Detailed Data Table -->
+                 <div id="table-container" class="hidden">
+                    <h3 class="text-xl title-color mb-2">📑 每 1% SoC 详细数据</h3>
+                    <div class="data-table-container">
+                        <table id="dataTable" class="w-full text-lg"><thead></thead><tbody></tbody></table>
+                    </div>
                 </div>
-                <div>
-                    <label for="station-occupancy" class="block mb-1">🔢 同站占用桩数:</label>
-                    <input type="number" id="station-occupancy" min="1" class="w-full p-2 rounded-md">
-                </div>
-            </div>
-
-            <h3 class="text-xl neon-text-pink pt-2 border-b border-b-[var(--border-neon-alt)] pb-2">⚙️ 损耗因子 (可选)</h3>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-2">
-                <div class="flex items-center"><input type="checkbox" id="ac-loss" class="mr-2 h-4 w-4 rounded"><label for="ac-loss">空调 🌬️ (+4%)</label></div>
-                <div class="flex items-center"><input type="checkbox" id="preheat-loss" class="mr-2 h-4 w-4 rounded"><label for="preheat-loss">电池预热 🔥 (+6%)</label></div>
-                <div class="flex items-center"><input type="checkbox" id="cold-loss" class="mr-2 h-4 w-4 rounded"><label for="cold-loss">低温环境 ❄️ (+5%)</label></div>
-                <div class="flex items-center"><input type="checkbox" id="hot-loss" class="mr-2 h-4 w-4 rounded"><label for="hot-loss">高温酷热 ☀️ (+7%)</label></div>
-                <div class="flex items-center"><input type="checkbox" id="autopilot-loss" class="mr-2 h-4 w-4 rounded"><label for="autopilot-loss">智驾耗电 🧠 (+2%)</label></div>
-                <div class="flex items-center"><input type="checkbox" id="load-loss" class="mr-2 h-4 w-4 rounded"><label for="load-loss">车辆载重 🚚 (+3%)</label></div>
-                <div class="flex items-center col-span-2"><input type="checkbox" id="s5-cooling" class="mr-2 h-4 w-4 rounded"><label for="s5-cooling">启用 S5 液冷枪线 💧</label></div>
-            </div>
-
-            <div class="flex flex-col space-y-3 pt-4">
-                <button id="calculate-btn" class="w-full p-3 rounded-lg text-lg neon-text-green border-[var(--text-neon-green)] hover:bg-green-500/20">>> 开始计算完整报告</button>
-                <div class="flex space-x-2">
-                    <button id="theme-toggle-btn" class="w-full p-2 rounded-lg border text-lg">🌗 切换模式</button>
-                    <button id="fullscreen-btn" class="w-full p-2 rounded-lg border text-lg">🖥️ 全屏幕</button>
-                    <button id="changelog-btn" class="w-full p-2 rounded-lg border text-lg">📜 更新日志</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 右侧：结果与图表 (3/5宽度) -->
-        <section id="results-and-charts-panel" class="lg:col-span-3 space-y-6">
-            <div class="panel p-6 rounded-xl">
-                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl neon-text-pink">📊 计算结果</h2>
-                    <button id="copy-report-btn" class="p-2 rounded-lg border text-base" disabled>📋 复制详细报告</button>
-                </div>
-                <pre id="results-output" class="whitespace-pre-wrap text-lg leading-relaxed bg-black/20 p-4 rounded-md min-h-[150px]"></pre>
-                 <button id="ai-suggest-btn" class="w-full p-3 rounded-lg text-lg neon-text-pink border-[var(--text-neon-pink)] hover:bg-pink-500/20 mt-4" disabled>🤖 获取智能充电建议 (AI)</button>
-            </div>
-            
-            <div id="detailed-report-container" class="panel p-4 rounded-xl hidden">
-                 <h3 class="text-xl neon-text-pink mb-3 border-b border-b-[var(--border-neon-alt)] pb-2">🧾 充电过程详细估算</h3>
-                 <pre id="detailedReport" class="text-xs whitespace-pre overflow-x-auto h-64 bg-black/20 p-2 rounded-md"></pre>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="panel p-4 rounded-xl aspect-video"><canvas id="socChart"></canvas></div>
-                <div class="panel p-4 rounded-xl aspect-video"><canvas id="ivChart"></canvas></div>
-                <div class="panel p-4 rounded-xl aspect-video"><canvas id="lossChart"></canvas></div>
-                <div class="panel p-4 rounded-xl aspect-video"><canvas id="effChart"></canvas></div>
-                <div class="md:col-span-2 panel p-4 rounded-xl aspect-video"><canvas id="tempChart"></canvas></div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- 更新日志 Modal -->
-    <div id="changelog-modal" class="modal-backdrop">
-        <div class="panel p-6 rounded-xl w-11/12 md:w-2/3 lg:w-1/2 relative">
-            <button id="close-changelog-btn" class="absolute top-4 right-4 text-2xl neon-text-pink">×</button>
-            <h2 class="text-2xl neon-text-pink mb-4">📜 更新日志</h2>
-            <div class="modal-content pr-4 text-base space-y-4">
-                <p class="neon-text-green">一个持续迭代，追求精准与美学的P7+充电计算器。</p>
-                
-                <div class="space-y-2">
-                    <h3 class="text-xl neon-text-cyan">v3.9.4 - 威利喜马拉雅 (Willy Himalayan)</h3>
-                    <p class="ml-4">视觉修复：强制更新Chart.js全局默认颜色，彻底解决图表字体在主题切换后变黑的问题。</p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-xl neon-text-cyan">v3.9.3 - 罗伊安哥拉 (Roy Angora)</h3>
-                    <p class="ml-4">视觉修复：夜间模式字体统一为TRON蓝色，日间模式统一为二次元紫色，提升可读性与风格感。</p>
-                </div>
-                
-                <div class="space-y-2">
-                    <h3 class="text-xl neon-text-cyan">v3.9.2 - 狄卡契克巨兔 (Deckard Checkered Giant)</h3>
-                    <p class="ml-4">模型优化：基于大量真实充电数据，精校各SOC区间的功率因子，大幅提升全段估算准确性。</p>
-                </div>
-                
-                <div class="space-y-2">
-                    <h3 class="text-xl neon-text-cyan">v3.9.1 - 教父侏儒兔 (Godfather Netherland Dwarf)</h3>
-                    <p class="ml-4">修复：夜间模式下按钮和图标字体颜色显示不正确的问题。</p>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-xl neon-text-cyan">v3.9.0 - 崔尼蒂垂耳兔 (Trinity Holland Lop)</h3>
-                    <p class="ml-4">核心模型与功能整合，统一版本命名规范。</p>
+                <!-- Buttons -->
+                 <div class="flex flex-wrap gap-4 justify-center">
+                    <button id="aiBtn" onclick="getAISuggestions()" class="flex-1 min-w-[140px] text-xl bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg">🤖 AI建议</button>
+                    <button onclick="copyResult()" class="flex-1 min-w-[140px] text-xl bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg">📋 复制报告</button>
+                    <button onclick="toggleChangelogModal(true)" class="flex-1 min-w-[140px] text-xl bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-lg">📜 日志</button>
+                    <button id="theme-toggle" onclick="toggleTheme()" class="flex-1 min-w-[140px] text-xl bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg">☀️/🌙</button>
+                    <button onclick="toggleFullscreen()" class="flex-1 min-w-[140px] text-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg">🖥️ 全屏幕</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- 自定义警告框 Modal -->
-    <div id="custom-alert" class="modal-backdrop">
-        <div class="panel p-8 rounded-xl w-11/12 md:w-1/2 lg:w-1/3 text-center relative">
-             <h3 id="custom-alert-title" class="text-2xl neon-text-pink mb-4">提示</h3>
-             <p id="custom-alert-message" class="text-lg mb-6 whitespace-pre-wrap"></p>
-             <button id="custom-alert-close-btn" class="px-8 py-2 rounded-lg text-lg">确认</button>
+    <!-- Changelog Modal -->
+    <div id="changelog-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 hidden" onclick="toggleChangelogModal(false)">
+        <div class="modal-content max-w-2xl w-full p-6 rounded-2xl border-2 border-amber-400 shadow-lg relative" onclick="event.stopPropagation()">
+            <button onclick="toggleChangelogModal(false)" class="absolute top-4 right-4 text-2xl text-red-500">×</button>
+            <div id="changelog-list">
+                 <h4>v4.0.1 - 布朗新西兰兔 (Brown New Zealand)</h4>
+                <ul>
+                    <li>功能增强: 重构全屏幕功能，增加对Chromium/Edge/Safari等浏览器的`webkit`前缀兼容，提升跨浏览器体验。</li>
+                </ul>
+                 <h4>v4.0 - 巴蒂巨兔 (Batty Checkered Giant)</h4>
+                <ul>
+                    <li>算法: 基于大量真实数据深度优化充电模型。</li>
+                    <li>新增: 主题切换, AI建议, 漫游兔子, 酷暑因子, 1% SoC数据列表。</li>
+                    <li>修复: 所有图表现已正常绘制。</li>
+                </ul>
+                <h4>v3.6 - 博士垂耳兔</h4><ul><li>命名: 采用新的版本命名规则。</li></ul>
+                <h4>v3.5 - 托尼·史塔克</h4><ul><li>新增: 独立快速时间估算工具、全萤幕按钮, 回归多个功能。</li></ul>
+                <h4>v3.4 - 专业增强版</h4><ul><li>升级: S5冷却策略, 小数点精度, SoC曲线动态变色。</li></ul>
+            </div>
         </div>
-    </div>
-    
-    <!-- Toast 通知 -->
-    <div id="toast-notification" class="toast-notification panel">Toast 消息</div>
-    
-    <!-- 加载指示器 -->
-    <div id="loading-indicator" class="loading-indicator">
-        <div class="loader"></div>
     </div>
 
     <script>
-        // IIFE (Immediately Invoked Function Expression) 封装所有代码，避免污染全局作用域
-        (() => {
-            'use strict';
+        const S5_LIMIT_KW = 800, S4_LIMIT_KW = 720, S2_LIMIT_KW = 90, THIRD_PARTY_LIMIT_KW = 120;
+        let charts = {};
+        let lastResultText = "";
 
+        const ui = {
+            model: document.getElementById("model"), charger: document.getElementById("charger"),
+            enableCooling: document.getElementById("enableCooling"), startSoC: document.getElementById("start"),
+            endSoC: document.getElementById("end"), actualKWh: document.getElementById("actual"),
+            resultContainer: document.getElementById("result-container"), resultText: document.getElementById("result"),
+            ac: document.getElementById('ac'), preheat: document.getElementById('preheat'),
+            cold: document.getElementById('cold'), hot: document.getElementById('hot'),
+            autopilot: document.getElementById('autopilot'), load: document.getElementById('load'),
+            quickStart: document.getElementById('quickStart'), quickEnd: document.getElementById('quickEnd'),
+            quickResult: document.getElementById('quickResult'), aiBtn: document.getElementById('aiBtn'),
+            aiResult: document.getElementById('ai-result'), aiPanel: document.getElementById('ai-suggestion-panel'),
+            tableContainer: document.getElementById('table-container'), dataTableBody: document.querySelector('#dataTable tbody'),
+            dataTableHead: document.querySelector('#dataTable thead'), themeToggle: document.getElementById('theme-toggle'),
+        };
+
+        Chart.defaults.font.family = "'VT323', monospace";
+        Chart.defaults.font.size = 16;
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.titleFont.size = 18;
+        Chart.defaults.plugins.tooltip.bodyFont.size = 16;
+
+        const getChartColors = () => ({
+            text: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+            title: getComputedStyle(document.documentElement).getPropertyValue('--title-color').trim(),
+            label: getComputedStyle(document.documentElement).getPropertyValue('--label-color').trim(),
+            grid: getComputedStyle(document.documentElement).getPropertyValue('--panel-border').trim()
+        });
+
+        const chartOptionsTemplate = (title, displayLegend = false) => {
+            const colors = getChartColors();
+            return {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: { display: true, text: title, color: colors.title, font: { size: 20 } },
+                    legend: { display: displayLegend, labels: { color: colors.text } }
+                },
+                scales: {
+                    x: { ticks: { color: colors.label }, grid: { color: colors.grid } },
+                    y: { ticks: { color: colors.label }, grid: { color: colors.grid }, beginAtZero: true }
+                }
+            };
+        };
+
+        function formatChargeTime(mins) { return mins < 60 ? `${mins.toFixed(0)} 分钟` : `${Math.floor(mins/60)} 小时 ${Math.round(mins%60)} 分钟`; }
+
+        function estimateRealisticChargeTime(startSoC, endSoC, capacity, maxPower, isCooling) {
+            let zones = [
+                { upto: 40, factor: 0.92 }, { upto: 60, factor: 0.85 },
+                { upto: 80, factor: 0.65 }, { upto: 95, factor: 0.35 },
+                { upto: 100, factor: 0.12 }
+            ];
+            if (isCooling) {
+                zones[2].factor = 0.75; zones[3].factor = 0.45;
+            }
+            let time = 0, currentSoC = startSoC;
+            for (const zone of zones) {
+                if (currentSoC >= endSoC || currentSoC >= zone.upto) continue;
+                const power = maxPower * zone.factor;
+                const socInZone = Math.min(endSoC, zone.upto) - currentSoC;
+                time += ((socInZone / 100) * capacity / power) * 60;
+                currentSoC += socInZone;
+            }
+            return time;
+        }
+        
+        function updateChargerOptions() {
+            const { value: capacity, dataset: { c: maxC } } = ui.model.selectedOptions[0];
+            ui.charger.innerHTML = "";
+            const chargers = [
+                { name: `S5（液冷超充）`, power: Math.min(S5_LIMIT_KW, capacity * maxC) },
+                { name: `S4（超充）`, power: Math.min(S4_LIMIT_KW, capacity * maxC) },
+                { name: "S2（普通快充）", power: S2_LIMIT_KW },
+                { name: "第三方快充", power: THIRD_PARTY_LIMIT_KW },
+                { name: "家用充电桩", power: 7 }
+            ];
+            chargers.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.power;
+                opt.textContent = `${c.name} - ${c.power.toFixed(0)} kW`;
+                ui.charger.appendChild(opt);
+            });
+        }
+
+        function calculate() {
+            destroyAllCharts();
+            const capacity = parseFloat(ui.model.value);
+            const { volt, c: maxCRate } = ui.model.selectedOptions[0].dataset;
+            const startSoC = parseFloat(ui.startSoC.value), endSoC = parseFloat(ui.endSoC.value);
+            const actualKWh = parseFloat(ui.actualKWh.value), chargerPower = parseFloat(ui.charger.value);
+
+            if (isNaN(capacity) || isNaN(startSoC) || isNaN(endSoC) || isNaN(actualKWh) || startSoC >= endSoC) { return; }
+
+            const sessionMaxPower = Math.min(chargerPower, capacity * maxCRate);
+            const time = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked);
+            
+            let lossFactor = 1.0;
+            if(ui.ac.checked) lossFactor+=0.04; if(ui.preheat.checked) lossFactor+=0.06;
+            if(ui.cold.checked) lossFactor+=0.05; if(ui.hot.checked) lossFactor+=0.03;
+            if(ui.autopilot.checked) lossFactor+=0.02; if(ui.load.checked) lossFactor+=0.03;
+
+            const theoreticalKWh = capacity * (endSoC - startSoC) / 100;
+            const lossKWh = actualKWh - theoreticalKWh;
+
+            lastResultText = `--- 充电报告 ---\n平台电压: ${volt}V\n拟真估算时长: ${formatChargeTime(time)}\n理论充电量: ${theoreticalKWh.toFixed(3)} kWh\n实际充电量: ${actualKWh.toFixed(3)} kWh\n总计损耗量: ${lossKWh.toFixed(3)} kWh\n额外损耗因子: x${lossFactor.toFixed(2)}`;
+            ui.resultText.innerText = lastResultText;
+            ui.resultContainer.classList.remove('hidden');
+
+            const detailedData = generateDetailedData(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseFloat(volt));
+            displayDetailedTable(detailedData);
+            
+            updateSoCChart(startSoC, endSoC, time);
+            updateIVChart(detailedData);
+            updateLossChart(theoreticalKWh, lossKWh);
+            updateTempEfficiencyChart();
+        }
+
+        function quickEstimate() {
+            const capacity = parseFloat(ui.model.value), { c: maxCRate } = ui.model.selectedOptions[0].dataset;
+            const chargerPower = parseFloat(ui.charger.value), start = parseFloat(ui.quickStart.value), end = parseFloat(ui.quickEnd.value);
+            if (isNaN(start) || isNaN(end) || start >= end) { ui.quickResult.textContent = "输入无效"; return; }
+            const sessionMaxPower = Math.min(chargerPower, capacity * maxCRate);
+            const time = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked);
+            ui.quickResult.textContent = `≈ ${formatChargeTime(time)}`;
+        }
+        
+  async function getAISuggestions() {
+        if (!lastResultText) { alert("请先计算一份报告。"); return; }
+        ui.aiBtn.disabled = true;
+        ui.aiBtn.innerText = "思考中...";
+        ui.aiPanel.classList.remove('hidden');
+        ui.aiResult.innerText = "正在连接...";
+        
+        const prompt = `基于以下小鹏P7的充电报告，请提供一些简洁、实用的充电建议和分析，语言风格要像一个懂车的朋友。报告内容：\n${lastResultText}`;
+        
+        try {
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
             const apiKey = "";
-
-            const dom = {
-                body: document.body,
-                carModelSelect: document.getElementById('car-model'),
-                chargerTypeSelect: document.getElementById('charger-type'),
-                startSocInput: document.getElementById('start-soc'),
-                endSocInput: document.getElementById('end-soc'),
-                chargedKwhInput: document.getElementById('charged-kwh'),
-                stationOccupancyInput: document.getElementById('station-occupancy'),
-                lossCheckboxes: {
-                    ac: document.getElementById('ac-loss'),
-                    preheat: document.getElementById('preheat-loss'),
-                    cold: document.getElementById('cold-loss'),
-                    hot: document.getElementById('hot-loss'),
-                    autopilot: document.getElementById('autopilot-loss'),
-                    load: document.getElementById('load-loss'),
-                    s5Cooling: document.getElementById('s5-cooling'),
-                },
-                buttons: {
-                    calculate: document.getElementById('calculate-btn'),
-                    aiSuggest: document.getElementById('ai-suggest-btn'),
-                    copyReport: document.getElementById('copy-report-btn'),
-                    themeToggle: document.getElementById('theme-toggle-btn'),
-                    fullscreen: document.getElementById('fullscreen-btn'),
-                    changelog: document.getElementById('changelog-btn'),
-                    closeChangelog: document.getElementById('close-changelog-btn'),
-                    customAlertClose: document.getElementById('custom-alert-close-btn'),
-                },
-                displays: {
-                    resultsOutput: document.getElementById('results-output'),
-                    loadingIndicator: document.getElementById('loading-indicator'),
-                    detailedReportContainer: document.getElementById('detailed-report-container'),
-                    detailedReport: document.getElementById('detailedReport'),
-                },
-                modals: {
-                    changelog: document.getElementById('changelog-modal'),
-                    customAlert: document.getElementById('custom-alert'),
-                },
-                customAlert: {
-                    title: document.getElementById('custom-alert-title'),
-                    message: document.getElementById('custom-alert-message'),
-                },
-                toast: document.getElementById('toast-notification'),
-                pixelBunny: document.getElementById('pixel-bunny'),
-            };
-
-            let chartInstances = {};
-
-            const carData = {
-                long_range: { name: '长续航', batteryKwh: 60.7, chargeRate: '3C', platform: 800, carMaxAchievablePower: 265 },
-                super_long_range: { name: '超长续航', batteryKwh: 76.3, chargeRate: '3C', platform: 800, carMaxAchievablePower: 265 },
-                flagship: { name: '旗舰', batteryKwh: 74.9, chargeRate: '5C', platform: 800, carMaxAchievablePower: 335 }
-            };
-
-            const chargerData = {
-                s5_super_plus: { name: 'S5 液冷超充', stationPower: 720, isStation: true },
-                s4_super: { name: 'S4 超充', stationPower: 480, isStation: true },
-                s2_fast: { name: 'S2 快充', stationPower: 90, isStation: false },
-                third_party_fast: { name: '第三方快充', stationPower: 120, isStation: false },
-                home_charger: { name: '家用充电桩', stationPower: 7, isStation: false }
-            };
-
-            let lastCalculationResult = null;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             
-            function estimateRealisticChargeTime() {
-                const startSoc = parseFloat(dom.startSocInput.value);
-                const endSoc = parseFloat(dom.endSocInput.value);
-                const carModel = carData[dom.carModelSelect.value];
-                const charger = chargerData[dom.chargerTypeSelect.value];
-                const occupancy = parseInt(dom.stationOccupancyInput.value);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-                if (isNaN(startSoc) || isNaN(endSoc) || isNaN(occupancy) || startSoc >= endSoc || occupancy < 1) {
-                    showCustomAlert("输入错误", "请检查输入值。\n起始电量必须小于目标电量，且占用桩数至少为 1。");
-                    return null;
-                }
+            if (!response.ok) throw new Error(`暂未开放`);
+            
+            const result = await response.json();
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            ui.aiResult.innerText = text || "暂未开放";
 
-                const sessionMaxPower = charger.isStation ? Math.min(charger.stationPower / occupancy, carModel.carMaxAchievablePower) : Math.min(charger.stationPower, carModel.carMaxAchievablePower);
-                
-                let socZones;
-                if (carModel.chargeRate === '5C') {
-                     socZones = [
-                        { soc: 10, factor: 0.99 }, { soc: 40, factor: 0.90 }, { soc: 70, factor: 0.70 },
-                        { soc: 85, factor: 0.50 }, { soc: 95, factor: 0.25 }, { soc: 100, factor: 0.10 }
-                    ];
+        } catch (error) {
+            console.error("AI suggestion error:", error);
+            ui.aiResult.innerText = `暂未开放`;
+        } finally {
+            ui.aiBtn.disabled = false;
+            ui.aiBtn.innerText = "🤖 AI建议";
+        }
+    }
+
+        function generateDetailedData(start, end, capacity, maxPower, isCooling, voltage) {
+            const data = [];
+            for (let soc = Math.floor(start); soc <= Math.ceil(end); soc++) {
+                let factor = 0.92;
+                if (soc > 95) factor = 0.12; else if (soc > 80) factor = 0.35; else if (soc > 60) factor = 0.65; else if (soc > 40) factor = 0.85;
+                if (isCooling) { if(soc > 80) factor = 0.45; else if (soc > 60) factor = 0.75; }
+                const currentPower = maxPower * factor;
+                const currentVoltage = voltage + (soc / 100 * 50);
+                const currentAmps = (currentPower * 1000) / currentVoltage;
+                data.push({ soc, power: currentPower, voltage: currentVoltage, amps: currentAmps });
+            }
+            return data;
+        }
+
+        function displayDetailedTable(data) {
+            ui.dataTableHead.innerHTML = `<tr><th>SoC(%)</th><th>功率(kW)</th><th>电压(V)</th><th>电流(A)</th></tr>`;
+            ui.dataTableBody.innerHTML = data.map(d => `<tr><td>${d.soc}</td><td>${d.power.toFixed(1)}</td><td>${d.voltage.toFixed(1)}</td><td>${d.amps.toFixed(1)}</td></tr>`).join('');
+            ui.tableContainer.classList.remove('hidden');
+        }
+
+        function destroyAllCharts() { Object.values(charts).forEach(c => c?.destroy()); }
+        
+        function updateSoCChart(start, end, duration) {
+            const colors = getChartColors();
+            const ctx = document.getElementById('socChart').getContext('2d');
+            const data = Array.from({length: Math.ceil(duration)+1}, (_,i) => start + (end-start)*(i/duration));
+            charts.soc = new Chart(ctx, { 
+                type: 'line', 
+                data: { 
+                    labels: Array.from({length:Math.ceil(duration)+1},(_,i)=>i), 
+                    datasets: [{ 
+                        data, 
+                        borderWidth: 3, tension: 0.1, pointRadius: 0,
+                        segment: {
+                            borderColor: c => {
+                                const y = c.p1.parsed.y;
+                                if (y > 80) return '#ff3366';
+                                if (y > 60) return '#ffaa00';
+                                return colors.text; 
+                            }
+                        }
+                    }]
+                }, 
+                options: chartOptionsTemplate('🔋 SoC 变化曲线')
+            });
+        }
+        
+        function updateIVChart(data) {
+            const ctx = document.getElementById('ivChart').getContext('2d');
+            let options = chartOptionsTemplate(`📉 模拟电流/电压`);
+            options.scales.x.title = {display:true, text:'SoC (%)', color:getChartColors().label};
+            options.scales.y1 = {type:'linear', position:'left', ticks:{color:'#00ccff'}, title:{display:true,text:'电流(A)',color:'#00ccff'}};
+            options.scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffaa00'}, grid:{drawOnChartArea:false}, title:{display:true,text:'电压(V)',color:'#ffaa00'}};
+            delete options.scales.y;
+
+            charts.iv = new Chart(ctx, { type:'line', data: { labels: data.map(d=>d.soc), datasets: [
+                {label: '电流', data: data.map(d=>d.amps), borderColor:'#00ccff', yAxisID:'y1', pointRadius:0}, 
+                {label: '电压', data: data.map(d=>d.voltage), borderColor:'#ffaa00', yAxisID:'y2', pointRadius:0}
+            ]}, options });
+        }
+        
+        function updateLossChart(theoretical, loss) {
+            const ctx = document.getElementById('lossChart').getContext('2d');
+            charts.loss = new Chart(ctx, { 
+                type:'doughnut', 
+                data: { 
+                    labels:['有效充电', '总损耗'], 
+                    datasets:[{ 
+                        data:[theoretical, loss], 
+                        backgroundColor:['#00ffcc', '#ff3366'], 
+                        borderColor:getComputedStyle(document.documentElement).getPropertyValue('--bg-color'), 
+                        borderWidth:4 
+                    }]
+                }, 
+                options: chartOptionsTemplate('⚡ 电量损耗分布', true)
+            });
+        }
+
+        function updateTempEfficiencyChart() {
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            const temps = Array.from({length:11}, (_,i)=>i*5-10);
+            const effs = temps.map(t=>(98 - Math.pow(t-22, 2)*0.05));
+            charts.temp = new Chart(ctx, { 
+                type:'line', 
+                data: { 
+                    labels:temps.map(t=>`${t}°C`), 
+                    datasets:[{ 
+                        data:effs, 
+                        fill:true, 
+                        borderColor:'#66ccff', 
+                        backgroundColor:'rgba(102, 204, 255, 0.2)', 
+                        tension:0.4, 
+                        pointRadius:0 
+                    }]
+                }, 
+                options: chartOptionsTemplate('🌡️ 温度 vs 充电效率')
+            });
+        }
+
+        function setupUI() {
+            updateChargerOptions();
+            ui.themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('day-mode');
+                localStorage.setItem('theme', document.body.classList.contains('day-mode') ? 'day' : 'night');
+                calculate();
+            });
+            if (localStorage.getItem('theme') === 'day') { document.body.classList.add('day-mode'); }
+            ['model', 'charger', 'enableCooling', 'ac', 'preheat', 'cold', 'hot', 'autopilot', 'load', 'start', 'end', 'actual'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('change', calculate);
+            });
+        }
+        
+        function moveRabbit() {
+            const rabbit = document.getElementById('wandering-rabbit');
+            const x = Math.random() * (window.innerWidth - 50);
+            const y = Math.random() * (window.innerHeight - 50);
+            rabbit.style.transform = `translate(${x}px, ${y}px)`;
+        }
+        
+        function copyResult() {
+            if (!lastResultText) return;
+            navigator.clipboard.writeText(lastResultText.trim()).then(() => {
+                alert('结果已复制!');
+            }).catch(err => console.error('无法复制', err));
+        }
+
+        function toggleChangelogModal(show) { 
+            const modal = document.getElementById('changelog-modal');
+            if (modal) modal.classList.toggle('hidden', !show); 
+        }
+
+        /**
+         * v4.0.1 增强的全屏幕切换功能
+         * @description 切换文档的全屏幕模式，并兼容主流浏览器前缀。
+         */
+        function toggleFullscreen() {
+            const docEl = document.documentElement;
+            
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+
+            if (!isFullscreen) {
+                const requestMethod = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+                if (requestMethod) {
+                    requestMethod.call(docEl).catch(err => alert(`无法进入全屏模式: ${err.message}`));
                 } else {
-                     socZones = [
-                        { soc: 15, factor: 0.98 }, { soc: 50, factor: 0.85 }, { soc: 80, factor: 0.60 },
-                        { soc: 90, factor: 0.40 }, { soc: 97, factor: 0.20 }, { soc: 100, factor: 0.08 }
-                    ];
+                    alert("您的浏览器不支持全屏模式。");
                 }
-                
-                if (dom.lossCheckboxes.s5Cooling.checked && charger.name.includes('S5')) {
-                    socZones.forEach(zone => {
-                        if (zone.soc > 15 && zone.soc <= 80) zone.factor = Math.min(1.0, zone.factor * 1.05);
-                    });
-                }
-                
-                let totalTimeMinutes = 0, energyAddedKwh = 0, lastSoc = startSoc;
-                const chargeProfile = []; 
-
-                for (const zone of socZones) {
-                    if (startSoc >= zone.soc || lastSoc >= endSoc) continue;
-                    const socStartOfZone = Math.max(lastSoc, (socZones.find(z => z.soc < zone.soc)?.soc || 0));
-                    const socEndOfZone = Math.min(endSoc, zone.soc);
-                    const socInZone = socEndOfZone - socStartOfZone;
-                    if (socInZone <= 0) continue;
-                    
-                    const avgPower = sessionMaxPower * zone.factor;
-                    const energyForZone = (socInZone / 100) * carModel.batteryKwh;
-                    totalTimeMinutes += (energyForZone / avgPower) * 60;
-                    energyAddedKwh += energyForZone;
-
-                    for(let currentSoc = socStartOfZone; currentSoc < socEndOfZone; currentSoc += 1) {
-                         const baseVoltage = 770 + (currentSoc / 100) * 50;
-                         const voltage = baseVoltage + (Math.random() - 0.5) * 20;
-                         const current = Math.min((avgPower * 1000) / voltage, carModel.chargeRate === '3C' ? 340 : 450);
-                         chargeProfile.push({ soc: currentSoc, power: avgPower, current, voltage });
-                    }
-                    lastSoc = socEndOfZone;
-                }
-                 const lastZone = socZones.find(z => endSoc <= z.soc) || socZones[socZones.length-1];
-                 const finalPower = sessionMaxPower * lastZone.factor;
-                 const finalVoltage = 770 + (endSoc / 100) * 50;
-                 chargeProfile.push({ soc: endSoc, power: finalPower, current: (finalPower * 1000) / finalVoltage, voltage: finalVoltage });
-
-                const baseLoss = 0.08;
-                let extraLossFactor = 0;
-                const lossFactors = {
-                    ac: { checked: dom.lossCheckboxes.ac.checked, value: 0.04 }, preheat: { checked: dom.lossCheckboxes.preheat.checked, value: 0.06 },
-                    cold: { checked: dom.lossCheckboxes.cold.checked, value: 0.05 }, hot: { checked: dom.lossCheckboxes.hot.checked, value: 0.07 },
-                    autopilot: { checked: dom.lossCheckboxes.autopilot.checked, value: 0.02 }, load: { checked: dom.lossCheckboxes.load.checked, value: 0.03 },
-                };
-                const appliedLosses = {};
-                for (const key in lossFactors) {
-                    if (lossFactors[key].checked) { extraLossFactor += lossFactors[key].value; appliedLosses[key] = true; }
-                }
-                const totalLossFactor = baseLoss + extraLossFactor;
-                const theoreticalKwhFromGrid = energyAddedKwh / (1 - totalLossFactor);
-                const totalLossKwh = theoreticalKwhFromGrid - energyAddedKwh;
-                
-                let actualLossKwh = null, actualEfficiency = null;
-                const chargedKwh = parseFloat(dom.chargedKwhInput.value);
-                if (!isNaN(chargedKwh) && chargedKwh > 0) {
-                    actualLossKwh = chargedKwh - energyAddedKwh;
-                    actualEfficiency = (energyAddedKwh / chargedKwh) * 100;
-                }
-
-                return { totalTimeMinutes, energyAddedKwh, effectiveMaxPower: sessionMaxPower, chargeProfile, totalLossKwh, totalLossFactor, appliedLosses, baseLoss, actualLossKwh, actualEfficiency, carModel, charger, startSoc, endSoc };
-            }
-
-            function calculateAndDisplay() {
-                populateDefaultsIfEmpty();
-                const result = estimateRealisticChargeTime();
-                if (!result) {
-                    dom.buttons.aiSuggest.disabled = true;
-                    dom.buttons.copyReport.disabled = true;
-                    return;
-                }
-                lastCalculationResult = result;
-
-                const hours = Math.floor(result.totalTimeMinutes / 60);
-                const minutes = Math.round(result.totalTimeMinutes % 60);
-                const timeString = `${hours > 0 ? hours + ' 小时 ' : ''}${minutes} 分钟`;
-                
-                let output = `预计充电时间: ${timeString} 🕒\n`;
-                output += `预计充入电量: ${result.energyAddedKwh.toFixed(2)} kWh ⚡\n`;
-                output += `最高有效功率: ${result.effectiveMaxPower.toFixed(0)} kW 🚀\n`;
-                output += `预估总损耗: ${result.totalLossKwh.toFixed(2)} kWh (约 ${(result.totalLossFactor * 100).toFixed(1)}%) 🔥\n`;
-                if (result.actualLossKwh !== null) {
-                    output += `\n>> 根据输入的 ${dom.chargedKwhInput.value} kWh 计算:\n`;
-                    output += `   实际总损耗: ${result.actualLossKwh.toFixed(2)} kWh\n`;
-                    output += `   实际综合效率: ${result.actualEfficiency.toFixed(1)} %\n`;
-                }
-
-                dom.displays.resultsOutput.textContent = output;
-                dom.buttons.aiSuggest.disabled = false;
-                dom.buttons.copyReport.disabled = false;
-
-                generateAndDisplayDetailedReport(result.chargeProfile);
-                dom.displays.detailedReportContainer.classList.remove('hidden');
-
-                updateAllCharts(result);
-            }
-
-            function generateAndDisplayDetailedReport(profile) {
-                 let reportContent = "SoC (%) | 功率 (kW) | 电流 (A) | 电压 (V)\n";
-                 reportContent += "--------|-----------|----------|----------\n";
-                 profile.forEach(p => {
-                     reportContent += `${p.soc.toFixed(1).padEnd(7)}| ${p.power.toFixed(2).padEnd(9)}| ${p.current.toFixed(2).padEnd(8)}| ${p.voltage.toFixed(0)}\n`;
-                 });
-                 dom.displays.detailedReport.textContent = reportContent;
-            }
-
-            function generateDetailedReportText() {
-                if (!lastCalculationResult) return "没有可用的报告。";
-                const r = lastCalculationResult;
-                const hours = Math.floor(r.totalTimeMinutes / 60);
-                const minutes = Math.round(r.totalTimeMinutes % 60);
-                let report = `--- 小鹏P7+ 充电报告 (v4.0.1) ---\n\n`;
-                report += `[充电设定]\n车型: ${r.carModel.name}\n充电桩: ${r.charger.name}\n充电区间: ${r.startSoc}% -> ${r.endSoc}%\n\n`;
-                report += `[核心结果]\n预计总耗时: ${hours} 小时 ${minutes} 分钟\n充入电池电量: ${r.energyAddedKwh.toFixed(2)} kWh\n峰值充电功率: ${r.effectiveMaxPower.toFixed(0)} kW\n\n`;
-                report += `[损耗分析]\n预估总损耗: ${r.totalLossKwh.toFixed(2)} kWh\n基础损耗 (8%): ${(r.energyAddedKwh / (1 - r.baseLoss) - r.energyAddedKwh).toFixed(2)} kWh\n`;
-                Object.keys(r.appliedLosses).forEach((key) => { report += `额外损耗 - ${key}\n`; });
-                if (r.actualEfficiency) report += `\n实际综合效率: ${r.actualEfficiency.toFixed(1)}%\n`;
-                report += `\n--- 报告生成于 ${new Date().toLocaleString('zh-CN')} ---\n`;
-                return report;
-            }
-
-            function destroyAllCharts() { Object.values(chartInstances).forEach(c => c?.destroy()); }
-            
-            function updateAllCharts(result) {
-                destroyAllCharts();
-                const colors = getThemeColors();
-                chartInstances.soc = createSoCChart(result, colors);
-                chartInstances.iv = createIVChart(result, colors);
-                chartInstances.loss = createLossChart(result, colors);
-                chartInstances.eff = createEffChart(result, colors);
-                chartInstances.temp = createTempChart(colors);
-            }
-            
-            function getThemeColors() {
-                const styles = getComputedStyle(document.documentElement);
-                return ['gridColor', 'tickColor', 'color1', 'color2', 'color3', 'color4', 'color5', 'color6']
-                    .reduce((acc, name) => ({ ...acc, [name]: styles.getPropertyValue(`--chart-${name}`).trim() }), {});
-            }
-            
-            function getChartOptions(title, xLabel, yLabel, y1Label = null, colors = getThemeColors(), hasDualAxis = false) {
-                const options = {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        title: { display: true, text: title, color: colors.tickColor, font: { size: 16, family: "'VT323', monospace" } },
-                        legend: { position: 'top', labels: { color: colors.tickColor, font: { family: "'VT323', monospace" } } },
-                        tooltip: { backgroundColor: 'rgba(0,0,0,0.7)', titleColor: colors.color1, titleFont: { family: "'VT323', monospace" }, bodyFont: { family: "'VT323', monospace" } }
-                    },
-                    scales: {
-                        x: { title: { display: !!xLabel, text: xLabel, color: colors.tickColor, font: { family: "'VT323', monospace" } }, grid: { color: colors.gridColor }, ticks: { color: colors.tickColor, font: { family: "'VT323', monospace" } } },
-                        y: { title: { display: true, text: yLabel, color: colors.tickColor, font: { family: "'VT323', monospace" } }, grid: { color: colors.gridColor }, ticks: { color: colors.tickColor, font: { family: "'VT323', monospace" } }, beginAtZero: true }
-                    }
-                };
-                if (hasDualAxis && y1Label) {
-                    options.scales.y1 = { type: 'linear', position: 'right', title: { display: true, text: y1Label, color: colors.tickColor, font: { family: "'VT323', monospace" } }, grid: { drawOnChartArea: false }, ticks: { color: colors.tickColor, font: { family: "'VT323', monospace" } }, beginAtZero: true };
-                }
-                return options;
-            }
-
-            function createSoCChart(result, colors) {
-                const options = getChartOptions('🔋 SoC 变化曲线', '时间 (分钟)', 'SoC (%)', null, colors, false);
-                const data = result.chargeProfile;
-                const totalMinutes = result.totalTimeMinutes;
-                return new Chart('socChart', {
-                    type: 'line', data: {
-                        labels: data.map(p => (p.soc / 100 * totalMinutes).toFixed(1)),
-                        datasets: [{ label: 'SoC', data: data.map(p => p.soc), borderColor: colors.color1, tension: 0.1 }]
-                    }, options
-                });
-            }
-
-            function createIVChart(result, colors) {
-                const data = result.chargeProfile;
-                const options = getChartOptions('📉 模拟电流/电压', 'SoC (%)', '电流(A)', '电压(V)', colors, true);
-                 options.scales.y1.min = (result.charger.name === '家用充电桩') ? 200 : 750;
-                 options.scales.y1.max = (result.charger.name === '家用充电桩') ? 240 : 850;
-                return new Chart('ivChart', {
-                    type: 'line', data: {
-                        labels: data.map(p => p.soc.toFixed(0)), datasets: [
-                            { label: '电流 (A)', data: data.map(p => p.current), borderColor: colors.color2, yAxisID: 'y' },
-                            { label: '电压 (V)', data: data.map(p => p.voltage), borderColor: colors.color3, yAxisID: 'y1' }
-                        ]
-                    }, options
-                });
-            }
-
-            function createLossChart(result, colors) {
-                return new Chart('lossChart', { type: 'doughnut', data: { labels: ['有效充电', '总损耗'], datasets: [{ data: [result.energyAddedKwh, result.totalLossKwh], backgroundColor: [colors.color4, colors.color5], borderColor: '#0d0e1b', borderWidth: 4 }] },
-                    options: getChartOptions('⚡ 电量损耗分布', null, null, null, colors, false)
-                });
-            }
-
-            function createEffChart(result, colors) {
-                 const data = [100 * (1-result.totalLossFactor)];
-                 const labels = ['预估效率'];
-                 if(result.actualEfficiency) {
-                     data.push(result.actualEfficiency);
-                     labels.push('实际效率');
-                 }
-                return new Chart('effChart', { type: 'bar', data: { labels: labels, datasets: [{ label: '效率 (%)', data: data, backgroundColor: [colors.color1, colors.color6] }] },
-                    options: getChartOptions('📊 充电效率对比', null, '效率 (%)', null, colors, false)
-                });
-            }
-
-            function createTempChart(colors) {
-                const temps = Array.from({ length: 11 }, (_, i) => i * 5 - 10);
-                const effs = temps.map(t => (98 - Math.pow(t - 22, 2) * 0.05));
-                return new Chart('tempChart', { type: 'line', data: { labels: temps.map(t => `${t}°C`), datasets: [{ label: '效率 (%)', data: effs, fill: true, borderColor: '#66ccff', backgroundColor: 'rgba(102, 204, 255, 0.2)', tension: 0.4 }] },
-                    options: getChartOptions('🌡️ 温度 vs 充电效率', '环境温度', '效率 (%)', null, colors, false)
-                });
-            }
-
-            function toggleTheme() {
-                dom.body.classList.toggle('light-mode');
-                const isLight = dom.body.classList.contains('light-mode');
-                localStorage.setItem('theme', isLight ? 'light' : 'dark');
-                dom.buttons.themeToggle.textContent = isLight ? '🌑 夜间模式' : '🌓 日间模式';
-
-                // v3.9.4 修复: 强制更新 Chart.js 全局默认颜色
-                const newTickColor = getThemeColors().tickColor;
-                Chart.defaults.color = newTickColor;
-                
-                if (lastCalculationResult) {
-                    updateAllCharts(lastCalculationResult);
-                }
-            }
-            
-            function toggleFullscreen() {
-                const docEl = document.documentElement;
-                const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-                if (!isFullscreen) {
-                    const requestMethod = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
-                    if (requestMethod) { requestMethod.call(docEl).catch(err => { showCustomAlert("错误", `无法进入全屏模式: ${err.message}`); });
-                    } else { showCustomAlert("提示", "您的浏览器不支持全屏模式。"); }
+            } else {
+                const exitMethod = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+                if (exitMethod) {
+                    exitMethod.call(document);
                 } else {
-                    const exitMethod = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
-                    if (exitMethod) { exitMethod.call(document);
-                    } else { showCustomAlert("提示", "您的浏览器不支持退出全屏模式。"); }
+                    alert("您的浏览器不支持退出全屏模式。");
                 }
             }
-            
-            function toggleModal(modal, show) { modal.classList.toggle('show', show); }
-            
-            function showCustomAlert(title, message) {
-                dom.customAlert.title.textContent = title;
-                dom.customAlert.message.textContent = message;
-                toggleModal(dom.modals.customAlert, true);
-            }
-            
-            function showToast(message) {
-                dom.toast.textContent = message;
-                dom.toast.classList.add('show');
-                setTimeout(() => dom.toast.classList.remove('show'), 3000);
-            }
-            
-            function copyReportToClipboard() {
-                navigator.clipboard.writeText(generateDetailedReportText()).then(() => showToast('报告已成功复制到剪贴板！')).catch(() => showCustomAlert("复制失败", "您的浏览器可能不支持此功能或未授予权限。"));
-            }
+        }
 
-            function populateDefaultsIfEmpty() {
-                if (!dom.startSocInput.value) dom.startSocInput.value = Math.floor(Math.random() * 15) + 5;
-                if (!dom.endSocInput.value) dom.endSocInput.value = Math.floor(Math.random() * 21) + 80;
-                if (!dom.stationOccupancyInput.value) dom.stationOccupancyInput.value = Math.floor(Math.random() * 3) + 1;
-                if (!dom.chargedKwhInput.value) dom.chargedKwhInput.value = ((parseFloat(dom.endSocInput.value) - parseFloat(dom.startSocInput.value)) / 100 * carData[dom.carModelSelect.value].batteryKwh / 0.9).toFixed(1);
-            }
-            
-            async function getAIChargeSuggestion() {
-                if (!lastCalculationResult) { showCustomAlert("提示", "请先进行一次计算。"); return; }
-                if (!apiKey) { showCustomAlert("API 密钥缺失", "无法连接到 AI 服务。"); return; }
-                dom.displays.loadingIndicator.style.display = 'block';
-                dom.buttons.aiSuggest.disabled = true;
-                const r = lastCalculationResult;
-                const prompt = `作为一名电动车充电专家，请根据以下小鹏P7+的充电计算数据，为车主提供3到5条专业、精简且易于理解的充电建议。要求：简体中文、点列式、每条不超过50字。数据：车型: ${r.carModel.name}，充电区间: ${r.startSoc}%-${r.endSoc}%，充电桩: ${r.charger.name}，耗时: ${Math.round(r.totalTimeMinutes)}分钟，峰值功率: ${r.effectiveMaxPower.toFixed(0)}kW，损耗率: ${(r.totalLossFactor*100).toFixed(1)}%，激活损耗: ${Object.keys(r.appliedLosses).join(', ')||'无'}`;
-                
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
-                    if (!response.ok) throw new Error((await response.json()).error.message);
-                    const data = await response.json();
-                    showCustomAlert("智能充电建议", data.candidates[0].content.parts[0].text);
-                } catch (error) { showCustomAlert("AI 建议出错", `无法获取建议: ${error.message}`); } 
-                finally { dom.displays.loadingIndicator.style.display = 'none'; dom.buttons.aiSuggest.disabled = false; }
-            }
-
-            function updateBunnyAnimation() {
-                const { innerWidth: vw, innerHeight: vh } = window;
-                for (let i = 1; i <= 10; i++) {
-                    dom.pixelBunny.style.setProperty(`--x${i}`, `${Math.random() * (vw - 100)}px`);
-                    dom.pixelBunny.style.setProperty(`--y${i}`, `${Math.random() * (vh - 100)}px`);
-                }
-            }
-
-            function initialize() {
-                dom.buttons.calculate.addEventListener('click', calculateAndDisplay);
-                dom.buttons.aiSuggest.addEventListener('click', getAIChargeSuggestion);
-                dom.buttons.themeToggle.addEventListener('click', toggleTheme);
-                dom.buttons.fullscreen.addEventListener('click', toggleFullscreen);
-                dom.buttons.changelog.addEventListener('click', () => toggleModal(dom.modals.changelog, true));
-                dom.buttons.closeChangelog.addEventListener('click', () => toggleModal(dom.modals.changelog, false));
-                dom.buttons.copyReport.addEventListener('click', copyReportToClipboard);
-                dom.buttons.customAlertClose.addEventListener('click', () => toggleModal(dom.modals.customAlert, false));
-
-                const recalcTriggers = [dom.carModelSelect, dom.chargerTypeSelect, dom.startSocInput, dom.endSocInput, dom.stationOccupancyInput, ...Object.values(dom.lossCheckboxes)];
-                recalcTriggers.forEach(el => el.addEventListener('change', calculateAndDisplay));
-                
-                // v3.9.4 修复: 初始化时也设置 Chart.js 全局颜色
-                const savedTheme = localStorage.getItem('theme');
-                const isLight = savedTheme === 'light';
-                if (isLight) dom.body.classList.add('light-mode');
-                dom.buttons.themeToggle.textContent = isLight ? '🌑 夜间模式' : '🌓 日间模式';
-                Chart.defaults.color = getThemeColors().tickColor;
-                
-                calculateAndDisplay();
-                updateBunnyAnimation();
-                setInterval(updateBunnyAnimation, 30000);
-            }
-
-            document.addEventListener('DOMContentLoaded', initialize);
-        })();
+        // --- Init ---
+        window.addEventListener('load', () => {
+            setupUI();
+            calculate();
+            setInterval(moveRabbit, 5000);
+        });
+        
     </script>
 </body>
 </html>
