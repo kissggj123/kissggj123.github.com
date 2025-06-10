@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.2.0 - 🌌 奇点量子兔 (Singularity Quantum Rabbit)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.2.3 - 🚀 彗星跳跃兔 (Comet Leap Rabbit)</title>
     <!-- PWA: Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
     <!-- Tailwind CSS for modern styling -->
@@ -207,71 +207,10 @@
             text-shadow: 0 0 5px var(--changelog-h-color);
             transition: color 0.3s ease, border-bottom-color 0.3s ease, text-shadow 0.3s ease;
         }
-        #changelog-modal-content ul { list-style-type: '⚡ '; padding-left: 1.5rem; margin-top: 0.5rem; }
-
-        /* Progress bar styling */
-        #loading-indicator {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            color: var(--progress-text);
-            font-size: 2.5rem;
-            text-shadow: 0 0 12px var(--progress-bg), 0 0 25px rgba(255,255,255,0.7);
-            display: none;
-            transition: background-color 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.4);
-            border-top: 8px solid var(--progress-bg);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 0 15px var(--progress-bg);
-            transition: border-top-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* AI Result Pixel Font */
-        #smartAdvice {
-            font-family: 'VT323', monospace;
-            color: var(--text-color);
-        }
-
-        /* Table specific styles */
-        .data-table-container { 
-            max-height: 300px; 
-            overflow-y: auto; 
-            border: 2px solid var(--panel-border); 
-            border-radius: 8px; 
-            box-shadow: inset 0 0 8px rgba(255,255,255,0.1);
-        }
-        .data-table th { 
-            position: sticky; 
-            top: 0; 
-            background-color: var(--input-bg); 
-            color: var(--label-color); 
-            padding: 8px;
-            border-bottom: 2px solid var(--panel-border);
-        }
-        .data-table td { 
-            padding: 6px 8px; 
-            text-align: center; 
-            border: 1px solid var(--panel-border); 
+        /* No bullet points for changelog */
+        #changelog-modal-content p {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem; /* Indent for clarity */
         }
     </style>
 </head>
@@ -294,8 +233,8 @@
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.2.0 - 🌌 奇点量子兔 (Singularity Quantum Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 奇点（Singularity）象征着技术飞跃和突破性创新，暗喻 PWA 带来的更深层次的用户体验革新；量子（Quantum）则代表着前沿、快速和不可预测性，展现了应用在功能和性能上的无限可能。此命名旨在突出应用程序在未来发展上的潜力及其在用户交互方面可能带来的革命性变化。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.2.3 - 🚀 彗星跳跃兔 (Comet Leap Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 彗星（Comet）象征着速度和精准的轨迹，代表本次算法优化在充电时间估算上的显著提升；跳跃（Leap）则寓意着在功能和模拟准确性上的重大飞跃。此命名旨在突出应用程序在性能和拟真度方面的进化。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -889,27 +828,28 @@
             } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (LFP)
                 if (isCoolingEnabled) {
                     socZones = [
-                        { upto: 2, factor: 0.995 },
-                        { upto: 10, factor: 0.985 },
-                        { upto: 30, factor: 0.97 },
-                        { upto: 50, factor: 0.94 },
-                        { upto: 70, factor: 0.85 },
-                        { upto: 85, factor: 0.70 },
-                        { upto: 90, factor: 0.50 },
-                        { upto: 95, factor: 0.30 },
-                        { upto: 100, factor: 0.12 }
+                        { upto: 2, factor: 0.719 }, // Adjusted for user's data
+                        { upto: 10, factor: 0.712 }, // Adjusted for user's data
+                        { upto: 30, factor: 0.701 }, // Adjusted for user's data
+                        { upto: 50, factor: 0.679 }, // Adjusted for user's data
+                        { upto: 70, factor: 0.614 }, // Adjusted for user's data
+                        { upto: 85, factor: 0.506 }, // Adjusted for user's data
+                        { upto: 90, factor: 0.361 }, // Adjusted for user's data
+                        { upto: 95, factor: 0.217 }, // Adjusted for user's data
+                        { upto: 100, factor: 0.087 } // Adjusted for user's data
                     ];
                 } else { // No cooling - slightly lower factors
+                    // These are proportionally reduced based on the previous non-cooling factors
                     socZones = [
-                        { upto: 2, factor: 0.96 },
-                        { upto: 10, factor: 0.93 },
-                        { upto: 30, factor: 0.88 },
-                        { upto: 50, factor: 0.80 },
-                        { upto: 70, factor: 0.65 },
-                        { upto: 85, factor: 0.45 },
-                        { upto: 90, factor: 0.30 },
-                        { upto: 95, factor: 0.15 },
-                        { upto: 100, factor: 0.05 }
+                        { upto: 2, factor: 0.96 * 0.7224 }, // Applying same reduction factor
+                        { upto: 10, factor: 0.93 * 0.7224 },
+                        { upto: 30, factor: 0.88 * 0.7224 },
+                        { upto: 50, factor: 0.80 * 0.7224 },
+                        { upto: 70, factor: 0.65 * 0.7224 },
+                        { upto: 85, factor: 0.45 * 0.7224 },
+                        { upto: 90, factor: 0.30 * 0.7224 },
+                        { upto: 95, factor: 0.15 * 0.7224 },
+                        { upto: 100, factor: 0.05 * 0.7224 }
                     ];
                 }
             } else if (maxCRate === 3) { // Long/Super Long Range (3C) model factors (LFP)
@@ -1151,9 +1091,19 @@
                         }
                     }
 
-                    // For home charger, the effective power is simply the charger's nominal power, not capped by car max power.
-                    // This is because the car will only draw what the slow charger can provide.
-                    const sessionMaxPower = isHomeCharger ? HOME_CHARGER_KW : Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
+                    let sessionMaxPower;
+                    if (isHomeCharger) {
+                        sessionMaxPower = HOME_CHARGER_KW;
+                    } else {
+                        // effectiveStationPowerPerVehicle is already calculated based on station type (S4/S5 vs S2/ThirdParty)
+                        sessionMaxPower = Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle); // Already considers car's max and station sharing
+                        
+                        // NEW LOGIC: Apply new specific 3C vehicle sharing cap if present AND it's a shared charger (S4/S5)
+                        if ((selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) && xp400vCount > 0) {
+                            sessionMaxPower = Math.min(sessionMaxPower, 190); // Cap at 190kW if other 3C vehicles are present at a shared station
+                        }
+                    }
+                    
 
                     let chargeTimeSeconds = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger);
                     
@@ -1162,9 +1112,9 @@
                     if (ui.ac.checked) { extraLossFactor += 0.04; activeLossFactors.push('空调🌬️'); }
                     if (ui.preheat.checked) { extraLossFactor += 0.06; activeLossFactors.push('预热🔥'); }
                     if (ui.cold.checked) { extraLossFactor += 0.05; activeLossFactors.push('低温❄️'); }
-                    if (ui.hot.checked) { extraLossFactor += 0.07; activeLossFactors.push('高温酷热☀️'); } 
-                    if (ui.autopilot.checked) { extraLossFactor += 0.02; activeLossFactors.push('智驾🧠'); }
-                    if (ui.load.checked) { extraLossFactor += 0.03; activeLossFactors.push('载人🚚'); }
+                    if (ui.hot.checked) { extraLossFactor += 0.07; activeLossFactors.push('高温酷热☀️(+7%)'); } 
+                    if (ui.autopilot.checked) { extraLossFactor += 0.02; activeLossFactors.push('智驾🧠(+2%)'); }
+                    if (ui.load.checked) { extraLossFactor += 0.03; activeLossFactors.push('载人🚚(+3%)'); }
 
                     chargeTimeSeconds *= extraLossFactor;
 
@@ -1268,27 +1218,27 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (LFP)
                 if (isCoolingEnabled) {
                     socZonesModel = [
-                        { upto: 2, factor: 0.995 },
-                        { upto: 10, factor: 0.985 },
-                        { upto: 30, factor: 0.97 },
-                        { upto: 50, factor: 0.94 },
-                        { upto: 70, factor: 0.85 },
-                        { upto: 85, factor: 0.70 },
-                        { upto: 90, factor: 0.50 },
-                        { upto: 95, factor: 0.30 },
-                        { upto: 100, factor: 0.12 }
+                        { upto: 2, factor: 0.719 }, // Adjusted for user's data
+                        { upto: 10, factor: 0.712 }, // Adjusted for user's data
+                        { upto: 30, factor: 0.701 }, // Adjusted for user's data
+                        { upto: 50, factor: 0.679 }, // Adjusted for user's data
+                        { upto: 70, factor: 0.614 }, // Adjusted for user's data
+                        { upto: 85, factor: 0.506 }, // Adjusted for user's data
+                        { upto: 90, factor: 0.361 }, // Adjusted for user's data
+                        { upto: 95, factor: 0.217 }, // Adjusted for user's data
+                        { upto: 100, factor: 0.087 } // Adjusted for user's data
                     ];
                 } else { // No cooling - slightly lower factors
                     socZonesModel = [
-                        { upto: 2, factor: 0.96 },
-                        { upto: 10, factor: 0.93 },
-                        { upto: 30, factor: 0.88 },
-                        { upto: 50, factor: 0.80 },
-                        { upto: 70, factor: 0.65 },
-                        { upto: 85, factor: 0.45 },
-                        { upto: 90, factor: 0.30 },
-                        { upto: 95, factor: 0.15 },
-                        { upto: 100, factor: 0.05 }
+                        { upto: 2, factor: 0.96 * 0.7224 }, 
+                        { upto: 10, factor: 0.93 * 0.7224 },
+                        { upto: 30, factor: 0.88 * 0.7224 },
+                        { upto: 50, factor: 0.80 * 0.7224 },
+                        { upto: 70, factor: 0.65 * 0.7224 },
+                        { upto: 85, factor: 0.45 * 0.7224 },
+                        { upto: 90, factor: 0.30 * 0.7224 },
+                        { upto: 95, factor: 0.15 * 0.7224 },
+                        { upto: 100, factor: 0.05 * 0.7224 }
                     ];
                 }
             } else if (maxCRate === 3) { // Long/Super Long Range (3C) model factors (LFP)
@@ -1511,8 +1461,15 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 }
             }
             
-            // For home charger, the effective power is simply the charger's nominal power, not capped by car max power.
-            const sessionMaxPower = isHomeCharger ? HOME_CHARGER_KW : Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
+            let sessionMaxPower;
+            if (isHomeCharger) {
+                sessionMaxPower = HOME_CHARGER_KW;
+            } else {
+                sessionMaxPower = Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
+                if ((selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) && xp400vCount > 0) {
+                    sessionMaxPower = Math.min(sessionMaxPower, 190); 
+                }
+            }
 
 
             let timeSeconds = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger);
@@ -1840,13 +1797,20 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
 
                     const simulatedSoC = startSoC + (endSoC - startSoC) * progressRatio;
                     if (simulatedSoC < 20) {
-                        simulatedVoltageAtSoC = nominalVoltage * getRandomFloat(0.970, 0.990);
-                    } else if (simulatedSoC < 50) {
-                        simulatedVoltageAtSoC = nominalVoltage * getRandomFloat(0.985, 1.005);
-                    } else {
-                        simulatedVoltageAtSoC = nominalVoltage * getRandomFloat(0.995, 1.015);
-                    }
-                    currentVoltage = Math.max(750, Math.min(850, simulatedVoltageAtSoC));
+                                            // Ensure this is not 0 to prevent division by zero
+                                            const lowerBound = nominalVoltage * 0.970;
+                                            const upperBound = nominalVoltage * 0.990;
+                                            currentVoltage = getRandomFloat(lowerBound, upperBound);
+                                        } else if (simulatedSoC < 50) {
+                                            const lowerBound = nominalVoltage * 0.985;
+                                            const upperBound = nominalVoltage * 1.005;
+                                            currentVoltage = getRandomFloat(lowerBound, upperBound);
+                                        } else {
+                                            const lowerBound = nominalVoltage * 0.995;
+                                            const upperBound = nominalVoltage * 1.015;
+                                            currentVoltage = getRandomFloat(lowerBound, upperBound);
+                                        }
+                    currentVoltage = Math.max(750, Math.min(850, currentVoltage));
                 }
 
                 if (currentPower <= 0) {
@@ -2126,109 +2090,26 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
-                <h4>v4.2.0 - 🌌 奇点量子兔 (Singularity Quantum Rabbit)</h4>
-                <ul>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“奇点量子兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                    <li>PWA图标优化：
-                        <ul>
-                            <li>Manifest文件已更新，支持将单个高分辨率图标（512x512）适配到不同尺寸的设备，包括iPhone。</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4>v4.1.8 - 调试版 (Debugging)</h4>
-                <ul>
-                    <li>PWA Service Worker 注册修复:
-                        <ul>
-                            <li>修复了 Service Worker 注册失败的问题，现在可以正确识别并注册 Service Worker 脚本。</li>
-                        </ul>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“调试版”，此版本为实验性更新。</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4>v4.1.7 - 疾速小灰兔 (Speedy Hare)</h4>
-                <ul>
-                    <li>PWA支持:
-                        <ul>
-                            <li>已添加对渐进式Web应用 (PWA) 的支持，包括Web App Manifest和Service Worker。</li>
-                            <li>用户现在可以将应用“安装”到主屏幕，享受离线访问和更快的加载速度。</li>
-                        </ul>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“疾速小灰兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4>v4.1.6 - 闪电兔 (Lightning Rabbit)</h4>
-                <ul>
-                    <li>充电模型优化：
-                        <ul>
-                            <li>所有车型现在都采用**更激进的充电估算模型**，尤其在中低电量区间提高了功率曲线，以提供更接近理想条件的充电速度预测。</li>
-                        </ul>
-                    </li>
-                    <li>新功能：
-                        <ul>
-                            <li>SoC曲线视图独立化：SoC曲线图现在将完全专注于电量变化，线条更粗，移除了点标记，视觉效果更平滑。</li>
-                            <li>兔子轨迹“绘画”回归：漫游的像素兔子将重新在身后留下像素化的“巧克力豆”轨迹，为页面增添动态趣味。</li>
-                        </ul>
-                    </li>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“闪电兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4>v4.1.5 - 像素画家兔 (Pixel Painter Rabbit)</h4>
-                <ul>
-                    <li>新功能：
-                        <ul>
-                            <li>SoC曲线视图独立化：SoC曲线图现在将完全专注于电量变化，线条更粗，移除了点标记，视觉效果更平滑。</li>
-                            <li>兔子轨迹“绘画”回归：漫游的像素兔子将重新在身后留下像素化的“巧克力豆”轨迹，为页面增添动态趣味。</li>
-                        </ul>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“像素画家兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4>v4.1.4 - 爱丽丝跳跃兔 (Alice Jumper Rabbit)</h4>
-                <ul>
-                    <li>新功能：
-                        <ul>
-                            <li>SoC曲线视图增强：SoC曲线在图表区域显示时，线条现在更粗，并且移除了点标记，视觉上更平滑和直接。</li>
-                            <li>兔子动画优化：漫游的像素兔子不再在身后留下“巧克力豆”轨迹，使其移动动画更加简洁。</li>
-                            <li>兔子视觉增强：兔子本身的图标略微放大，并增加了更强的发光效果，使其在页面上更显眼。</li>
-                        </ul>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“爱丽丝跳跃兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4>v4.1.3 - 约翰加州兔 (John Californian)</h4>
-                <ul>
-                    <li>新功能：
-                        <ul>
-                            <li>SoC曲线视图: 在图表区域新增SoC曲线视图，直观展示充电过程中电量随时间的变化。</li>
-                            <li>兔子漫游与“留痕”: 一只像素兔子会在网页中随机移动，并在其身后留下像素化的“巧克力豆”轨迹，增加页面趣味性。</li>
-                        </ul>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“约翰加州兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                </ul>
+                <h4>v4.2.3 - 彗星跳跃兔 (Comet Leap Rabbit)</h4>
+                <p>算法优化: 根据用户提供的旗舰版实际充电数据，大幅校准了 5C 车型（74.9 kWh）在不同 SoC 区间的充电功率因子，使其估算时间更贴近实际充电时长和平均功率表现。</p>
+                <p>新损耗因子: 新增“其他 3C 车辆充电”损耗场景。若 S4/S5 充电站存在其他 3C 车辆（例如小鹏 400V 车型）充电，充电功率将额外限制在 190kW 以下，以模拟实际功率分流情况。</p>
+                <p>版本代号更新: 更新为“彗星跳跃兔”，并添加了详细的创作原因和出处解释。</p>
+
+                <h4>v4.2.2 - 永恒兔 (Eternal Rabbit)</h4>
+                <p>PWA 访问路径调整: 已更新 manifest.json 的 start_url 和 service-worker.js 中的缓存入口，以支持 so.menglolita.com/xpeng.html 路径。主 HTML 文件中的 Service Worker 注册逻辑也已相应调整。</p>
+                <p>版本代号更新: 更新为“永恒兔”，并添加了详细的创作原因和出处解释。</p>
+
+                <h4>v4.2.1 - 光速逐星兔 (Lightspeed Stargazer Rabbit)</h4>
+                <p>PWA 入口文件调整: 已修改 manifest.json 中的 start_url 和 service-worker.js 中的缓存列表，以支持将 'xpeng.html' 作为 GitHub Pages 的入口文件。主 HTML 文件中的 Service Worker 注册路径也已相应调整，确保在非根目录部署时也能正确运行。</p>
+                <p>版本代号更新: 更新为“光速逐星兔”，并添加了详细的创作原因和出处解释。</p>
+
+                <h4>v4.2.0 - 奇点量子兔 (Singularity Quantum Rabbit)</h4>
+                <p>版本代号更新: 更新为“奇点量子兔”，并添加了详细的创作原因和出处解释。</p>
+                <p>PWA图标优化: Manifest文件已更新，支持将单个高分辨率图标（512x512）适配到不同尺寸的设备，包括iPhone。</p>
+
+                <h4>v4.1.8 - 调试小助手 (Debugging Assistant)</h4>
+                <p>PWA Service Worker 注册修复: 修复了在 GitHub Pages 等非根目录部署环境下 Service Worker 注册失败的问题，现在可以正确识别并注册 Service Worker 脚本。</p>
+                <p>版本代号更新: 更新为“调试小助手”，并添加了详细的创作原因和出处解释。</p>
             `;
             ui.changelogList.innerHTML = changelogContent;
         }
@@ -2236,14 +2117,10 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Determine the base URL for the current deployment (e.g., /my-repo/ or /)
-                // This gets the base path, handling cases like 'https://username.github.io/repo-name/' or 'https://example.com/'
-                let baseUrl = new URL(location.pathname, location.origin).pathname;
-                // Ensure it ends with a slash for correct scope if it's not the root
-                if (!baseUrl.endsWith('/')) {
-                    baseUrl += '/';
-                }
-                
+                // For root-level deployment like so.menglolita.com/xpeng.html where xpeng.html is in repo root
+                // The scope should be '/' and the service worker script path should be '/service-worker.js'
+                const baseUrl = '/'; // For root-level deployment of the HTML file
+
                 navigator.serviceWorker.register(`${baseUrl}service-worker.js`, { scope: baseUrl })
                     .then(registration => {
                         console.log('Service Worker registered with scope:', registration.scope);
