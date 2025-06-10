@@ -1,11 +1,11 @@
 // Service Worker 文件名：service-worker.js
 
 // 定义缓存名称和要缓存的静态资产列表
-const CACHE_NAME = 'xp7-charge-calculator-v4.2.0'; // 更新缓存版本
+const CACHE_NAME = 'xp7-charge-calculator-v4.2.3'; // 更新缓存版本
 const urlsToCache = [
-    '/',
     '/xpeng.html', // 指向您的主HTML文件
     '/manifest.json', // PWA 清单文件
+    'img/521x.png', // 新增的图标缓存
     'https://cdn.tailwindcss.com', // Tailwind CSS CDN
     'https://cdn.jsdelivr.net/npm/chart.js', // Chart.js CDN
     'https://fonts.googleapis.com/css2?family=VT323&display=swap', // Google Fonts CSS
