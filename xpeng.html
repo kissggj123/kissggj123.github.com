@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.1.6 - 闪电兔 (Lightning Rabbit)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.1.7 - 疾速小灰兔 (Speedy Hare)</title>
+    <!-- PWA: Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for data visualization - Loaded at the end of body for performance -->
@@ -292,8 +294,8 @@
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.1.6 - 闪电兔 (Lightning Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 闪电（Lightning）象征着速度、爆发力和高效，代表了新的激进充电估算模型旨在提供更快的充电体验；兔（Rabbit）则延续了之前版本中活泼、灵动的形象，同时隐喻着在充电曲线上的敏捷变化。此命名旨在突出应用程序在充电速度估算上的激进与精准，同时保持趣味性。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.1.7 - 疾速小灰兔 (Speedy Hare)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 疾速（Speedy）象征着PWA带来的更快的加载速度和响应能力；小灰兔（Hare）则延续了之前版本中活泼、灵动的形象，同时隐喻着在网络环境下的敏捷表现。此命名旨在突出应用程序在性能上的提升和用户体验的优化。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -723,7 +725,6 @@
                 '--button-accent-hover-bg': 'linear-gradient(45deg, #ee5337 0%, #ee3500 100%)',
                 '--button-accent-border': '#ff4500',
                 '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
-                '--changelog-text-color': '#444444',
                 '--changelog-h-color': 'var(--title-color)',
                 '--changelog-h-border': 'var(--label-color)',
                 '--progress-bg': 'var(--title-color)',
@@ -2125,11 +2126,25 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v4.1.7 - 疾速小灰兔 (Speedy Hare)</h4>
+                <ul>
+                    <li>PWA支持:
+                        <ul>
+                            <li>已添加对渐进式Web应用 (PWA) 的支持，包括Web App Manifest和Service Worker。</li>
+                            <li>用户现在可以将应用“安装”到主屏幕，享受离线访问和更快的加载速度。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“疾速小灰兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
+                </ul>
                 <h4>v4.1.6 - 闪电兔 (Lightning Rabbit)</h4>
                 <ul>
                     <li>充电模型优化：
                         <ul>
-                            <li>所有车型现在都采用更激进的充电估算模型，尤其在中低电量区间提高了功率曲线，以提供更接近理想条件的充电速度预测。</li>
+                            <li>所有车型现在都采用**更激进的充电估算模型**，尤其在中低电量区间提高了功率曲线，以提供更接近理想条件的充电速度预测。</li>
                         </ul>
                     </li>
                     <li>新功能：
@@ -2187,23 +2202,22 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
                         </ul>
                     </li>
                 </ul>
-                <h4>v4.1.2 - 卢克野兔 (Luke Jackrabbit)</h4>
-                <ul>
-                    <li>充电逻辑优化：
-                        <ul>
-                            <li>优化了家用充电桩（慢充）的功率计算模型，现在模拟时功率将保持稳定，不再随SoC衰减，更符合实际慢充特性。</li>
-                        </ul>
-                    </li>
-                    <li>版本代号更新：
-                        <ul>
-                            <li>更新为“卢克野兔”，并添加了详细的创作原因和出处解释。</li>
-                        </ul>
-                    </li>
-                </ul>
             `;
             ui.changelogList.innerHTML = changelogContent;
         }
 
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
