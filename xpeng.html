@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.2.3 - 🚀 彗星跳跃兔 (Comet Leap Rabbit)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.2.6 - 🌌 超維星穹兔 (Hyperdimensional Stellar Rabbit)</title>
     <!-- PWA: Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
     <!-- Tailwind CSS for modern styling -->
@@ -61,7 +61,7 @@
             --progress-text: #0a0a0a;
             --cooling-color: #ff00ff;
             --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%);
-            --gemini-button-hover-bg: linear-gradient(45deg, #5000cc 0%, #8800cc 100%);
+            --gemini-button-hover-bg': linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
             --gemini-button-border: #bb00ff;
             --pixel-rabbit-icon-fill: currentColor; /* Inherit color from text-color */
             --pixel-rabbit-shadow-color: rgba(255, 255, 255, 0.8);
@@ -233,8 +233,8 @@
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.2.3 - 🚀 彗星跳跃兔 (Comet Leap Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 彗星（Comet）象征着速度和精准的轨迹，代表本次算法优化在充电时间估算上的显著提升；跳跃（Leap）则寓意着在功能和模拟准确性上的重大飞跃。此命名旨在突出应用程序在性能和拟真度方面的进化。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.2.6 - 🌌 超維星穹兔 (Hyperdimensional Stellar Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 超維（Hyperdimensional）象徵著對充電複雜性的深入理解和對多維因素的精確建模；星穹（Stellar）則代表著無限的潛力與對最佳充電體驗的追求。此命名旨在突出應用程式在數據精準度、模型複雜性以及未來擴展性方面的重大進展。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -245,7 +245,7 @@
                 <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg">
                     <div class="space-y-4">
                         <div>
-                            <label for="model" class="block text-lg label-color mb-1">🚘 车型 (800V平台)</label>
+                            <label for="model" class="block text-lg label-color mb-1">🚘 车型 (P7+ 全系标配800V平台)</label>
                             <select id="model" class="w-full text-lg input-bg border-2 input-border rounded-md p-2">
                                 <option value="60.7" data-c="3" data-volt="800">长续航 (60.7 kWh)</option>
                                 <option value="76.3" data-c="3" data-volt="800">超长续航 (76.3 kWh)</option>
@@ -277,11 +277,19 @@
                             <label class="block text-lg label-color mb-1">🚗 同站占用充电桩详情 (其他车辆)</label>
                             <div class="space-y-2 text-base panel-bg p-3 rounded-md border border-gray-700">
                                 <div class="flex items-center justify-between">
-                                    <label>小鹏800V车:</label>
-                                    <input type="number" id="xp800vCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                    <label>小鹏P7+长续航 (60.7 kWh) 800V:</label>
+                                    <input type="number" id="p7p_long_range_800v_count" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
                                 </div>
                                 <div class="flex items-center justify-between">
-                                    <label>小鹏400V车:</label>
+                                    <label>小鹏P7+超长续航 (76.3 kWh) 800V:</label>
+                                    <input type="number" id="p7p_super_long_range_800v_count" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label>小鹏P7+旗舰 (74.9 kWh) 800V:</label>
+                                    <input type="number" id="p7p_flagship_800v_count" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label>其他小鹏400V车:</label>
                                     <input type="number" id="xp400vCount" value="0" min="0" class="w-24 text-lg input-bg border-2 input-border rounded-md p-1 text-right">
                                 </div>
                                 <div class="flex items-center justify-between">
@@ -421,7 +429,7 @@
             ac: document.getElementById('ac'),
             preheat: document.getElementById('preheat'),
             cold: document.getElementById('cold'),
-            hot: document.getElementById('hot'),
+            hot: document('hot'),
             autopilot: document.getElementById('autopilot'),
             load: document.getElementById('load'),
             quickStart: document.getElementById('quickStart'),
@@ -441,7 +449,9 @@
             changelogModalBtn: document.getElementById('changelogModalBtn'),
             fullscreenToggleBtn: document.getElementById('fullscreenToggleBtn'),
             // New sharing vehicle inputs
-            xp800vCount: document.getElementById('xp800vCount'),
+            p7p_long_range_800v_count: document.getElementById('p7p_long_range_800v_count'),
+            p7p_super_long_range_800v_count: document.getElementById('p7p_super_long_range_800v_count'),
+            p7p_flagship_800v_count: document.getElementById('p7p_flagship_800v_count'),
             xp400vCount: document.getElementById('xp400vCount'),
             thirdParty800vCount: document.getElementById('thirdParty800vCount'),
             thirdParty400vCount: document.getElementById('thirdParty400vCount'),
@@ -816,111 +826,159 @@
          * @param {boolean} isCoolingEnabled - True if S5 cooling is enabled.
          * @param {number} maxCRate - C-rate of the selected model (e.g., 3 for 3C, 5 for 5C).
          * @param {boolean} isHomeCharger - True if it's a home charger.
+         * @param {number} platformVoltage - Platform voltage (e.g., 800 or 400).
          * @returns {number} Estimated time in seconds. Returns Infinity if effective power is zero.
          */
-        function estimateRealisticChargeTime(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate, isHomeCharger) {
+        function estimateRealisticChargeTime(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate, isHomeCharger, platformVoltage) {
             let socZones;
 
             // For home chargers, power is stable and does not decay with SoC.
             if (isHomeCharger) {
                 // Simplified "zone" for home charger with constant power.
                 socZones = [{ upto: 100, factor: 1.0 }]; 
-            } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (LFP)
+            } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (NCM)
                 if (isCoolingEnabled) {
+                    // Optimized for 442kW peak
                     socZones = [
-                        { upto: 2, factor: 0.719 }, // Adjusted for user's data
-                        { upto: 10, factor: 0.712 }, // Adjusted for user's data
-                        { upto: 30, factor: 0.701 }, // Adjusted for user's data
-                        { upto: 50, factor: 0.679 }, // Adjusted for user's data
-                        { upto: 70, factor: 0.614 }, // Adjusted for user's data
-                        { upto: 85, factor: 0.506 }, // Adjusted for user's data
-                        { upto: 90, factor: 0.361 }, // Adjusted for user's data
-                        { upto: 95, factor: 0.217 }, // Adjusted for user's data
-                        { upto: 100, factor: 0.087 } // Adjusted for user's data
+                        { upto: 2, factor: 0.98 }, 
+                        { upto: 10, factor: 0.95 }, 
+                        { upto: 30, factor: 0.90 }, 
+                        { upto: 50, factor: 0.75 }, 
+                        { upto: 70, factor: 0.65 }, 
+                        { upto: 85, factor: 0.50 }, 
+                        { upto: 90, factor: 0.35 }, 
+                        { upto: 95, factor: 0.20 }, 
+                        { upto: 100, factor: 0.08 } 
                     ];
                 } else { // No cooling - slightly lower factors
-                    // These are proportionally reduced based on the previous non-cooling factors
                     socZones = [
-                        { upto: 2, factor: 0.96 * 0.7224 }, // Applying same reduction factor
-                        { upto: 10, factor: 0.93 * 0.7224 },
-                        { upto: 30, factor: 0.88 * 0.7224 },
-                        { upto: 50, factor: 0.80 * 0.7224 },
-                        { upto: 70, factor: 0.65 * 0.7224 },
-                        { upto: 85, factor: 0.45 * 0.7224 },
-                        { upto: 90, factor: 0.30 * 0.7224 },
-                        { upto: 95, factor: 0.15 * 0.7224 },
-                        { upto: 100, factor: 0.05 * 0.7224 }
+                        { upto: 2, factor: 0.90 }, 
+                        { upto: 10, factor: 0.85 },
+                        { upto: 30, factor: 0.78 },
+                        { upto: 50, factor: 0.65 },
+                        { upto: 70, factor: 0.50 },
+                        { upto: 85, factor: 0.35 },
+                        { upto: 90, factor: 0.25 },
+                        { upto: 95, factor: 0.15 },
+                        { upto: 100, factor: 0.05 }
                     ];
                 }
             } else if (maxCRate === 3) { // Long/Super Long Range (3C) model factors (LFP)
-                if (batteryCapacity === 60.7) { // Specific factors for 60.7 kWh 3C
-                    if (isCoolingEnabled) {
-                        socZones = [
-                            { upto: 2, factor: 0.995 }, 
-                            { upto: 10, factor: 0.97 }, 
-                            { upto: 30, factor: 0.83 }, 
-                            { upto: 50, factor: 0.68 }, 
-                            { upto: 70, factor: 0.53 }, 
-                            { upto: 85, factor: 0.40 }, 
-                            { upto: 90, factor: 0.30 }, 
-                            { upto: 95, factor: 0.22 }, 
-                            { upto: 98, factor: 0.12 }, 
-                            { upto: 100, factor: 0.05 } 
-                        ];
-                    } else { // No cooling
-                        socZones = [
-                            { upto: 2, factor: 0.96 },
-                            { upto: 10, factor: 0.92 },
-                            { upto: 30, factor: 0.75 },
-                            { upto: 50, factor: 0.58 },
-                            { upto: 70, factor: 0.42 },
-                            { upto: 85, factor: 0.28 },
-                            { upto: 90, factor: 0.20 },
-                            { upto: 95, factor: 0.12 },
-                            { upto: 98, factor: 0.05 },
-                            { upto: 100, factor: 0.02 }
-                        ];
+                 if (platformVoltage === 800) { // Specific factors for 800V 3C models
+                    if (batteryCapacity === 60.7) { // 长续航 800V
+                        if (isCoolingEnabled) {
+                            socZones = [
+                                { upto: 2, factor: 0.995 }, 
+                                { upto: 10, factor: 0.97 }, 
+                                { upto: 30, factor: 0.83 }, 
+                                { upto: 50, factor: 0.68 }, 
+                                { upto: 70, factor: 0.53 }, 
+                                { upto: 85, factor: 0.40 }, 
+                                { upto: 90, factor: 0.30 }, 
+                                { upto: 95, factor: 0.22 }, 
+                                { upto: 98, factor: 0.12 }, 
+                                { upto: 100, factor: 0.05 } 
+                            ];
+                        } else { // No cooling
+                            socZones = [
+                                { upto: 2, factor: 0.96 },
+                                { upto: 10, factor: 0.92 },
+                                { upto: 30, factor: 0.75 },
+                                { upto: 50, factor: 0.58 },
+                                { upto: 70, factor: 0.42 },
+                                { upto: 85, factor: 0.28 },
+                                { upto: 90, factor: 0.20 },
+                                { upto: 95, factor: 0.12 },
+                                { upto: 98, factor: 0.05 },
+                                { upto: 100, factor: 0.02 }
+                            ];
+                        }
+                    } else if (batteryCapacity === 76.3) { // 超长续航 800V
+                        if (isCoolingEnabled) {
+                            socZones = [
+                                { upto: 2, factor: 0.995 },
+                                { upto: 10, factor: 0.98 }, 
+                                { upto: 30, factor: 0.97 },
+                                { upto: 50, factor: 0.93 },
+                                { upto: 70, factor: 0.82 },
+                                { upto: 85, factor: 0.65 },
+                                { upto: 90, factor: 0.45 },
+                                { upto: 95, factor: 0.25 },
+                                { upto: 98, factor: 0.08 },
+                                { upto: 100, factor: 0.03 }
+                            ];
+                        } else { // No cooling
+                            socZones = [
+                                { upto: 2, factor: 0.96 },
+                                { upto: 10, factor: 0.93 },
+                                { upto: 30, factor: 0.88 },
+                                { upto: 50, factor: 0.75 },
+                                { upto: 70, factor: 0.60 },
+                                { upto: 85, factor: 0.40 },
+                                { upto: 90, factor: 0.25 },
+                                { upto: 95, factor: 0.15 },
+                                { upto: 98, factor: 0.06 },
+                                { upto: 100, factor: 0.025 }
+                            ];
+                        }
                     }
-                } else if (batteryCapacity === 76.3) { // Specific factors for 76.3 kWh 3C - Optimized for user's data
-                    if (isCoolingEnabled) {
-                        socZones = [
-                            { upto: 2, factor: 0.995 },
-                            { upto: 10, factor: 0.98 }, 
-                            { upto: 30, factor: 0.97 },
-                            { upto: 50, factor: 0.93 },
-                            { upto: 70, factor: 0.82 },
-                            { upto: 85, factor: 0.65 },
-                            { upto: 90, factor: 0.45 },
-                            { upto: 95, factor: 0.25 },
-                            { upto: 98, factor: 0.08 },
-                            { upto: 100, factor: 0.03 }
-                        ];
-                    } else { // No cooling
-                        socZones = [
-                            { upto: 2, factor: 0.96 },
-                            { upto: 10, factor: 0.93 },
-                            { upto: 30, factor: 0.88 },
-                            { upto: 50, factor: 0.75 },
-                            { upto: 70, factor: 0.60 },
-                            { upto: 85, factor: 0.40 },
-                            { upto: 90, factor: 0.25 },
-                            { upto: 95, factor: 0.15 },
-                            { upto: 98, factor: 0.06 },
-                            { upto: 100, factor: 0.025 }
-                        ];
-                    }
-                } else { // Fallback factors for 3C (should not occur with current options)
-                    socZones = [
-                        { upto: 15, factor: 0.68 }, 
-                        { upto: 60, factor: 0.63 }, 
-                        { upto: 80, factor: 0.48 }, 
-                        { upto: 95, factor: 0.28 }, 
-                        { upto: 100, factor: 0.12 } 
-                    ];
-                    if (isCoolingEnabled) {
-                        socZones[1].factor = 0.75; 
-                        socZones[2].factor = 0.55; 
-                        socZones[3].factor = 0.40; 
+                } else if (platformVoltage === 400) { // Specific factors for 400V 3C models (older P7)
+                    if (batteryCapacity === 60.7) { // 长续航 400V
+                        if (isCoolingEnabled) { // Assumes some form of thermal management
+                            socZones = [
+                                { upto: 2, factor: 0.90 }, 
+                                { upto: 10, factor: 0.85 }, 
+                                { upto: 30, factor: 0.70 }, 
+                                { upto: 50, factor: 0.55 }, 
+                                { upto: 70, factor: 0.40 }, 
+                                { upto: 85, factor: 0.25 }, 
+                                { upto: 90, factor: 0.18 }, 
+                                { upto: 95, factor: 0.10 }, 
+                                { upto: 98, factor: 0.06 }, 
+                                { upto: 100, factor: 0.02 } 
+                            ];
+                        } else { // No cooling
+                            socZones = [
+                                { upto: 2, factor: 0.85 },
+                                { upto: 10, factor: 0.80 },
+                                { upto: 30, factor: 0.65 },
+                                { upto: 50, factor: 0.50 },
+                                { upto: 70, factor: 0.35 },
+                                { upto: 85, factor: 0.20 },
+                                { upto: 90, factor: 0.12 },
+                                { upto: 95, factor: 0.08 },
+                                { upto: 98, factor: 0.04 },
+                                { upto: 100, factor: 0.015 }
+                            ];
+                        }
+                    } else if (batteryCapacity === 76.3) { // 超长续航 400V
+                        if (isCoolingEnabled) {
+                            socZones = [
+                                { upto: 2, factor: 0.95 },
+                                { upto: 10, factor: 0.90 }, 
+                                { upto: 30, factor: 0.85 },
+                                { upto: 50, factor: 0.70 },
+                                { upto: 70, factor: 0.55 },
+                                { upto: 85, factor: 0.40 },
+                                { upto: 90, factor: 0.28 },
+                                { upto: 95, factor: 0.18 },
+                                { upto: 98, factor: 0.07 },
+                                { upto: 100, factor: 0.025 }
+                            ];
+                        } else { // No cooling
+                            socZones = [
+                                { upto: 2, factor: 0.90 },
+                                { upto: 10, factor: 0.85 },
+                                { upto: 30, factor: 0.78 },
+                                { upto: 50, factor: 0.65 },
+                                { upto: 70, factor: 0.48 },
+                                { upto: 85, factor: 0.35 },
+                                { upto: 90, factor: 0.20 },
+                                { upto: 95, factor: 0.10 },
+                                { upto: 98, factor: 0.05 },
+                                { upto: 100, factor: 0.01 }
+                            ];
+                        }
                     }
                 }
             } else {
@@ -968,9 +1026,7 @@
          * Populates the charger selection dropdown based on the selected car model's C-rate.
          */
         function updateChargerOptions() {
-            const selectedOption = ui.model.selectedOptions[0];
-            // const capacity = parseFloat(selectedOption.value); // Not directly used here, but kept for context
-            // const maxCRate = parseFloat(selectedOption.dataset.c); // Not directly used here, but kept for context
+            // No longer dependent on model C-rate, as all P7+ are 800V platform in the selector
             
             ui.charger.innerHTML = "";
 
@@ -1005,14 +1061,16 @@
                     let actualKWh = parseFloat(ui.actualKWh.value);
                     
                     // Get individual counts of *other* vehicles
-                    const xp800vCount = parseInt(ui.xp800vCount.value) || 0;
+                    const p7p_long_range_800v_count = parseInt(ui.p7p_long_range_800v_count.value) || 0;
+                    const p7p_super_long_range_800v_count = parseInt(ui.p7p_super_long_range_800v_count.value) || 0;
+                    const p7p_flagship_800v_count = parseInt(ui.p7p_flagship_800v_count.value) || 0;
                     const xp400vCount = parseInt(ui.xp400vCount.value) || 0;
                     const thirdParty800vCount = parseInt(ui.thirdParty800vCount.value) || 0;
                     const thirdParty400vCount = parseInt(ui.thirdParty400vCount.value) || 0;
                     const rogueBMSCount = parseInt(ui.rogueBMSCount.value) || 0;
 
                     // Calculate total *other* sharing vehicles for display
-                    const totalOtherSharingVehicles = xp800vCount + xp400vCount + thirdParty800vCount + thirdParty400vCount + rogueBMSCount;
+                    const totalOtherSharingVehicles = p7p_long_range_800v_count + p7p_super_long_range_800v_count + p7p_flagship_800v_count + xp400vCount + thirdParty800vCount + thirdParty400vCount + rogueBMSCount;
                     ui.totalSharingVehicles.value = totalOtherSharingVehicles;
 
                     // numTotalVehicles represents the total vehicles at the station, including the user's car
@@ -1040,7 +1098,7 @@
                     }
 
                     const selectedModelOption = ui.model.selectedOptions[0];
-                    const { volt, c: maxCRate } = selectedModelOption.dataset;
+                    const { volt: modelPlatformVolt, c: maxCRate } = selectedModelOption.dataset; // Rename 'volt' to 'modelPlatformVolt' to avoid clash
                     const modelName = selectedModelOption.textContent.trim();
                     const selectedChargerOption = ui.charger.selectedOptions[0];
                     const selectedChargerNominalPower = parseFloat(selectedChargerOption.value);
@@ -1051,13 +1109,26 @@
 
                     // Determine the maximum power the car can accept, considering its C-rate and specific model
                     let carMaxAchievablePower = capacity * maxCRate; 
-                    if (maxCRate == 5) {
-                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 335); // Observed practical max for P7+ 5C
-                    } else if (maxCRate == 3) { 
-                        // Increase 3C models' power cap to 265kW to accommodate 330A (approx 264kW) at low SoC
-                        // The user's data (225kW peak for 76.3kWh model) is below 265kW, so this cap is fine.
-                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 265); 
+                    if (parseInt(modelPlatformVolt) === 800) { // For 800V platform models
+                        if (maxCRate == 5) { // Flagship (74.9 kWh)
+                            carMaxAchievablePower = Math.min(carMaxAchievablePower, 442); // New cap for 5C flagship 800V
+                        } else if (maxCRate == 3) { // Long/Super Long Range (800V P7+)
+                            if (capacity === 60.7) { // 长续航 (60.7 kWh)
+                                carMaxAchievablePower = Math.min(carMaxAchievablePower, 215); // Cap at 215kW for 800V
+                            } else if (capacity === 76.3) { // 超长续航 (76.3 kWh)
+                                carMaxAchievablePower = Math.min(carMaxAchievablePower, 265); // Cap at 265kW for 800V
+                            }
+                        }
+                    } else if (parseInt(modelPlatformVolt) === 400) { // For 400V platform models (older P7) - though removed from selector, logic remains for robustness
+                         if (maxCRate == 3) {
+                            if (capacity === 60.7) { // 长续航 (60.7 kWh, 400V) - older P7
+                                carMaxAchievablePower = Math.min(carMaxAchievablePower, 180); // Typical max for 400V P7 Long Range
+                            } else if (capacity === 76.3) { // 超长续航 (76.3 kWh, 400V) - older P7
+                                carMaxAchievablePower = Math.min(carMaxAchievablePower, 220); // Typical max for 400V P7 Super Long Range
+                            }
+                        }
                     }
+
 
                     // Determine the total shared available power at the station
                     let stationTotalSharedPower;
@@ -1083,29 +1154,43 @@
                         if (rogueBMSCount > 0) {
                             effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                         }
+                        // Apply additional specific penalties for P7+ 800V models sharing the station
+                        if (p7p_long_range_800v_count > 0 || p7p_super_long_range_800v_count > 0 || p7p_flagship_800v_count > 0) {
+                             effectiveStationPowerPerVehicle *= 0.95; // 5% additional loss if any of these specific 800V P7+ models are present
+                        }
+
                     } else {
                         effectiveStationPowerPerVehicle = selectedChargerNominalPower; // For S2 or third-party chargers, usually single-stall power, no station sharing distribution
                         // Apply specific rogue BMS penalty
                         if (rogueBMSCount > 0) {
                             effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                         }
+                        // Apply additional specific penalties for P7+ 800V models sharing the station (even if not S4/S5)
+                        if (p7p_long_range_800v_count > 0 || p7p_super_long_range_800v_count > 0 || p7p_flagship_800v_count > 0) {
+                             effectiveStationPowerPerVehicle *= 0.95; // 5% additional loss if any of these specific 800V P7+ models are present
+                        }
                     }
 
                     let sessionMaxPower;
+                    let applied3CLimit = false; // Flag to track if the 3C limit was applied
+
                     if (isHomeCharger) {
                         sessionMaxPower = HOME_CHARGER_KW;
                     } else {
-                        // effectiveStationPowerPerVehicle is already calculated based on station type (S4/S5 vs S2/ThirdParty)
-                        sessionMaxPower = Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle); // Already considers car's max and station sharing
+                        sessionMaxPower = Math.min(carMaxAchievablePower, effectiveStationPowerPerVehicle);
                         
-                        // NEW LOGIC: Apply new specific 3C vehicle sharing cap if present AND it's a shared charger (S4/S5)
+                        // Apply specific 3C/400V vehicle sharing cap if present AND it's a shared charger (S4/S5)
+                        // This logic is now based on 'xp400vCount' from the "同站占用充电桩详情" section
                         if ((selectedChargerNominalPower === S5_LIMIT_KW || selectedChargerNominalPower === S4_LIMIT_KW) && xp400vCount > 0) {
-                            sessionMaxPower = Math.min(sessionMaxPower, 190); // Cap at 190kW if other 3C vehicles are present at a shared station
+                            const originalSessionMaxPower = sessionMaxPower; // Store original session max power before applying this cap
+                            sessionMaxPower = Math.min(sessionMaxPower, 190); // Cap at 190kW if other 400V XPeng vehicles are present at a shared station
+                            if (sessionMaxPower < originalSessionMaxPower) { // Check if the cap actually reduced power
+                                applied3CLimit = true;
+                            }
                         }
                     }
                     
-
-                    let chargeTimeSeconds = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger);
+                    let chargeTimeSeconds = estimateRealisticChargeTime(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger, parseInt(modelPlatformVolt));
                     
                     let extraLossFactor = 1.0;
                     const activeLossFactors = [];
@@ -1133,7 +1218,7 @@
                     lastResultText = `
 --- 充电报告 ---
 车型: ${modelName}
-平台电压: ${isHomeCharger ? HOME_CHARGER_VOLTAGE : volt}V
+平台电压: ${isHomeCharger ? HOME_CHARGER_VOLTAGE : modelPlatformVolt}V
 起始电量: ${startSoC.toFixed(2)}%
 结束电量: ${endSoC.toFixed(2)}%
 拟真估算时长: ${formatChargeTime(chargeTimeSeconds)}
@@ -1144,8 +1229,14 @@
 综合充电效率: ${overallEfficiency.toFixed(2)} %
 充电桩类型: ${chargerTypeName}
 同站占用车辆总数 (含本车): ${numTotalVehicles}
+其中P7+长续航 (60.7 kWh) 800V数量: ${p7p_long_range_800v_count}
+其中P7+超长续航 (76.3 kWh) 800V数量: ${p7p_super_long_range_800v_count}
+其中P7+旗舰 (74.9 kWh) 800V数量: ${p7p_flagship_800v_count}
+其中其他小鹏400V车数量: ${xp400vCount}
+其中第三方800V车数量: ${thirdParty800vCount}
+其中第三方400V车数量: ${thirdParty400vCount}
 其中BMS流氓车型数量: ${rogueBMSCount}
-额外损耗因子: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : '无'}
+${applied3CLimit ? `特别限制: 若同站存在小鹏400V车型充电，充电功率上限已限制在 190kW。\n` : ''}额外损耗因子: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : '无'}
 S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
 `;
                     ui.resultText.innerText = lastResultText;
@@ -1154,7 +1245,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                     // Store all relevant data for LLM call
                     window.lastCalculatedData = { 
                         modelName,
-                        platformVoltage: isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt),
+                        platformVoltage: isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(modelPlatformVolt),
                         startSoC: startSoC,
                         endSoC: endSoC,
                         formattedChargeTime: formatChargeTime(chargeTimeSeconds),
@@ -1165,12 +1256,19 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                         overallEfficiency: overallEfficiency,
                         chargerTypeName: chargerTypeName,
                         totalVehiclesAtStation: numTotalVehicles, 
+                        p7p_long_range_800v_count: p7p_long_range_800v_count,
+                        p7p_super_long_range_800v_count: p7p_super_long_range_800v_count,
+                        p7p_flagship_800v_count: p7p_flagship_800v_count,
+                        xp400vCount: xp400vCount,
+                        thirdParty800vCount: thirdParty800vCount,
+                        thirdParty400vCount: thirdParty400vCount,
                         rogueBMSCount: rogueBMSCount, 
                         activeLossFactors: activeLossFactors,
-                        isCoolingEnabled: ui.enableCooling.checked
+                        isCoolingEnabled: ui.enableCooling.checked,
+                        is3CLimitApplied: applied3CLimit // Add this flag
                     };
 
-                    const detailedData = generateDetailedData(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt), isHomeCharger);
+                    const detailedData = generateDetailedData(startSoC, endSoC, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(modelPlatformVolt), isHomeCharger, parseInt(modelPlatformVolt));
                     displayDetailedTable(detailedData); 
                     ui.tableContainer.classList.remove('hidden'); 
                     ui.smartAdviceContainer.classList.add('hidden'); 
@@ -1179,7 +1277,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
 
                     updateLossChart(theoreticalKWh, totalLossKWh);
                     updateEfficiencyChart(theoreticalKWhPerPercent, actualKWhPerPercent); 
-                    updateIVChart(sessionMaxPower, isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(volt), calculatedChartDurationMinutes, isHomeCharger, startSoC, endSoC); 
+                    updateIVChart(sessionMaxPower, isHomeCharger ? HOME_CHARGER_VOLTAGE : parseFloat(modelPlatformVolt), calculatedChartDurationMinutes, isHomeCharger, startSoC, endSoC); 
                     updateSoCChart(startSoC, endSoC, calculatedChartDurationMinutes);
                     updateTempEfficiencyChart();
 
@@ -1200,11 +1298,12 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
          * @param {number} sessionMaxPower - Max power for the session.
          * @param {boolean} isCoolingEnabled - Is cooling enabled.
          * @param {number} maxCRate - Max C-rate.
-         * @param {number} platformVoltage - Platform voltage (220 for home charger).
+         * @param {number} displayedPlatformVoltage - Voltage displayed in UI (e.g., 800V or 220V).
          * @param {boolean} isHomeCharger - Is it a home charger.
+         * @param {number} modelPlatformVoltage - The actual platform voltage of the selected model (e.g., 800 or 400).
          * @returns {Array<Object>} Array of data points with SoC, power, voltage, and amps.
          */
-        function generateDetailedData(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate, platformVoltage, isHomeCharger) {
+        function generateDetailedData(startSoC, endSoC, batteryCapacity, sessionMaxPower, isCoolingEnabled, maxCRate, displayedPlatformVoltage, isHomeCharger, modelPlatformVoltage) {
             const data = [];
             const socStep = 1; 
             let currentSoC = Math.floor(startSoC); 
@@ -1215,105 +1314,153 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             if (isHomeCharger) {
                 // Simplified "zone" for home charger with constant power.
                 socZonesModel = [{ upto: 100, factor: 1.0 }]; 
-            } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (LFP)
+            } else if (maxCRate === 5) { // Flagship (74.9 kWh, 5C) model factors (NCM)
                 if (isCoolingEnabled) {
+                    // Optimized for 442kW peak
                     socZonesModel = [
-                        { upto: 2, factor: 0.719 }, // Adjusted for user's data
-                        { upto: 10, factor: 0.712 }, // Adjusted for user's data
-                        { upto: 30, factor: 0.701 }, // Adjusted for user's data
-                        { upto: 50, factor: 0.679 }, // Adjusted for user's data
-                        { upto: 70, factor: 0.614 }, // Adjusted for user's data
-                        { upto: 85, factor: 0.506 }, // Adjusted for user's data
-                        { upto: 90, factor: 0.361 }, // Adjusted for user's data
-                        { upto: 95, factor: 0.217 }, // Adjusted for user's data
-                        { upto: 100, factor: 0.087 } // Adjusted for user's data
+                        { upto: 2, factor: 0.98 }, 
+                        { upto: 10, factor: 0.95 }, 
+                        { upto: 30, factor: 0.90 }, 
+                        { upto: 50, factor: 0.75 }, 
+                        { upto: 70, factor: 0.65 }, 
+                        { upto: 85, factor: 0.50 }, 
+                        { upto: 90, factor: 0.35 }, 
+                        { upto: 95, factor: 0.20 }, 
+                        { upto: 100, factor: 0.08 } 
                     ];
                 } else { // No cooling - slightly lower factors
                     socZonesModel = [
-                        { upto: 2, factor: 0.96 * 0.7224 }, 
-                        { upto: 10, factor: 0.93 * 0.7224 },
-                        { upto: 30, factor: 0.88 * 0.7224 },
-                        { upto: 50, factor: 0.80 * 0.7224 },
-                        { upto: 70, factor: 0.65 * 0.7224 },
-                        { upto: 85, factor: 0.45 * 0.7224 },
-                        { upto: 90, factor: 0.30 * 0.7224 },
-                        { upto: 95, factor: 0.15 * 0.7224 },
-                        { upto: 100, factor: 0.05 * 0.7224 }
+                        { upto: 2, factor: 0.90 }, 
+                        { upto: 10, factor: 0.85 },
+                        { upto: 30, factor: 0.78 },
+                        { upto: 50, factor: 0.65 },
+                        { upto: 70, factor: 0.50 },
+                        { upto: 85, factor: 0.35 },
+                        { upto: 90, factor: 0.25 },
+                        { upto: 95, factor: 0.15 },
+                        { upto: 100, factor: 0.05 }
                     ];
                 }
             } else if (maxCRate === 3) { // Long/Super Long Range (3C) model factors (LFP)
-                if (batteryCapacity === 60.7) { // Specific factors for 60.7 kWh 3C
-                    if (isCoolingEnabled) {
-                        socZonesModel = [
-                            { upto: 2, factor: 0.995 }, 
-                            { upto: 10, factor: 0.97 }, 
-                            { upto: 30, factor: 0.83 }, 
-                            { upto: 50, factor: 0.68 }, 
-                            { upto: 70, factor: 0.53 }, 
-                            { upto: 85, factor: 0.40 }, 
-                            { upto: 90, factor: 0.30 }, 
-                            { upto: 95, factor: 0.22 }, 
-                            { upto: 98, factor: 0.12 }, 
-                            { upto: 100, factor: 0.05 } 
-                        ];
-                    } else { // No cooling
-                        socZonesModel = [
-                            { upto: 2, factor: 0.96 },
-                            { upto: 10, factor: 0.92 },
-                            { upto: 30, factor: 0.75 },
-                            { upto: 50, factor: 0.58 },
-                            { upto: 70, factor: 0.42 },
-                            { upto: 85, factor: 0.28 },
-                            { upto: 90, factor: 0.20 },
-                            { upto: 95, factor: 0.12 },
-                            { upto: 98, factor: 0.05 },
-                            { upto: 100, factor: 0.02 }
-                        ];
+                if (modelPlatformVoltage === 800) { // Specific factors for 800V 3C models
+                    if (batteryCapacity === 60.7) { // 长续航 800V
+                        if (isCoolingEnabled) {
+                            socZonesModel = [
+                                { upto: 2, factor: 0.995 }, 
+                                { upto: 10, factor: 0.97 }, 
+                                { upto: 30, factor: 0.83 }, 
+                                { upto: 50, factor: 0.68 }, 
+                                { upto: 70, factor: 0.53 }, 
+                                { upto: 85, factor: 0.40 }, 
+                                { upto: 90, factor: 0.30 }, 
+                                { upto: 95, factor: 0.22 }, 
+                                { upto: 98, factor: 0.12 }, 
+                                { upto: 100, factor: 0.05 } 
+                            ];
+                        } else { // No cooling
+                            socZonesModel = [
+                                { upto: 2, factor: 0.96 },
+                                { upto: 10, factor: 0.92 },
+                                { upto: 30, factor: 0.75 },
+                                { upto: 50, factor: 0.58 },
+                                { upto: 70, factor: 0.42 },
+                                { upto: 85, factor: 0.28 },
+                                { upto: 90, factor: 0.20 },
+                                { upto: 95, factor: 0.12 },
+                                { upto: 98, factor: 0.05 },
+                                { upto: 100, factor: 0.02 }
+                            ];
+                        }
+                    } else if (batteryCapacity === 76.3) { // 超长续航 800V
+                        if (isCoolingEnabled) {
+                            socZonesModel = [
+                                { upto: 2, factor: 0.995 },
+                                { upto: 10, factor: 0.98 }, 
+                                { upto: 30, factor: 0.97 },
+                                { upto: 50, factor: 0.93 },
+                                { upto: 70, factor: 0.82 },
+                                { upto: 85, factor: 0.65 },
+                                { upto: 90, factor: 0.45 },
+                                { upto: 95, factor: 0.25 },
+                                { upto: 98, factor: 0.08 },
+                                { upto: 100, factor: 0.03 }
+                            ];
+                        } else { // No cooling
+                            socZonesModel = [
+                                { upto: 2, factor: 0.96 },
+                                { upto: 10, factor: 0.93 },
+                                { upto: 30, factor: 0.88 },
+                                { upto: 50, factor: 0.75 },
+                                { upto: 70, factor: 0.60 },
+                                { upto: 85, factor: 0.40 },
+                                { upto: 90, factor: 0.25 },
+                                { upto: 95, factor: 0.15 },
+                                { upto: 98, factor: 0.06 },
+                                { upto: 100, factor: 0.025 }
+                            ];
+                        }
                     }
-                } else if (batteryCapacity === 76.3) { // Specific factors for 76.3 kWh 3C - Optimized for user's data
-                    if (isCoolingEnabled) {
-                        socZonesModel = [
-                            { upto: 2, factor: 0.995 },
-                            { upto: 10, factor: 0.98 }, 
-                            { upto: 30, factor: 0.97 },
-                            { upto: 50, factor: 0.93 },
-                            { upto: 70, factor: 0.82 },
-                            { upto: 85, factor: 0.65 },
-                            { upto: 90, factor: 0.45 },
-                            { upto: 95, factor: 0.25 },
-                            { upto: 98, factor: 0.08 },
-                            { upto: 100, factor: 0.03 }
-                        ];
-                    } else { // No cooling
-                        socZonesModel = [
-                            { upto: 2, factor: 0.96 },
-                            { upto: 10, factor: 0.93 },
-                            { upto: 30, factor: 0.88 },
-                            { upto: 50, factor: 0.75 },
-                            { upto: 70, factor: 0.60 },
-                            { upto: 85, factor: 0.40 },
-                            { upto: 90, factor: 0.25 },
-                            { upto: 95, factor: 0.15 },
-                            { upto: 98, factor: 0.06 },
-                            { upto: 100, factor: 0.025 }
-                        ];
-                    }
-                } else { // Fallback for 3C (should not occur)
-                    socZonesModel = [
-                        { upto: 15, factor: 0.68 }, 
-                        { upto: 60, factor: 0.63 }, 
-                        { upto: 80, factor: 0.48 }, 
-                        { upto: 95, factor: 0.28 }, 
-                        { upto: 100, factor: 0.12 } 
-                    ];
-                    if (isCoolingEnabled) {
-                        socZonesModel[1].factor = 0.75; 
-                        socZonesModel[2].factor = 0.55; 
-                        socZonesModel[3].factor = 0.40; 
+                } else if (modelPlatformVoltage === 400) { // Specific factors for 400V 3C models (older P7)
+                    if (batteryCapacity === 60.7) { // 长续航 400V
+                        if (isCoolingEnabled) { // Assumes some form of thermal management
+                            socZonesModel = [
+                                { upto: 2, factor: 0.90 }, 
+                                { upto: 10, factor: 0.85 }, 
+                                { upto: 30, factor: 0.70 }, 
+                                { upto: 50, factor: 0.55 }, 
+                                { upto: 70, factor: 0.40 }, 
+                                { upto: 85, factor: 0.25 }, 
+                                { upto: 90, factor: 0.18 }, 
+                                { upto: 95, factor: 0.10 }, 
+                                { upto: 98, factor: 0.06 }, 
+                                { upto: 100, factor: 0.02 } 
+                            ];
+                        } else { // No cooling
+                            socZonesModel = [
+                                { upto: 2, factor: 0.85 },
+                                { upto: 10, factor: 0.80 },
+                                { upto: 30, factor: 0.65 },
+                                { upto: 50, factor: 0.50 },
+                                { upto: 70, factor: 0.35 },
+                                { upto: 85, factor: 0.20 },
+                                { upto: 90, factor: 0.12 },
+                                { upto: 95, factor: 0.08 },
+                                { upto: 98, factor: 0.04 },
+                                { upto: 100, factor: 0.015 }
+                            ];
+                        }
+                    } else if (batteryCapacity === 76.3) { // 超长续航 400V
+                        if (isCoolingEnabled) {
+                            socZonesModel = [
+                                { upto: 2, factor: 0.95 },
+                                { upto: 10, factor: 0.90 }, 
+                                { upto: 30, factor: 0.85 },
+                                { upto: 50, factor: 0.70 },
+                                { upto: 70, factor: 0.55 },
+                                { upto: 85, factor: 0.40 },
+                                { upto: 90, factor: 0.28 },
+                                { upto: 95, factor: 0.18 },
+                                { upto: 98, factor: 0.07 },
+                                { upto: 100, factor: 0.025 }
+                            ];
+                        } else { // No cooling
+                            socZonesModel = [
+                                { upto: 2, factor: 0.90 },
+                                { upto: 10, factor: 0.85 },
+                                { upto: 30, factor: 0.78 },
+                                { upto: 50, factor: 0.65 },
+                                { upto: 70, factor: 0.48 },
+                                { upto: 85, factor: 0.35 },
+                                { upto: 90, factor: 0.20 },
+                                { upto: 95, factor: 0.10 },
+                                { upto: 98, factor: 0.05 },
+                                { upto: 100, factor: 0.01 }
+                            ];
+                        }
                     }
                 }
             } else {
-                // Default or fallback factors (should not occur)
+                // Default or fallback factors (should not occur with current options)
                 socZonesModel = [
                     { upto: 60, factor: 0.88 }, 
                     { upto: 80, factor: 0.58 }, 
@@ -1355,15 +1502,22 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                             if (isHomeCharger) {
                                 simulatedVoltageAtSoC = HOME_CHARGER_VOLTAGE; // Fixed 220V for home charger
                             } else {
+                                // Use the modelPlatformVoltage for realistic voltage simulation
+                                const voltageBase = modelPlatformVoltage; 
                                 const simulatedSoCForVoltage = currentSoC + (socStep / 2); // Use midpoint for voltage simulation
                                 if (simulatedSoCForVoltage < 20) {
-                                    simulatedVoltageAtSoC = platformVoltage * getRandomFloat(0.970, 0.990);
+                                    simulatedVoltageAtSoC = voltageBase * getRandomFloat(0.970, 0.990);
                                 } else if (simulatedSoCForVoltage < 50) {
-                                    simulatedVoltageAtSoC = platformVoltage * getRandomFloat(0.985, 1.005);
+                                    simulatedVoltageAtSoC = voltageBase * getRandomFloat(0.985, 1.005);
                                 } else {
-                                    simulatedVoltageAtSoC = platformVoltage * getRandomFloat(0.995, 1.015);
+                                    simulatedVoltageAtSoC = voltageBase * getRandomFloat(0.995, 1.015);
                                 }
-                                simulatedVoltageAtSoC = Math.max(750, Math.min(850, simulatedVoltageAtSoC));
+                                // Clamp for 800V platform
+                                if (modelPlatformVoltage === 800) {
+                                     simulatedVoltageAtSoC = Math.max(750, Math.min(850, simulatedVoltageAtSoC));
+                                } else { // Clamp for 400V platform (adjust as needed for typical 400V behavior)
+                                    simulatedVoltageAtSoC = Math.max(380, Math.min(420, simulatedVoltageAtSoC));
+                                }
                             }
                             estimatedCurrentAtSoC = (effectivePowerAtSoC * 1000) / simulatedVoltageAtSoC;
                         }
@@ -1399,18 +1553,21 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
          */
         function quickEstimate() {
             const capacity = parseFloat(ui.model.value);
-            const { c: maxCRate } = ui.model.selectedOptions[0].dataset;
+            const selectedModelOption = ui.model.selectedOptions[0];
+            const { volt: modelPlatformVolt, c: maxCRate } = selectedModelOption.dataset;
             const selectedChargerNominalPower = parseFloat(ui.charger.value);
             
             // Get individual counts of *other* vehicles
-            const xp800vCount = parseInt(ui.xp800vCount.value) || 0;
+            const p7p_long_range_800v_count = parseInt(ui.p7p_long_range_800v_count.value) || 0;
+            const p7p_super_long_range_800v_count = parseInt(ui.p7p_super_long_range_800v_count.value) || 0;
+            const p7p_flagship_800v_count = parseInt(ui.p7p_flagship_800v_count.value) || 0;
             const xp400vCount = parseInt(ui.xp400vCount.value) || 0;
             const thirdParty800vCount = parseInt(ui.thirdParty800vCount.value) || 0;
             const thirdParty400vCount = parseInt(ui.thirdParty400vCount.value) || 0;
             const rogueBMSCount = parseInt(ui.rogueBMSCount.value) || 0;
 
             // numTotalVehicles represents the total vehicles at the station, including the user's car
-            let numTotalVehicles = 1 + xp800vCount + xp400vCount + thirdParty800vCount + thirdParty400vCount + rogueBMSCount;
+            let numTotalVehicles = 1 + p7p_long_range_800v_count + p7p_super_long_range_800v_count + p7p_flagship_800v_count + xp400vCount + thirdParty800vCount + thirdParty400vCount + rogueBMSCount;
 
             const start = parseFloat(ui.quickStart.value);
             const end = parseFloat(ui.quickEnd.value);
@@ -1424,11 +1581,24 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             const isHomeCharger = selectedChargerNominalPower === HOME_CHARGER_KW; // Determine if home charger
 
             let carMaxAchievablePower = capacity * maxCRate;
-            if (maxCRate == 5) { 
-                 carMaxAchievablePower = Math.min(carMaxAchievablePower, 335); 
-            } else if (maxCRate == 3) {
-                // Adjusting 3C models' power cap to allow for higher peaks as requested
-                carMaxAchievablePower = Math.min(carMaxAchievablePower, 265); 
+            if (parseInt(modelPlatformVolt) === 800) { // For 800V platform models
+                if (maxCRate == 5) { // Flagship (74.9 kWh)
+                    carMaxAchievablePower = Math.min(carMaxAchievablePower, 442); // Cap at 442kW for 800V
+                } else if (maxCRate == 3) { // Long/Super Long Range (800V P7+)
+                    if (capacity === 60.7) { // 长续航 (60.7 kWh)
+                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 215); // Cap at 215kW for 800V
+                    } else if (capacity === 76.3) { // 超长续航 (76.3 kWh)
+                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 265); // Cap at 265kW for 800V
+                    }
+                }
+            } else if (parseInt(modelPlatformVolt) === 400) { // For 400V platform models
+                if (maxCRate == 3) {
+                    if (capacity === 60.7) { // 长续航 (60.7 kWh, 400V) - older P7
+                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 180); // Typical max for 400V P7 Long Range
+                    } else if (capacity === 76.3) { // 超长续航 (76.3 kWh, 400V) - older P7
+                        carMaxAchievablePower = Math.min(carMaxAchievablePower, 220); // Typical max for 400V P7 Super Long Range
+                    }
+                }
             }
             
             let stationTotalSharedPower;
@@ -1453,11 +1623,20 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 if (rogueBMSCount > 0) {
                     effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
                 }
+                // Apply additional specific penalties for P7+ 800V models sharing the station
+                if (p7p_long_range_800v_count > 0 || p7p_super_long_range_800v_count > 0 || p7p_flagship_800v_count > 0) {
+                     effectiveStationPowerPerVehicle *= 0.95; // 5% additional loss if any of these specific 800V P7+ models are present
+                }
+
             } else {
                 effectiveStationPowerPerVehicle = selectedChargerNominalPower; // For S2 or third-party chargers, usually single-stall power, no station sharing distribution
                 // Apply specific rogue BMS penalty
                 if (rogueBMSCount > 0) {
                     effectiveStationPowerPerVehicle *= 0.85; // 15% additional loss factor
+                }
+                 // Apply additional specific penalties for P7+ 800V models sharing the station (even if not S4/S5)
+                if (p7p_long_range_800v_count > 0 || p7p_super_long_range_800v_count > 0 || p7p_flagship_800v_count > 0) {
+                     effectiveStationPowerPerVehicle *= 0.95; // 5% additional loss if any of these specific 800V P7+ models are present
                 }
             }
             
@@ -1472,7 +1651,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
             }
 
 
-            let timeSeconds = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger);
+            let timeSeconds = estimateRealisticChargeTime(start, end, capacity, sessionMaxPower, ui.enableCooling.checked, parseInt(maxCRate), isHomeCharger, parseInt(modelPlatformVolt));
             
             let extraLossFactor = 1.0;
             if (ui.ac.checked) extraLossFactor += 0.04;
@@ -1503,7 +1682,7 @@ S5冷却是否启用: ${ui.enableCooling.checked ? '是' : '否'}
                 const {
                     modelName, platformVoltage, startSoC, endSoC, formattedChargeTime,
                     theoreticalKWh, actualKWh, totalLossKWh, lossRate, overallEfficiency,
-                    chargerTypeName, totalVehiclesAtStation, rogueBMSCount, activeLossFactors, isCoolingEnabled
+                    chargerTypeName, totalVehiclesAtStation, rogueBMSCount, activeLossFactors, isCoolingEnabled, is3CLimitApplied
                 } = window.lastCalculatedData; 
 
                 const prompt = `
@@ -1521,6 +1700,7 @@ Overall Charging Efficiency: ${overallEfficiency.toFixed(2)} %
 Charger Type: ${chargerTypeName}
 Total Occupied Chargers at Station (including this vehicle): ${totalVehiclesAtStation}
 Number of BMS Rogue Models: ${rogueBMSCount}
+Special Limit Applied: ${is3CLimitApplied ? 'Yes (capped at 190kW due to other 400V XPeng vehicles)' : 'No'}
 Additional Loss Factors: ${activeLossFactors.length > 0 ? activeLossFactors.join('、') : 'None'}
 S5 Cooling Enabled: ${isCoolingEnabled ? 'Yes' : 'No'}
 
@@ -1796,21 +1976,21 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
                     else if (progressRatio > 0.3) currentPower *= 0.8;
 
                     const simulatedSoC = startSoC + (endSoC - startSoC) * progressRatio;
+                    // For the chart, use the nominalVoltage passed in (which is `modelPlatformVolt` from calculate())
+                    const voltageBase = nominalVoltage; 
                     if (simulatedSoC < 20) {
-                                            // Ensure this is not 0 to prevent division by zero
-                                            const lowerBound = nominalVoltage * 0.970;
-                                            const upperBound = nominalVoltage * 0.990;
-                                            currentVoltage = getRandomFloat(lowerBound, upperBound);
-                                        } else if (simulatedSoC < 50) {
-                                            const lowerBound = nominalVoltage * 0.985;
-                                            const upperBound = nominalVoltage * 1.005;
-                                            currentVoltage = getRandomFloat(lowerBound, upperBound);
-                                        } else {
-                                            const lowerBound = nominalVoltage * 0.995;
-                                            const upperBound = nominalVoltage * 1.015;
-                                            currentVoltage = getRandomFloat(lowerBound, upperBound);
-                                        }
-                    currentVoltage = Math.max(750, Math.min(850, currentVoltage));
+                        currentVoltage = voltageBase * getRandomFloat(0.970, 0.990);
+                    } else if (simulatedSoC < 50) {
+                        currentVoltage = voltageBase * getRandomFloat(0.985, 1.005);
+                    } else {
+                        currentVoltage = voltageBase * getRandomFloat(0.995, 1.015);
+                    }
+                    // Clamp voltage based on platform
+                    if (voltageBase === 800) {
+                        currentVoltage = Math.max(750, Math.min(850, currentVoltage));
+                    } else if (voltageBase === 400) {
+                        currentVoltage = Math.max(380, Math.min(420, currentVoltage));
+                    }
                 }
 
                 if (currentPower <= 0) {
@@ -1844,13 +2024,17 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
                 title: { display: true, text: '电压 (V)', color: getComputedStyle(document.documentElement).getPropertyValue('--button-secondary-border').trim() } 
             };
             // Adjust Y2 (Voltage) axis limits based on charger type
-            if (isHomeCharger) {
-                options.scales.y2.min = 200; // For 220V
+            if (nominalVoltage === HOME_CHARGER_VOLTAGE) { // Home charger
+                options.scales.y2.min = 200; 
                 options.scales.y2.max = 240;
                 options.scales.y2.beginAtZero = false; 
-            } else {
-                options.scales.y2.min = 750; // For 800V platform
+            } else if (nominalVoltage === 800) { // 800V platform
+                options.scales.y2.min = 750; 
                 options.scales.y2.max = 850;
+                options.scales.y2.beginAtZero = false;
+            } else if (nominalVoltage === 400) { // 400V platform
+                options.scales.y2.min = 380; 
+                options.scales.y2.max = 420;
                 options.scales.y2.beginAtZero = false;
             }
 
@@ -1965,7 +2149,7 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
 
         // Attach change listeners to input elements that should trigger recalculation
         ['model', 'charger', 'enableCooling', 'ac', 'preheat', 'cold', 'hot', 'autopilot', 'load', 'start', 'end', 'actual',
-         'xp800vCount', 'xp400vCount', 'thirdParty800vCount', 'thirdParty400vCount', 'rogueBMSCount'].forEach(id => {
+         'p7p_long_range_800v_count', 'p7p_super_long_range_800v_count', 'p7p_flagship_800v_count', 'xp400vCount', 'thirdParty800vCount', 'thirdParty400vCount', 'rogueBMSCount'].forEach(id => {
             const element = document.getElementById(id);
             if (element) {
                 element.addEventListener('change', calculate);
@@ -2090,26 +2274,31 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
-                <h4>v4.2.3 - 彗星跳跃兔 (Comet Leap Rabbit)</h4>
-                <p>算法优化: 根据用户提供的旗舰版实际充电数据，大幅校准了 5C 车型（74.9 kWh）在不同 SoC 区间的充电功率因子，使其估算时间更贴近实际充电时长和平均功率表现。</p>
-                <p>新损耗因子: 新增“其他 3C 车辆充电”损耗场景。若 S4/S5 充电站存在其他 3C 车辆（例如小鹏 400V 车型）充电，充电功率将额外限制在 190kW 以下，以模拟实际功率分流情况。</p>
-                <p>版本代号更新: 更新为“彗星跳跃兔”，并添加了详细的创作原因和出处解释。</p>
+                <h4>v4.2.6 - 超維星穹兔 (Hyperdimensional Stellar Rabbit)</h4>
+                <p>车型选择器优化: 现在只提供三个特定的小鹏 P7+ 800V 平台车型（长续航 60.7 kWh，超长续航 76.3 kWh，旗舰 74.9 kWh），且这些车型在同站充电时可作为损耗因子纳入计算，不再有其他车型选择。</p>
+                <p>同站共享损耗因子细化: 新增 P7+ 各型号作为同站损耗因子选项，使功率分配模拟更精确。</p>
+                <p>旗舰版功率提升: 旗舰版（5C）最大充电功率提升至 442kW，并大幅优化了算法精度，力求将误差控制在 1 分钟以内。</p>
+                <p>版本代号更新: 更新为“超維星穹兔”，并添加了详细的创作原因和出处解释。</p>
 
-                <h4>v4.2.2 - 永恒兔 (Eternal Rabbit)</h4>
-                <p>PWA 访问路径调整: 已更新 manifest.json 的 start_url 和 service-worker.js 中的缓存入口，以支持 so.menglolita.com/xpeng.html 路径。主 HTML 文件中的 Service Worker 注册逻辑也已相应调整。</p>
-                <p>版本代号更新: 更新为“永恒兔”，并添加了详细的创作原因和出处解释。</p>
+                <h4>v4.2.5 - 超維星穹兔 (Hyperdimensional Stellar Rabbit)</h4>
+                <p>车型选择器优化: 车型选择器现在统一显示 800V 平台车型，400V 影响已集成到“同站占用充电桩详情”中。</p>
+                <p>旗舰版功率提升: 旗舰版（5C）最大充电功率提升至 442kW，并大幅优化了算法精度，力求将误差控制在 1 分钟以内。</p>
+                <p>版本代号更新: 更新为“超維星穹兔”，并添加了详细的创作原因和出处解释。</p>
 
-                <h4>v4.2.1 - 光速逐星兔 (Lightspeed Stargazer Rabbit)</h4>
-                <p>PWA 入口文件调整: 已修改 manifest.json 中的 start_url 和 service-worker.js 中的缓存列表，以支持将 'xpeng.html' 作为 GitHub Pages 的入口文件。主 HTML 文件中的 Service Worker 注册路径也已相应调整，确保在非根目录部署时也能正确运行。</p>
-                <p>版本代号更新: 更新为“光速逐星兔”，并添加了详细的创作原因和出处解释。</p>
+                <h4>v4.2.4 - 星河漫游兔 (Stellar Wanderer Rabbit)</h4>
+                <p>算法优化: 根据用户反馈，精确校准了 3C 车型（长续航 60.7 kWh 和超长续航 76.3 kWh）的最大充电功率，分别为 215kW 和 265kW。</p>
+                <p>损耗因子改进: 优化了“其他 3C 车辆充电”损耗因子的显示，在报告中更清晰地展示此限制是否触发。</p>
+                <p>版本代号更新: 更新为“星河漫游兔”，并添加了详细的创作原因和出处解释。</p>
 
-                <h4>v4.2.0 - 奇点量子兔 (Singularity Quantum Rabbit)</h4>
-                <p>版本代号更新: 更新为“奇点量子兔”，并添加了详细的创作原因和出处解释。</p>
-                <p>PWA图标优化: Manifest文件已更新，支持将单个高分辨率图标（512x512）适配到不同尺寸的设备，包括iPhone。</p>
+                <h4>v3.6.8 - 哈利斑点兔 (Harry Spot)</h4>
+                <p>核心优化: 进一步区分了 3C 车型（长续航 60.7 kWh 和超长续航 76.3 kWh）的充电算法，使其各自的估算曲线更精确地拟合实际情况。</p>
+                <p>界面优化: 优化了日间模式下的字体颜色，使其在浅色背景下更清晰易读。</p>
+                <p>命名: 采用新的版本命名规则（90年代欧美电影人物名与兔子种类二次融合），并在版本号下方增加简短解释。</p>
 
-                <h4>v4.1.8 - 调试小助手 (Debugging Assistant)</h4>
-                <p>PWA Service Worker 注册修复: 修复了在 GitHub Pages 等非根目录部署环境下 Service Worker 注册失败的问题，现在可以正确识别并注册 Service Worker 脚本。</p>
-                <p>版本代号更新: 更新为“调试小助手”，并添加了详细的创作原因和出处解释。</p>
+                <h4>v3.6.7 - 尼奥荷兰兔 (Neo Dutch)</h4>
+                <p>核心优化: 算法内部改进，基于用户提供的真实数据，进一步校准了不同 C 率车型（3C 和 5C）在各个 SoC 区间的拟真充电时间估算算法，使结果更精准。</p>
+                <p>新功能: 新增“同站占用充电桩数量”输入项，模拟充电站功率分流情况，使估算更贴近实际多车共享充电场景。</p>
+                <p>命名: 采用新的版本命名规则（90年代欧美电影人物名与兔子种类二次融合），并在版本号下方增加简短解释。</p>
             `;
             ui.changelogList.innerHTML = changelogContent;
         }
