@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ 小鹏P7+ 充电计算器 v4.1.7 - 疾速小灰兔 (Speedy Hare)</title>
+    <title>⚡ 小鹏P7+ 充电计算器 v4.2.0 - 🌌 奇点量子兔 (Singularity Quantum Rabbit)</title>
     <!-- PWA: Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
     <!-- Tailwind CSS for modern styling -->
@@ -294,8 +294,8 @@
     <div class="container mx-auto max-w-7xl p-4 md:p-6">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🔋 小鹏P7+ 充电计算器</h1>
-            <p class="text-slate-400 mt-2 text-lg">v4.1.7 - 疾速小灰兔 (Speedy Hare)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 疾速（Speedy）象征着PWA带来的更快的加载速度和响应能力；小灰兔（Hare）则延续了之前版本中活泼、灵动的形象，同时隐喻着在网络环境下的敏捷表现。此命名旨在突出应用程序在性能上的提升和用户体验的优化。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v4.2.0 - 🌌 奇点量子兔 (Singularity Quantum Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 奇点（Singularity）象征着技术飞跃和突破性创新，暗喻 PWA 带来的更深层次的用户体验革新；量子（Quantum）则代表着前沿、快速和不可预测性，展现了应用在功能和性能上的无限可能。此命名旨在突出应用程序在未来发展上的潜力及其在用户交互方面可能带来的革命性变化。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -1840,13 +1840,13 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
 
                     const simulatedSoC = startSoC + (endSoC - startSoC) * progressRatio;
                     if (simulatedSoC < 20) {
-                        currentVoltage = nominalVoltage * getRandomFloat(0.970, 0.990);
+                        simulatedVoltageAtSoC = nominalVoltage * getRandomFloat(0.970, 0.990);
                     } else if (simulatedSoC < 50) {
-                        currentVoltage = nominalVoltage * getRandomFloat(0.985, 1.005);
+                        simulatedVoltageAtSoC = nominalVoltage * getRandomFloat(0.985, 1.005);
                     } else {
-                        currentVoltage = nominalVoltage * getRandomFloat(0.995, 1.015);
+                        simulatedVoltageAtSoC = nominalVoltage * getRandomFloat(0.995, 1.015);
                     }
-                    currentVoltage = Math.max(750, Math.min(850, currentVoltage));
+                    currentVoltage = Math.max(750, Math.min(850, simulatedVoltageAtSoC));
                 }
 
                 if (currentPower <= 0) {
@@ -2126,6 +2126,32 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v4.2.0 - 🌌 奇点量子兔 (Singularity Quantum Rabbit)</h4>
+                <ul>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“奇点量子兔”，并添加了详细的创作原因和出处解释。</li>
+                        </ul>
+                    </li>
+                    <li>PWA图标优化：
+                        <ul>
+                            <li>Manifest文件已更新，支持将单个高分辨率图标（512x512）适配到不同尺寸的设备，包括iPhone。</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h4>v4.1.8 - 调试版 (Debugging)</h4>
+                <ul>
+                    <li>PWA Service Worker 注册修复:
+                        <ul>
+                            <li>修复了 Service Worker 注册失败的问题，现在可以正确识别并注册 Service Worker 脚本。</li>
+                        </ul>
+                    </li>
+                    <li>版本代号更新：
+                        <ul>
+                            <li>更新为“调试版”，此版本为实验性更新。</li>
+                        </ul>
+                    </li>
+                </ul>
                 <h4>v4.1.7 - 疾速小灰兔 (Speedy Hare)</h4>
                 <ul>
                     <li>PWA支持:
@@ -2152,6 +2178,7 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
                             <li>SoC曲线视图独立化：SoC曲线图现在将完全专注于电量变化，线条更粗，移除了点标记，视觉效果更平滑。</li>
                             <li>兔子轨迹“绘画”回归：漫游的像素兔子将重新在身后留下像素化的“巧克力豆”轨迹，为页面增添动态趣味。</li>
                         </ul>
+                    </li>
                     </li>
                     <li>版本代号更新：
                         <ul>
@@ -2209,7 +2236,15 @@ Please answer in Simplified Chinese, present the recommendations as bullet point
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                // Determine the base URL for the current deployment (e.g., /my-repo/ or /)
+                // This gets the base path, handling cases like 'https://username.github.io/repo-name/' or 'https://example.com/'
+                let baseUrl = new URL(location.pathname, location.origin).pathname;
+                // Ensure it ends with a slash for correct scope if it's not the root
+                if (!baseUrl.endsWith('/')) {
+                    baseUrl += '/';
+                }
+                
+                navigator.serviceWorker.register(`${baseUrl}service-worker.js`, { scope: baseUrl })
                     .then(registration => {
                         console.log('Service Worker registered with scope:', registration.scope);
                     })
