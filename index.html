@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.0 - 🐰 数据时光兔 (Data Chronos Rabbit)</title>
+    <title>🐰 兔可可档案 v1.3.1 - 🐰 数据时光兔 (Data Chronos Rabbit)</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js and date-fns adapter for charting -->
@@ -249,7 +249,7 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.0 - 🐰 数据时光兔 (Data Chronos Rabbit)</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.1 - 🐰 数据时光兔 (Data Chronos Rabbit)</p>
             <p class="text-sm text-slate-500 mt-1">/* 數據時光兔強調了應用程式現在不僅能記錄時間，還能視覺化數據，成為您寵物成長和重要時刻的數據時光守護者。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
@@ -725,11 +725,20 @@
             }
 
             const labels = records.map(record => {
-                const recordDate = new Date(record.date * 1000);
+                const rawTimestampMs = record.date * 1000;
+                const recordDate = new Date(rawTimestampMs);
+                if (isNaN(recordDate.getTime())) {
+                    console.error('Invalid date generated for record:', record, 'Raw timestamp (ms):', rawTimestampMs);
+                    return null; // Return null for invalid dates
+                }
                 recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years
                 return recordDate;
-            });
+            }).filter(date => date !== null); // Filter out any null dates
+
             const dataPoints = records.map(record => record.weight);
+
+            console.log('Chart labels:', labels); // Debugging: Check generated labels
+            console.log('Chart dataPoints:', dataPoints); // Debugging: Check data points
 
             const ctx = ui.weightChartCanvas.getContext('2d');
             weightChartInstance = new Chart(ctx, {
@@ -879,8 +888,14 @@
 
                 // Filter and sort weight records for the chart
                 weightRecords = records
-                    .filter(record => record.activity === '体重测量' && typeof record.weight !== 'undefined')
+                    .filter(record => 
+                        record.activity === '体重测量' && 
+                        typeof record.weight === 'number' && // Ensure weight is a number
+                        typeof record.date === 'number'      // Ensure date is a number
+                    )
                     .sort((a, b) => a.date - b.date); // Sort ascending for chart chronological order
+
+                console.log('Filtered weightRecords for chart:', weightRecords); // Debugging
 
                 // Render the weight chart
                 renderWeightChart(weightRecords);
@@ -1028,6 +1043,11 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.1 - 数据时光兔 (Data Chronos Rabbit)</h4>
+                <p>修复: 解决了 Chart.js 图表在数据加载时出现的 'TypeError: Cannot read properties of undefined (reading 'toDate')' 错误。</p>
+                <p>优化: 增强了数据过滤，确保只有有效的体重和日期数据才用于图表绘制，提升稳定性。</p>
+                <p>优化: 增加了日期有效性检查，防止 Chart.js 接收到无效日期对象。</p>
+                
                 <h4>v1.3.0 - 数据时光兔 (Data Chronos Rabbit)</h4>
                 <p>新增: 体重测量数据可视化图表功能。现在可以从 PetRecords.json 中筛选“体重测量”记录，并将其绘制成体重曲线图。</p>
                 <p>新增: 体重曲线图支持交互点击，点击数据点可显示与前一个测量点的体重差异（增加/减少多少克）。</p>
