@@ -3,13 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.10 - 🐰 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</title>
+    <title>🐰 兔可可档案 v1.3.11 - 🐰 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</title>
     <!-- Tailwind CSS for modern styling (Note: CDN usage is for development. For production, consider installing as a PostCSS plugin or using the Tailwind CLI.) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- IMPORTANT: Correct loading order for Chart.js and its date-fns adapter -->
-    <!-- 1. date-fns library MUST be loaded first. Using an older, known-compatible version. -->
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.25.0/cdn.min.js"></script>
+    <!-- 1. date-fns library MUST be loaded first. Using an older, known-compatible version from unpkg for better global exposure. -->
+    <script src="https://unpkg.com/date-fns@2.25.0/dist/date-fns.min.js"></script>
+    <script>
+        // Diagnostic log: Check if dateFns and startOfDay are available immediately after date-fns loads
+        if (typeof dateFns !== 'undefined') {
+            console.log('dateFns object is defined after loading.');
+            if (typeof dateFns.startOfDay === 'function') {
+                console.log('dateFns.startOfDay is available and is a function.');
+            } else {
+                console.error('dateFns.startOfDay is NOT available as a function after loading date-fns. Full dateFns object:', dateFns);
+            }
+        } else {
+            console.error('dateFns object is UNDEFINED after loading.');
+        }
+    </script>
     <!-- 2. Chart.js core library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 3. Chart.js date-fns adapter MUST be loaded after date-fns and Chart.js -->
@@ -26,7 +39,7 @@
         } else {
             console.error('Could not override date-fns adapter for Chart.js. Check library loading or Chart.js/dateFns availability.');
             console.log('Chart object status:', typeof Chart, Chart);
-            console.log('dateFns object status:', typeof dateFns, dateFns);
+            console.log('dateFns object status (during override attempt):', typeof dateFns, dateFns);
         }
     </script>
 
@@ -131,8 +144,8 @@
             --chart-grid-color: rgba(0, 0, 0, 0.1);
             --chart-text-color: #5e35b1;
             --chart-line-color: #ff4081;
-            --chart-point-border-color: #5e35b1;
-            --chart-point-bg-color: #5e35b1;
+            --chart-point-border-color': #5e35b1;
+            --chart-point-bg-color': #5e35b1;
         }
 
         /* Apply CSS variables */
@@ -268,8 +281,8 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.10 - 🐰 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 适配强化兔 V2.2 解决了 Chart.js 日期适配器无法识别 date-fns 函数的问题，通过版本回退和显式注册增强兼容性。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.11 - 🐰 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 兼容性稳定兔 V1.0 解决了 Chart.js 日期适配器无法识别 date-fns 函数的问题，通过更换 CDN 源和加强诊断来提升兼容性。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -377,12 +390,13 @@
                 '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
                 '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
                 '--gemini-button-border': '#bb00ff',
-                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
-                '--chart-grid-color': 'rgba(255, 255, 255, 0.1)',
-                '--chart-text-color': '#00eaff',
-                '--chart-line-color': '#33ffff',
-                '--chart-point-border-color': '#00eaff',
-                '--chart-point-bg-color': '#00eaff',
+                '--pixel-rabbit-icon-fill': currentColor; /* Inherit color from text-color */
+                --pixel-rabbit-shadow-color: rgba(255, 255, 255, 0.8);
+                --chart-grid-color: rgba(255, 255, 255, 0.1);
+                --chart-text-color: #00eaff;
+                --chart-line-color: #33ffff;
+                --chart-point-border-color: #00eaff;
+                --chart-point-bg-color: #00eaff;
             },
             { // Dark Forest Green
                 '--bg-color': 'linear-gradient(180deg, #102010 0%, #050505 100%)',
@@ -1088,6 +1102,10 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
+                <p>修复: 切换 date-fns 的 CDN 源至 unpkg.com 的 dist/date-fns.min.js 版本，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高全局变量暴露的稳定性。</p>
+                <p>优化: 增加 date-fns 加载后的立即诊断日志，更早地确认 dateFns.startOfDay 的可用性。</p>
+
                 <h4>v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
                 <p>修复: 将 date-fns 库版本回退至 2.25.0，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高与 Chart.js 日期适配器的兼容性。</p>
 
