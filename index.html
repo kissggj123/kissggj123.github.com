@@ -3,17 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.8 - 🐰 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</title>
+    <title>🐰 兔可可档案 v1.3.10 - 🐰 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</title>
     <!-- Tailwind CSS for modern styling (Note: CDN usage is for development. For production, consider installing as a PostCSS plugin or using the Tailwind CLI.) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- IMPORTANT: Correct loading order for Chart.js and its date-fns adapter -->
-    <!-- 1. date-fns library MUST be loaded first -->
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/cdn.min.js"></script>
+    <!-- 1. date-fns library MUST be loaded first. Using an older, known-compatible version. -->
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.25.0/cdn.min.js"></script>
     <!-- 2. Chart.js core library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- 3. Chart.js date-fns adapter MUST be loaded after date-fns and Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.min.js"></script>
+
+    <!-- Explicitly override Chart.js date adapter immediately after libraries are loaded -->
+    <!-- This ensures Chart.js explicitly knows to use dateFns for date operations. -->
+    <script>
+        console.log('Attempting to override Chart.js date adapter...');
+        if (typeof Chart !== 'undefined' && typeof dateFns !== 'undefined' && Chart._adapters && Chart._adapters._date) {
+            Chart._adapters._date.override(dateFns);
+            console.log('date-fns adapter explicitly overridden for Chart.js.');
+            console.log('Current Chart._adapters._date:', Chart._adapters._date); // Check adapter object
+        } else {
+            console.error('Could not override date-fns adapter for Chart.js. Check library loading or Chart.js/dateFns availability.');
+            console.log('Chart object status:', typeof Chart, Chart);
+            console.log('dateFns object status:', typeof dateFns, dateFns);
+        }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +98,7 @@
             --title-color: #ff4081;
             --label-color: #64dd17;
             --input-bg: rgba(255, 255, 255, 0.95);
-            --input-border: #ff4081;
+            --input-border': #ff4081;
             --panel-bg: rgba(255, 255, 255, 0.9);
             --panel-border: #ff4081;
             --button-primary-bg: linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%);
@@ -253,8 +268,8 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.8 - 🐰 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 适配强化兔 V2.0 强调了对第三方库兼容性的深层优化，确保应用程序稳定运行。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.10 - 🐰 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 适配强化兔 V2.2 解决了 Chart.js 日期适配器无法识别 date-fns 函数的问题，通过版本回退和显式注册增强兼容性。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -1073,6 +1088,12 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
+                <p>修复: 将 date-fns 库版本回退至 2.25.0，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高与 Chart.js 日期适配器的兼容性。</p>
+
+                <h4>v1.3.9 - 适配强化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
+                <p>修复: 将 date-fns 适配器注册代码提前，确保 Chart.js 在实例化时能够正确访问 date-fns 函数，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
+
                 <h4>v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
                 <p>修复: 显式地将 date-fns 注册为 Chart.js 的日期适配器，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
 
@@ -1102,13 +1123,8 @@
 
         // --- Event Listeners and Initial Setup ---
         window.addEventListener('load', () => {
-            // Explicitly register date-fns with Chart.js adapter
-            if (typeof Chart !== 'undefined' && typeof dateFns !== 'undefined' && Chart._adapters && Chart._adapters._date) {
-                Chart._adapters._date.override(dateFns);
-                console.log('date-fns adapter explicitly overridden for Chart.js.');
-            } else {
-                console.error('Could not override date-fns adapter for Chart.js. Check library loading or Chart.js/dateFns availability.');
-            }
+            // The adapter override is now outside window.onload for earlier execution.
+            // console.log has been added there.
 
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'day') {
