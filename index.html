@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.7 - 🐰 脚本同步兔 (Script Sync Rabbit)</title>
+    <title>🐰 兔可可档案 v1.3.8 - 🐰 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</title>
     <!-- Tailwind CSS for modern styling (Note: CDN usage is for development. For production, consider installing as a PostCSS plugin or using the Tailwind CLI.) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -253,8 +253,8 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.7 - 🐰 脚本同步兔 (Script Sync Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 脚本同步兔强调了应用程序正确处理外部脚本依赖的能力，确保所有组件按预期工作。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.8 - 🐰 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 适配强化兔 V2.0 强调了对第三方库兼容性的深层优化，确保应用程序稳定运行。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -1073,6 +1073,9 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
+                <p>修复: 显式地将 date-fns 注册为 Chart.js 的日期适配器，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
+
                 <h4>v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
                 <p>修复: 调整 Chart.js, date-fns, chartjs-adapter-date-fns 的加载顺序，确保 date-fns 在其适配器之前加载，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
 
@@ -1099,6 +1102,14 @@
 
         // --- Event Listeners and Initial Setup ---
         window.addEventListener('load', () => {
+            // Explicitly register date-fns with Chart.js adapter
+            if (typeof Chart !== 'undefined' && typeof dateFns !== 'undefined' && Chart._adapters && Chart._adapters._date) {
+                Chart._adapters._date.override(dateFns);
+                console.log('date-fns adapter explicitly overridden for Chart.js.');
+            } else {
+                console.error('Could not override date-fns adapter for Chart.js. Check library loading or Chart.js/dateFns availability.');
+            }
+
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'day') {
                 setTheme(true); // Apply saved day theme, which will also pick a random palette
