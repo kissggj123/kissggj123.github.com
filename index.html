@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.3 - 🐰 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</title>
+    <title>🐰 兔可可档案 v1.3.4 - 🐰 数据修正兔 (Data Correction Rabbit)</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js and date-fns adapter for charting -->
@@ -249,8 +249,8 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.3 - 🐰 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 數據時光兔強調了應用程式現在不僅能記錄時間，還能視覺化數據，成為您寵物成長和重要時刻的數據時光守護者。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.4 - 🐰 数据修正兔 (Data Correction Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 数据修正兔强调了应用程序现在能够修正和优化数据，确保其准确性和稳定性。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -731,14 +731,19 @@
             }
 
             const labels = records.map(record => {
-                const rawTimestampMs = record.date * 1000;
+                // 将时间戳转换为整数秒，再乘以 1000 得到整数毫秒
+                const rawTimestampMs = Math.floor(record.date) * 1000; 
                 const recordDate = new Date(rawTimestampMs);
+                
+                console.log(`Processing record:`, record, `-> Raw Timestamp (ms): ${rawTimestampMs}`);
+                
                 // 确保日期是有效的，并且年份调整后再返回
                 if (isNaN(recordDate.getTime())) {
                     console.error('Invalid date generated for record (will be filtered):', record, 'Raw timestamp (ms):', rawTimestampMs);
                     return null; 
                 }
                 recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years
+                console.log(`Converted date for chart: ${recordDate.toISOString()}`);
                 return recordDate;
             }).filter(date => date !== null); // Filter out any null (invalid) dates
 
@@ -883,6 +888,7 @@
             try {
                 // 直接使用嵌入的 JSON 数据
                 const records = petRecordsData;
+                console.log('Raw petRecordsData loaded:', records);
 
                 ui.recordsList.innerHTML = ''; // Clear loading message
 
@@ -906,18 +912,23 @@
                 renderWeightChart(weightRecords);
 
                 // Sort all records by date in descending order (newest first) for the list display
-                records.sort((a, b) => b.date - a.date);
+                // For general record display, we also apply the year adjustment
+                const displayRecords = records.map(record => {
+                    const rawTimestampMs = Math.floor(record.date) * 1000;
+                    const recordDate = new Date(rawTimestampMs);
+                    if (!isNaN(recordDate.getTime())) {
+                         recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years
+                    } else {
+                        console.error('Invalid date encountered for display record:', record);
+                    }
+                    return { ...record, displayDate: recordDate };
+                }).sort((a, b) => b.displayDate.getTime() - a.displayDate.getTime()); // Sort by adjusted date
 
-                records.forEach(record => {
+                displayRecords.forEach(record => {
                     const recordDiv = document.createElement('div');
                     recordDiv.className = 'bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-md';
 
-                    // Convert timestamp (assuming seconds) and add 31 years to the year
-                    const rawTimestampMs = record.date * 1000; 
-                    const recordDate = new Date(rawTimestampMs);
-                    recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years to the year
-
-                    const formattedDate = recordDate.toLocaleString('zh-CN', {
+                    const formattedDate = record.displayDate.toLocaleString('zh-CN', {
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit',
@@ -1048,6 +1059,10 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
+                <p>修复: 确保时间戳在转换为 Date 对象之前去除小数点并转换为整数毫秒，以提高 Chart.js 日期适配器的兼容性。</p>
+                <p>优化: 增加更多控制台日志，以便在日期转换和 Chart.js 初始化过程中进行调试。</p>
+                
                 <h4>v1.3.3 - 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</h4>
                 <p>修复: 为确保 JSON 数据可靠加载，将 PetRecords.json 的内容直接嵌入到 HTML 脚本的 JavaScript 变量中。</p>
                 <p>优化: 增加更多控制台日志，以便在日期转换和 Chart.js 初始化过程中进行调试。</p>
@@ -1060,16 +1075,6 @@
                 <p>修复: 解决了 Chart.js 图表在数据加载时出现的 'TypeError: Cannot read properties of undefined (reading 'toDate')' 错误。</p>
                 <p>优化: 增强了数据过滤，确保只有有效的体重和日期数据才用于图表绘制，提升稳定性。</p>
                 <p>优化: 增加了日期有效性检查，防止 Chart.js 接收到无效日期对象。</p>
-                
-                <h4>v1.3.0 - 数据时光兔 (Data Chronos Rabbit)</h4>
-                <p>新增: 体重测量数据可视化图表功能。现在可以从 PetRecords.json 中筛选“体重测量”记录，并将其绘制成体重曲线图。</p>
-                <p>新增: 体重曲线图支持交互点击，点击数据点可显示与前一个测量点的体重差异（增加/减少多少克）。</p>
-                <p>优化: 图表配色方案与主题同步，提升视觉一致性。</p>
-                <p>优化: 纪念日计算逻辑简化，确保获取下一个纪念日逻辑更清晰。</p>
-
-                <h4>v1.2.0 - 时空档案守护兔 (Chronotemporal Archivist Rabbit)</h4>
-                <p>新增: 重新整合纪念日实时更新功能，与宠物档案功能并存。</p>
-                <p>优化: 页面布局调整，纪念日模块独立成面板，使信息展示更清晰。</p>
             `;
             ui.changelogList.innerHTML = changelogContent;
         }
