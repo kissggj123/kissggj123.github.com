@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.6 - 🐰 路径校准兔 (Path Calibration Rabbit)</title>
+    <title>🐰 兔可可档案 v1.3.7 - 🐰 脚本同步兔 (Script Sync Rabbit)</title>
     <!-- Tailwind CSS for modern styling (Note: CDN usage is for development. For production, consider installing as a PostCSS plugin or using the Tailwind CLI.) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js and date-fns adapter for charting -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- IMPORTANT: Correct loading order for Chart.js and its date-fns adapter -->
+    <!-- 1. date-fns library MUST be loaded first -->
     <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/cdn.min.js"></script>
+    <!-- 2. Chart.js core library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 3. Chart.js date-fns adapter MUST be loaded after date-fns and Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- VT323 for pixel font aesthetic. Chinese fallback is monospace. -->
@@ -186,8 +191,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.1);
         }
 
-        /* Specific button background overrides (these will be set by JS dynamically) */
-        /* They are here as fallbacks or for initial render */
+        /* Specific button background overrides (they are here as fallbacks or for initial render) */
         .btn-primary { background: var(--button-primary-bg); border-bottom-color: var(--button-primary-border); }
         .btn-primary:hover { background: var(--button-primary-hover-bg); }
         .btn-secondary { background: var(--button-secondary-bg); border-bottom-color: var(--button-secondary-border); }
@@ -249,8 +253,8 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.6 - 🐰 路径校准兔 (Path Calibration Rabbit)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 路径校准兔强调了应用程序在文件路径管理上的精确性和修正能力。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.7 - 🐰 脚本同步兔 (Script Sync Rabbit)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 脚本同步兔强调了应用程序正确处理外部脚本依赖的能力，确保所有组件按预期工作。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
@@ -1069,6 +1073,9 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
+                <p>修复: 调整 Chart.js, date-fns, chartjs-adapter-date-fns 的加载顺序，确保 date-fns 在其适配器之前加载，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
+
                 <h4>v1.3.6 - 路径校准兔 (Path Calibration Rabbit)</h4>
                 <p>修复: 修正了 PetRecords.json 文件的加载路径为 'dist/bunnycc/PetRecords.json'，与用户提供的路径一致。</p>
 
