@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.1 - 🐰 数据时光兔 (Data Chronos Rabbit)</title>
+    <title>🐰 兔可可档案 v1.3.2 - 🐰 数据时光兔 (Data Chronos Rabbit)</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js and date-fns adapter for charting -->
@@ -249,7 +249,7 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.1 - 🐰 数据时光兔 (Data Chronos Rabbit)</p>
+            <p class="text-slate-400 mt-2 text-lg">v1.3.2 - 🐰 数据时光兔 (Data Chronos Rabbit)</p>
             <p class="text-sm text-slate-500 mt-1">/* 數據時光兔強調了應用程式現在不僅能記錄時間，還能視覺化數據，成為您寵物成長和重要時刻的數據時光守護者。*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
@@ -727,18 +727,19 @@
             const labels = records.map(record => {
                 const rawTimestampMs = record.date * 1000;
                 const recordDate = new Date(rawTimestampMs);
+                // Ensure the date is valid before returning
                 if (isNaN(recordDate.getTime())) {
-                    console.error('Invalid date generated for record:', record, 'Raw timestamp (ms):', rawTimestampMs);
-                    return null; // Return null for invalid dates
+                    console.warn('Invalid date detected and filtered for chart:', record);
+                    return null; 
                 }
                 recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years
                 return recordDate;
-            }).filter(date => date !== null); // Filter out any null dates
+            }).filter(date => date !== null); // Filter out any null (invalid) dates
 
             const dataPoints = records.map(record => record.weight);
 
-            console.log('Chart labels:', labels); // Debugging: Check generated labels
-            console.log('Chart dataPoints:', dataPoints); // Debugging: Check data points
+            console.log('Chart labels for rendering:', labels); // Debugging: Check generated labels
+            console.log('Chart dataPoints for rendering:', dataPoints); // Debugging: Check data points
 
             const ctx = ui.weightChartCanvas.getContext('2d');
             weightChartInstance = new Chart(ctx, {
@@ -817,11 +818,12 @@
                                     if (context.parsed.y !== null) {
                                         label += context.parsed.y + 'g';
                                         const currentIndex = context.dataIndex;
-                                        if (currentIndex > 0) {
+                                        // Ensure previous point exists to calculate difference
+                                        if (currentIndex > 0 && context.dataset.data[currentIndex - 1] !== null && typeof context.dataset.data[currentIndex - 1] !== 'undefined') {
                                             const previousWeight = context.dataset.data[currentIndex - 1];
                                             const currentWeight = context.parsed.y;
                                             const difference = currentWeight - previousWeight;
-                                            label += ` (${difference >= 0 ? '+' : ''}${difference}g)`;
+                                            label += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
                                         }
                                     }
                                     return label;
@@ -849,7 +851,8 @@
 
                             let message = `日期: ${new Date(currentTimestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })} 体重: ${currentWeight}g`;
 
-                            if (index > 0) {
+                            // Ensure previous point exists to calculate difference for the alert
+                            if (index > 0 && weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== null && typeof weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== 'undefined') {
                                 const previousWeight = weightChartInstance.data.datasets[datasetIndex].data[index - 1];
                                 const difference = currentWeight - previousWeight;
                                 message += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
@@ -1043,6 +1046,10 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
+                <h4>v1.3.2 - 数据时光兔 (Data Chronos Rabbit)</h4>
+                <p>修复: 进一步增强 Chart.js 日期处理的健壮性，确保 Chart.js 的时间刻度适配器不会因无效日期而报错。</p>
+                <p>优化: 增加对 Chart.js tooltip 和 click 事件中前一个数据点存在的检查，避免在图表边缘点击时出现 'undefined' 错误。</p>
+
                 <h4>v1.3.1 - 数据时光兔 (Data Chronos Rabbit)</h4>
                 <p>修复: 解决了 Chart.js 图表在数据加载时出现的 'TypeError: Cannot read properties of undefined (reading 'toDate')' 错误。</p>
                 <p>优化: 增强了数据过滤，确保只有有效的体重和日期数据才用于图表绘制，提升稳定性。</p>
