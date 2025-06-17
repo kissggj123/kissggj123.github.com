@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC Archive v8.0.3 - 🛤️ Path Weaver Rabbit</title>
+    <title>🐰 Bunny CC Archive v8.0.4 - ⚙️ Data Resilience Rabbit</title>
     <!-- Tailwind CSS CDN - 注意：用於生產環境時，請作為 PostCSS 插件安裝或使用 Tailwind CLI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -290,7 +290,7 @@
         <!-- 頁眉 -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
             <!-- 更新標題文字以模仿終端提示符 -->
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.3_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.4_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
             <!-- 控制按鈕（現在使用 ID 和 programmatically 綁定事件） -->
             <div class="flex items-center space-x-3 text-gray-400">
                 <button id="changelog-btn" title="更新日誌" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
@@ -733,7 +733,7 @@
         
         /**
          * Loads pet records from a JSON file and processes them for display and charting.
-         * Now uses standard fetch for a relative path.
+         * Now uses standard fetch for a relative path with enhanced error handling.
          */
         async function loadAndProcessData() {
             console.log("[DEBUG] Starting data load and processing.");
@@ -747,14 +747,22 @@
             allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">Initiating pet archive retrieval... stand by.</p>`;
 
             try {
-                // Using standard fetch for a relative path. 
-                // This means the file must exist at ./dist/bunnycc/PetRecords.json relative to your HTML.
-                // It will NOT use the file you uploaded to the platform if you specify a literal path like this.
                 const response = await fetch(CONFIG.PET_RECORDS_FETCH_ID);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorResponseText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status} (${response.statusText}). Could not load data from '${CONFIG.PET_RECORDS_FETCH_ID}'. Server response: ${errorResponseText.substring(0, 200)}...`);
                 }
-                const records = await response.json();
+                
+                const responseText = await response.text(); // Get raw text first for detailed error logging
+                console.log('[DEBUG] Raw response text (first 500 chars):', responseText.substring(0, 500));
+
+                let records;
+                try {
+                    records = JSON.parse(responseText); // Explicitly parse the text content
+                } catch (jsonError) {
+                    throw new Error(`JSON parsing error for '${CONFIG.PET_RECORDS_FETCH_ID}': ${jsonError.message}. The file content might be malformed JSON. Content starts with: ${responseText.substring(0, 200)}...`);
+                }
+                
                 console.log('[DEBUG] Pet records data loaded and parsed:', records);
                 
                 // Process all records: convert timestamps and add 31-year offset
@@ -1011,6 +1019,13 @@
                 return;
             }
             const changelogContent = `
+                <h4>✨ v8.0.4 - ⚙️ Data Resilience Rabbit (數據韌性兔)</h4>
+                <div class="changelog-entry">
+                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
+                    <ul>
+                        <li><span style="color: red;"><strong>The Oracle's Whispers, Now Clearer! (神諭低語，更顯澄澈！):</strong></span> The elusive error, which oft whispered of "Unexpected identifier 'PetRecords'" when our scrolls were read, hath been tamed! We have imbued our reading ritual with greater wisdom, to divine whether the very fabric of the data be sound, or perchance, broken. Thus, when the archive doth fail to yield its secrets in proper JSON tongue, a clearer warning shall appear, guiding thee to mend its fractured syntax! (數據解析錯誤時，錯誤訊息更詳細，方便您檢查 JSON 格式！🔍)</li>
+                    </ul>
+                </div>
                 <h4>✨ v8.0.3 - 🛤️ Path Weaver Rabbit (路徑編織兔)</h4>
                 <div class="changelog-entry">
                     <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
