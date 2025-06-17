@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v2.0.0 - 🐰 像素风回归兔 V1.0</title>
-    <!-- Tailwind CSS for modern styling (Note: CDN usage is for development. For production, consider installing as a PostCSS plugin or using the Tailwind CLI.) -->
+    <title>🐰 兔可可档案 v2.0.0 - 🐰 稳定同步兔 V1.0</title>
+    <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- IMPORTANT: Correct loading order for Chart.js and its date-fns adapter -->
@@ -74,7 +74,7 @@
             --button-primary-hover-bg: linear-gradient(45deg, #00aadd 0%, #0066ee 100%);
             --button-primary-border: #00eaff;
             --button-secondary-bg: linear-gradient(45deg, #ff9900 0%, #ff6600 100%);
-            --button-secondary-hover-bg': linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
+            --button-secondary-hover-bg: linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
             --button-secondary-border: #ff9900;
             --button-success-bg: linear-gradient(45deg, #00ee00 0%, #00bb00 100%);
             --button-success-hover-bg': linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
@@ -115,7 +115,7 @@
             --panel-bg: rgba(255, 255, 255, 0.9);
             --panel-border: #ff4081;
             --button-primary-bg: linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%);
-            --button-primary-hover-bg': linear-gradient(45deg, #ff6090 0%, #6090ff 100%)',
+            --button-primary-hover-bg: linear-gradient(45deg, #ff6090 0%, #6090ff 100%);
             --button-primary-border: #82b1ff;
             --button-secondary-bg: linear-gradient(45deg, #ffd740 0%, #ff8a80 100%);
             --button-secondary-hover-bg': linear-gradient(45deg, #ffcc30 0%, #ff7070 100%)',
@@ -281,15 +281,15 @@
     <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v2.0.0 - 🐰 像素风回归兔 V1.0 (Pixel-Style Reversion Rabbit V1.0)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 融合了复古像素风 UI 与稳定的图表日期加载逻辑。*/</p>
+            <p class="text-slate-400 mt-2 text-lg">v2.0.0 - 🐰 稳定同步兔 V1.0 (Stable Sync Rabbit V1.0)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 修复了档案加载错误，并保持了所有炫酷 UI 元素！*/</p>
             <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
         </header>
 
         <!-- Profile Section -->
         <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
             <div id="profile-section" class="flex flex-col items-center">
-                <img id="profile-avatar" src="dist/Bunny CC_Profile.JPG" alt="兔可可头像" class="w-28 h-28 rounded-full object-cover border-4 border-emerald-500 shadow-lg">
+                <img id="profile-pic" src="dist/Bunny CC_Profile.JPG" alt="兔可可头像" class="w-28 h-28 rounded-full object-cover border-4 border-emerald-500 shadow-lg">
                 <h2 class="text-3xl title-color mt-4 mb-2">兔可可</h2>
                 <p class="text-lg label-color">数字档案</p>
             </div>
@@ -307,12 +307,15 @@
             <div id="weight-chart-container">
                 <canvas id="weightChart"></canvas>
             </div>
+            <div id="weight-change-info" class="mt-4 text-center bg-gray-900/50 p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="border: 1px solid rgba(var(--primary-rgb), 0.15)">
+                <p class="text-gray-400">点击图表上的数据点以查看体重变化</p>
+            </div>
         </div>
 
         <!-- Main Records Panel -->
         <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full">
             <h3 class="text-2xl title-color mb-4 text-center">📝 档案记录</h3>
-            <div id="records-list" class="space-y-4">
+            <div id="all-records-container" class="record-scrollbar space-y-4 h-64 overflow-y-auto pr-2 text-sm">
                 <!-- Pet records will be dynamically loaded here -->
             </div>
         </div>
@@ -342,15 +345,15 @@
 
         // --- DOM Element References ---
         const ui = {
-            profileSection: document.getElementById('profile-section'),
-            recordsList: document.getElementById('records-list'),
-            timingDisplay: document.getElementById('timing'),
+            profilePic: document.getElementById('profile-pic'),
+            timing: document.getElementById('timing'),
+            weightChartCanvas: document.getElementById('weightChart'),
+            weightChangeInfo: document.getElementById('weight-change-info'),
+            allRecordsContainer: document.getElementById('all-records-container'),
             themeToggleBtn: document.getElementById('themeToggleBtn'),
             changelogList: document.getElementById('changelog-list'),
             changelogModalBtn: document.getElementById('changelogModalBtn'),
             fullscreenToggleBtn: document.getElementById('fullscreenToggleBtn'),
-            profileAvatar: document.getElementById('profile-avatar'),
-            weightChartCanvas: document.getElementById('weightChart'),
         };
 
         // --- Color Palettes for Dynamic Theming (Copied from Charger Calculator) ---
@@ -738,7 +741,7 @@
                 `🎉下一个一周年纪念日是 ${nextYearAnniversaryFormatted}\n` +
                 `🎂目前已经到来 ${elapsedHours} 小时 ${elapsedMinutes} 分钟 ${elapsedSeconds} 秒`;
 
-            ui.timingDisplay.textContent = timingString;
+            ui.timing.textContent = timingString; // Use ui.timing
         }
 
         /**
@@ -754,12 +757,12 @@
             if (records.length === 0) {
                 // Hide canvas if no data, and display a message in weight-change-info
                 ui.weightChartCanvas.style.display = 'none'; 
-                document.getElementById('weight-change-info').innerHTML = '<p class="text-yellow-400">未找到体重测量数据。</p>'; // Update specific info div
+                ui.weightChangeInfo.innerHTML = '<p class="text-yellow-400">未找到体重测量数据。</p>'; // Use ui.weightChangeInfo
                 console.log('No weight records to display chart.');
                 return;
             } else {
                 ui.weightChartCanvas.style.display = 'block'; // Show canvas if data
-                document.getElementById('weight-change-info').innerHTML = '<p class="text-gray-400">点击图表上的数据点以查看体重变化</p>'; // Reset message
+                ui.weightChangeInfo.innerHTML = '<p class="text-gray-400">点击图表上的数据点以查看体重变化</p>'; // Use ui.weightChangeInfo
             }
 
             const labels = records.map(record => {
@@ -784,7 +787,7 @@
             console.log('Chart labels for rendering:', labels); // Debugging: Check generated labels
             console.log('Chart dataPoints for rendering:', dataPoints); // Debugging: Check data points
 
-            const ctx = ui.weightChartCanvas.getContext('2d');
+            const ctx = ui.weightChartCanvas.getContext('2d'); // Use ui.weightChartCanvas
             
             // Get dynamic colors from CSS variables
             const chartLineColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-line-color');
@@ -896,31 +899,32 @@
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
                             const clickedElement = elements[0];
-                            const index = clickedElement.index; // Directly use index from clicked element
+                            const datasetIndex = clickedElement.datasetIndex;
+                            const index = clickedElement.index;
                             
-                            const currentWeight = dataPoints[index]; // Use dataPoints array directly
-                            let messageContent = '';
+                            const currentWeight = weightChartInstance.data.datasets[datasetIndex].data[index];
+                            const currentTimestamp = weightChartInstance.data.labels[index];
 
-                            if (index > 0) {
-                                const previousWeight = dataPoints[index - 1];
+                            // Format the date for the alert to only show year-month-day
+                            let message = `日期: ${new Date(currentTimestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })} 体重: ${currentWeight}g`;
+
+                            // Ensure previous point exists to calculate difference for the alert
+                            if (index > 0 && weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== null && typeof weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== 'undefined') {
+                                const previousWeight = weightChartInstance.data.datasets[datasetIndex].data[index - 1];
+                                const currentWeight = weightChartInstance.data.datasets[datasetIndex].data[index]; // Use data from chart directly
                                 const difference = currentWeight - previousWeight;
-                                const sign = difference >= 0 ? '+' : ''; // Keep + for positive diff
-                                const colorClass = difference >= 0 ? 'text-green-400' : 'text-red-400';
-                                messageContent = `<p>与上次相比: <span class="font-bold ${colorClass}">${sign}${difference.toFixed(1)}g</span></p>`;
-                            } else {
-                                messageContent = `<p>这是第一次测量记录</p>`;
+                                message += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
                             }
-                            // Update the dedicated info div
-                            document.getElementById('weight-change-info').innerHTML = messageContent;
+                            showCustomAlert(message);
                         }
                     }
                 }
             });
 
-            // The data is already set during initialization, no need for separate update
-            // weightChartInstance.data.labels = labels;
-            // weightChartInstance.data.datasets[0].data = dataPoints;
-            // weightChartInstance.update();
+            // Populate and update chart data
+            weightChartInstance.data.labels = labels;
+            weightChartInstance.data.datasets[0].data = dataPoints;
+            weightChartInstance.update();
         }
 
         /**
@@ -930,24 +934,24 @@
             const loadingMessage = document.createElement('p');
             loadingMessage.textContent = '正在加载宠物档案...';
             loadingMessage.className = 'text-center text-xl label-color';
-            ui.recordsList.innerHTML = ''; // Clear previous content
-            ui.recordsList.appendChild(loadingMessage);
+            ui.allRecordsContainer.innerHTML = ''; // Use ui.allRecordsContainer
+            ui.allRecordsContainer.appendChild(loadingMessage); // Use ui.allRecordsContainer
 
             try {
                 // Fetch the JSON data from the correct path
-                const response = await fetch('dist/bunnycc/PetRecords.json');
+                const response = await fetch('./dist/bunnycc/PetRecords.json'); // Corrected path
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const records = await response.json();
                 console.log('Raw petRecordsData loaded:', records);
 
-                ui.recordsList.innerHTML = ''; // Clear loading message
+                ui.allRecordsContainer.innerHTML = ''; // Clear loading message, use ui.allRecordsContainer
 
                 if (records.length === 0) {
-                    ui.recordsList.innerHTML = '<p class="text-center text-xl text-red-400">没有找到宠物记录。</p>';
+                    ui.allRecordsContainer.innerHTML = '<p class="text-center text-xl text-red-400">没有找到宠物记录。</p>'; // Use ui.allRecordsContainer
                     // Also update weight chart area if no records at all
-                    document.getElementById('weight-change-info').innerHTML = '<p class="text-yellow-400">未找到体重测量数据。</p>';
+                    ui.weightChangeInfo.innerHTML = '<p class="text-yellow-400">未找到体重测量数据。</p>'; // Use ui.weightChangeInfo
                     return;
                 }
 
@@ -1000,11 +1004,11 @@
                         <p><span class="label-color font-bold">日期:</span> ${formattedDate}</p>
                         ${record.notes ? `<p><span class="label-color font-bold">备注:</span> ${record.notes}</p>` : ''}
                     `;
-                    ui.recordsList.appendChild(recordDiv);
+                    ui.allRecordsContainer.appendChild(recordDiv); // Use ui.allRecordsContainer
                 });
             } catch (error) {
                 console.error('Error loading pet records:', error);
-                ui.recordsList.innerHTML = `<p class="text-center text-xl text-red-400">加载档案失败: ${error.message}</p>`;
+                ui.allRecordsContainer.innerHTML = `<p class="text-center text-xl text-red-400">加载档案失败: ${error.message}</p>`; // Use ui.allRecordsContainer
                 showCustomAlert(`加载档案失败: ${error.message}`);
             }
         }
@@ -1115,57 +1119,129 @@
         // --- Changelog Population ---
         function populateChangelog() {
             const changelogContent = `
-                <h4>v2.0.0 - 像素风回归兔 V1.0 (Pixel-Style Reversion Rabbit V1.0)</h4>
-                <p>功能: 整合了 v1.3.11 的完整像素风格 UI、动态主题和“乱跑的兔子”动画。</p>
-                <p>修复: 确保了 Chart.js 的日期适配器和图表功能在新的 UI 框架下稳定运行，核心加载逻辑不变。</p>
+                <h4>✨ v2.0.0 - 稳定同步兔 V1.0 (Stable Sync Rabbit V1.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>檔案載入奇蹟復甦！</strong> 徹底解決了 `Cannot set properties of null (setting 'innerHTML')` 這個嚇人的錯誤，現在檔案列表能夠穩定載入，數據不再神隱！</li>
+                    <li><strong>DOM 元素 ID 對齊！</strong> 確保了 JavaScript 中對 `profile-pic` 和 `all-records-container` 等核心 UI 元素的引用與 HTML 中的 ID 精準匹配，從此不再「找錯人」！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>無縫 UI 體驗！</strong> 所有的像素風格 UI、動態主題和可愛的「亂跑的兔子」動畫都完整保留下來，讓你在修復錯誤的同時，也能享受視覺盛宴！</li>
+                </ul>
 
-                <h4>v2.0.0 - 像素同步兔 V2.0 (Pixel Sync Rabbit V2.0)</h4>
-                <p>UI 整合: 整合了您提供的最新像素風格 UI 佈局、按鈕樣式和主題切換功能。</p>
-                <p>日期功能核心恢復: 重新整合了 date-fns 和 chartjs-adapter-date-fns 的載入邏輯和顯式註冊，並將 Chart.js 圖表的 X 軸類型設定為 time，以確保體重追蹤圖表的日期顯示和功能正常。</p>
-                <p>CDN 優化: 繼續使用 unpkg.com 作為 date-fns 的 CDN 源，以提高全域物件暴露的穩定性。</p>
-                <p>診斷保留: 保留了載入後檢查 dateFns 和 startOfDay 可用性的診斷日誌。</p>
-                <p>移除冗餘組件: 移除了舊版本中與新 UI 重複的元素（如獨立的切換主題、全螢幕按鈕及相關 JavaScript），並移除了「亂跑的兔子」動畫以匹配新 UI 的簡潔性。</p>
-                
-                <h4>v2.0.0 - 像素同步兔 V1.0 (Pixel Sync Rabbit V1.0)</h4>
-                <p>整合修复: 核心整合了 v1.3.11 - 兼容性稳定兔 V1.0 的 date-fns 和 chartjs-adapter-date-fns 加载逻辑。</p>
-                <p>日期适配器稳定性: 确保 Chart.js 的 X 轴时间刻度能够正确利用 date-fns 进行日期解析和格式化，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
-                <p>CDN 优化: 使用 unpkg.com 作为 date-fns 的 CDN 源，以提高全局对象暴露的稳定性。</p>
-                <p>诊断增强: 保留了加载后检查 dateFns 和 startOfDay 可用性的诊断日志。</p>
-                <p>图表配置更新: 调整了 Chart.js 图表的 X 轴配置，使其类型为 'time' 并使用 date-fns 的时间单位和显示格式。</p>
+                <h4>✨ v2.0.0 - 史诗级像素风回归兔 (Pixel-Style Reversion Rabbit)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**舊時代靈魂召喚！** 完整召喚了 `v1.3.11` 的像素風 UI、動感主題與我們最愛的「亂跑的兔子」動畫！是不是感覺像穿越回了魂斗羅時代？✨</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**圖表魔法穩定咒！** 即使檔案介面大變樣，Chart.js 的日期魔法（時間軸、數據點顯示）依然穩定如山，比你上網課的 Wi-Fi 還穩！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時空錯亂修正！** 确保了 `date-fns` 和 `chartjs-adapter-date-fns` 的加载逻辑铁板钉钉，图表时间线不再“跑偏”，你再也别想怪我们“内存泄露”啦！</li>
+                    <li>**小兔兔回歸！** 讓亂跑的像素兔重新活躍起來，因為…沒有兔子跑跑的檔案，那還叫兔可可檔案嗎？！ᕕ( ᐛ )ᕗ</li>
+                </ul>
 
-                <h4>v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
-                <p>修复: 切换 date-fns 的 CDN 源至 unpkg.com 的 dist/date-fns.min.js 版本，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高全局变量暴露的稳定性。</p>
-                <p>优化: 增加 date-fns 加载后的立即诊断日志，更早地确认 dateFns.startOfDay 的可用性。</p>
+                <h4>🌟 v2.0.0 - 像素同步兔 V2.0 (Pixel Sync Rabbit V2.0)</h4>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**UI 超載進化！** 將最新的像素風介面和主題切換按鈕完美整合，現在換膚就像換遊戲角色一樣簡單，根本停不下來！</li>
+                    <li>**時間軸扭曲修正！** 穩固了 Chart.js 圖表的日期時間軸功能，讓你的體重記錄不再是薛丁格的貓，每次打開都清清楚楚！</li>
+                </ul>
+                <p><strong>删除 (Deleted!):</strong></p>
+                <ul>
+                    <li>**冗餘魔法符文移除！** 清理了多餘的 UI 元素和按鈕，畢竟我們是極簡主義者（才不是因為偷懶呢！）。亂跑的兔子也暫時放假了，因為要給新 UI 騰地方嘛！</li>
+                </ul>
 
-                <h4>v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
-                <p>修复: 将 date-fns 库版本回退至 2.25.0，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高与 Chart.js 日期适配器的兼容性。</p>
+                <h4>🚀 v2.0.0 - 像素同步兔 V1.0 (Pixel Sync Rabbit V1.0)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**日期魔法適配！** 首次引入 `date-fns` 與 `chartjs-adapter-date-fns` 聯合施法，讓 Chart.js 的時間軸能夠正確解讀日期，告別“未定義屬性”的崩潰！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**圖表時間軸校準！** 將 Chart.js 的 X 軸類型設定為 `time`，確保日期顯示精準，再也不會錯過兔可可的任何一個“漲胖”瞬間（誤）！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**依賴地獄救贖！** 調整了函式庫載入順序，確保所有魔法組件都能按時到位，避免了“找不到函數”的尷尬場面，就像在說：「我準備好了，你呢？」</li>
+                </ul>
 
-                <h4>v1.3.9 - 适配强化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
-                <p>修复: 将 date-fns 适配器注册代码提前，确保 Chart.js 在实例化时能够正确访问 date-fns 函数，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
+                <h4>🛡️ v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**神秘錯誤終結者！** 解決了 `Chart.js` 日期適配器找不到 `date-fns` 的 `startOfDay` 函數的謎團。現在它乖乖地從 `unpkg.com` 載入正確的魔法，不會再鬧脾氣了！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**診斷魔法升級！** 增加了更多載入後的診斷日誌，方便我們像偵探一樣追蹤魔法元素的到位情況。</li>
+                </ul>
 
-                <h4>v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
-                <p>修复: 显式地将 date-fns 注册为 Chart.js 的日期适配器，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
+                <h4>⏪ v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時光倒流術！** 將 `date-fns` 庫版本回退到 `2.25.0`。是的，我們承認有時候舊的才是最好的，就像你的老電玩主機一樣！這解決了 `startOfDay` 錯誤，確保了兼容性。</li>
+                </ul>
 
-                <h4>v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
-                <p>修复: 调整 Chart.js, date-fns, chartjs-adapter-date-fns 的加载顺序，确保 date-fns 在其适配器之前加载，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
+                <h4>⚡ v1.3.9 - 适配强化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**前置施法！** 將 `date-fns` 適配器註冊代碼提前了。現在，Chart.js 在它需要之前就能找到所有必要的日期魔法，完美解決了加載問題。</li>
+                </ul>
 
-                <h4>v1.3.6 - 路径校准兔 (Path Calibration Rabbit)</h4>
-                <p>修复: 修正了 PetRecords.json 文件的加载路径为 'dist/bunnycc/PetRecords.json'，与用户提供的路径一致。</p>
+                <h4>🔄 v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**明確指示！** 顯式地將 `date-fns` 註冊為 Chart.js 的日期適配器。這次，Chart.js 絕對不會再裝傻說它不認識 `date-fns` 了！</li>
+                </ul>
 
-                <h4>v1.3.5 - 适配强化兔 (Adaptation Enhanced Rabbit)</h4>
-                <p>修复: 将 Chart.js 图表初始化和数据填充分为两步，先创建空图表实例，后填充数据并更新，提高数据加载的健壮性。</p>
-                <p>修复: Chart.js 图表和记录列表的日期显示均调整为仅显示“年-月-日”，去除时间信息。</p>
-                <p>修复: 还原为通过 fetch 加载 PetRecords.json 文件，并优化了错误处理机制。</p>
-                <p>修复: 移除了外部不安全的光标链接，避免混合内容警告。</p>
-                <p>优化: 增加了 Tailwind CSS CDN 使用的注释，提醒生产环境注意事项。</p>
+                <h4>🔗 v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**魔法序曲調度！** 仔細調整了 `Chart.js`、`date-fns` 和 `chartjs-adapter-date-fns` 的載入順序。就像管弦樂隊一樣，每個樂器都必須在正確的時間加入，才能奏出完美的樂章！</li>
+                </ul>
 
-                <h4>v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
-                <p>修复: 确保时间戳在转换为 Date 对象之前去除小数点并转换为整数毫秒，以提高 Chart.js 日期适配器的兼容性。</p>
-                <p>优化: 增加更多控制台日志，以便在日期转换和 Chart.js 初始化过程中进行调试。</p>
-                
-                <h4>v1.3.3 - 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</h4>
-                <p>修复: 为确保 JSON 数据可靠加载，将 PetRecords.json 的内容直接嵌入到 HTML 脚本的 JavaScript 变量中。</p>
-                <p>优化: 增加更多控制台日志，以便在日期转换和 Chart.js 初始化过程中进行调试。</p>
+                <h4>🗺️ v1.3.6 - 路径校准兔 (Path Calibration Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**迷路檔案找回家！** 修正了 `PetRecords.json` 檔案的載入路徑。現在它會準確地在 `dist/bunnycc/PetRecords.json` 找到家了，不再流浪街頭。</li>
+                </ul>
+
+                <h4>✨ v1.3.5 - 适配强化兔 (Adaptation Enhanced Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**圖表數據分批上菜！** 將 Chart.js 圖表的初始化和數據填充分為兩步，就像先準備好餐具再上菜一樣，讓整個過程更流暢、更健壯。</li>
+                    <li>**日期顯示美容！** 圖表和記錄列表的日期現在只顯示「年-月-日」，簡潔明了，就像只留下你最瘦的照片一樣！</li>
+                    <li>**檔案傳輸回歸！** 重新使用 `fetch` 來載入 `PetRecords.json` 檔案，並優化了錯誤處理，現在傳輸數據就像搭乘高速列車，安全又快速！</li>
+                    <li>**危險連結警報解除！** 移除了可能引起混合內容警告的外部危險連結。安全第一，畢竟我們不想引來什麼不速之客！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**Tailwind 貼心提示！** 增加了關於 Tailwind CSS CDN 使用的註釋，提醒你在生產環境中的注意事項。</li>
+                </ul>
+
+                <h4>📐 v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時間戳精準矯正！** 確保時間戳在轉換為 `Date` 物件之前，會先去除小數點並轉換為整數毫秒，從此時間不再模棱兩可！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**偵探日誌詳情增加！** 增加了更多的控制台日誌，方便在日期轉換和 Chart.js 初始化過程中進行「案情分析」。</li>
+                </ul>
+
+                <h4>🪐 v1.3.3 - 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**數據永恆鑲嵌！** 為確保 JSON 數據可靠載入，將 `PetRecords.json` 的內容直接嵌入到 HTML 腳本的 JavaScript 變數中。現在數據就像被封印在水晶球裡，穩固不破！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**更多偵錯足跡！** 增加了更多的控制台日誌，讓追蹤數據轉換和 Chart.js 初始化過程中的問題變得更加清晰。</li>
+                </ul>
             `;
             ui.changelogList.innerHTML = changelogContent;
         }
