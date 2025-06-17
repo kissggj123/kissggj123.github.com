@@ -599,12 +599,23 @@
          * Generates and appends theme color swatches to the theme modal.
          */
         function generateThemeSwatches() {
-            if (!ui.themeGrid) {
-                console.error("Theme grid element not found for generating swatches.");
+            console.log("[DEBUG] 生成主題樣本。");
+            const themeGrid = document.getElementById('theme-grid');
+            const prevBtn = document.getElementById('prev-theme-page-btn');
+            const nextBtn = document.getElementById('next-theme-page-btn');
+
+            if (!themeGrid || !prevBtn || !nextBtn) {
+                console.error("[ERROR] 未找到主題網格或分頁按鈕元素以生成樣本。");
                 return;
             }
-            ui.themeGrid.innerHTML = ''; // Clear previous swatches
-            CONFIG.THEMES.forEach(theme => {
+
+            themeGrid.innerHTML = ''; // Clear previous swatches
+
+            const startIndex = currentThemePage * CONFIG.THEMES_PER_PAGE;
+            const endIndex = startIndex + CONFIG.THEMES_PER_PAGE;
+            const themesToShow = CONFIG.THEMES.slice(startIndex, endIndex);
+
+            themesToShow.forEach(theme => {
                 const swatch = document.createElement('button');
                 swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2";
                 swatch.style.backgroundColor = `rgb(${theme.rgb})`;
@@ -612,9 +623,15 @@
                 swatch.style.ringColor = `rgb(${theme.rgb})`;
                 swatch.style.ringOffsetColor = `var(--bg-color)`;
                 swatch.title = theme.name;
-                swatch.onclick = () => changeTheme(theme); // Use the new, unified changeTheme
-                ui.themeGrid.appendChild(swatch);
+                swatch.addEventListener('click', () => changeTheme(theme));
+                themeGrid.appendChild(swatch);
             });
+
+            // Update pagination button states
+            prevBtn.disabled = currentThemePage === 0;
+            nextBtn.disabled = endIndex >= CONFIG.THEMES.length;
+
+            console.log("[DEBUG] 主題樣本已生成。");
         }
         
         /**
@@ -630,42 +647,87 @@
         }
 
         /**
-         * Displays browser performance metrics in the performance modal.
+         * 在性能模態框中顯示瀏覽器性能指標。
          */
         function displayPerformanceMetrics() {
-            if (!ui.performanceDataOutput) {
-                console.error("Performance data output element not found.");
+            console.log("[DEBUG] 顯示性能指標。");
+            const performanceDataOutput = document.getElementById('performance-data-output');
+            if (!performanceDataOutput) {
+                console.error("[ERROR] 未找到性能數據輸出元素以進行顯示。");
                 return;
             }
 
             let outputHtml = '<h3>當前性能數據:</h3>';
 
-            // Memory usage (non-standard, primarily Chrome)
+            // 記憶體使用情況 (非標準，主要用於 Chrome)
             if (window.performance && window.performance.memory) {
                 const memory = window.performance.memory;
-                outputHtml += `<p><strong>JS Heap 使用量:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>JS Heap 總量:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>JS Heap 限制:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS 堆使用量:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>總 JS 堆:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS 堆限制:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
             } else {
-                outputHtml += `<p><em>瀏覽器不支持 Performance.memory API。</em></p>`;
+                outputHtml += `<p><em>Performance.memory API 不可用。</em></p>`;
             }
 
-            // Navigation Timing API
+            // 導航計時 API
             if (window.performance && window.performance.getEntriesByType) {
                 const navTiming = performance.getEntriesByType("navigation")[0];
                 if (navTiming) {
-                    outputHtml += `<h3>頁面載入時間:</h3>`;
-                    outputHtml += `<p><strong>DOM 內容載入:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>總載入時間:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>DNS 查詢:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>TCP 連接:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>請求響應:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<h3>頁面加載時間:</h3>`;
+                    outputHtml += `<p><strong>DOM 內容加載:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>總加載時間:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>DNS 解析:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>TCP 握手:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>請求-響應延遲:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
                 }
             } else {
-                outputHtml += `<p><em>瀏覽器不支持 Performance Timing API。</em></p>`;
+                outputHtml += `<p><em>性能計時 API 不可用。</em></p>`;
+            }
+
+            // 網絡資訊 API (實驗性，並非所有瀏覽器都支持)
+            if (navigator.connection) {
+                const connection = navigator.connection;
+                outputHtml += `<h3>網絡子系統資訊:</h3>`;
+                outputHtml += `<p><strong>有效類型:</strong> ${connection.effectiveType || 'N/A'}</p>`;
+                outputHtml += `<p><strong>往返時間 (RTT):</strong> ${connection.rtt || 'N/A'} ms</p>`;
+                outputHtml += `<p><strong>下行帶寬:</strong> ${connection.downlink || 'N/A'} Mbps</p>`;
+                outputHtml += `<p><strong>數據節省模式:</strong> ${connection.saveData ? '已啟用' : '已禁用'}</p>`;
+            } else {
+                outputHtml += `<p><em>網絡資訊 API 不可用。</em></p>`;
+            }
+
+            // 硬體並發 (CPU 核心數)
+            if (navigator.hardwareConcurrency) {
+                outputHtml += `<h3>硬體子系統資訊:</h3>`;
+                outputHtml += `<p><strong>處理器核心數:</strong> ${navigator.hardwareConcurrency}</p>`;
+            } else {
+                outputHtml += `<p><em>處理器核心數無法檢測。</em></p>`;
+            }
+
+            // 設備記憶體 (實驗性)
+            if (navigator.deviceMemory) {
+                outputHtml += `<p><strong>系統記憶體 (約):</strong> ${navigator.deviceMemory} GB</p>`;
+            } else {
+                outputHtml += `<p><em>系統記憶體無法檢測。</em></p>`;
+            }
+
+            // 瀏覽器用戶代理和作業系統 (來自 navigator.userAgent)
+            outputHtml += `<h3>瀏覽器與作業系統診斷:</h3>`;
+            if (navigator && navigator.userAgent) {
+                outputHtml += `<p><strong>用戶代理 (UA):</strong> ${navigator.userAgent}</p>`;
+                let os = "未知";
+                if (navigator.userAgent.includes("Win")) os = "Windows";
+                else if (navigator.userAgent.includes("Mac")) os = "macOS";
+                else if (navigator.userAgent.includes("Linux")) os = "Linux";
+                else if (navigator.userAgent.includes("Android")) os = "Android";
+                else if (navigator.userAgent.includes("iPad")) os = "iPadOS";
+                else if (navigator.userAgent.includes("iPhone")) os = "iOS";
+                outputHtml += `<p><strong>操作系統 (估計):</strong> ${os}</p>`;
+            } else {
+                outputHtml += `<p><em>用戶代理資訊無法訪問。</em></p>`;
             }
             
-            ui.performanceDataOutput.innerHTML = outputHtml;
+            performanceDataOutput.innerHTML = outputHtml;
         }
 
         // --- DATA & TIMING LOGIC ---
