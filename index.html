@@ -340,11 +340,15 @@
             </div>
         </div>
     </div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('theme-modal')">
+    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
         <div class="main-container glow-border w-11/12 max-w-md modal-content-base" onclick="event.stopPropagation()">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">COLOR_CYCLE</h2>
-            <div id="theme-grid" class="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-        </div>
+            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">色彩循環</h2>
+            <!-- HERE IS THE CHANGE: grid-cols-8 for 8x7 layout -->
+            <div id="theme-grid" class="p-6 grid grid-cols-8 gap-4"></div> 
+            <div class="flex justify-between p-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.3)">
+                <button id="prev-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">上一頁</button>
+                <button id="next-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">下一頁</button>
+            </div>
     </div>
     <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('performance-modal')">
         <div class="main-container glow-border w-11/12 max-w-lg modal-content-base" onclick="event.stopPropagation()">
@@ -512,16 +516,24 @@
          * @param {string} modalId - The ID of the modal element.
          */
         function toggleModal(modalId) {
+            console.log(`[DEBUG] Attempting to toggle modal: ${modalId}`);
             const modal = document.getElementById(modalId);
             if (modal) {
-                modal.classList.toggle('hidden');
-                modal.classList.toggle('flex');
-                if (modalId === 'performance-modal' && modal.classList.contains('flex')) {
-                    // Automatically display metrics when performance modal is opened
-                    displayPerformanceMetrics();
+                const isHidden = modal.classList.contains('hidden');
+                modal.classList.toggle('hidden', !isHidden);
+                modal.classList.toggle('flex', isHidden); // Add flex when showing
+
+                // Only display performance metrics when the performance modal is shown
+                if (modalId === 'performance-modal' && isHidden) { 
+                    displayPerformanceMetrics(); // Call function
+                }
+                // When the theme modal is shown, regenerate theme swatches to ensure correct pagination
+                if (modalId === 'theme-modal' && isHidden) {
+                    currentThemePage = 0; // Reset to the first page
+                    generateThemeSwatches();
                 }
             } else {
-                console.error(`Modal with ID '${modalId}' not found.`);
+                console.error(`[ERROR] Modal with ID '${modalId}' not found during toggleModal execution.`);
             }
         }
 
