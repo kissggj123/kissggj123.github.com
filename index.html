@@ -1,1184 +1,386 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v1.3.11 - 🐰 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</title>
-    <!-- Tailwind CSS for modern styling (Note: CDN usage is for development. For production, consider installing as a PostCSS plugin or using the Tailwind CLI.) -->
+    <title>档案：Bunny CC v2.0</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- IMPORTANT: Correct loading order for Chart.js and its date-fns adapter -->
-    <!-- 1. date-fns library MUST be loaded first. Using an older, known-compatible version from unpkg for better global exposure. -->
-    <script src="https://unpkg.com/date-fns@2.25.0/dist/date-fns.min.js"></script>
-    <script>
-        // Diagnostic log: Check if dateFns and startOfDay are available immediately after date-fns loads
-        if (typeof dateFns !== 'undefined') {
-            console.log('dateFns object is defined after loading.');
-            if (typeof dateFns.startOfDay === 'function') {
-                console.log('dateFns.startOfDay is available and is a function.');
-            } else {
-                console.error('dateFns.startOfDay is NOT available as a function after loading date-fns. Full dateFns object:', dateFns);
-            }
-        } else {
-            console.error('dateFns object is UNDEFINED after loading.');
-        }
-    </script>
-    <!-- 2. Chart.js core library -->
+    <!-- Chart.js for the graph -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 3. Chart.js date-fns adapter MUST be loaded after date-fns and Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.min.js"></script>
-
-    <!-- Explicitly override Chart.js date adapter immediately after libraries are loaded -->
-    <!-- This ensures Chart.js explicitly knows to use dateFns for date operations. -->
-    <script>
-        console.log('Attempting to override Chart.js date adapter...');
-        if (typeof Chart !== 'undefined' && typeof dateFns !== 'undefined' && Chart._adapters && Chart._adapters._date) {
-            Chart._adapters._date.override(dateFns);
-            console.log('date-fns adapter explicitly overridden for Chart.js.');
-            console.log('Current Chart._adapters._date:', Chart._adapters._date); // Check adapter object
-        } else {
-            console.error('Could not override date-fns adapter for Chart.js. Check library loading or Chart.js/dateFns availability.');
-            console.log('Chart object status:', typeof Chart, Chart);
-            console.log('dateFns object status (during override attempt):', typeof dateFns, dateFns);
-        }
-    </script>
-
+    <!-- Google Fonts for a retro-pixel feel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- VT323 for pixel font aesthetic. Chinese fallback is monospace. -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles using VT323 pixel font */
-        body {
-            font-family: 'VT323', monospace; /* Apply pixel font globally */
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: background 0.5s ease, color 0.3s ease;
-        }
-        input, select, button, pre, textarea { /* Apply to all form elements and pre-formatted text */
-            font-family: 'VT323', monospace;
-            color: var(--text-color);
-        }
-
-        /* CSS Variables for theming (Default: Night Mode) */
+        /* CSS Variables for theming */
         :root {
-            --bg-color: linear-gradient(180deg, #0a0a0a 0%, #000005 100%);
-            --text-color: #00eaff;
-            --title-color: #00eaff;
-            --label-color: #33ffff;
-            --input-bg: rgba(0, 0, 10, 0.7);
-            --input-border: #00eaff;
-            --panel-bg: rgba(0, 0, 15, 0.8);
-            --panel-border: #00eaff;
-            --button-primary-bg: linear-gradient(45deg, #00bfff 0%, #0077ff 100%);
-            --button-primary-hover-bg: linear-gradient(45deg, #00aadd 0%, #0066ee 100%);
-            --button-primary-border: #00eaff;
-            --button-secondary-bg: linear-gradient(45deg, #ff9900 0%, #ff6600 100%);
-            --button-secondary-hover-bg': linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
-            --button-secondary-border: #ff9900;
-            --button-success-bg: linear-gradient(45deg, #00ee00 0%, #00bb00 100%);
-            --button-success-hover-bg': linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
-            --button-success-border: #00ee00;
-            --button-info-bg: linear-gradient(45deg, #666666 0%, #333333 100%);
-            --button-info-hover-bg: linear-gradient(45deg, #555555 0%, #222222 100%);
-            --button-info-border: #888888;
-            --button-accent-bg: linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%);
-            --button-accent-hover-bg': linear-gradient(45deg, #ee00ee 0%, #bb00bb 100%)',
-            --button-accent-border: #ff00ff;
-            --changelog-modal-bg: rgba(0, 0, 20, 0.9);
-            --changelog-text-color: #ccffff;
-            --changelog-border-color: #00eaff;
-            --changelog-h-color: #00eaff;
-            --changelog-h-border: #33ffff;
-            --progress-bg: #00eaff;
-            --progress-text: #0a0a0a;
-            --cooling-color: #ff00ff;
-            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%);
-            --gemini-button-hover-bg': linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-            --gemini-button-border: #bb00ff;
-            --pixel-rabbit-icon-fill: currentColor; /* Inherit color from text-color */
-            --pixel-rabbit-shadow-color: rgba(255, 255, 255, 0.8);
-            --chart-grid-color: rgba(255, 255, 255, 0.1);
-            --chart-text-color: #00eaff;
-            --chart-line-color: #33ffff;
-            --chart-point-border-color: #00eaff;
-            --chart-point-bg-color: #00eaff;
+            --primary-rgb: 34, 211, 238; /* cyan-400 */
+            --primary-light-rgb: 103, 232, 249; /* cyan-300 */
+            --primary-dark-rgb: 13, 148, 136; /* teal-700 */
+            --bg-color: #111827; /* gray-900 */
+            --surface-color: rgba(17, 24, 39, 0.5); /* gray-900/50 */
+            --text-color: #d1d5db; /* gray-300 */
+            --text-muted-color: #6b7280; /* gray-500 */
+        }
+        [data-theme="amber"] {
+            --primary-rgb: 251, 191, 36; /* amber-400 */
+            --primary-light-rgb: 252, 211, 77; /* amber-300 */
+            --primary-dark-rgb: 180, 83, 9; /* amber-700 */
+        }
+        [data-theme="pink"] {
+            --primary-rgb: 244, 114, 182; /* pink-400 */
+            --primary-light-rgb: 249, 168, 212; /* pink-300 */
+            --primary-dark-rgb: 190, 24, 93; /* pink-700 */
         }
 
-        body.day-mode {
-            --bg-color: linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%);
-            --text-color: #5e35b1;
-            --title-color: #ff4081;
-            --label-color: #64dd17;
-            --input-bg: rgba(255, 255, 255, 0.95);
-            --input-border': #ff4081;
-            --panel-bg: rgba(255, 255, 255, 0.9);
-            --panel-border: #ff4081;
-            --button-primary-bg: linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%);
-            --button-primary-hover-bg: linear-gradient(45deg, #ff6090 0%, #6090ff 100%);
-            --button-primary-border: #82b1ff;
-            --button-secondary-bg: linear-gradient(45deg, #ffd740 0%, #ff8a80 100%);
-            --button-secondary-hover-bg': linear-gradient(45deg, #ffcc30 0%, #ff7070 100%)',
-            --button-secondary-border: #ff8a80;
-            --button-success-bg: linear-gradient(45deg, #69f0ae 0%, #18ffff 100%);
-            --button-success-hover-bg': linear-gradient(45deg, #50e090 0%, #00e0e0 100%)',
-            --button-success-border: #18ffff;
-            --button-info-bg: linear-gradient(45deg, #b388ff 0%, #8c9eff 100%);
-            --button-info-hover-bg': linear-gradient(45deg, #a070e0 0%, #7080ff 100%)',
-            --button-info-border: #8c9eff;
-            --button-accent-bg: linear-gradient(45deg, #ff1744 0%, #f50057 100%)',
-            --button-accent-hover-bg': linear-gradient(45deg, #e00030 0%, #d00040 100%)',
-            --button-accent-border': #f50057;
-            --changelog-modal-bg: rgba(255, 255, 255, 0.98);
-            --changelog-text-color: #333333;
-            --changelog-border-color: var(--button-secondary-border);
-            --changelog-h-color: var(--title-color);
-            --changelog-h-border: var(--label-color);
-            --progress-bg: var(--title-color);
-            --progress-text: #ffffff;
-            --cooling-color: #00bcd4;
-            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
-            --gemini-button-hover-bg': linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-            --gemini-button-border: #bb00ff;
-            --pixel-rabbit-shadow-color: rgba(0, 0, 0, 0.6);
-            --chart-grid-color: rgba(0, 0, 0, 0.1);
-            --chart-text-color: #5e35b1;
-            --chart-line-color: #ff4081;
-            --chart-point-border-color': #5e35b1;
-            --chart-point-bg-color': #5e35b1;
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s;
         }
-
-        /* Apply CSS variables */
-        .title-color { 
-            color: var(--title-color); 
-            text-shadow: 0 0 10px var(--title-color), 0 0 20px rgba(255,255,255,0.5); /* Neon glow effect */
-            transition: text-shadow 0.3s ease;
+        .font-pixel {
+            font-family: 'Press Start 2P', cursive;
         }
-        .label-color { color: var(--label-color); }
-        .input-bg { background-color: var(--input-bg); }
-        .input-border { border-color: var(--input-border); }
-        .panel-bg { 
-            background-color: var(--panel-bg); 
-            border-color: var(--panel-border);
-            box-shadow: 0 0 15px var(--panel-border), inset 0 0 8px rgba(255,255,255,0.1); /* Subtle glow + inner shadow */
-            transition: box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-            position: relative; /* Ensure z-index works correctly for content */
-            overflow: hidden; /* Hide anything going beyond panel bounds */
-        }
-        body.day-mode .panel-bg {
-            box-shadow: 0 0 15px var(--panel-border), inset 0 0 8px rgba(0,0,0,0.1);
-        }
-
-        /* Randomly moving pixel rabbit */
-        #wandering-rabbit {
-            position: fixed;
-            width: 72px; /* Slightly larger for "bolder" look */
-            height: 72px; /* Maintain aspect ratio */
-            z-index: 100;
+        /* Custom styles for the chart tooltip */
+        .chartjs-tooltip {
+            background: rgba(31, 41, 55, 0.9);
+            border-radius: 0.5rem;
+            color: white;
+            padding: 0.5rem 0.75rem;
             pointer-events: none;
-            transition: left 1s ease-in-out, top 1s ease-in-out;
-            fill: var(--pixel-rabbit-icon-fill); /* Use CSS variable for fill */
-            filter: drop-shadow(0 0 15px var(--pixel-rabbit-shadow-color)); /* Enhanced shadow for "bolder" look */
+            transition: all .1s ease;
+            box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+            border: 1px solid rgba(var(--primary-rgb), 0.5);
+            font-family: 'Noto Sans SC', sans-serif;
         }
-
-        /* Rabbit Droppings (Chocolate Beans) */
-        .rabbit-dropping {
-            position: absolute;
-            width: 6px; /* Pixelated size */
-            height: 6px;
-            background-color: #4a2c2a; /* Chocolate brown */
-            border-radius: 1px; /* Slightly rounded pixel look */
-            transform: scale(1);
-            opacity: 1;
-            transition: transform 2s ease-out, opacity 2s ease-out; /* Fade and shrink over 2 seconds */
-            z-index: 99; /* Below rabbit, above background */
-            pointer-events: none; /* Don't interfere with clicks */
-            box-shadow: 0 0 2px rgba(0,0,0,0.5); /* Small shadow */
+        /* Custom scrollbar for record list */
+        .record-scrollbar::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .rabbit-dropping.fade-out {
-            transform: scale(0.2);
-            opacity: 0;
+        .record-scrollbar::-webkit-scrollbar-track {
+            background: rgba(var(--primary-dark-rgb), 0.1);
+            border-radius: 4px;
         }
-
-        /* Button styling using CSS variables */
-        .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-accent, .btn-gemini {
-            background: var(--button-primary-bg);
-            border-bottom: 4px solid var(--button-primary-border);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.2);
-            transition: all 0.2s ease;
-            color: white; /* Ensure text is always white on gradient buttons */
+        .record-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(var(--primary-rgb), 0.5);
+            border-radius: 4px;
         }
-        .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-info:hover, .btn-accent:hover, .btn-gemini:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 2px 8px rgba(255,255,255,0.3);
-        }
-        .btn-primary:active, .btn-secondary:active, .btn-success:active, .btn-info:active, .btn-accent:active, .btn-gemini:active {
-            transform: translateY(2px);
-            border-bottom-width: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.1);
-        }
-
-        /* Specific button background overrides (they are here as fallbacks or for initial render) */
-        .btn-primary { background: var(--button-primary-bg); border-bottom-color: var(--button-primary-border); }
-        .btn-primary:hover { background: var(--button-primary-hover-bg); }
-        .btn-secondary { background: var(--button-secondary-bg); border-bottom-color: var(--button-secondary-border); }
-        .btn-secondary:hover { background: var(--button-secondary-hover-bg); }
-        .btn-success { background: var(--button-success-bg); border-bottom-color: var(--button-success-border); }
-        .btn-success:hover { background: var(--button-success-hover-bg); }
-        .btn-info { background: var(--button-info-bg); border-bottom-color: var(--button-info-border); }
-        .btn-info:hover { background: var(--button-info-hover-bg); }
-        .btn-accent { background: var(--button-accent-bg); border-bottom-color: var(--button-accent-border); }
-        .btn-accent:hover { background: var(--button-accent-hover-bg); }
-        .btn-gemini { background: var(--gemini-button-bg); border-bottom-color: var(--gemini-button-border); }
-        .btn-gemini:hover { background: var(--gemini-button-hover-bg); }
-
-        /* Changelog modal specific styling */
-        #changelog-modal-content {
-            background-color: var(--changelog-modal-bg);
-            color: var(--changelog-text-color);
-            border-color: var(--changelog-border-color);
-            box-shadow: 0 0 20px var(--changelog-border-color);
-            transition: box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        #changelog-modal-content h3, #changelog-modal-content h4 {
-            color: var(--changelog-h-color);
-            border-bottom-color: var(--changelog-h-border);
-            text-shadow: 0 0 5px var(--changelog-h-color);
-            transition: color 0.3s ease, border-bottom-color 0.3s ease, text-shadow 0.3s ease;
-        }
-        /* No bullet points for changelog */
-        #changelog-modal-content p {
-            margin-bottom: 0.5rem;
-            padding-left: 1rem; /* Indent for clarity */
-        }
-        /* Chart specific styling */
-        #weight-chart-container {
-            position: relative; /* For tooltip positioning */
-            height: 300px; /* Fixed height for chart */
-            width: 100%;
+        .record-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(var(--primary-rgb), 0.8);
         }
     </style>
 </head>
-<body class="antialiased">
-    <!-- Wandering Rabbit Character -->
-    <div id="wandering-rabbit">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="currentColor">
-            <rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/>
-            <rect x="0" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/>
-            <rect x="0" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/>
-            <rect x="0" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/>
-            <rect x="0" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/>
-            <rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/>
-            <rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/>
-            <rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/>
-            <rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/>
-        </svg>
-    </div>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
-            <p class="text-slate-400 mt-2 text-lg">v1.3.11 - 🐰 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</p>
-            <p class="text-sm text-slate-500 mt-1">/* 兼容性稳定兔 V1.0 解决了 Chart.js 日期适配器无法识别 date-fns 函数的问题，通过更换 CDN 源和加强诊断来提升兼容性。*/</p>
-            <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈现</p>
-        </header>
-
-        <!-- Profile Section -->
-        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
-            <div id="profile-section" class="flex flex-col items-center">
-                <img id="profile-avatar" src="dist/Bunny CC_Profile.JPG" alt="兔可可头像" class="w-28 h-28 rounded-full object-cover border-4 border-emerald-500 shadow-lg">
-                <h2 class="text-3xl title-color mt-4 mb-2">兔可可</h2>
-                <p class="text-lg label-color">数字档案</p>
+    <!-- Main container -->
+    <div class="w-full max-w-7xl bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden transition-all duration-300" 
+         style="border: 1px solid rgba(var(--primary-rgb), 0.3); box-shadow: 0 0 25px rgba(var(--primary-rgb), 0.1);">
+        <!-- Header bar -->
+        <div class="bg-gray-900/80 px-4 py-2 flex items-center justify-between"
+             style="border-bottom: 1px solid rgba(var(--primary-rgb), 0.3);">
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full animate-pulse" style="background-color: rgba(var(--primary-light-rgb), 1)"></span>
+                <span class="w-3 h-3 rounded-full" style="background-color: rgba(var(--primary-light-rgb), 0.5)"></span>
+                <span class="w-3 h-3 rounded-full" style="background-color: rgba(var(--primary-light-rgb), 0.2)"></span>
+            </div>
+            <p class="font-pixel text-xs sm:text-sm tracking-widest" style="color: rgba(var(--primary-light-rgb), 1)">BCC_ARCHIVE_SYSTEM_v2</p>
+            <!-- Controls: Theme, Fullscreen -->
+            <div class="flex items-center space-x-2">
+                <button title="主题: 赛博蓝" onclick="changeTheme('cyan')" class="w-5 h-5 bg-cyan-400 rounded-full border-2 border-transparent focus:border-white"></button>
+                <button title="主题: 琥珀黄" onclick="changeTheme('amber')" class="w-5 h-5 bg-amber-400 rounded-full border-2 border-transparent focus:border-white"></button>
+                <button title="主题: 像素粉" onclick="changeTheme('pink')" class="w-5 h-5 bg-pink-400 rounded-full border-2 border-transparent focus:border-white"></button>
+                <button title="全屏切换" onclick="toggleFullscreen()" class="ml-2 w-5 h-5 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
+                </button>
             </div>
         </div>
 
-        <!-- Anniversary Timer Panel -->
-        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
-            <h3 class="text-2xl title-color mb-4 text-center">⏱️ 兔可可纪念日</h3>
-            <pre id="timing" class="text-xl md:text-2xl whitespace-pre-line text-center label-color"></pre>
-        </div>
+        <!-- Main content grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+            
+            <!-- Left Panel: Profile and Anniversaries -->
+            <div class="lg:col-span-1 bg-black/20 p-6 rounded-lg" style="border: 1px solid rgba(var(--primary-rgb), 0.2)">
+                <div class="text-center">
+                    <div class="relative w-40 h-40 mx-auto mb-4">
+                         <img id="profile-pic" src="https://placehold.co/160x160/1f2937/7dd3fc?text=Loading..." 
+                             onerror="this.onerror=null; this.src='https://placehold.co/160x160/1f2937/7dd3fc?text=Error';"
+                             class="w-full h-full rounded-full object-cover shadow-lg"
+                             style="border: 4px solid rgba(var(--primary-rgb), 0.5); box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2)">
+                         <div class="absolute inset-0 rounded-full border-2 animate-spin-slow" style="border-color: rgba(var(--primary-light-rgb), 0.7); border-top-color: transparent;"></div>
+                    </div>
+                    <h1 class="font-pixel text-2xl font-bold" style="color: rgba(var(--primary-light-rgb), 1)">BUNNY CC</h1>
+                    <p class="text-sm font-pixel" style="color: rgba(var(--text-muted-color))">ID: B-20240312</p>
+                </div>
 
-        <!-- Weight Chart Panel -->
-        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
-            <h3 class="text-2xl title-color mb-4 text-center">📊 体重变化曲线</h3>
-            <div id="weight-chart-container">
-                <canvas id="weightChart"></canvas>
+                <div class="mt-8">
+                    <h2 class="font-pixel text-base pb-2 mb-4" style="color: rgba(var(--primary-light-rgb), 1); border-bottom: 2px solid rgba(var(--primary-rgb), 0.2)">MILESTONES</h2>
+                    <div id="timing" class="space-y-2 text-sm whitespace-pre-line leading-relaxed">
+                        <p>正在连接到时间序列...</p>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Main Records Panel -->
-        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full">
-            <h3 class="text-2xl title-color mb-4 text-center">📝 档案记录</h3>
-            <div id="records-list" class="space-y-4">
-                <!-- Pet records will be dynamically loaded here -->
-            </div>
-        </div>
-
-        <div class="flex flex-wrap gap-4 justify-center mt-6">
-            <button id="changelogModalBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">📜 更新日志</button>
-            <button id="fullscreenToggleBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-accent">🖥️ 全屏幕</button>
-            <button id="themeToggleBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">🌓 夜间模式</button>
-        </div>
-    </div>
-    
-    <!-- Changelog Modal -->
-    <div id="changelog-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 hidden" onclick="toggleChangelogModal(false)">
-        <div id="changelog-modal-content" class="max-w-2xl w-full p-6 rounded-2xl border-2 border-amber-400 shadow-lg relative" onclick="event.stopPropagation()">
-            <button onclick="toggleChangelogModal(false)" class="absolute top-4 right-4 text-2xl text-red-500">&times;</button>
-            <div id="changelog-list">
-                <!-- Changelog content will be populated by JavaScript -->
+            <!-- Right Panel: Chart and All Records -->
+            <div class="lg:col-span-2 bg-black/20 p-6 rounded-lg space-y-6" style="border: 1px solid rgba(var(--primary-rgb), 0.2)">
+                <div>
+                    <h2 class="font-pixel text-base pb-2 mb-4" style="color: rgba(var(--primary-light-rgb), 1); border-bottom: 2px solid rgba(var(--primary-rgb), 0.2)">WEIGHT TRACKING</h2>
+                    <div><canvas id="weightChart"></canvas></div>
+                    <div id="weight-change-info" class="mt-4 text-center bg-gray-900/50 p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="border: 1px solid rgba(var(--primary-rgb), 0.15)">
+                        <p class="text-gray-400">点击图表上的数据点以查看体重变化</p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="font-pixel text-base pb-2 mb-4" style="color: rgba(var(--primary-light-rgb), 1); border-bottom: 2px solid rgba(var(--primary-rgb), 0.2)">ARCHIVE LOG</h2>
+                    <div id="all-records-container" class="record-scrollbar h-64 overflow-y-auto pr-2 space-y-3 text-sm">
+                        <p>正在加载档案...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Constants and Global Variables ---
-        const startDate = new Date('2024/03/12 00:00:00'); // Set your start date here for anniversary timer
-        let weightChartInstance = null; // Global variable to store Chart.js instance
-        let weightRecords = []; // Global variable to store filtered weight records
+        // --- CONFIGURATION ---
+        const PROFILE_PIC_PATH = './dist/Bunny CC_Profile.JPG';
+        const PET_RECORDS_PATH = './dist/bunnycc/PetRecords.json';
+        const START_DATE = '2024/03/12 00:00:00';
 
-        // --- DOM Element References ---
-        const ui = {
-            profileSection: document.getElementById('profile-section'),
-            recordsList: document.getElementById('records-list'),
-            timingDisplay: document.getElementById('timing'),
-            themeToggleBtn: document.getElementById('themeToggleBtn'),
-            changelogList: document.getElementById('changelog-list'),
-            changelogModalBtn: document.getElementById('changelogModalBtn'),
-            fullscreenToggleBtn: document.getElementById('fullscreenToggleBtn'),
-            profileAvatar: document.getElementById('profile-avatar'),
-            weightChartCanvas: document.getElementById('weightChart'),
-        };
+        // --- GLOBAL STATE ---
+        let weightChart = null;
+        let weightChartData = []; // Store processed weight data
+        let allRecordsData = []; // Store all records
 
-        // --- Color Palettes for Dynamic Theming (Copied from Charger Calculator) ---
-        const nightModePalettes = [
-            { // TRON Blue/Cyan
-                '--bg-color': 'linear-gradient(180deg, #0a0a0a 0%, #000005 100%)',
-                '--text-color': '#00eaff',
-                '--title-color': '#00eaff',
-                '--label-color': '#33ffff',
-                '--input-bg': 'rgba(0, 0, 10, 0.7)',
-                '--input-border': '#00eaff',
-                '--panel-bg': 'rgba(0, 0, 15, 0.8)',
-                '--panel-border': '#00eaff',
-                '--button-primary-bg': 'linear-gradient(45deg, #00bfff 0%, #0077ff 100%)',
-                '--button-primary-hover-bg': 'linear-gradient(45deg, #00aadd 0%, #0066ee 100%)',
-                '--button-primary-border': '#00eaff',
-                '--button-secondary-bg': 'linear-gradient(45deg, #ff9900 0%, #ff6600 100%)',
-                '--button-secondary-hover-bg': 'linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
-                '--button-secondary-border': '#ff9900',
-                '--button-success-bg': 'linear-gradient(45deg, #00ee00 0%, #00bb00 100%)',
-                '--button-success-hover-bg': 'linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
-                '--button-success-border': '#00ee00',
-                '--button-info-bg': 'linear-gradient(45deg, #666666 0%, #333333 100%)',
-                '--button-info-hover-bg': 'linear-gradient(45deg, #555555 0%, #222222 100%)',
-                '--button-info-border': '#888888',
-                '--button-accent-bg': 'linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%)',
-                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee00ee 0%, #bb00bb 100%)',
-                '--button-accent-border': '#ff00ff',
-                '--changelog-modal-bg': 'rgba(0, 0, 20, 0.9)',
-                '--changelog-text-color': '#ccffff',
-                '--changelog-border-color': '#00eaff',
-                '--changelog-h-color': '#00eaff',
-                '--changelog-h-border': '#33ffff',
-                '--progress-bg': '#00eaff',
-                '--progress-text': '#0a0a0a',
-                '--cooling-color': '#ff00ff',
-                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
-                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-                '--gemini-button-border': '#bb00ff',
-                '--pixel-rabbit-icon-fill': currentColor; /* Inherit color from text-color */
-                --pixel-rabbit-shadow-color: rgba(255, 255, 255, 0.8);
-                --chart-grid-color: rgba(255, 255, 255, 0.1);
-                --chart-text-color: #00eaff;
-                --chart-line-color: #33ffff;
-                --chart-point-border-color: #00eaff;
-                --chart-point-bg-color: #00eaff;
-            },
-            { // Dark Forest Green
-                '--bg-color': 'linear-gradient(180deg, #102010 0%, #050505 100%)',
-                '--text-color': '#00ff7f', /* Neon Green */
-                '--title-color': '#00ff7f',
-                '--label-color': '#66ff99',
-                '--input-bg': 'rgba(0, 5, 0, 0.7)',
-                '--input-border': '#00ff7f',
-                '--panel-bg': 'rgba(0, 8, 0, 0.8)',
-                '--panel-border': '#00ff7f',
-                '--button-primary-bg': 'linear-gradient(45deg, #32cd32 0%, #008000 100%)',
-                '--button-primary-hover-bg': 'linear-gradient(45deg, #22bb22 0%, #006600 100%)',
-                '--button-primary-border': '#00ff7f',
-                '--button-secondary-bg': 'linear-gradient(45deg, #ffcc00 0%, #e0a000 100%)',
-                '--button-secondary-hover-bg': 'linear-gradient(45deg, #eebb00 0%, #cc9000 100%)',
-                '--button-secondary-border': '#ffcc00',
-                '--button-success-bg': 'linear-gradient(45deg, #00ee00 0%, #00bb00 100%)',
-                '--button-success-hover-bg': 'linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
-                '--button-success-border': '#00ee00',
-                '--button-info-bg': 'linear-gradient(45deg, #708090 0%, #405060 100%)',
-                '--button-info-hover-bg': 'linear-gradient(45deg, #607080 0%, #304050 100%)',
-                '--button-info-border': '#90a0b0',
-                '--button-accent-bg': 'linear-gradient(45deg, #ff69b4 0%, #c71585 100%)',
-                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee59a4 0%, #b00070 100%)',
-                '--button-accent-border': '#ff69b4',
-                '--changelog-modal-bg': 'rgba(0, 10, 0, 0.9)',
-                '--changelog-text-color': '#d0ffe0',
-                '--changelog-border-color': '#00ff7f',
-                '--changelog-h-color': '#00ff7f',
-                '--changelog-h-border': '#66ff99',
-                '--progress-bg': '#00ff7f',
-                '--progress-text': '#0a0a0a',
-                '--cooling-color': '#ffd700', /* Gold for cooling */
-                '--gemini-button-bg': 'linear-gradient(45deg, #4b0082 0%, #8a2be2 100%)',
-                '--gemini-button-hover-bg': 'linear-gradient(45deg, #3a006f 0%, #701fd0 100%)',
-                '--gemini-button-border': '#9932cc',
-                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
-                '--chart-grid-color': 'rgba(0, 255, 127, 0.1)',
-                '--chart-text-color': '#00ff7f',
-                '--chart-line-color': '#66ff99',
-                '--chart-point-border-color': '#00ff7f',
-                '--chart-point-bg-color': '#00ff7f',
-            },
-            { // Deep Purple/Magenta
-                '--bg-color': 'linear-gradient(180deg, #150015 0%, #000000 100%)',
-                '--text-color': '#ff00ff', /* Neon Magenta */
-                '--title-color': '#ff00ff',
-                '--label-color': '#ff66ff',
-                '--input-bg': 'rgba(10, 0, 10, 0.7)',
-                '--input-border': '#ff00ff',
-                '--panel-bg': 'rgba(15, 0, 15, 0.8)',
-                '--panel-border': '#ff00ff',
-                '--button-primary-bg': 'linear-gradient(45deg, #8a2be2 0%, #4b0082 100%)',
-                '--button-primary-hover-bg': 'linear-gradient(45deg, #7a1be2 0%, #3b0072 100%)',
-                '--button-primary-border': '#ff00ff',
-                '--button-secondary-bg': 'linear-gradient(45deg, #00ffff 0%, #00aaff 100%)',
-                '--button-secondary-hover-bg': 'linear-gradient(45deg, #00dddd 0%, #0099ee 100%)',
-                '--button-secondary-border': '#00ffff',
-                '--button-success-bg': 'linear-gradient(45deg, #00ff00 0%, #00aa00 100%)',
-                '--button-success-hover-bg': 'linear-gradient(45deg, #00ee00 0%, #009900 100%)',
-                '--button-success-border': '#00ff00',
-                '--button-info-bg': 'linear-gradient(45deg, #aaaaaa 0%, #777777 100%)',
-                '--button-info-hover-bg': 'linear-gradient(45deg, #999999 0%, #666666 100%)',
-                '--button-info-border': '#cccccc',
-                '--button-accent-bg': 'linear-gradient(45deg, #ffd700 0%, #ffa500 100%)',
-                '--button-accent-hover-bg': 'linear-gradient(45deg, #eec700 0%, #ee9500 100%)',
-                '--button-accent-border': '#ffd700',
-                '--changelog-modal-bg': 'rgba(10, 0, 10, 0.9)',
-                '--changelog-text-color': '#ffeeff',
-                '--changelog-border-color': '#ff00ff',
-                '--changelog-h-color': '#ff00ff',
-                '--changelog-h-border': '#ff66ff',
-                '--progress-bg': '#ff00ff',
-                '--progress-text': '#0a0a0a',
-                '--cooling-color': '#00ffff',
-                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
-                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-                '--gemini-button-border': '#bb00ff',
-                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
-                '--chart-grid-color': 'rgba(255, 0, 255, 0.1)',
-                '--chart-text-color': '#ff00ff',
-                '--chart-line-color': '#ff66ff',
-                '--chart-point-border-color': '#ff00ff',
-                '--chart-point-bg-color': '#ff00ff',
-            },
-        ];
+        // --- DOM ELEMENTS ---
+        const timingEl = document.getElementById('timing');
+        const profilePicEl = document.getElementById('profile-pic');
+        const weightChangeInfoEl = document.getElementById('weight-change-info');
+        const chartCanvas = document.getElementById('weightChart');
+        const allRecordsContainer = document.getElementById('all-records-container');
 
-        const dayModePalettes = [
-            { // Soft Pastel Blue/Pink
-                '--bg-color': 'linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%)',
-                '--text-color': '#5e35b1',
-                '--title-color': '#ff4081',
-                '--label-color': '#64dd17',
-                '--input-bg': 'rgba(255, 255, 255, 0.95)',
-                '--input-border': '#ff4081',
-                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
-                '--panel-border': '#ff4081',
-                '--button-primary-bg': 'linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%)',
-                '--button-primary-hover-bg': 'linear-gradient(45deg, #ff6090 0%, #6090ff 100%)',
-                '--button-primary-border': '#82b1ff',
-                '--button-secondary-bg': 'linear-gradient(45deg, #ffd740 0%, #ff8a80 100%)',
-                '--button-secondary-hover-bg': 'linear-gradient(45deg, #ffcc30 0%, #ff7070 100%)',
-                '--button-secondary-border': '#ff8a80',
-                '--button-success-bg': 'linear-gradient(45deg, #69f0ae 0%, #18ffff 100%)',
-                '--button-success-hover-bg': 'linear-gradient(45deg, #50e090 0%, #00e0e0 100%)',
-                '--button-success-border': '#18ffff',
-                '--button-info-bg': 'linear-gradient(45deg, #b388ff 0%, #8c9eff 100%)',
-                '--button-info-hover-bg': 'linear-gradient(45deg, #a070e0 0%, #7080ff 100%)',
-                '--button-info-border': '#8c9eff',
-                '--button-accent-bg': 'linear-gradient(45deg, #ff1744 0%, #f50057 100%)',
-                '--button-accent-hover-bg': 'linear-gradient(45deg, #e00030 0%, #d00040 100%)',
-                '--button-accent-border': '#f50057',
-                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
-                '--changelog-text-color': '#333333',
-                '--changelog-border-color': 'var(--button-secondary-border)',
-                '--changelog-h-color': 'var(--title-color)',
-                '--changelog-h-border': 'var(--label-color)',
-                '--progress-bg': 'var(--title-color)',
-                '--progress-text': '#ffffff',
-                '--cooling-color': '#00bcd4',
-                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
-                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-                '--gemini-button-border': '#bb00ff',
-                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
-                '--chart-grid-color': 'rgba(0, 0, 0, 0.1)',
-                '--chart-text-color': '#5e35b1',
-                '--chart-line-color': '#ff4081',
-                '--chart-point-border-color': '#5e35b1',
-                '--chart-point-bg-color': '#5e35b1',
-            },
-            { // Warm Autumn Hues
-                '--bg-color': 'linear-gradient(135deg, #fceabb 0%, #f8b500 100%)',
-                '--text-color': '#8b4513', /* Saddle Brown */
-                '--title-color': '#d2691e', /* Chocolate */
-                '--label-color': '#a0522d', /* Sienna */
-                '--input-bg': 'rgba(255, 255, 255, 0.95)',
-                '--input-border': '#d2691e',
-                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
-                '--panel-border': '#d2691e',
-                '--button-primary-bg': 'linear-gradient(45deg, #ff8c00 0%, #ff4500 100%)', /* Dark Orange to Orange Red */
-                '--button-primary-hover-bg': 'linear-gradient(45deg, #ee7c00 0%, #ee3500 100%)',
-                '--button-primary-border': '#ff4500',
-                '--button-secondary-bg': 'linear-gradient(45deg, #8b4513 0%, #a0522d 100%)', /* Saddle Brown to Sienna */
-                '--button-secondary-hover-bg': 'linear-gradient(45deg, #7b3503 0%, #90421d 100%)',
-                '--button-secondary-border': '#a0522d',
-                '--button-success-bg': 'linear-gradient(45deg, #3cb371 0%, #2e8b57 100%)', /* Medium Sea Green to Sea Green */
-                '--button-success-hover-bg': 'linear-gradient(45deg, #2c9361 0%, #1e7b47 100%)',
-                '--button-success-border': '#2e8b57',
-                '--button-info-bg': 'linear-gradient(45deg, #b0c4de 0%, #87ceeb 100%)', /* Light Steel Blue to Sky Blue */
-                '--button-info-hover-bg': 'linear-gradient(45deg, #a0b4ce 0%, #77bdeb 100%)',
-                '--button-info-border': '#87ceeb',
-                '--button-accent-bg': 'linear-gradient(45deg, #dc143c 0%, #b22222 100%)', /* Crimson to Firebrick */
-                '--button-accent-hover-bg': 'linear-gradient(45deg, #cc042c 0%, #a21212 100%)',
-                '--button-accent-border': '#b22222',
-                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
-                '--changelog-text-color': '#555555',
-                '--changelog-border-color': 'var(--button-secondary-border)',
-                '--changelog-h-color': 'var(--title-color)',
-                '--changelog-h-border': 'var(--label-color)',
-                '--progress-bg': 'var(--title-color)',
-                '--progress-text': '#ffffff',
-                '--cooling-color': '#00aaff', /* Blue for cooling */
-                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
-                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-                '--gemini-button-border': '#bb00ff',
-                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
-                '--chart-grid-color': 'rgba(0, 0, 0, 0.1)',
-                '--chart-text-color': '#8b4513',
-                '--chart-line-color': '#d2691e',
-                '--chart-point-border-color': '#8b4513',
-                '--chart-point-bg-color': '#8b4513',
-            },
-            { // Fresh Spring Greens
-                '--bg-color': 'linear-gradient(135deg, #d4edda 0%, #f0fff0 100%)',
-                '--text-color': '#2e8b57', /* Sea Green */
-                '--title-color': '#3cb371', /* Medium Sea Green */
-                '--label-color': '#66cdaa', /* Medium Aquamarine */
-                '--input-bg': 'rgba(255, 255, 255, 0.95)',
-                '--input-border': '#3cb371',
-                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
-                '--panel-border': '#3cb371',
-                '--button-primary-bg': 'linear-gradient(45deg, #66cdaa 0%, #4682b4 100%)', /* Medium Aquamarine to Steel Blue */
-                '--button-primary-hover-bg': 'linear-gradient(45deg, #56bda0 0%, #3672a4 100%)',
-                '--button-primary-border': '#4682b4',
-                '--button-secondary-bg': 'linear-gradient(45deg, #f0e68c 0%, #ffd700 100%)', /* Khaki to Gold */
-                '--button-secondary-hover-bg': 'linear-gradient(45deg, #e0d67c 0%, #eec700 100%)',
-                '--button-secondary-border': '#ffd700',
-                '--button-success-bg': 'linear-gradient(45deg, #98fb98 0%, #32cd32 100%)', /* Pale Green to Lime Green */
-                '--button-success-hover-bg': 'linear-gradient(45deg, #88ea88 0%, #22bb22 100%)',
-                '--button-success-border': '#32cd32',
-                '--button-info-bg': 'linear-gradient(45deg, #add8e6 0%, #87ceeb 100%)', /* Light Blue to Sky Blue */
-                '--button-info-hover-bg': 'linear-gradient(45deg, #99c8d6 0%, #77bdea 100%)',
-                '--button-info-border': '#87ceeb',
-                '--button-accent-bg': 'linear-gradient(45deg, #ff6347 0%, #ff4500 100%)', /* Tomato to Orange Red */
-                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee5337 0%, #ee3500 100%)',
-                '--button-accent-border': '#ff4500',
-                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
-                '--changelog-h-color': 'var(--title-color)',
-                '--changelog-h-border': 'var(--label-color)',
-                '--progress-bg': 'var(--title-color)',
-                '--progress-text': '#ffffff',
-                '--cooling-color': '#ff6347', /* Tomato for cooling */
-                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
-                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
-                '--gemini-button-border': '#bb00ff',
-                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
-                '--chart-grid-color': 'rgba(0, 0, 0, 0.1)',
-                '--chart-text-color': '#2e8b57',
-                '--chart-line-color': '#3cb371',
-                '--chart-point-border-color': '#2e8b57',
-                '--chart-point-bg-color': '#2e8b57',
-            },
-        ];
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            profilePicEl.src = PROFILE_PIC_PATH;
+            setInterval(updateTiming, 100);
+            loadAndProcessData();
+        });
 
-        /**
-         * Utility to apply a given color palette to CSS variables.
-         * @param {Object} palette - An object containing CSS variable names and their values.
-         */
-        function applyColorPalette(palette) {
-            const root = document.documentElement;
-            for (const key in palette) {
-                root.style.setProperty(key, palette[key]);
+        // --- UI FUNCTIONS (THEME, FULLSCREEN) ---
+        function changeTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            // Re-render chart with new theme colors
+            if (weightChartData.length > 0) {
+                renderWeightChart(weightChartData);
             }
         }
 
-        /**
-         * Displays a custom alert modal instead of the native alert().
-         * @param {string} message - The message to display.
-         */
-        function showCustomAlert(message) {
-            const alertModal = document.createElement('div');
-            alertModal.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50';
-            alertModal.innerHTML = `
-                <div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg border-2 border-red-500 max-w-sm w-full text-center">
-                    <p class="text-xl mb-4">${message}</p>
-                    <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg" onclick="this.closest('.fixed').remove()">确定</button>
-                </div>
-            `;
-            document.body.appendChild(alertModal);
-        }
-
-        /**
-         * Toggles between day and night themes, randomly selecting a color palette.
-         */
-        function toggleTheme() {
-            const isDayMode = document.body.classList.contains('day-mode');
-            setTheme(!isDayMode);
-        }
-
-        /**
-         * Sets the theme (day or night) and updates button text and random color palette.
-         * @param {boolean} enableDayMode - True for day mode, false for night mode.
-         */
-        function setTheme(enableDayMode) {
-            if (enableDayMode) {
-                document.body.classList.add('day-mode');
-                localStorage.setItem('theme', 'day');
-                ui.themeToggleBtn.textContent = '🌑 夜间模式';
-                const randomPalette = dayModePalettes[Math.floor(Math.random() * dayModePalettes.length)];
-                applyColorPalette(randomPalette);
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
             } else {
-                document.body.classList.remove('day-mode');
-                localStorage.setItem('theme', 'night');
-                ui.themeToggleBtn.textContent = '🌓 日间模式';
-                const randomPalette = nightModePalettes[Math.floor(Math.random() * nightModePalettes.length)];
-                applyColorPalette(randomPalette);
+                document.exitFullscreen();
             }
-            // Re-render chart to apply new theme colors
-            if (weightChartInstance) {
-                renderWeightChart(weightRecords);
+        }
+
+        // --- TIMING & ANNIVERSARY LOGIC ---
+        function updateTiming() {
+            const startDate = new Date(START_DATE);
+            const currentDate = new Date();
+            const elapsedMilliseconds = currentDate.getTime() - startDate.getTime();
+
+            const elapsedDays = (elapsedMilliseconds / (1000 * 60 * 60 * 24)).toFixed(3);
+            const totalSeconds = Math.floor(elapsedMilliseconds / 1000);
+            const elapsedHours = Math.floor(totalSeconds / 3600);
+            const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60);
+            const elapsedSeconds = totalSeconds % 60;
+            
+            const formatDate = (date) => `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+            const getNextAnniversary = (baseDate, daysInterval) => {
+                let count = 0;
+                let nextDate;
+                do {
+                    count++;
+                    nextDate = new Date(baseDate.getTime() + count * daysInterval * 24 * 60 * 60 * 1000);
+                } while (nextDate < currentDate);
+                return { date: nextDate, count: count };
+            };
+            
+            const getNextYearlyAnniversary = (baseDate) => {
+                let count = 0;
+                let nextDate;
+                 do {
+                    count++;
+                    nextDate = new Date(baseDate);
+                    nextDate.setFullYear(baseDate.getFullYear() + count);
+                } while (nextDate < currentDate);
+                return { date: nextDate, count: count };
+            };
+            
+            const next100 = getNextAnniversary(startDate, 100);
+            const next180 = getNextAnniversary(startDate, 180);
+            const next300 = getNextAnniversary(startDate, 300);
+            const nextYear = getNextYearlyAnniversary(startDate);
+            
+            // New display format as requested
+            timingEl.innerHTML = `
+                <p>🐰兔可可已经到来 ${elapsedDays} 天啦</p>
+                <p>🌱下一个100天纪念日是 ${formatDate(next100.date)}（第${next100.count}个100天）</p>
+                <p>🌿下一个180天纪念日是 ${formatDate(next180.date)}（第${next180.count}个180天）</p>
+                <p>🍀下一个300天纪念日是 ${formatDate(next300.date)}（第${next300.count}个300天）</p>
+                <p>🎉下一个一周年纪念日是 ${formatDate(nextYear.date)}（第${nextYear.count}周年）</p>
+                <p>🎂目前已经到来 ${elapsedHours}小时${elapsedMinutes}分钟${elapsedSeconds}秒</p>
+            `;
+        }
+
+        // --- DATA PROCESSING & RENDERING ---
+        async function loadAndProcessData() {
+            try {
+                const response = await fetch(PET_RECORDS_PATH);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const records = await response.json();
+                
+                // Process and sort ALL records first
+                allRecordsData = records.map(r => {
+                    const ts = Math.floor(r.date);
+                    const d = new Date(ts * 1000);
+                    d.setFullYear(d.getFullYear() + 31);
+                    return { ...r, processedDate: d };
+                }).sort((a, b) => b.processedDate - a.processedDate); // Sort descending for display
+
+                // Filter for weight chart data (sorted ascending)
+                weightChartData = allRecordsData
+                    .filter(r => r.activity === '体重测量' && r.weight > 0)
+                    .sort((a, b) => a.processedDate - b.processedDate);
+
+                if (weightChartData.length > 0) renderWeightChart(weightChartData);
+                else weightChangeInfoEl.innerHTML = `<p class="text-yellow-400">未找到体重测量数据。</p>`;
+                
+                if (allRecordsData.length > 0) renderAllRecords(allRecordsData);
+                else allRecordsContainer.innerHTML = `<p class="text-yellow-400">未找到任何档案记录。</p>`;
+
+            } catch (error) {
+                console.error("无法加载或解析数据:", error);
+                weightChangeInfoEl.innerHTML = `<p class="text-red-400">错误: 加载数据失败。</p>`;
+                allRecordsContainer.innerHTML = `<p class="text-red-400">错误: 加载数据失败。</p>`;
             }
         }
         
-        /**
-         * Updates the timing display with elapsed days, hours, minutes, seconds, and upcoming anniversaries.
-         */
-        function updateTiming() {
-            const currentDate = new Date();
-            const timestamp = currentDate.getTime();
-            const startstamp = startDate.getTime();
-            const elapsedMilliseconds = timestamp - startstamp;
-
-            // Calculate days, accurate to three decimal places
-            const elapsedDays = elapsedMilliseconds / (1000 * 60 * 60 * 24);
-            const elapsedDaysFormatted = elapsedDays.toFixed(3);
-
-            // Calculate hours, minutes, and seconds
-            const elapsedHours = Math.floor(elapsedMilliseconds / (1000 * 60 * 60));
-            const elapsedMinutes = Math.floor((elapsedMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
-            const elapsedSeconds = Math.floor((elapsedMilliseconds % (1000 * 60)) / 1000);
-
-            // Format date helper
-            function formatDate(date) {
-                const year = date.getFullYear();
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                return `${year}-${month}-${day}`;
+        function renderAllRecords(records) {
+            let html = '';
+            const formatDate = (date) => `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
+            
+            for (const record of records) {
+                html += `
+                    <div class="bg-gray-900/50 p-3 rounded-md" style="border-left: 3px solid rgba(var(--primary-rgb), 0.5)">
+                        <div class="flex justify-between items-center">
+                            <strong class="font-bold" style="color: rgba(var(--primary-light-rgb), 1)">${record.activity}</strong>
+                            <time class="text-xs text-gray-400">${formatDate(record.processedDate)}</time>
+                        </div>
+                        <p class="text-gray-300 mt-1">${record.notes || '无备注'}</p>
+                    </div>
+                `;
             }
-
-            // Calculate next anniversary date
-            function getNextAnniversaryDate(baseDate, days) {
-                let nextAnniversaryDate = new Date(baseDate.getTime());
-                let count = 0; 
-                while (nextAnniversaryDate <= currentDate) {
-                    count++;
-                    nextAnniversaryDate = new Date(baseDate.getTime() + count * days * 24 * 60 * 60 * 1000);
-                }
-                return { date: nextAnniversaryDate, count: count };
-            }
-
-            const next100Days = getNextAnniversaryDate(startDate, 100);
-            const next180Days = getNextAnniversaryDate(startDate, 180);
-            const next300Days = getNextAnniversaryDate(startDate, 300);
-
-            const next100DaysFormatted = `${formatDate(next100Days.date)}（第${next100Days.count}个100天）`;
-            const next180DaysFormatted = `${formatDate(next180Days.date)}（第${next180Days.count}个180天）`;
-            const next300DaysFormatted = `${formatDate(next300Days.date)}（第${next300Days.count}个300天）`;
-
-            // Calculate next yearly anniversary
-            function getNextYearAnniversary(baseDate) {
-                let nextYearAnniversaryDate = new Date(baseDate);
-                let yearsCount = 0;
-                while (nextYearAnniversaryDate <= currentDate) {
-                    yearsCount++;
-                    nextYearAnniversaryDate.setFullYear(nextYearAnniversaryDate.getFullYear() + 1);
-                }
-                return { date: nextYearAnniversaryDate, count: yearsCount };
-            }
-
-            const nextYearAnniversary = getNextYearAnniversary(startDate);
-            const nextYearAnniversaryFormatted = `${formatDate(nextYearAnniversary.date)}（第${nextYearAnniversary.count}周年）`;
-
-            // Concatenate display string
-            const timingString = 
-                `🐰兔可可已经到来 ${elapsedDaysFormatted} 天啦\n` +
-                `🌱下一个100天纪念日是 ${next100DaysFormatted}\n` +
-                `🌿下一个180天纪念日是 ${next180DaysFormatted}\n` +
-                `🍀下一个300天纪念日是 ${next300DaysFormatted}\n` +
-                `🎉下一个一周年纪念日是 ${nextYearAnniversaryFormatted}\n` +
-                `🎂目前已经到来 ${elapsedHours} 小时 ${elapsedMinutes} 分钟 ${elapsedSeconds} 秒`;
-
-            ui.timingDisplay.textContent = timingString;
+            allRecordsContainer.innerHTML = html;
         }
 
-        /**
-         * Renders the weight chart using Chart.js.
-         * @param {Array<Object>} records - Filtered records for weight measurement.
-         */
-        function renderWeightChart(records) {
-            if (weightChartInstance) {
-                weightChartInstance.destroy(); // Destroy previous chart instance
-                console.log('Previous chart instance destroyed.');
-            }
+        function renderWeightChart(data) {
+            const labels = data.map(d => d.processedDate.toLocaleDateString('zh-CN'));
+            const weights = data.map(d => d.weight);
 
-            if (records.length === 0) {
-                ui.weightChartCanvas.style.display = 'none'; // Hide canvas if no data
-                console.log('No weight records to display chart.');
-                return;
-            } else {
-                ui.weightChartCanvas.style.display = 'block'; // Show canvas if data
-            }
-
-            const labels = records.map(record => {
-                // 将时间戳转换为整数秒，再乘以 1000 得到整数毫秒
-                const rawTimestampMs = Math.floor(record.date) * 1000; 
-                const recordDate = new Date(rawTimestampMs);
-                
-                console.log(`Processing record:`, record, `-> Raw Timestamp (ms): ${rawTimestampMs}`);
-                
-                // 确保日期是有效的，并且年份调整后再返回
-                if (isNaN(recordDate.getTime())) {
-                    console.error('Invalid date generated for record (will be filtered):', record, 'Raw timestamp (ms):', rawTimestampMs);
-                    return null; 
-                }
-                recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years
-                console.log(`Converted date for chart: ${recordDate.toISOString()}`);
-                return recordDate;
-            }).filter(date => date instanceof Date && !isNaN(date.getTime())); // Explicitly filter for valid Date objects
-
-            const dataPoints = records.map(record => record.weight);
-
-            console.log('Chart labels for rendering:', labels); // Debugging: Check generated labels
-            console.log('Chart dataPoints for rendering:', dataPoints); // Debugging: Check data points
-
-            const ctx = ui.weightChartCanvas.getContext('2d');
+            if (weightChart) weightChart.destroy();
             
-            // Initialize Chart.js with empty data first
-            weightChartInstance = new Chart(ctx, {
+            const style = getComputedStyle(document.documentElement);
+            const primaryColor = `rgb(${style.getPropertyValue('--primary-rgb').trim()})`;
+            const primaryLightColor = `rgb(${style.getPropertyValue('--primary-light-rgb').trim()})`;
+            const primaryColorTransparent = `rgba(${style.getPropertyValue('--primary-rgb').trim()}, 0.2)`;
+
+            weightChart = new Chart(chartCanvas.getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: [], // Start with empty labels
+                    labels: labels,
                     datasets: [{
                         label: '体重 (g)',
-                        data: [], // Start with empty data
-                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-line-color'),
-                        backgroundColor: 'rgba(0, 0, 0, 0)', // Transparent fill
+                        data: weights,
+                        borderColor: primaryColor,
+                        backgroundColor: primaryColorTransparent,
                         borderWidth: 2,
-                        pointRadius: 5,
-                        pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-point-bg-color'),
-                        pointBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-point-border-color'),
-                        pointHoverRadius: 7,
-                        tension: 0.3, // Smooth the line
-                        fill: false,
+                        pointBackgroundColor: primaryLightColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: primaryColor,
+                        tension: 0.3,
+                        fill: true,
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day', // Changed to day for finer granularity
-                                tooltipFormat: 'yyyy-MM-dd', // Only show year-month-day
-                                displayFormats: {
-                                    day: 'yyyy-MM-dd', // Display format for day unit
-                                    month: 'yyyy-MM' // Display format for month unit (as fallback/higher level)
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: false, // Use custom HTML tooltip
+                            external: function(context) {
+                                let tooltipEl = document.getElementById('chartjs-tooltip');
+                                if (!tooltipEl) {
+                                    tooltipEl = document.createElement('div');
+                                    tooltipEl.id = 'chartjs-tooltip';
+                                    tooltipEl.classList.add('chartjs-tooltip');
+                                    document.body.appendChild(tooltipEl);
                                 }
-                            },
-                            title: {
-                                display: true,
-                                text: '日期',
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color'),
-                                font: { family: 'VT323, monospace', size: 16 }
-                            },
-                            grid: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color')
-                            },
-                            ticks: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color'),
-                                font: { family: 'VT323, monospace' }
-                            }
-                        },
-                        y: {
-                            beginAtZero: false,
-                            title: {
-                                display: true,
-                                text: '体重 (g)',
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color'),
-                                font: { family: 'VT323, monospace', size: 16 }
-                            },
-                            grid: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color')
-                            },
-                            ticks: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color'),
-                                font: { family: 'VT323, monospace' }
+                                const tooltipModel = context.tooltip;
+                                if (tooltipModel.opacity === 0) {
+                                    tooltipEl.style.opacity = 0;
+                                    return;
+                                }
+                                if (tooltipModel.body) {
+                                    const pointData = data[tooltipModel.dataPoints[0].dataIndex];
+                                    tooltipEl.innerHTML = `
+                                        <div class="font-bold">${pointData.processedDate.toLocaleDateString('zh-CN')}</div>
+                                        <div>体重: ${pointData.weight}g</div>
+                                        <div class="text-xs text-gray-300 mt-1">备注: ${pointData.notes}</div>
+                                    `;
+                                }
+                                const position = context.chart.canvas.getBoundingClientRect();
+                                tooltipEl.style.opacity = 1;
+                                tooltipEl.style.position = 'absolute';
+                                tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+                                tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+                                tooltipEl.style.transform = 'translate(-50%, -120%)';
                             }
                         }
                     },
-                    plugins: {
-                        legend: {
-                            display: false,
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(209, 213, 219, 0.1)' },
+                            ticks: { color: 'rgb(156, 163, 175)' }
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y + 'g';
-                                        const currentIndex = context.dataIndex;
-                                        // Ensure previous point exists to calculate difference
-                                        if (currentIndex > 0 && context.dataset.data[currentIndex - 1] !== null && typeof context.dataset.data[currentIndex - 1] !== 'undefined') {
-                                            const previousWeight = context.dataset.data[currentIndex - 1];
-                                            const currentWeight = context.parsed.y;
-                                            const difference = currentWeight - previousWeight;
-                                            label += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
-                                        }
-                                    }
-                                    return label;
-                                }
-                            },
-                            titleFont: { family: 'VT323, monospace' },
-                            bodyFont: { family: 'VT323, monospace' },
-                            padding: 10,
-                            boxPadding: 5,
-                            displayColors: false, // Hide color box in tooltip
-                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-line-color'),
-                            borderWidth: 1,
-                            cornerRadius: 5,
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'rgb(156, 163, 175)' }
                         }
                     },
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
-                            const clickedElement = elements[0];
-                            const datasetIndex = clickedElement.datasetIndex;
-                            const index = clickedElement.index;
-                            
-                            const currentWeight = weightChartInstance.data.datasets[datasetIndex].data[index];
-                            const currentTimestamp = weightChartInstance.data.labels[index];
-
-                            // Format the date for the alert to only show year-month-day
-                            let message = `日期: ${new Date(currentTimestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })} 体重: ${currentWeight}g`;
-
-                            // Ensure previous point exists to calculate difference for the alert
-                            if (index > 0 && weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== null && typeof weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== 'undefined') {
-                                const previousWeight = weightChartInstance.data.datasets[datasetIndex].data[index - 1];
-                                const currentWeight = weightChartInstance.data.datasets[datasetIndex].data[index]; // Use data from chart directly
+                            const index = elements[0].index;
+                            if (index > 0) {
+                                const currentWeight = data[index].weight;
+                                const previousWeight = data[index - 1].weight;
                                 const difference = currentWeight - previousWeight;
-                                message += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
+                                const sign = difference >= 0 ? '+' : '-';
+                                const colorClass = difference >= 0 ? 'text-green-400' : 'text-red-400';
+                                weightChangeInfoEl.innerHTML = `<p>与上次相比: <span class="font-bold ${colorClass}">${sign}${Math.abs(difference.toFixed(1))}g</span></p>`;
+                            } else {
+                                weightChangeInfoEl.innerHTML = `<p>这是第一次测量记录</p>`;
                             }
-                            showCustomAlert(message);
                         }
                     }
                 }
             });
-
-            // Populate and update chart data
-            weightChartInstance.data.labels = labels;
-            weightChartInstance.data.datasets[0].data = dataPoints;
-            weightChartInstance.update();
         }
-
-        /**
-         * Loads pet records from the PetRecords.json file and displays them.
-         */
-        async function loadAndDisplayRecords() {
-            const loadingMessage = document.createElement('p');
-            loadingMessage.textContent = '正在加载宠物档案...';
-            loadingMessage.className = 'text-center text-xl label-color';
-            ui.recordsList.innerHTML = ''; // Clear previous content
-            ui.recordsList.appendChild(loadingMessage);
-
-            try {
-                // Fetch the JSON data from the correct path
-                const response = await fetch('dist/bunnycc/PetRecords.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const records = await response.json();
-                console.log('Raw petRecordsData loaded:', records);
-
-                ui.recordsList.innerHTML = ''; // Clear loading message
-
-                if (records.length === 0) {
-                    ui.recordsList.innerHTML = '<p class="text-center text-xl text-red-400">没有找到宠物记录。</p>';
-                    return;
-                }
-
-                // Filter and sort weight records for the chart
-                weightRecords = records
-                    .filter(record => 
-                        record.activity === '体重测量' && 
-                        typeof record.weight === 'number' && // Ensure weight is a number
-                        typeof record.date === 'number'      // Ensure date is a number
-                    )
-                    .sort((a, b) => a.date - b.date); // Sort ascending for chart chronological order
-
-                console.log('Filtered weightRecords for chart:', weightRecords); // Debugging
-
-                // Render the weight chart
-                renderWeightChart(weightRecords);
-
-                // Sort all records by date in descending order (newest first) for the list display
-                const displayRecords = records.map(record => {
-                    // Convert timestamp to integer seconds, then to milliseconds
-                    const rawTimestampMs = Math.floor(record.date) * 1000; 
-                    const recordDate = new Date(rawTimestampMs);
-                    
-                    if (!isNaN(recordDate.getTime())) {
-                         recordDate.setFullYear(recordDate.getFullYear() + 31); // Add 31 years
-                    } else {
-                        console.error('Invalid date encountered for display record:', record);
-                        // Fallback for invalid dates in display, if any
-                        recordDate.setTime(0); // Set to epoch or another fallback if invalid
-                    }
-                    return { ...record, displayDate: recordDate };
-                }).sort((a, b) => b.displayDate.getTime() - a.displayDate.getTime()); // Sort by adjusted date
-
-                displayRecords.forEach(record => {
-                    const recordDiv = document.createElement('div');
-                    recordDiv.className = 'bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-md';
-
-                    // Format the date for the list to only show year-month-day
-                    const formattedDate = record.displayDate.toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                    });
-
-                    recordDiv.innerHTML = `
-                        <p><span class="label-color font-bold">活动:</span> ${record.activity || '无'}</p>
-                        ${typeof record.weight !== 'undefined' ? `<p><span class="label-color font-bold">体重:</span> ${record.weight}g</p>` : ''}
-                        <p><span class="label-color font-bold">日期:</span> ${formattedDate}</p>
-                        ${record.notes ? `<p><span class="label-color font-bold">备注:</span> ${record.notes}</p>` : ''}
-                    `;
-                    ui.recordsList.appendChild(recordDiv);
-                });
-            } catch (error) {
-                console.error('Error loading pet records:', error);
-                ui.recordsList.innerHTML = `<p class="text-center text-xl text-red-400">加载档案失败: ${error.message}</p>`;
-                showCustomAlert(`加载档案失败: ${error.message}`);
-            }
-        }
-
-        /**
-         * Toggles the visibility of the changelog modal.
-         * @param {boolean} show - True to show, false to hide.
-         */
-        function toggleChangelogModal(show) { 
-            document.getElementById('changelog-modal').classList.toggle('hidden', !show); 
-        }
-
-        /**
-         * Toggles fullscreen mode for the document.
-         */
-        function toggleFullscreen() {
-            const docElem = document.documentElement;
-            const requestFn = docElem.requestFullscreen ||
-                              docElem.webkitRequestFullscreen || 
-                              docElem.mozRequestFullScreen ||    
-                              docElem.msRequestFullscreen;       
-
-            if (requestFn) {
-                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-                    requestFn.call(docElem).catch(err => showCustomAlert(`Could not enter fullscreen: ${err.message}`));
-                } else {
-                    const exitFn = document.exitFullscreen ||
-                                   document.webkitExitFullscreen || 
-                                   document.mozCancelFullScreen ||    
-                                   document.msExitFullscreen;       
-                    if (exitFn) {
-                        exitFn.call(document).catch(err => showCustomAlert(`Could not exit fullscreen: ${err.message}`));
-                    } else {
-                        showCustomAlert("Your browser or current environment does not support exiting fullscreen mode.");
-                    }
-                }
-            } else {
-                showCustomAlert("Your browser or current environment does not support fullscreen mode.");
-            }
-        }
-        
-        // --- Wandering Rabbit Animation Logic (Copied from Charger Calculator) ---
-        const wanderingRabbit = document.getElementById('wandering-rabbit');
-
-        let targetX = Math.random() * (window.innerWidth - 72); 
-        let targetY = Math.random() * (window.innerHeight - 72); 
-        let currentX = parseFloat(wanderingRabbit.style.left || '0');
-        let currentY = parseFloat(wanderingRabbit.style.top || '0');
-
-        const droppingsPool = [];
-        const MAX_DROPPINGS = 70; 
-        let currentDroppingIndex = 0;
-        let lastDropTime = 0;
-        const DROP_INTERVAL_MS = 150; 
-
-        function animateRabbit() {
-            const speed = 2; 
-            
-            const prevX = currentX; 
-            const prevY = currentY;
-
-            const distanceX = targetX - currentX;
-            const distanceY = targetY - currentY;
-            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-            if (distance < speed || distance > 500) { 
-                currentX = targetX;
-                currentY = targetY;
-                targetX = Math.random() * (window.innerWidth - 72); 
-                targetY = Math.random() * (window.innerHeight - 72); 
-            } else {
-                currentX += (distanceX / distance) * speed;
-                currentY += (distanceY / distance) * speed;
-            }
-
-            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 72)); 
-            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 72)); 
-
-            wanderingRabbit.style.left = `${currentX}px`;
-            wanderingRabbit.style.top = `${currentY}px`;
-
-            if (performance.now() - lastDropTime > DROP_INTERVAL_MS) {
-                const dropping = droppingsPool[currentDroppingIndex];
-                dropping.style.left = `${prevX + (72 - 6) / 2}px`; 
-                dropping.style.top = `${prevY + (72 - 6) / 2 + 10}px`;  
-                
-                dropping.classList.remove('fade-out');
-                void dropping.offsetWidth; 
-                dropping.classList.add('fade-out');
-
-                currentDroppingIndex = (currentDroppingIndex + 1) % MAX_DROPPINGS;
-                lastDropTime = performance.now();
-            }
-
-            requestAnimationFrame(animateRabbit);
-        }
-
-        window.addEventListener('resize', () => {
-            currentX = Math.min(Math.max(0, currentX), window.innerWidth - 72); 
-            currentY = Math.min(Math.max(0, currentY), window.innerHeight - 72); 
-            wanderingRabbit.style.left = `${currentX}px`;
-            wanderingRabbit.style.top = `${currentY}px`;
-
-            targetX = Math.random() * (window.innerWidth - 72); 
-            targetY = Math.random() * (window.innerHeight - 72); 
-        });
-
-        // --- Changelog Population ---
-        function populateChangelog() {
-            const changelogContent = `
-                <h4>v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
-                <p>修复: 切换 date-fns 的 CDN 源至 unpkg.com 的 dist/date-fns.min.js 版本，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高全局变量暴露的稳定性。</p>
-                <p>优化: 增加 date-fns 加载后的立即诊断日志，更早地确认 dateFns.startOfDay 的可用性。</p>
-
-                <h4>v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
-                <p>修复: 将 date-fns 库版本回退至 2.25.0，以解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误，提高与 Chart.js 日期适配器的兼容性。</p>
-
-                <h4>v1.3.9 - 适配强化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
-                <p>修复: 将 date-fns 适配器注册代码提前，确保 Chart.js 在实例化时能够正确访问 date-fns 函数，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
-
-                <h4>v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
-                <p>修复: 显式地将 date-fns 注册为 Chart.js 的日期适配器，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
-
-                <h4>v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
-                <p>修复: 调整 Chart.js, date-fns, chartjs-adapter-date-fns 的加载顺序，确保 date-fns 在其适配器之前加载，解决 'Cannot read properties of undefined (reading 'startOfDay')' 错误。</p>
-
-                <h4>v1.3.6 - 路径校准兔 (Path Calibration Rabbit)</h4>
-                <p>修复: 修正了 PetRecords.json 文件的加载路径为 'dist/bunnycc/PetRecords.json'，与用户提供的路径一致。</p>
-
-                <h4>v1.3.5 - 适配强化兔 (Adaptation Enhanced Rabbit)</h4>
-                <p>修复: 将 Chart.js 图表初始化和数据填充分为两步，先创建空图表实例，后填充数据并更新，提高数据加载的健壮性。</p>
-                <p>修复: Chart.js 图表和记录列表的日期显示均调整为仅显示“年-月-日”，去除时间信息。</p>
-                <p>修复: 还原为通过 fetch 加载 PetRecords.json 文件，并优化了错误处理机制。</p>
-                <p>修复: 移除了外部不安全的光标链接，避免混合内容警告。</p>
-                <p>优化: 增加了 Tailwind CSS CDN 使用的注释，提醒生产环境注意事项。</p>
-
-                <h4>v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
-                <p>修复: 确保时间戳在转换为 Date 对象之前去除小数点并转换为整数毫秒，以提高 Chart.js 日期适配器的兼容性。</p>
-                <p>优化: 增加更多控制台日志，以便在日期转换和 Chart.js 初始化过程中进行调试。</p>
-                
-                <h4>v1.3.3 - 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</h4>
-                <p>修复: 为确保 JSON 数据可靠加载，将 PetRecords.json 的内容直接嵌入到 HTML 脚本的 JavaScript 变量中。</p>
-                <p>优化: 增加更多控制台日志，以便在日期转换和 Chart.js 初始化过程中进行调试。</p>
-            `;
-            ui.changelogList.innerHTML = changelogContent;
-        }
-
-        // --- Event Listeners and Initial Setup ---
-        window.addEventListener('load', () => {
-            // The adapter override is now outside window.onload for earlier execution.
-            // console.log has been added there.
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'day') {
-                setTheme(true); // Apply saved day theme, which will also pick a random palette
-            } else {
-                setTheme(false); // Apply saved night theme, which will also pick a random palette
-            }
-            populateChangelog(); 
-            
-            // Initialize droppings pool
-            for (let i = 0; i < MAX_DROPPINGS; i++) {
-                const dropping = document.createElement('div');
-                dropping.className = 'rabbit-dropping';
-                document.body.appendChild(dropping);
-                droppingsPool.push(dropping);
-            }
-
-            // Set initial rabbit position and start animation
-            const initialX = Math.random() * (window.innerWidth - 72);
-            const initialY = Math.random() * (window.innerHeight - 72);
-            wanderingRabbit.style.left = `${initialX}px`;
-            wanderingRabbit.style.top = `${initialY}px`;
-            animateRabbit();
-
-            // Load and display pet records on initial load
-            loadAndDisplayRecords();
-
-            // Initial call and set interval for timing update for anniversary timer
-            updateTiming();
-            setInterval(updateTiming, 100);
-
-            // Attach event listeners for buttons
-            if (ui.changelogModalBtn) ui.changelogModalBtn.addEventListener('click', () => toggleChangelogModal(true));
-            if (ui.fullscreenToggleBtn) ui.fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
-            if (ui.themeToggleBtn) ui.themeToggleBtn.addEventListener('click', toggleTheme);
-        });
     </script>
 </body>
 </html>
