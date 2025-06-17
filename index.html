@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC Archive v8.0.2 - 🌟 Grand Revival Rabbit</title>
+    <title>🐰 Bunny CC Archive v8.0.3 - 🛤️ Path Weaver Rabbit</title>
     <!-- Tailwind CSS CDN - 注意：用於生產環境時，請作為 PostCSS 插件安裝或使用 Tailwind CLI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -290,7 +290,7 @@
         <!-- 頁眉 -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
             <!-- 更新標題文字以模仿終端提示符 -->
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.2_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.3_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
             <!-- 控制按鈕（現在使用 ID 和 programmatically 綁定事件） -->
             <div class="flex items-center space-x-3 text-gray-400">
                 <button id="changelog-btn" title="更新日誌" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
@@ -354,7 +354,7 @@
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">色彩循環</h2>
             <div id="theme-grid" class="p-6 grid grid-cols-3 sm:grid-cols-4 gap-4"></div>
             <div class="flex justify-between p-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.3)">
-                <button id="prev-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);" disabled>上一頁</button>
+                <button id="prev-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">上一頁</button>
                 <button id="next-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">下一頁</button>
             </div>
             <!-- 模態框關閉按鈕 -->
@@ -381,15 +381,14 @@
     </div>
 
     <script>
-        // content_fetcher 是全域可用的，不需要 import
-        // import { content_fetcher } from 'content_fetcher'; // 移除此行
-
         // --- 配置 ---
         const CONFIG = {
-            PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG', // 用於 GitHub Pages 部署的相對路徑
-            PET_RECORDS_FETCH_ID: 'uploaded:PetRecords.json', // 使用 content_fetcher 的 ID
-            START_DATE: '2024/03/12 00:00:00', // 週年計時器起始日期
-            // 擴展的 THEMES 陣列至 56 種獨特配色方案
+            PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG', // Path for profile picture
+            // Changed to a relative path for a static asset. 
+            // If you want to use the uploaded file, change this back to 'uploaded:PetRecords.json'
+            PET_RECORDS_FETCH_ID: './dist/bunnycc/PetRecords.json', 
+            START_DATE: '2024/03/12 00:00:00', // Anniversary timer start date
+            // Extended THEMES array to 56 unique color schemes
             THEMES: [
                 { name: '青色', rgb: '34, 211, 238', light_rgb: '103, 232, 249'},
                 { name: '品紅', rgb: '244, 114, 182', light_rgb: '249, 168, 212'},
@@ -421,7 +420,7 @@
                 { name: '午夜藍', rgb: '25, 25, 112', light_rgb: '65, 105, 225'},
                 { name: '琥珀金', rgb: '255, 191, 0', light_rgb: '255, 215, 0'},
                 { name: '湖藍色', rgb: '0, 139, 139', light_rgb: '0, 191, 191'},
-                // 額外 26 種主題以達到 56 種
+                // Additional 26 themes to reach 56
                 { name: '蔚藍色', rgb: '42, 82, 190', light_rgb: '64, 130, 250'},
                 { name: '深紅', rgb: '220, 20, 60', light_rgb: '255, 99, 71'},
                 { name: '暗板岩灰', rgb: '47, 79, 79', light_rgb: '95, 158, 160'},
@@ -449,143 +448,143 @@
                 { name: '暗金黃色', rgb: '184, 134, 11', light_rgb: '218, 165, 32'},
                 { name: '軍藍色', rgb: '95, 158, 160', light_rgb: '120, 180, 180'}
             ],
-            THEMES_PER_PAGE: 8 // 每頁顯示的主題數 (8*7 翻頁制, 但總數 56，每頁 8 個，共 7 頁)
+            THEMES_PER_PAGE: 8 // Number of themes to display per page (8*7 pages for 56 themes)
         };
 
-        // --- 全局狀態與 UI 元素 ---
-        let weightChart = null; // Chart.js 實例
-        let allRecordsData = []; // 儲存所有解析後的寵物記錄
-        let weightChartData = []; // 儲存用於圖表的過濾體重記錄
-        let currentThemePage = 0; // 當前主題頁面索引
+        // --- Global State and UI Elements ---
+        let weightChart = null; // Chart.js instance
+        let allRecordsData = []; // Stores all parsed pet records
+        let weightChartData = []; // Stores filtered weight records for the chart
+        let currentThemePage = 0; // Current page index for themes
 
-        // 兔子動畫變量
+        // Rabbit animation variables
         let wanderingRabbit; 
         const droppingsPool = [];
         const MAX_DROPPINGS = 70; 
         let currentDroppingIndex = 0;
         let lastDropTime = 0;
         let targetX, targetY, currentX, currentY; 
-        let animationSpeedMultiplier = 1; // 動畫速度乘數，用於 Safari 優化
-        let DROP_INTERVAL_MS = 150; // 掉落「巧克力豆」的時間間隔
+        let animationSpeedMultiplier = 1; // Animation speed multiplier for Safari optimization
+        let DROP_INTERVAL_MS = 150; // Interval for dropping "chocolate beans"
 
         /**
-         * 切換模態框元素的顯示狀態。
-         * @param {string} modalId - 要切換的模態框元素的 ID。
+         * Toggles the display state of a modal element.
+         * @param {string} modalId - The ID of the modal element to toggle.
          */
         function toggleModal(modalId) {
-            console.log(`[DEBUG] 嘗試切換模態框: ${modalId}`);
+            console.log(`[DEBUG] Attempting to toggle modal: ${modalId}`);
             const modal = document.getElementById(modalId);
             if (modal) {
                 const isHidden = modal.classList.contains('hidden');
                 modal.classList.toggle('hidden', !isHidden);
-                modal.classList.toggle('flex', isHidden); // 顯示時添加 flex
+                modal.classList.toggle('flex', isHidden); // Add flex when showing
 
-                // 只有當性能模態框顯示時才顯示指標
+                // Only display performance metrics when the performance modal is shown
                 if (modalId === 'performance-modal' && isHidden) { 
-                    displayPerformanceMetrics(); // 調用函數
+                    displayPerformanceMetrics(); // Call function
                 }
-                // 當主題模態框顯示時，重新生成主題樣本以確保分頁正確
+                // When the theme modal is shown, regenerate theme swatches to ensure correct pagination
                 if (modalId === 'theme-modal' && isHidden) {
-                    currentThemePage = 0; // 重置到第一頁
+                    currentThemePage = 0; // Reset to the first page
                     generateThemeSwatches();
                 }
             } else {
-                console.error(`[ERROR] 執行 toggleModal 時未找到 ID 為 '${modalId}' 的模態框。`);
+                console.error(`[ERROR] Modal with ID '${modalId}' not found during toggleModal execution.`);
             }
         }
 
         /**
-         * 切換文檔的全螢幕模式。
+         * Toggles the document's fullscreen mode.
          */
         function toggleFullscreen() {
-            console.log("[DEBUG] 嘗試切換全螢幕。");
+            console.log("[DEBUG] Attempting to toggle fullscreen.");
             const docEl = document.documentElement;
             if (!document.fullscreenElement) {
-                docEl.requestFullscreen().catch(err => console.error(`[ERROR] 進入全螢幕失敗: ${err.message}`));
+                docEl.requestFullscreen().catch(err => console.error(`[ERROR] Failed to enter fullscreen: ${err.message}`));
             } else {
-                document.exitFullscreen().catch(err => console.error(`[ERROR] 退出全螢幕失敗: ${err.message}`));
+                document.exitFullscreen().catch(err => console.error(`[ERROR] Failed to exit fullscreen: ${err.message}`));
             }
         }
 
         /**
-         * 在性能模態框中顯示瀏覽器性能指標。
+         * Displays browser performance metrics in the performance modal.
          */
         function displayPerformanceMetrics() {
-            console.log("[DEBUG] 顯示性能指標。");
+            console.log("[DEBUG] Displaying performance metrics.");
             const performanceDataOutput = document.getElementById('performance-data-output');
             if (!performanceDataOutput) {
-                console.error("[ERROR] 未找到性能數據輸出元素以進行顯示。");
+                console.error("[ERROR] Performance data output element not found for display.");
                 return;
             }
 
-            let outputHtml = '<h3>當前性能數據:</h3>';
+            let outputHtml = '<h3>Current Performance Data:</h3>';
 
-            // 記憶體使用情況 (非標準，主要用於 Chrome)
+            // Memory usage (non-standard, primarily for Chrome)
             if (window.performance && window.performance.memory) {
                 const memory = window.performance.memory;
-                outputHtml += `<p><strong>JS 堆使用量:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>總 JS 堆:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>JS 堆限制:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS Heap Used:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>Total JS Heap:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS Heap Limit:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
             } else {
-                outputHtml += `<p><em>Performance.memory API 不可用。</em></p>`;
+                outputHtml += `<p><em>Performance.memory API not available.</em></p>`;
             }
 
-            // 導航計時 API
+            // Navigation Timing API
             if (window.performance && window.performance.getEntriesByType) {
                 const navTiming = performance.getEntriesByType("navigation")[0];
                 if (navTiming) {
-                    outputHtml += `<h3>頁面加載時間:</h3>`;
-                    outputHtml += `<p><strong>DOM 內容加載:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>總加載時間:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>DNS 解析:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>TCP 握手:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>請求-響應延遲:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<h3>Page Load Times:</h3>`;
+                    outputHtml += `<p><strong>DOM Content Loaded:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>Total Load Time:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>DNS Resolution:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>TCP Handshake:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>Request-Response Latency:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
                 }
             } else {
-                outputHtml += `<p><em>性能計時 API 不可用。</em></p>`;
+                outputHtml += `<p><em>Performance Timing API not available.</em></p>`;
             }
 
-            // 網絡資訊 API (實驗性，並非所有瀏覽器都支持)
+            // Network Information API (experimental, not supported by all browsers)
             if (navigator.connection) {
                 const connection = navigator.connection;
-                outputHtml += `<h3>網絡子系統資訊:</h3>`;
-                outputHtml += `<p><strong>有效類型:</strong> ${connection.effectiveType || 'N/A'}</p>`;
-                outputHtml += `<p><strong>往返時間 (RTT):</strong> ${connection.rtt || 'N/A'} ms</p>`;
-                outputHtml += `<p><strong>下行帶寬:</strong> ${connection.downlink || 'N/A'} Mbps</p>`;
-                outputHtml += `<p><strong>數據節省模式:</strong> ${connection.saveData ? '已啟用' : '已禁用'}</p>`;
+                outputHtml += `<h3>Network Subsystem Info:</h3>`;
+                outputHtml += `<p><strong>Effective Type:</strong> ${connection.effectiveType || 'N/A'}</p>`;
+                outputHtml += `<p><strong>Round Trip Time (RTT):</strong> ${connection.rtt || 'N/A'} ms</p>`;
+                outputHtml += `<p><strong>Downlink Bandwidth:</strong> ${connection.downlink || 'N/A'} Mbps</p>`;
+                outputHtml += `<p><strong>Data Saver Mode:</strong> ${connection.saveData ? 'Enabled' : 'Disabled'}</p>`;
             } else {
-                outputHtml += `<p><em>網絡資訊 API 不可用。</em></p>`;
+                outputHtml += `<p><em>Network Information API not available.</em></p>`;
             }
 
-            // 硬體並發 (CPU 核心數)
+            // Hardware Concurrency (number of CPU cores)
             if (navigator.hardwareConcurrency) {
-                outputHtml += `<h3>硬體子系統資訊:</h3>`;
-                outputHtml += `<p><strong>處理器核心數:</strong> ${navigator.hardwareConcurrency}</p>`;
+                outputHtml += `<h3>Hardware Subsystem Info:</h3>`;
+                outputHtml += `<p><strong>Processor Cores:</strong> ${navigator.hardwareConcurrency}</p>`;
             } else {
-                outputHtml += `<p><em>處理器核心數無法檢測。</em></p>`;
+                outputHtml += `<p><em>Processor core count not detectable.</em></p>`;
             }
 
-            // 設備記憶體 (實驗性)
+            // Device Memory (experimental)
             if (navigator.deviceMemory) {
-                outputHtml += `<p><strong>系統記憶體 (約):</strong> ${navigator.deviceMemory} GB</p>`;
+                outputHtml += `<p><strong>System Memory (Approx.):</strong> ${navigator.deviceMemory} GB</p>`;
             } else {
-                outputHtml += `<p><em>系統記憶體無法檢測。</em></p>`;
+                outputHtml += `<p><em>System memory not detectable.</em></p>`;
             }
 
-            // 瀏覽器用戶代理和作業系統 (來自 navigator.userAgent)
-            outputHtml += `<h3>瀏覽器與作業系統診斷:</h3>`;
+            // Browser User Agent and OS (from navigator.userAgent)
+            outputHtml += `<h3>Browser and OS Diagnostics:</h3>`;
             if (navigator && navigator.userAgent) {
-                outputHtml += `<p><strong>用戶代理 (UA):</strong> ${navigator.userAgent}</p>`;
-                let os = "未知";
+                outputHtml += `<p><strong>User Agent (UA):</strong> ${navigator.userAgent}</p>`;
+                let os = "Unknown";
                 if (navigator.userAgent.includes("Win")) os = "Windows";
                 else if (navigator.userAgent.includes("Mac")) os = "macOS";
                 else if (navigator.userAgent.includes("Linux")) os = "Linux";
                 else if (navigator.userAgent.includes("Android")) os = "Android";
                 else if (navigator.userAgent.includes("iPad")) os = "iPadOS";
                 else if (navigator.userAgent.includes("iPhone")) os = "iOS";
-                outputHtml += `<p><strong>操作系統 (估計):</strong> ${os}</p>`;
+                outputHtml += `<p><strong>Operating System (Estimated):</strong> ${os}</p>`;
             } else {
-                outputHtml += `<p><em>用戶代理資訊無法訪問。</em></p>`;
+                outputHtml += `<p><em>User Agent information not accessible.</em></p>`;
             }
             
             performanceDataOutput.innerHTML = outputHtml;
@@ -593,26 +592,26 @@
 
 
         /**
-         * 根據 RGB 值改變應用程序的整體主題。
-         * 此函數現在還會更新背景徑向漸變顏色。
-         * @param {Object} theme - 包含主題 RGB 和 light_rgb 值的對象。
+         * Changes the overall theme of the application based on RGB values.
+         * This function now also updates the background radial gradient colors.
+         * @param {Object} theme - An object containing the theme's RGB and light_rgb values.
          */
         function changeTheme(theme) {
-            console.log(`[DEBUG] 改變主題為: ${theme.name}`);
+            console.log(`[DEBUG] Changing theme to: ${theme.name}`);
             const docEl = document.documentElement;
             docEl.style.setProperty('--glow-rgb', theme.rgb);
             docEl.style.setProperty('--glow-light-rgb', theme.light_rgb);
 
-            // 動態設置背景徑向漸變顏色，基於主題和日間/夜間模式
+            // Dynamically set background radial gradient colors, based on theme and day/night mode
             const isDayMode = document.body.classList.contains('day-mode');
             const currentBgColor = getComputedStyle(docEl).getPropertyValue('--bg-color');
             let baseBgColorRgb;
-            // 嘗試解析基礎背景顏色
+            // Attempt to parse base background color
             const match = currentBgColor.match(/\d+/g);
             if (match && match.length >= 3) {
                 baseBgColorRgb = [parseInt(match[0]), parseInt(match[1]), parseInt(match[2])];
             } else {
-                // 如果解析失敗，回退到預設的深色/淺色
+                // Fallback to default dark/light if parsing fails
                 baseBgColorRgb = isDayMode ? [240, 248, 255] : [1, 4, 9]; 
             }
             
@@ -622,32 +621,33 @@
             docEl.style.setProperty('--bg-radial-start', `rgba(${theme.rgb}, ${radialStartAlpha})`);
             docEl.style.setProperty('--bg-radial-end', `rgba(${baseBgColorRgb.join(', ')}, ${radialEndAlpha})`);
 
-            // 也根據新主題的發光色更新面板和模態框的表面色
+            // Also update the surface color for panels and modals based on the new theme's glow color
             const surfaceAlpha = isDayMode ? 0.15 : 0.08;
             docEl.style.setProperty('--surface-color', `rgba(${theme.rgb}, ${surfaceAlpha})`);
 
 
-            // 如果圖表存在，重新渲染圖表以應用新顏色
+            // If the chart exists, re-render the chart to apply new colors
             if (weightChart) {
                 renderWeightChart(); 
             }
         }
 
         /**
-         * 生成並將主題顏色樣本添加到主題模態框。
+         * Generates and appends theme color swatches to the theme modal.
+         * Implements pagination for themes.
          */
         function generateThemeSwatches() {
-            console.log("[DEBUG] 生成主題樣本。");
+            console.log("[DEBUG] Generating theme swatches.");
             const themeGrid = document.getElementById('theme-grid');
             const prevBtn = document.getElementById('prev-theme-page-btn');
             const nextBtn = document.getElementById('next-theme-page-btn');
 
             if (!themeGrid || !prevBtn || !nextBtn) {
-                console.error("[ERROR] 未找到主題網格或分頁按鈕元素以生成樣本。");
+                console.error("[ERROR] Theme grid or pagination buttons not found for swatch generation.");
                 return;
             }
 
-            themeGrid.innerHTML = ''; // 清除之前的樣本
+            themeGrid.innerHTML = ''; // Clear previous swatches
 
             const startIndex = currentThemePage * CONFIG.THEMES_PER_PAGE;
             const endIndex = startIndex + CONFIG.THEMES_PER_PAGE;
@@ -665,21 +665,21 @@
                 themeGrid.appendChild(swatch);
             });
 
-            // 更新分頁按鈕狀態
+            // Update pagination button states
             prevBtn.disabled = currentThemePage === 0;
             nextBtn.disabled = endIndex >= CONFIG.THEMES.length;
 
-            console.log("[DEBUG] 主題樣本已生成。");
+            console.log("[DEBUG] Theme swatches generated for page", currentThemePage);
         }
         
-        // --- 數據與計時邏輯 ---
+        // --- Data and Timing Logic ---
         /**
-         * 更新週年計時顯示。
+         * Updates the anniversary timer display.
          */
         function updateTiming() {
             const timingElement = document.getElementById('timing');
             if (!timingElement) {
-                console.warn("[WARN] 未找到 UI 元素 'timing' 以進行 updateTiming。跳過。");
+                console.warn("[WARN] UI element 'timing' not found for updateTiming. Skipping.");
                 return;
             }
 
@@ -695,7 +695,7 @@
             
             const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
             
-            // 幫助函數：根據固定天數間隔獲取下一個週年日期
+            // Helper function: get next anniversary date based on fixed day intervals
             const getNextAnniversary = (baseDate, days) => {
                 let count = 0, nextDate;
                 do { 
@@ -705,7 +705,7 @@
                 return { date: nextDate, count };
             };
             
-            // 幫助函數：獲取下一個年度週年日期
+            // Helper function: get next yearly anniversary date
             const getNextYearly = (baseDate) => {
                 let count = 0, nextDate;
                 do { 
@@ -732,39 +732,41 @@
         }
         
         /**
-         * 從 JSON 文件加載寵物記錄並處理以用於顯示和圖表。
-         * 現在使用 content_fetcher 來加載上傳的文件。
+         * Loads pet records from a JSON file and processes them for display and charting.
+         * Now uses standard fetch for a relative path.
          */
         async function loadAndProcessData() {
-            console.log("[DEBUG] 開始數據加載與處理。");
+            console.log("[DEBUG] Starting data load and processing.");
             const allRecordsContainer = document.getElementById('all-records-container');
             if (!allRecordsContainer) {
-                console.error("[ERROR] 未找到所有記錄容器元素以進行數據加載。");
+                console.error("[ERROR] All records container element not found for data loading.");
                 return;
             }
 
-            // 顯示加載訊息
-            allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">啟動寵物檔案檢索中...請稍候。</p>`;
+            // Display loading message
+            allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">Initiating pet archive retrieval... stand by.</p>`;
 
             try {
-                // 使用 content_fetcher 來加載上傳的文件
-                const recordsText = await content_fetcher.fetch({ // content_fetcher is now directly accessible
-                    query: CONFIG.PET_RECORDS_FETCH_ID,
-                    source_references: [{ id: CONFIG.PET_RECORDS_FETCH_ID, type: 'FILE' }]
-                });
-                const records = JSON.parse(recordsText);
-                console.log('[DEBUG] 已加載並解析寵物記錄數據:', records);
+                // Using standard fetch for a relative path. 
+                // This means the file must exist at ./dist/bunnycc/PetRecords.json relative to your HTML.
+                // It will NOT use the file you uploaded to the platform if you specify a literal path like this.
+                const response = await fetch(CONFIG.PET_RECORDS_FETCH_ID);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const records = await response.json();
+                console.log('[DEBUG] Pet records data loaded and parsed:', records);
                 
-                // 處理所有記錄: 轉換時間戳並添加 31 年偏移
+                // Process all records: convert timestamps and add 31-year offset
                 allRecordsData = records.map(r => {
-                    // 確保 r.date 是數字並轉換為毫秒
+                    // Ensure r.date is a number and convert to milliseconds
                     const dateTimestamp = typeof r.date === 'number' ? Math.floor(r.date) : Date.parse(r.date) / 1000;
                     const d = new Date(dateTimestamp * 1000); 
-                    d.setFullYear(d.getFullYear() + 31); // 添加 31 年偏移 (根據用戶之前的代碼)
+                    d.setFullYear(d.getFullYear() + 31); // Add 31-year offset (as per user's previous code)
                     return { ...r, processedDate: d };
-                }).sort((a, b) => b.processedDate.getTime() - a.processedDate.getTime()); // 降序排序以供顯示
+                }).sort((a, b) => b.processedDate.getTime() - a.processedDate.getTime()); // Sort in descending order for display
 
-                // 過濾體重圖表數據 - 注意這裡的 '体重测量' (簡體中文)
+                // Filter weight chart data - note '体重测量' (simplified Chinese)
                 weightChartData = records
                     .filter(r => r.activity === '体重测量' && typeof r.weight === 'number' && r.weight > 0)
                     .map(r => {
@@ -773,23 +775,23 @@
                         d.setFullYear(d.getFullYear() + 31);
                         return { date: d, weight: r.weight };
                     })
-                    .sort((a, b) => a.date.getTime() - b.date.getTime()); // 升序排序以供圖表按時間順序顯示
+                    .sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort in ascending order for chart chronological display
 
                 renderAllRecords();
                 renderWeightChart();
-                console.log("[DEBUG] 數據加載與處理完成。");
+                console.log("[DEBUG] Data load and processing complete.");
 
             } catch (error) {
-                console.error("[ERROR] 數據加載錯誤:", error);
-                allRecordsContainer.innerHTML = `<p class="text-red-400 text-center">錯誤: 檔案檢索失敗。請查閱日誌。</p>`;
+                console.error("[ERROR] Data loading error:", error);
+                allRecordsContainer.innerHTML = `<p class="text-red-400 text-center">ERROR: Archive retrieval failed. Consult logs. (${error.message})</p>`;
             }
         }
 
         /**
-         * 在列表容器中渲染所有寵物記錄。
+         * Renders all pet records in the list container.
          */
         function renderAllRecords() {
-            console.log("[DEBUG] 渲染所有記錄。");
+            console.log("[DEBUG] Rendering all records.");
             const allRecordsContainer = document.getElementById('all-records-container');
             if (!allRecordsContainer) return;
 
@@ -797,45 +799,45 @@
                 const dateStr = rec.processedDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
                 return `<div class="p-3 rounded-md" style="background: rgba(var(--glow-rgb), 0.05); border-left: 3px solid rgba(var(--glow-rgb), 0.5)">
                             <div class="flex justify-between items-center">
-                                <strong class="font-bold glow-text text-sm">活動: ${rec.activity}</strong>
-                                <time class="text-xs" style="color:var(--text-muted-color)">時間標記: ${dateStr}</time>
+                                <strong class="font-bold glow-text text-sm">Activity: ${rec.activity}</strong>
+                                <time class="text-xs" style="color:var(--text-muted-color)">Timestamp: ${dateStr}</time>
                             </div>
-                            <p class="mt-1" style="color: var(--text-color)">筆記: ${rec.notes || '無'}</p>
+                            <p class="mt-1" style="color: var(--text-color)">Notes: ${rec.notes || 'N/A'}</p>
                         </div>`;
             }).join('');
-            // 如果沒有記錄，顯示一條訊息
+            // If no records, display a message
             if (allRecordsData.length === 0) {
-                allRecordsContainer.innerHTML = `<p class="text-center text-xl text-gray-500 mt-8">在此檔案中未找到任何記錄。</p>`;
+                allRecordsContainer.innerHTML = `<p class="text-center text-xl text-gray-500 mt-8">No records found in this archive.</p>`;
             }
-            console.log("[DEBUG] 所有記錄已渲染。");
+            console.log("[DEBUG] All records rendered.");
         }
 
         /**
-         * 渲染體重變化圖表。
+         * Renders the weight change chart.
          */
         function renderWeightChart() {
-            console.log("[DEBUG] 渲染體重圖表。");
+            console.log("[DEBUG] Rendering weight chart.");
             const weightChartCanvas = document.getElementById('weightChart');
             const weightChangeInfo = document.getElementById('weight-change-info');
 
             if (!weightChartCanvas) {
-                console.error("[ERROR] 未找到體重圖表畫布元素以進行渲染。");
+                console.error("[ERROR] Weight chart canvas element not found for rendering.");
                 return;
             }
 
             if (weightChart) {
-                weightChart.destroy(); // 銷毀現有圖表實例
-                console.log("[DEBUG] 現有圖表已銷毀。");
+                weightChart.destroy(); // Destroy existing chart instance
+                console.log("[DEBUG] Existing chart destroyed.");
             }
 
             if (!weightChartData.length) {
                 weightChartCanvas.style.display = 'none';
-                if (weightChangeInfo) weightChangeInfo.innerHTML = `<p class="text-yellow-400">未檢測到質量數據。</p>`;
-                console.log("[DEBUG] 沒有體重數據可渲染圖表。");
+                if (weightChangeInfo) weightChangeInfo.innerHTML = `<p class="text-yellow-400">No mass data detected.</p>`;
+                console.log("[DEBUG] No weight data to render chart.");
                 return;
             } else {
                 weightChartCanvas.style.display = 'block';
-                if (weightChangeInfo) weightChangeInfo.innerHTML = `<p class="text-gray-400">點擊數據點以進行質量波動分析。</p>`;
+                if (weightChangeInfo) weightChangeInfo.innerHTML = `<p class="text-gray-400">Click data points for mass fluctuation analysis.</p>`;
             }
             
             const ctx = weightChartCanvas.getContext('2d');
@@ -847,10 +849,10 @@
             weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    // 標籤是簡單的日期字符串，而不是 'time' 刻度的 Date 對象
+                    // Labels are simple date strings, not Date objects for 'time' scale
                     labels: weightChartData.map(d => d.date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })),
                     datasets: [{
-                        label: '質量 (g)',
+                        label: 'Mass (g)',
                         data: weightChartData.map(d => d.weight),
                         borderColor: primaryColor,
                         backgroundColor: `rgba(${style.getPropertyValue('--glow-rgb').trim()}, 0.2)`,
@@ -868,7 +870,7 @@
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { display: false },
-                        tooltip: { // 自定義工具提示樣式
+                        tooltip: { // Custom tooltip style
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';
@@ -878,18 +880,18 @@
                                     if (context.parsed.y !== null) {
                                         label += context.parsed.y + 'g';
                                         const currentIndex = context.dataIndex;
-                                        // 計算與前一個點的差異
+                                        // Calculate difference from previous point
                                         if (currentIndex > 0) {
                                             const previousWeight = context.dataset.data[currentIndex - 1];
                                             const currentWeight = context.parsed.y;
                                             const difference = currentWeight - previousWeight;
-                                            label += ` (增量: ${difference >= 0 ? '+' : ''}${difference.toFixed(1)}g)`;
+                                            label += ` (Increment: ${difference >= 0 ? '+' : ''}${difference.toFixed(1)}g)`;
                                         }
                                     }
                                     return label;
                                 }
                             },
-                            titleFont: { family: "'Noto Sans SC', sans-serif" }, // 工具提示使用 Noto Sans
+                            titleFont: { family: "'Noto Sans SC', sans-serif" }, // Tooltip uses Noto Sans
                             bodyFont: { family: "'Noto Sans SC', sans-serif" },
                             padding: 10,
                             boxPadding: 5,
@@ -912,33 +914,33 @@
                     }
                     ,
                     onClick: (event, elements) => {
-                        if (elements.length > 0 && weightChangeInfo) { // 確保元素存在
+                        if (elements.length > 0 && weightChangeInfo) { // Ensure elements exist
                             const index = elements[0].index;
                             if (index > 0) {
                                 const diff = weightChartData[index].weight - weightChartData[index - 1].weight;
                                 const sign = diff >= 0 ? '+' : '';
                                 const color = diff >= 0 ? 'text-lime-400' : 'text-red-400';
-                                weightChangeInfo.innerHTML = `<p>增量: <span class="font-bold ${color}">${sign}${diff.toFixed(1)}g</span></p>`;
+                                weightChangeInfo.innerHTML = `<p>Increment: <span class="font-bold ${color}">${sign}${diff.toFixed(1)}g</span></p>`;
                             } else {
-                                weightChangeInfo.innerHTML = `<p>初始質量掃描。</p>`;
+                                weightChangeInfo.innerHTML = `<p>Initial mass scan.</p>`;
                             }
                         }
                     }
                 }
             });
-            console.log("[DEBUG] 體重圖表已渲染。");
+            console.log("[DEBUG] Weight chart rendered.");
         }
 
-        // --- 遊走兔動畫邏輯 ---
+        // --- Wandering Rabbit Animation Logic ---
         function animateRabbit() {
             if (!wanderingRabbit) {
-                console.warn("[WARN] 未找到遊走兔元素，停止動畫。");
+                console.warn("[WARN] Wandering rabbit element not found, stopping animation.");
                 return;
             }
 
             const speed = 2.5 * animationSpeedMultiplier; 
             
-            // 從 transform 獲取當前位置
+            // Get current position from transform
             const style = window.getComputedStyle(wanderingRabbit);
             const transform = style.transform || style.webkitTransform || style.mozTransform;
             let currentRabbitX = 0, currentRabbitY = 0;
@@ -948,36 +950,36 @@
                 currentRabbitX = matrix.m41;
                 currentRabbitY = matrix.m42;
             } else {
-                // 對不支持 style.transform 的 DOMMatrix 或 transform 尚未設置的瀏覽器進行回退。
-                // 這裡我們需要解析當前樣式而不是依賴於 prevX/prevY
+                // Fallback for browsers that don't support DOMMatrix or transform not yet set.
+                // Here we need to parse current style instead of relying on prevX/prevY
                 currentRabbitX = parseFloat(wanderingRabbit.style.transform.match(/translateX\(([^)]+)px\)/)?.[1] || '0');
                 currentRabbitY = parseFloat(wanderingRabbit.style.transform.match(/translateY\(([^)]+)px\)/)?.[1] || '0');
             }
 
 
-            // 如果目標未定義或兔子靠近目標，設置一個新的隨機目標
+            // If target is undefined or rabbit is close to target, set a new random target
             if (targetX === undefined || targetY === undefined || 
                 Math.sqrt(Math.pow(targetX - currentRabbitX, 2) + Math.pow(targetY - currentRabbitY, 2)) < speed) { 
                 targetX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
                 targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
             }
             
-            const prevX = currentRabbitX; // 儲存兔子移動前的位置用於掉落物
+            const prevX = currentRabbitX; // Store rabbit's position before moving for dropping
             const prevY = currentRabbitY;
 
             const distanceX = targetX - currentRabbitX;
-            const distanceY = targetY - currentRabbitY; // 修正：應使用 currentRabbitY
+            const distanceY = targetY - currentRabbitY; // Corrected: should use currentRabbitY
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            if (distance > 0) { // 只有當存在距離時才移動
+            if (distance > 0) { // Only move if there is a distance
                 currentX = currentRabbitX + (distanceX / distance) * speed;
                 currentY = currentRabbitY + (distanceY / distance) * speed;
-            } else { // 如果已經到達目標，則停留或重新計算 (由上面的條件處理)
+            } else { // If already at target, stay or recalculate (handled by above condition)
                 currentX = targetX;
                 currentY = targetY;
             }
 
-            // 將位置限制在邊界內
+            // Constrain position within boundaries
             currentX = Math.max(0, Math.min(currentX, window.innerWidth - wanderingRabbit.offsetWidth)); 
             currentY = Math.max(0, Math.min(currentY, window.innerHeight - wanderingRabbit.offsetHeight)); 
 
@@ -990,7 +992,7 @@
                     dropping.style.top = `${prevY + (wanderingRabbit.offsetHeight - 6) / 2 + 10}px`;  
                     
                     dropping.classList.remove('fade-out');
-                    void dropping.offsetWidth; // 觸發重排以重新開始動畫
+                    void dropping.offsetWidth; // Trigger reflow to restart animation
                     dropping.classList.add('fade-out');
 
                     currentDroppingIndex = (currentDroppingIndex + 1) % MAX_DROPPINGS;
@@ -1000,15 +1002,22 @@
             window.requestAnimationFrame(animateRabbit);
         }
 
-        // --- 更新日誌填充 ---
+        // --- Changelog Population ---
         function populateChangelog() {
-            console.log("[DEBUG] 填充更新日誌。");
+            console.log("[DEBUG] Populating changelog.");
             const changelogList = document.getElementById('changelog-list');
             if (!changelogList) {
-                console.error("[ERROR] 未找到更新日誌列表元素以填充。");
+                console.error("[ERROR] Changelog list element not found for population.");
                 return;
             }
             const changelogContent = `
+                <h4>✨ v8.0.3 - 🛤️ Path Weaver Rabbit (路徑編織兔)</h4>
+                <div class="changelog-entry">
+                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
+                    <ul>
+                        <li><span style="color: red;"><strong>The Archive's Trajectory, Now Fixed! (檔案軌跡，現已固定！):</strong></span> The esteemed `PetRecords.json` archive, which once sought its solace via arcane `content_fetcher` from the ethereal uploads, now doth heed a more earthly decree! Its path is now bound directly to `dist/bunnycc/PetRecords.json` within the very fabric of this application. This change, though profound, ensures its unwavering presence, yet know, good sir, it shall no longer consult the uploaded scrolls! (數據路徑已強制寫入 `dist/bunnycc/PetRecords.json`，直接讀取！📦 但記得這不再是您上傳的那個文件了哦！🤔)</li>
+                    </ul>
+                </div>
                 <h4>✨ v8.0.2 - 🌟 Grand Revival Rabbit (王者歸來兔)</h4>
                 <div class="changelog-entry">
                     <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
@@ -1046,31 +1055,67 @@
                         <li>Woes of Yore, Now Dispelled! (往昔之困，盡皆消弭！): All manner of runtime afflictions, such as 'Unexpected identifier 'addEventListener'' and 'window.toggleModal is not a function', have been utterly uprooted in this iteration, rendering the archive stable and serene! (各種報錯都沒了！🥳)</li>
                     </ul>
                 </div>
-                <!-- Previous Changelog Entries (省略了，因為內容較長，但結構與上面相同) -->
+                <!-- Previous Changelog Entries (此處為節選，完整的日誌將包含所有舊版本條目，並已進行風格轉換) -->
+
+                <h4>✨ v7.0.1 - 🌌 Cosmic Symphony Rabbit (宇宙交響兔)</h4>
+                <div class="changelog-entry">
+                    <p><strong>Additions (A New Decree Hath Been Issued! 新令已頒！):</p>
+                    <ul>
+                        <li>A grand decree for Chronological Scrolls: Each sagacious update, henceforth, shall reside within its own hallowed frame, distinctly marked for ease of contemplation and historical traverse. (更新日誌現在獨立成頁，方便查閱！📖)</li>
+                    </ul>
+                    <p><strong>Optimizations (Improvements of Noble Bearing! 精進頌歌！):</p>
+                    <ul>
+                        <li>The arcane glyphs and solitary marks, which once obscured the pristine pronouncements within these chronicles, have been expunged, that truth may shine unblemished, free from the shackles of superfluous punctuation. (那些多餘的符號和單個標記都清理掉了！✨)</li>
+                    </ul>
+                    <p><strong>Fixes (The Vexing Maladies Vanquished! 痼疾盡除！):</p>
+                    <ul>
+                        <li>A whisper of correction for the Temporal Weaver, ensuring the epochal calculations remain true, unaffected by the whispers of future dawns. (時間計算的 bug 也修復了，不會亂跳了！🕰️)</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v7.0.0 - 🌠 Luminous Fusion Rabbit (炫光融合兔)</h4>
+                <div class="changelog-entry">
+                    <p><strong>Optimizations (Improvements of Noble Bearing! 精進頌歌！):</p>
+                    <ul>
+                        <li>The Visage's Interplay now Heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel. (頭像互動效果更炫酷了！🤩)</li>
+                        <li>The Canvas of Aetherial Radiance now Adorned: The web's backdrop embraceth a dynamic radial gradient, its hues meticulously woven with the chosen theme's palette, shifting subtly as if breathing, thus forging a deeper, more artistic vista. (背景增加了動態光暈效果，超級夢幻！💫)</li>
+                        <li>The Errant Hare's Gambol now Flows with Fluid Grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity. (兔子跑起來更流暢了，像在飛！💨)</li>
+                        <li>Universal Accord for Digital Scrolls: The interface's harmony across all digital realms, from the venerable Edge to the swift Chrome, and adapting to screens of manifold sizes, hath been fortified, ensuring an impeccable and beauteous presentation. (跨瀏覽器和響應式佈局更棒了！📱💻)</li>
+                        <li>The Lexicon and Chroma Elevated: The primary script now rendered in Noto Sans SC for clarity's sake, granting the gaze an unobstructed passage through knowledge. Furthermore, our chromatic repertoire hath expanded by five, presenting a grand total of twenty vibrant themes, inviting the connoisseur to adorn the archive in a vestment of light and shade. (字體更清晰，主題顏色增加了 5 種！🎨)</li>
+                    </ul>
+                    <p><strong>Additions (A New Decree Hath Been Issued! 新令已頒！):</p>
+                    <ul>
+                        <li>The Oracle of Performance now stands Revealed! A button, newly forged, doth summon forth a tableau revealing the browser's vital humours, specifically its memory's embrace, thereby granting insight into the digital essence's consumption. (新增性能監控按鈕，可以看瀏覽器內存佔用了！📊)</li>
+                    </ul>
+                    <p><strong>Fixes (The Vexing Maladies Vanquished! 痼疾盡除！):</p>
+                    <ul>
+                        <li>The Chronicle of Changes, once shrouded in silence, now Unfurls in its Entirety. The malady of blank entries hath been utterly dispelled, and the annals of transformation stand complete, preserving every epochal shift. (更新日誌空白問題終於解決了！🎉)</li>
+                    </ul>
+                </div>
             `;
             changelogList.innerHTML = changelogContent;
-            console.log("[DEBUG] 更新日誌已填充。");
+            console.log("[DEBUG] Changelog populated.");
         }
 
         /**
-         * 設置所有 UI 按鈕的事件監聽器。
+         * Sets up event listeners for all UI buttons.
          */
         function setupEventListeners() {
-            console.log("[DEBUG] 設置事件監聽器。");
+            console.log("[DEBUG] Setting up event listeners.");
             document.getElementById('changelog-btn')?.addEventListener('click', () => toggleModal('changelog-modal'));
             document.getElementById('theme-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
             document.getElementById('performance-btn')?.addEventListener('click', () => toggleModal('performance-modal'));
             document.getElementById('fullscreen-btn')?.addEventListener('click', toggleFullscreen);
 
-            // 模態框關閉按鈕
+            // Modal close buttons
             document.getElementById('changelog-close-btn')?.addEventListener('click', () => toggleModal('changelog-modal'));
             document.getElementById('theme-close-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
             document.getElementById('performance-close-btn')?.addEventListener('click', () => toggleModal('performance-modal'));
             
-            // 性能模態框中的激活感應器按鈕
+            // Activate sensor button in performance modal
             document.getElementById('activate-sensor-btn')?.addEventListener('click', displayPerformanceMetrics);
 
-            // 主題分頁按鈕
+            // Theme pagination buttons
             document.getElementById('prev-theme-page-btn')?.addEventListener('click', () => {
                 if (currentThemePage > 0) {
                     currentThemePage--;
@@ -1085,7 +1130,7 @@
                 }
             });
 
-            // 模態框疊加層點擊關閉功能 (僅當點擊疊加層本身時)
+            // Modal overlay click-to-close functionality (only if clicking the overlay itself)
             document.getElementById('changelog-modal')?.addEventListener('click', (event) => {
                 if (event.target.id === 'changelog-modal') toggleModal('changelog-modal');
             });
@@ -1096,67 +1141,67 @@
                 if (event.target.id === 'performance-modal') toggleModal('performance-modal');
             });
 
-            console.log("[DEBUG] 事件監聽器已設置。");
+            console.log("[DEBUG] Event listeners set up.");
         }
 
 
-        // --- 主 window.onload 監聽器 ---
-        // 使用 window.onload 以確保所有 DOM 元素在嘗試獲取其引用或附加事件監聽器之前已完全加載並可訪問。
+        // --- Main window.onload listener ---
+        // Use window.onload to ensure all DOM elements are fully loaded and accessible before attempting to get their references or attach event listeners.
         window.onload = function() {
-            console.log("[DEBUG] window.onload 事件觸發。開始初始化...");
+            console.log("[DEBUG] window.onload event triggered. Starting initialization...");
 
-            // 初始化兔子元素及其位置
+            // Initialize rabbit element and its position
             wanderingRabbit = document.getElementById('wandering-rabbit');
             if (wanderingRabbit) {
-                // 將 currentX, currentY 初始化為隨機起始位置
+                // Initialize currentX, currentY to a random starting position
                 currentX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
                 currentY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
                 wanderingRabbit.style.transform = `translate(${currentX}px, ${currentY}px)`;
                 
-                // 初始化掉落物池
+                // Initialize droppings pool
                 for (let i = 0; i < MAX_DROPPINGS; i++) {
                     const dropping = document.createElement('div');
                     dropping.className = 'rabbit-dropping';
                     document.body.appendChild(dropping);
                     droppingsPool.push(dropping);
                 }
-                console.log("[DEBUG] 兔子掉落物池已初始化。");
-                window.requestAnimationFrame(animateRabbit); // 開始動畫循環
-                console.log("[DEBUG] 兔子動畫已啟動。");
+                console.log("[DEBUG] Rabbit droppings pool initialized.");
+                window.requestAnimationFrame(animateRabbit); // Start animation loop
+                console.log("[DEBUG] Rabbit animation started.");
             } else {
-                console.warn("[WARN] 未找到遊走兔元素，動畫已禁用。");
+                console.warn("[WARN] Wandering rabbit element not found, animation disabled.");
             }
 
-            // 檢測 Safari 並調整動畫幀率以獲得感知的流暢度
+            // Detect Safari and adjust animation framerate for perceived smoothness
             const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
             if (isSafari) {
                 animationSpeedMultiplier = 1.2; 
                 DROP_INTERVAL_MS = 100; 
-                console.log("[DEBUG] 檢測到 Safari 瀏覽器，動畫速度已優化。");
+                console.log("[DEBUG] Safari browser detected, animation speed optimized.");
             }
 
-            // 設置頭像圖片源
+            // Set profile picture source
             const profilePic = document.getElementById('profile-pic');
             if (profilePic) {
                 profilePic.src = CONFIG.PROFILE_PIC_PATH;
             } else {
-                console.error("[ERROR] 初始化時未找到頭像圖片元素。");
+                console.error("[ERROR] Profile picture element not found during initialization.");
             }
 
-            // 設置事件監聽器
+            // Set up event listeners
             setupEventListeners();
             
-            // 開始計時器更新
+            // Start timer updates
             setInterval(updateTiming, 100);
-            console.log("[DEBUG] 計時器更新已啟動。");
+            console.log("[DEBUG] Timer updates started.");
 
-            // 加載並處理數據
+            // Load and process data
             loadAndProcessData();
 
-            // 生成主題樣本 (初始會顯示第一頁)
+            // Generate theme swatches (will display the first page initially)
             generateThemeSwatches();
 
-            // 添加調整大小監聽器以調整兔子動畫邊界
+            // Add resize listener to adjust rabbit animation boundaries
             window.addEventListener('resize', () => {
                 if (!wanderingRabbit) return; 
                 const style = window.getComputedStyle(wanderingRabbit);
@@ -1178,17 +1223,17 @@
 
                 targetX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
                 targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
-                console.log("[DEBUG] 窗口已調整大小，兔子位置和目標已更新。");
+                console.log("[DEBUG] Window resized, rabbit position and target updated.");
             });
 
-            // 填充更新日誌內容
+            // Populate changelog content
             populateChangelog();
             
-            // 設置初始隨機主題
+            // Set initial random theme
             const initialTheme = CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)];
             changeTheme(initialTheme);
-            console.log("[DEBUG] 初始主題已設置。");
-            console.log("[DEBUG] 初始化完成。");
+            console.log("[DEBUG] Initial theme set.");
+            console.log("[DEBUG] Initialization complete.");
         };
     </script>
 </body>
