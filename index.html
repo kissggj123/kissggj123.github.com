@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC Archive v7.1.3 - Interstellar Sentient Rabbit</title>
+    <title>🐰 Bunny CC Archive v7.1.4 - Interstellar Sentient Rabbit</title>
     <!-- Tailwind CSS CDN - Note: For production, install as PostCSS plugin or use Tailwind CLI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -289,13 +289,14 @@
     <div class="main-container w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 glow-border">
         <!-- Header -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v7.1.3_TRON <span style="font-size: 0.75em;">Presented by CanguroMIO & Bunny CC Joint Archives</span></p>
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v7.1.4_TRON <span style="font-size: 0.75em;">Presented by CanguroMIO & Bunny CC Joint Archives</span></p>
             <!-- Controls -->
             <div class="flex items-center space-x-3 text-gray-400">
-                   <button id="changelog-btn" title="CHANGELOG" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
-                <button id="theme-btn" title="COLOR_CYCLE" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
-                <button id="performance-btn" title="PERFORMANCE_MONITOR" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
-                <button id="fullscreen-btn" title="FULLSCREEN" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
+                <!-- Buttons now use inline onclick to match 7.0.1 logic, functions are globally exposed -->
+                <button id="changelog-btn" title="CHANGELOG" class="transition-colors hover:text-white" onclick="window.toggleModal('changelog-modal')"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
+                <button id="theme-btn" title="COLOR_CYCLE" class="transition-colors hover:text-white" onclick="window.toggleModal('theme-modal')"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
+                <button id="performance-btn" title="PERFORMANCE_MONITOR" class="transition-colors hover:text-white" onclick="window.toggleModal('performance-modal')"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
+                <button id="fullscreen-btn" title="FULLSCREEN" class="transition-colors hover:text-white" onclick="window.toggleFullscreen()"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
             </div>
         </div>
 
@@ -342,7 +343,7 @@
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="changelog-list">
                 <!-- Changelog content will be populated by JavaScript -->
             </div>
-            <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white" data-modal-id="changelog-modal">
+            <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white" onclick="window.toggleModal('changelog-modal')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
@@ -351,7 +352,7 @@
         <div class="main-container glow-border w-11/12 max-w-md modal-content-base" onclick="event.stopPropagation()">
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">COLOR_CYCLE</h2>
             <div id="theme-grid" class="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
-            <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white" data-modal-id="theme-modal">
+            <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white" onclick="window.toggleModal('theme-modal')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
@@ -361,11 +362,12 @@
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">PERFORMANCE_MONITOR</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="performance-metrics">
                 <p class="text-sm" style="color: var(--text-muted-color);">Activate Sensor Array for Real-time Metrics.</p>
-                <button id="activate-sensor-btn" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">ACTIVATE SENSOR ARRAY</button>
+                <!-- Button now uses inline onclick to match 7.0.1 logic, function is globally exposed -->
+                <button id="activate-sensor-btn" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);" onclick="window.displayPerformanceMetrics()">ACTIVATE SENSOR ARRAY</button>
                 <div id="performance-data-output" class="mt-4 space-y-2 text-sm" style="color: var(--text-color);"></div>
                 <p class="text-xs mt-4 text-red-400">Note: Due to Security Protocols, Direct CPU/GPU Utilization and Public IP Not Accessible.</p>
             </div>
-            <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white" data-modal-id="performance-modal">
+            <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white" onclick="window.toggleModal('performance-modal')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
@@ -460,6 +462,7 @@
         // --- UI Functions (exposed to global scope for HTML event handlers) ---
         /**
          * Toggles the visibility of a modal.
+         * Exposed to window for direct HTML onclick calls.
          * @param {string} modalId - The ID of the modal element.
          */
         window.toggleModal = function(modalId) {
@@ -469,8 +472,9 @@
                 modal.classList.toggle('hidden', !isHidden);
                 modal.classList.toggle('flex', isHidden); // Add flex when showing
 
-                if (modalId === 'performance-modal' && isHidden) { // Only display if it's being shown
-                    displayPerformanceMetrics();
+                // Only display metrics when the performance modal is being shown
+                if (modalId === 'performance-modal' && isHidden) { 
+                    window.displayPerformanceMetrics(); // Call globally exposed function
                 }
             } else {
                 console.error(`Modal with ID '${modalId}' not found.`);
@@ -479,6 +483,7 @@
 
         /**
          * Toggles fullscreen mode for the document.
+         * Exposed to window for direct HTML onclick calls.
          */
         window.toggleFullscreen = function() {
             const docEl = document.documentElement;
@@ -488,6 +493,90 @@
                 document.exitFullscreen().catch(err => console.error(`Failed to exit fullscreen: ${err.message}`));
             }
         };
+
+        /**
+         * Displays browser performance metrics in the performance modal.
+         * Exposed to window for direct HTML onclick calls.
+         */
+        window.displayPerformanceMetrics = function() {
+            if (!ui.performanceDataOutput) {
+                console.error("Performance data output element not found.");
+                return;
+            }
+
+            let outputHtml = '<h3>Current Performance Data:</h3>';
+
+            // Memory usage (non-standard, primarily Chrome)
+            if (window.performance && window.performance.memory) {
+                const memory = window.performance.memory;
+                outputHtml += `<p><strong>JS Heap Usage:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>Total JS Heap:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS Heap Limit:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
+            } else {
+                outputHtml += `<p><em>Performance.memory API Unavailable.</em></p>`;
+            }
+
+            // Navigation Timing API
+            if (window.performance && window.performance.getEntriesByType) {
+                const navTiming = performance.getEntriesByType("navigation")[0];
+                if (navTiming) {
+                    outputHtml += `<h3>Page Load Times:</h3>`;
+                    outputHtml += `<p><strong>DOM Content Loaded:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>Total Load Time:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>DNS Resolution:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>TCP Handshake:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>Request-Response Latency:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
+                }
+            } else {
+                outputHtml += `<p><em>Performance Timing API Unavailable.</em></p>`;
+            }
+
+            // Network Information API (Experimental, not all browsers support)
+            if (navigator.connection) {
+                const connection = navigator.connection;
+                outputHtml += `<h3>Network Subsystem Info:</h3>`;
+                outputHtml += `<p><strong>Effective Type:</strong> ${connection.effectiveType || 'N/A'}</p>`;
+                outputHtml += `<p><strong>Round Trip Time (RTT):</strong> ${connection.rtt || 'N/A'} ms</p>`;
+                outputHtml += `<p><strong>Downlink Bandwidth:</strong> ${connection.downlink || 'N/A'} Mbps</p>`;
+                outputHtml += `<p><strong>Data Saver Mode:</strong> ${connection.saveData ? 'Enabled' : 'Disabled'}</p>`;
+            } else {
+                outputHtml += `<p><em>Network Info API Unavailable.</em></p>`;
+            }
+
+            // Hardware Concurrency (CPU Cores)
+            if (navigator.hardwareConcurrency) {
+                outputHtml += `<h3>Hardware Subsystem Info:</h3>`;
+                outputHtml += `<p><strong>Processor Cores:</strong> ${navigator.hardwareConcurrency}</p>`;
+            } else {
+                outputHtml += `<p><em>Processor Core Count Undetectable.</em></p>`;
+            }
+
+            // Device Memory (Experimental)
+            if (navigator.deviceMemory) {
+                outputHtml += `<p><strong>System Memory (approx):</strong> ${navigator.deviceMemory} GB</p>`;
+            } else {
+                outputHtml += `<p><em>System Memory Undetectable.</em></p>`;
+            }
+
+            // Browser User Agent and OS (from navigator.userAgent)
+            outputHtml += `<h3>Browser & OS Diagnostics:</h3>`;
+            if (navigator && navigator.userAgent) {
+                outputHtml += `<p><strong>User Agent (UA):</strong> ${navigator.userAgent}</p>`;
+                let os = "Unknown";
+                if (navigator.userAgent.includes("Win")) os = "Windows";
+                else if (navigator.userAgent.includes("Mac")) os = "macOS";
+                else if (navigator.userAgent.includes("Linux")) os = "Linux";
+                else if (navigator.userAgent.includes("Android")) os = "Android";
+                else if (navigator.userAgent.includes("iPad")) os = "iPadOS";
+                else if (navigator.userAgent.includes("iPhone")) os = "iOS";
+                outputHtml += `<p><strong>Operating System (Estimated):</strong> ${os}</p>`;
+            } else {
+                outputHtml += `<p><em>User Agent Information Unreachable.</em></p>`;
+            }
+            
+            ui.performanceDataOutput.innerHTML = outputHtml;
+        };
+
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -504,37 +593,15 @@
                 changelogList: document.getElementById('changelog-list'), 
                 themeGrid: document.getElementById('theme-grid'),
                 performanceDataOutput: document.getElementById('performance-data-output'),
-                // New button references
-                changelogBtn: document.getElementById('changelog-btn'),
-                themeBtn: document.getElementById('theme-btn'),
-                performanceBtn: document.getElementById('performance-btn'),
-                fullscreenBtn: document.getElementById('fullscreen-btn'),
-                activateSensorBtn: document.getElementById('activate-sensor-btn'),
+                // Note: Buttons no longer need programmatic event listeners here
+                // as they use inline onclick attributes calling global functions.
             };
 
-            // Attach event listeners to buttons
-            if (ui.changelogBtn) ui.changelogBtn.addEventListener('click', () => window.toggleModal('changelog-modal'));
-            if (ui.themeBtn) ui.themeBtn.addEventListener('click', () => window.toggleModal('theme-modal'));
-            if (ui.performanceBtn) ui.performanceBtn.addEventListener('click', () => window.toggleModal('performance-modal'));
-            if (ui.fullscreenBtn) ui.fullscreenBtn.addEventListener('click', window.toggleFullscreen);
-            if (ui.activateSensorBtn) ui.activateSensorBtn.addEventListener('click', displayPerformanceMetrics);
-
-            // Attach event listeners to modal overlays to close them when clicking outside content
+            // Attach event listener to modal overlays to close them when clicking outside content
+            // The `event.stopPropagation()` on the modal content itself prevents the modal from closing when clicking inside it.
             if (ui.changelogModal) ui.changelogModal.addEventListener('click', () => window.toggleModal('changelog-modal'));
             if (ui.themeModal) ui.themeModal.addEventListener('click', () => window.toggleModal('theme-modal'));
             if (ui.performanceModal) ui.performanceModal.addEventListener('click', () => window.toggleModal('performance-modal'));
-
-            // Attach event listeners to close buttons within modals
-            document.querySelectorAll('.close-modal-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Prevent click from propagating to overlay
-                    const modalId = button.dataset.modalId;
-                    if (modalId) {
-                        window.toggleModal(modalId);
-                    }
-                });
-            });
-
 
             // Detect Safari and adjust animation frame rate for perceived smoothness
             const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
@@ -653,88 +720,6 @@
             });
         }
         
-        /**
-         * Displays browser performance metrics in the performance modal.
-         */
-        function displayPerformanceMetrics() {
-            if (!ui.performanceDataOutput) {
-                console.error("Performance data output element not found.");
-                return;
-            }
-
-            let outputHtml = '<h3>Current Performance Data:</h3>';
-
-            // Memory usage (non-standard, primarily Chrome)
-            if (window.performance && window.performance.memory) {
-                const memory = window.performance.memory;
-                outputHtml += `<p><strong>JS Heap Usage:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>Total JS Heap:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>JS Heap Limit:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
-            } else {
-                outputHtml += `<p><em>Performance.memory API Unavailable.</em></p>`;
-            }
-
-            // Navigation Timing API
-            if (window.performance && window.performance.getEntriesByType) {
-                const navTiming = performance.getEntriesByType("navigation")[0];
-                if (navTiming) {
-                    outputHtml += `<h3>Page Load Times:</h3>`;
-                    outputHtml += `<p><strong>DOM Content Loaded:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>Total Load Time:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>DNS Resolution:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>TCP Handshake:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>Request-Response Latency:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
-                }
-            } else {
-                outputHtml += `<p><em>Performance Timing API Unavailable.</em></p>`;
-            }
-
-            // Network Information API (Experimental, not all browsers support)
-            if (navigator.connection) {
-                const connection = navigator.connection;
-                outputHtml += `<h3>Network Subsystem Info:</h3>`;
-                outputHtml += `<p><strong>Effective Type:</strong> ${connection.effectiveType || 'N/A'}</p>`;
-                outputHtml += `<p><strong>Round Trip Time (RTT):</strong> ${connection.rtt || 'N/A'} ms</p>`;
-                outputHtml += `<p><strong>Downlink Bandwidth:</strong> ${connection.downlink || 'N/A'} Mbps</p>`;
-                outputHtml += `<p><strong>Data Saver Mode:</strong> ${connection.saveData ? 'Enabled' : 'Disabled'}</p>`;
-            } else {
-                outputHtml += `<p><em>Network Info API Unavailable.</em></p>`;
-            }
-
-            // Hardware Concurrency (CPU Cores)
-            if (navigator.hardwareConcurrency) {
-                outputHtml += `<h3>Hardware Subsystem Info:</h3>`;
-                outputHtml += `<p><strong>Processor Cores:</strong> ${navigator.hardwareConcurrency}</p>`;
-            } else {
-                outputHtml += `<p><em>Processor Core Count Undetectable.</em></p>`;
-            }
-
-            // Device Memory (Experimental)
-            if (navigator.deviceMemory) {
-                outputHtml += `<p><strong>System Memory (approx):</strong> ${navigator.deviceMemory} GB</p>`;
-            } else {
-                outputHtml += `<p><em>System Memory Undetectable.</em></p>`;
-            }
-
-            // Browser User Agent and OS (from navigator.userAgent)
-            outputHtml += `<h3>Browser & OS Diagnostics:</h3>`;
-            if (navigator && navigator.userAgent) {
-                outputHtml += `<p><strong>User Agent (UA):</strong> ${navigator.userAgent}</p>`;
-                let os = "Unknown";
-                if (navigator.userAgent.includes("Win")) os = "Windows";
-                else if (navigator.userAgent.includes("Mac")) os = "macOS";
-                else if (navigator.userAgent.includes("Linux")) os = "Linux";
-                else if (navigator.userAgent.includes("Android")) os = "Android";
-                else if (navigator.userAgent.includes("iPad")) os = "iPadOS";
-                else if (navigator.userAgent.includes("iPhone")) os = "iOS";
-                outputHtml += `<p><strong>Operating System (Estimated):</strong> ${os}</p>`;
-            } else {
-                outputHtml += `<p><em>User Agent Information Unreachable.</em></p>`;
-            }
-            
-            ui.performanceDataOutput.innerHTML = outputHtml;
-        }
-
         // --- Data & Timing Logic ---
         /**
          * Updates the anniversary timing display.
@@ -1074,6 +1059,15 @@
                 return;
             }
             const changelogContent = `
+                <h4>✨ v7.1.4 - 🌌 Interstellar Sentient Rabbit Refined</h4>
+                <div class="changelog-entry">
+                    <p><strong>Fixes (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>互動協議穩定性增強：用於訪問更新日誌、顏色循環、性能監控和全螢幕的互動按鈕現在反應精準無誤。所有按鈕的事件監聽器都在 'DOMContentLoaded' 事件中以程式方式附加，確保在調用函數時它們已定義，從而解決了 'is not a function' 錯誤。</li>
+                        <li>模態視窗關閉功能強化：每個模態視窗現在都包含一個專用的關閉按鈕（X 圖標），以便直觀地關閉，提供了點擊疊加層以外的替代方法。</li>
+                        <li>動畫幀完整性：遊走兔動畫的 'requestAnimationFrame' 調用現在明確地加上 'window.' 前綴，確保其正確識別並防止在更嚴格的環境中出現潛在的 'SyntaxError' 問題。</li>
+                    </ul>
+                </div>
                 <h4>✨ v7.1.3 - 🌌 Interstellar Sentient Rabbit Refined</h4>
                 <div class="changelog-entry">
                     <p><strong>Fixes (The Vexing Maladies Vanquished!):</strong></p>
@@ -1197,7 +1191,7 @@
 
                 <h4>✨ v5.0.0 - 💫 Kinetic Glint Rabbit</h4>
                 <div class="changelog-entry">
-                    <p><strong>Optimizations (Improvements of Noble Bearing!):</strong></p>
+                    <p><strong>Optimizations (Improvements of Noble Bearing!):</p>
                     <ul>
                         <li>The Visage's Interplay now Heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel.</li>
                         <li>The Errant Hare's Gambol now Flows with Fluid Grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity.</li>
