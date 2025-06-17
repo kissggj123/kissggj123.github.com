@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 兔可可档案 v3.0.0 - 🔄 核心回溯兔 (Core Rollback Rabbit)</title>
+    <title>🐰 兔可可档案 v4.0.0 - ✨ 像素超進化兔 (Pixel Evolution Rabbit)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -11,9 +11,10 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Keep Press Start 2P for pixelated titles, Noto Sans SC for main content -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for TRON Theming (from user's working code) */
+        /* CSS Variables for TRON Theming */
         :root {
             --glow-rgb: 34, 211, 238; /* Cyan */
             --glow-light-rgb: 103, 232, 249;
@@ -26,16 +27,17 @@
 
         /* Base styles */
         body {
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Noto Sans SC', sans-serif; /* Use Noto Sans SC for main body text */
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.5s ease;
-            overflow: hidden; /* Prevent scrollbar from animated background */
+            overflow-x: hidden; /* Prevent horizontal scrollbar, allow vertical for content */
+            overflow-y: auto; /* Allow vertical scroll for content if needed */
             opacity: 0;
             animation: fadeIn 1s ease 0.5s forwards;
         }
         
-        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        .font-pixel { font-family: 'Press Start 2P', cursive; } /* Apply pixel font only to specific elements */
         .glow-text { color: rgb(var(--glow-light-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
         .glow-border { border: 1px solid rgba(var(--glow-rgb), 0.4); box-shadow: 0 0 12px rgba(var(--glow-rgb), 0.2), inset 0 0 8px rgba(var(--glow-rgb), 0.15); }
         
@@ -68,28 +70,34 @@
             animation: scanline-move 10s linear infinite;
         }
 
-        /* Pac-Man Profile Image Container */
+        /* Pac-Man Profile Image Container - Modified to remove "mouth" clip, show full circle */
         .pacman-container {
             position: relative;
             width: 160px; height: 160px;
             transition: transform 0.3s ease;
+            border-radius: 50%; /* Ensure container is rounded */
+            overflow: hidden; /* Ensure image stays within bounds */
         }
         .pacman-container:hover { transform: scale(1.05); }
         .pacman-mouth {
             position: absolute;
             width: 100%; height: 100%;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 40%, 50% 50%, 100% 60%, 100% 100%, 0% 100%);
-            transition: clip-path 0.3s ease-in-out;
+            /* Removed clip-path to show full circle */
+            border-radius: 50%; /* Make sure inner part is also rounded */
         }
-        .pacman-container:hover .pacman-mouth {
-            clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 50% 50%, 100% 100%, 100% 100%, 0% 100%);
+        .pacman-container .pacman-mouth img {
+            border-radius: 50%; /* Ensure image is perfectly circular */
         }
+
 
         /* Main container and UI elements */
         .main-container {
             background-color: var(--surface-color);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            /* Added min-h and min-w to ensure it's always visible and usable */
+            min-height: 80vh; 
+            min-width: 320px; /* Minimum width for small screens */
         }
         .ui-module { transition: all 0.5s; opacity: 0; transform: translateY(20px); animation: module-boot 0.5s ease forwards; }
         .list-pellet li::before {
@@ -118,15 +126,15 @@
         .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
         .record-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--glow-rgb), 0.8); }
 
-        /* Rabbit styles (from previous versions, re-integrated) */
+        /* Rabbit styles */
         #wandering-rabbit {
             position: fixed;
             width: 72px; 
             height: 72px; 
-            z-index: 90; /* Below scanline, above grid */
+            z-index: 90; 
             pointer-events: none;
-            transition: left 1s ease-in-out, top 1s ease-in-out;
-            fill: rgb(var(--glow-light-rgb)); /* Use glow color */
+            transition: transform 0.1s linear; /* Smoother, more frequent updates from JS */
+            fill: rgb(var(--glow-light-rgb)); 
             filter: drop-shadow(0 0 15px rgba(var(--glow-rgb), 0.8));
         }
         .rabbit-dropping {
@@ -150,7 +158,7 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
     <div id="grid-background"></div>
-    <!-- Wandering Rabbit Character (Re-added) -->
+    <!-- Wandering Rabbit Character -->
     <div id="wandering-rabbit">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="currentColor">
             <rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/>
@@ -166,12 +174,12 @@
     </div>
     <div id="scanline-overlay"></div>
 
-    <!-- Main Container (from user's working code) -->
+    <!-- Main Container -->
     <div class="main-container w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 glow-border">
         <!-- Header -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v3.0.0_TRON</p>
-            <!-- Controls (from user's working code) -->
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v4.0.0_TRON</p>
+            <!-- Controls -->
             <div class="flex items-center space-x-3 text-gray-400">
                    <button title="更新日誌" onclick="toggleModal('changelog-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
                 <button title="主題面板" onclick="toggleModal('theme-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
@@ -179,17 +187,16 @@
             </div>
         </div>
 
-        <!-- Main content grid (from user's working code) -->
+        <!-- Main content grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
             <!-- Left Panel -->
             <div class="lg:col-span-1 p-6 flex flex-col space-y-8">
                 <div class="ui-module text-center" style="animation-delay: 0.2s;">
-                    <div class="pacman-container mx-auto">
-                        <div class="pacman-mouth glow-border rounded-full">
-                            <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." 
-                                 onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';"
-                                 class="w-full h-full rounded-full object-cover">
-                        </div>
+                    <div class="pacman-container mx-auto glow-border rounded-full">
+                        <!-- Pac-Man effect is now just a circular border around the image -->
+                        <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." 
+                             onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';"
+                             class="w-full h-full rounded-full object-cover">
                     </div>
                     <h1 class="font-pixel text-2xl font-bold mt-4 glow-text">BUNNY CC</h1>
                     <p class="text-sm font-pixel" style="color: var(--text-muted-color)">ID: B-20240312</p>
@@ -215,11 +222,11 @@
         </div>
     </div>
     
-    <!-- Modals (from user's working code) -->
+    <!-- Modals -->
     <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('changelog-modal')">
         <div class="main-container glow-border w-11/12 max-w-2xl" onclick="event.stopPropagation()">
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2>
-            <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar list-pellet">
+            <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar list-pellet" id="changelog-list">
                 <!-- Changelog content will be populated by JavaScript -->
             </div>
         </div>
@@ -248,6 +255,12 @@
                 { name: 'Green', rgb: '34, 197, 94', light_rgb: '74, 222, 128'},
                 { name: 'White', rgb: '229, 231, 235', light_rgb: '243, 244, 246'},
                 { name: 'Purple', rgb: '168, 85, 247', light_rgb: '192, 132, 252'},
+                // Added more themes
+                { name: 'Gold', rgb: '255, 215, 0', light_rgb: '255, 228, 77'},
+                { name: 'Teal', rgb: '0, 128, 128', light_rgb: '0, 168, 168'},
+                { name: 'Coral', rgb: '255, 127, 80', light_rgb: '255, 160, 122'},
+                { name: 'Sky Blue', rgb: '135, 206, 235', light_rgb: '173, 216, 230'},
+                { name: 'Rose', rgb: '255, 0, 127', light_rgb: '255, 51, 153'},
             ]
         };
 
@@ -278,7 +291,7 @@
                 allRecordsContainer: document.getElementById('all-records-container'),
                 changelogModal: document.getElementById('changelog-modal'),
                 themeModal: document.getElementById('theme-modal'),
-                changelogList: null, // Will be set after changelog content is populated
+                changelogList: document.getElementById('changelog-list'), // Get directly from HTML
                 themeGrid: document.getElementById('theme-grid'),
             };
 
@@ -312,19 +325,13 @@
                     document.body.appendChild(dropping);
                     droppingsPool.push(dropping);
                 }
-                animateRabbit();
+                animateRabbit(); // Start the animation loop
             } else {
                 console.warn("Wandering rabbit element not found, animation disabled.");
             }
 
-            // Populate changelog content and then get the list element
+            // Populate changelog content
             populateChangelog();
-            if (ui.changelogModal) {
-                 ui.changelogList = ui.changelogModal.querySelector('.list-pellet');
-                 if (!ui.changelogList) {
-                     console.error("Changelog list inside modal not found.");
-                 }
-            }
         });
 
         // --- UI FUNCTIONS ---
@@ -557,7 +564,9 @@
                         pointHoverRadius: 7,
                         tension: 0.4,
                         fill: true,
-                        shadowOffsetX: 0, // Custom properties for shadow (might not work directly in Chart.js)
+                        // Chart.js does not directly support shadowOffsetX/Y/Blur/Color on datasets, these are ignored.
+                        // You would typically achieve shadows with a custom plugin or canvas API drawing.
+                        shadowOffsetX: 0, 
                         shadowOffsetY: 0,
                         shadowBlur: 10,
                         shadowColor: primaryColor,
@@ -629,46 +638,45 @@
 
         // --- Wandering Rabbit Animation Logic ---
         function animateRabbit() {
-            if (!wanderingRabbit) return; // Guard against element not found
+            // Ensure wanderingRabbit is valid
+            if (!wanderingRabbit) {
+                console.warn("Wandering rabbit element not found, stopping animation.");
+                return;
+            }
 
-            const speed = 2; 
-            // Initialize targets if not set
-            if (targetX === undefined || targetY === undefined) { 
-                targetX = Math.random() * (window.innerWidth - 72); 
-                targetY = Math.random() * (window.innerHeight - 72); 
+            const speed = 2.5; // Slightly increased speed for more noticeable movement
+            
+            // Initialize targetX, targetY if not set or if rabbit reached target
+            const distToTarget = Math.sqrt(Math.pow(targetX - currentX, 2) + Math.pow(targetY - currentY, 2));
+            if (targetX === undefined || targetY === undefined || distToTarget < speed) { 
+                targetX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
+                targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
             }
             
             const prevX = currentX; 
             const prevY = currentY;
 
-            const distanceX = targetX - currentX;
-            const distanceY = targetY - currentY;
-            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+            // Move towards the target
+            currentX += (targetX - currentX) / distToTarget * speed;
+            currentY += (targetY - currentY) / distToTarget * speed;
 
-            if (distance < speed || distance > 500) { 
-                currentX = targetX;
-                currentY = targetY;
-                targetX = Math.random() * (window.innerWidth - 72); 
-                targetY = Math.random() * (window.innerHeight - 72); 
-            } else {
-                currentX += (distanceX / distance) * speed;
-                currentY += (distanceY / distance) * speed;
-            }
+            // Clamp positions to stay within bounds
+            currentX = Math.max(0, Math.min(currentX, window.innerWidth - wanderingRabbit.offsetWidth)); 
+            currentY = Math.max(0, Math.min(currentY, window.innerHeight - wanderingRabbit.offsetHeight)); 
 
-            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 72)); 
-            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 72)); 
-
+            // Apply position (use transform for smoother animation if possible, but left/top is fine)
             wanderingRabbit.style.left = `${currentX}px`;
             wanderingRabbit.style.top = `${currentY}px`;
 
+            // Drop "droppings"
             if (performance.now() - lastDropTime > DROP_INTERVAL_MS) {
                 const dropping = droppingsPool[currentDroppingIndex];
-                if (dropping) { // Ensure dropping element exists
-                    dropping.style.left = `${prevX + (72 - 6) / 2}px`; 
-                    dropping.style.top = `${prevY + (72 - 6) / 2 + 10}px`;  
+                if (dropping) { 
+                    dropping.style.left = `${prevX + (wanderingRabbit.offsetWidth - 6) / 2}px`; 
+                    dropping.style.top = `${prevY + (wanderingRabbit.offsetHeight - 6) / 2 + 10}px`;  
                     
                     dropping.classList.remove('fade-out');
-                    void dropping.offsetWidth; // Trigger reflow to restart animation
+                    void dropping.offsetWidth; // Trigger reflow
                     dropping.classList.add('fade-out');
 
                     currentDroppingIndex = (currentDroppingIndex + 1) % MAX_DROPPINGS;
@@ -680,20 +688,42 @@
         }
 
         window.addEventListener('resize', () => {
-            if (!wanderingRabbit) return; // Guard against element not found
-            currentX = Math.min(Math.max(0, currentX), window.innerWidth - 72); 
-            currentY = Math.min(Math.max(0, currentY), window.innerHeight - 72); 
+            if (!wanderingRabbit) return; 
+            // Recalculate current position relative to new window size
+            currentX = Math.min(Math.max(0, currentX), window.innerWidth - wanderingRabbit.offsetWidth); 
+            currentY = Math.min(Math.max(0, currentY), window.innerHeight - wanderingRabbit.offsetHeight); 
             wanderingRabbit.style.left = `${currentX}px`;
             wanderingRabbit.style.top = `${currentY}px`;
 
-            targetX = Math.random() * (window.innerWidth - 72); 
-            targetY = Math.random() * (window.innerHeight - 72); 
+            // Set a new random target within the new window bounds
+            targetX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
+            targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
         });
 
         // --- Changelog Population ---
         function populateChangelog() {
-            // This needs to be populated after ui.changelogList is set
+            if (!ui.changelogList) {
+                console.error("Changelog list element not found.");
+                return;
+            }
             const changelogContent = `
+                <h4>✨ v4.0.0 - ✨ 像素超進化兔 (Pixel Evolution Rabbit)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**擴充配色！** 新增 5 組主題配色，提供更豐富的視覺選擇。</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**頭像完美呈現！** 調整 Pac-Man 頭像框的 CSS，確保頭像圖片完整顯示，不再缺失一角。</li>
+                    <li>**兔子活動更流暢！** 優化亂跑的兔子動畫邏輯，使其移動更平滑，並修復了在某些瀏覽器中不移動的問題。</li>
+                    <li>**響應式佈局強化！** 改善網頁在不同瀏覽器（特別是 Edge）和螢幕尺寸下的顯示兼容性，確保內容完整呈現。</li>
+                    <li>**簡體中文友好！** 網頁主體內容字體調整為 'Noto Sans SC'，提供更好的簡體中文閱讀體驗，僅部分標題保留像素字體風格。</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**更新日誌不再空白！** 修正了更新日誌內容無法顯示的問題，並完整保留了所有歷史版本記錄。</li>
+                </ul>
+
                 <h4>✨ v3.0.0 - 🔄 核心回溯兔 (Core Rollback Rabbit)</h4>
                 <p><strong>新增 (New!):</strong></p>
                 <ul>
@@ -806,7 +836,7 @@
                 <h4>🛡️ v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
                 <p><strong>修复 (Fixed!):</strong></p>
                 <ul>
-                    <li><strong>神秘錯誤終結者！</strong> 解決了 \`Chart.js\` 日期適配器找不到 \`date-fns\` 的 \`startOfDay\` 函數的謎團。現在它乖乖地從 \`unpkg.com\` 載入正確的魔法，不會再鬧脾氣了！</li>
+                    <li><strong>神秘錯誤終結者！** 解決了 \`Chart.js\` 日期適配器找不到 \`date-fns\` 的 \`startOfDay\` 函數的謎團。現在它乖乖地從 \`unpkg.com\` 載入正確的魔法，不會再鬧脾氣了！</li>
                 </ul>
                 <p><strong>优化 (Optimized!):</strong></p>
                 <ul>
@@ -859,7 +889,7 @@
                 <h4>📐 v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
                 <p><strong>修复 (Fixed!):</strong></p>
                 <ul>
-                    <li>**時間戳精準矯正！** 確保時間戳在轉換為 \`Date\` 物件之前，會先去除小數點並轉換為整數毫秒，從此時間不再模棱兩可！</li>
+                    <li><strong>時間戳精準矯正！</strong> 確保時間戳在轉換為 \`Date\` 物件之前，會先去除小數點並轉換為整數毫秒，從此時間不再模棱兩可！</li>
                 </ul>
                 <p><strong>优化 (Optimized!):</strong></p>
                 <ul>
@@ -876,10 +906,10 @@
                     <li>**更多偵錯足跡！** 增加了更多的控制台日誌，讓追蹤數據轉換和 Chart.js 初始化過程中的問題變得更加清晰。</li>
                 </ul>
             `;
-            if (ui.changelogList) { // Ensure ui.changelogList is set before trying to access it
+            if (ui.changelogList) {
                 ui.changelogList.innerHTML = changelogContent;
             } else {
-                console.error("Changelog list element is still not available after populateChangelog call.");
+                console.error("Changelog list element not found when populating content.");
             }
         }
     </script>
