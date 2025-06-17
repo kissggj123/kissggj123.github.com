@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC Days v8.0.0 - 🐇 Arcane Chronos Rabbit</title>
+    <title>🐰 Bunny CC Archive v8.0.0 - 🐇 Arcane Chronos Rabbit</title>
     <!-- Tailwind CSS CDN - 注意：用於生產環境時，請作為 PostCSS 插件安裝或使用 Tailwind CLI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -291,12 +291,12 @@
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
             <!-- 更新標題文字以模仿終端提示符 -->
             <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.0_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
-            <!-- 控制按鈕（為與用戶偏好的 7.0.1 工作狀態兼容，已恢復 onclick 屬性） -->
+            <!-- 控制按鈕（現在使用 ID 和 programmatically 綁定事件） -->
             <div class="flex items-center space-x-3 text-gray-400">
-                <button onclick="toggleModal('changelog-modal')" title="更新日誌" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
-                <button onclick="toggleModal('theme-modal')" title="色彩循環" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
-                <button onclick="toggleModal('performance-modal')" title="性能監控" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
-                <button onclick="toggleFullscreen()" title="全螢幕" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
+                <button id="changelog-btn" title="更新日誌" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
+                <button id="theme-btn" title="色彩循環" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
+                <button id="performance-btn" title="性能監控" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
+                <button id="fullscreen-btn" title="全螢幕" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
             </div>
         </div>
 
@@ -337,50 +337,53 @@
     </div>
     
     <!-- 模態框 -->
-    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('changelog-modal')">
+    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
         <div class="main-container glow-border w-11/12 max-w-2xl modal-content-base" onclick="event.stopPropagation()">
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">更新日誌</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="changelog-list">
                 <!-- 更新日誌內容將由 JavaScript 填充 -->
             </div>
             <!-- 模態框關閉按鈕 -->
-            <button onclick="toggleModal('changelog-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+            <button id="changelog-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
     </div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('theme-modal')">
+    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
         <div class="main-container glow-border w-11/12 max-w-md modal-content-base" onclick="event.stopPropagation()">
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">色彩循環</h2>
             <div id="theme-grid" class="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
             <!-- 模態框關閉按鈕 -->
-            <button onclick="toggleModal('theme-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+            <button id="theme-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
     </div>
-    <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('performance-modal')">
+    <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
         <div class="main-container glow-border w-11/12 max-w-lg modal-content-base" onclick="event.stopPropagation()">
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">性能監控</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="performance-metrics">
                 <p class="text-sm" style="color: var(--text-muted-color);">激活感應器陣列以獲取實時指標。</p>
-                <!-- 按鈕現在使用 onclick 以保持一致性 -->
-                <button onclick="displayPerformanceMetrics()" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">激活感應器陣列</button>
+                <!-- 按鈕現在使用 ID 並 programmatically 綁定事件 -->
+                <button id="activate-sensor-btn" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">激活感應器陣列</button>
                 <div id="performance-data-output" class="mt-4 space-y-2 text-sm" style="color: var(--text-color);"></div>
                 <p class="text-xs mt-4 text-red-400">注意: 由於安全協議，無法直接訪問 CPU/GPU 利用率和公共 IP。</p>
             </div>
             <!-- 模態框關閉按鈕 -->
-            <button onclick="toggleModal('performance-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+            <button id="performance-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
     </div>
 
     <script type="module">
+        // 導入 content_fetcher 以加載上傳的文件
+        import { content_fetcher } from 'content_fetcher';
+
         // --- 配置 ---
         const CONFIG = {
             PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG', // 用於 GitHub Pages 部署的相對路徑
-            PET_RECORDS_PATH: './dist/bunnycc/PetRecords.json', // 用於 GitHub Pages 部署的相對路徑
+            PET_RECORDS_FETCH_ID: 'uploaded:PetRecords.json', // 使用 content_fetcher 的 ID
             START_DATE: '2024/03/12 00:00:00', // 週年計時器起始日期
             // 擴展的 THEMES 陣列至 56 種獨特配色方案
             THEMES: [
@@ -464,7 +467,7 @@
          * 切換模態框元素的顯示狀態。
          * @param {string} modalId - 要切換的模態框元素的 ID。
          */
-        window.toggleModal = function(modalId) {
+        function toggleModal(modalId) {
             console.log(`[DEBUG] 嘗試切換模態框: ${modalId}`);
             const modal = document.getElementById(modalId);
             if (modal) {
@@ -479,12 +482,12 @@
             } else {
                 console.error(`[ERROR] 執行 toggleModal 時未找到 ID 為 '${modalId}' 的模態框。`);
             }
-        };
+        }
 
         /**
          * 切換文檔的全螢幕模式。
          */
-        window.toggleFullscreen = function() {
+        function toggleFullscreen() {
             console.log("[DEBUG] 嘗試切換全螢幕。");
             const docEl = document.documentElement;
             if (!document.fullscreenElement) {
@@ -492,12 +495,12 @@
             } else {
                 document.exitFullscreen().catch(err => console.error(`[ERROR] 退出全螢幕失敗: ${err.message}`));
             }
-        };
+        }
 
         /**
          * 在性能模態框中顯示瀏覽器性能指標。
          */
-        window.displayPerformanceMetrics = function() {
+        function displayPerformanceMetrics() {
             console.log("[DEBUG] 顯示性能指標。");
             const performanceDataOutput = document.getElementById('performance-data-output');
             if (!performanceDataOutput) {
@@ -576,7 +579,7 @@
             }
             
             performanceDataOutput.innerHTML = outputHtml;
-        };
+        }
 
 
         /**
@@ -584,7 +587,7 @@
          * 此函數現在還會更新背景徑向漸變顏色。
          * @param {Object} theme - 包含主題 RGB 和 light_rgb 值的對象。
          */
-        window.changeTheme = function(theme) {
+        function changeTheme(theme) {
             console.log(`[DEBUG] 改變主題為: ${theme.name}`);
             const docEl = document.documentElement;
             docEl.style.setProperty('--glow-rgb', theme.rgb);
@@ -618,12 +621,12 @@
             if (weightChart) {
                 renderWeightChart(); 
             }
-        };
+        }
 
         /**
          * 生成並將主題顏色樣本添加到主題模態框。
          */
-        window.generateThemeSwatches = function() {
+        function generateThemeSwatches() {
             console.log("[DEBUG] 生成主題樣本。");
             const themeGrid = document.getElementById('theme-grid');
             if (!themeGrid) {
@@ -639,12 +642,12 @@
                 swatch.style.ringColor = `rgb(${theme.rgb})`;
                 swatch.style.ringOffsetColor = `var(--bg-color)`;
                 swatch.title = theme.name;
-                // 使用 onclick 以兼容用戶偏好的 7.0.1 工作狀態
-                swatch.setAttribute('onclick', `changeTheme(${JSON.stringify(theme).replace(/"/g, '&quot;')})`);
+                // 使用 addEventListener 動態綁定事件，避免 onclick 的潛在問題
+                swatch.addEventListener('click', () => changeTheme(theme));
                 themeGrid.appendChild(swatch);
             });
             console.log("[DEBUG] 主題樣本已生成。");
-        };
+        }
         
         // --- 數據與計時邏輯 ---
         /**
@@ -696,7 +699,7 @@
             const nextYear = getNextYearly(new Date(CONFIG.START_DATE));
             
             timingElement.innerHTML = `<ul>
-                <li>兔可可已與吾等共度 ${elapsedDays} 太陽週期。</li>
+                <li>Bunny CC 已與吾等共度 ${elapsedDays} 太陽週期。</li>
                 <li>下個百年標記: ${formatDate(next100.date)} (週期 ${next100.count})。</li>
                 <li>下個 180 日標記: ${formatDate(next180.date)} (週期 ${next180.count})。</li>
                 <li>下個 300 日標記: ${formatDate(next300.date)} (週期 ${next300.count})。</li>
@@ -707,6 +710,7 @@
         
         /**
          * 從 JSON 文件加載寵物記錄並處理以用於顯示和圖表。
+         * 現在使用 content_fetcher 來加載上傳的文件。
          */
         async function loadAndProcessData() {
             console.log("[DEBUG] 開始數據加載與處理。");
@@ -720,12 +724,12 @@
             allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">啟動寵物檔案檢索中...請稍候。</p>`;
 
             try {
-                // 使用標準 fetch 進行 GitHub Pages 部署
-                const response = await fetch(CONFIG.PET_RECORDS_PATH);
-                if (!response.ok) {
-                    throw new Error(`HTTP 錯誤! 狀態: ${response.status} 來自 ${CONFIG.PET_RECORDS_PATH}`);
-                }
-                const records = await response.json();
+                // 使用 content_fetcher 來加載上傳的文件
+                const recordsText = await content_fetcher.fetch({
+                    query: CONFIG.PET_RECORDS_FETCH_ID,
+                    source_references: [{ id: CONFIG.PET_RECORDS_FETCH_ID, type: 'FILE' }]
+                });
+                const records = JSON.parse(recordsText);
                 console.log('[DEBUG] 已加載並解析寵物記錄數據:', records);
                 
                 // 處理所有記錄: 轉換時間戳並添加 31 年偏移
@@ -739,7 +743,7 @@
 
                 // 過濾體重圖表數據
                 weightChartData = records
-                    .filter(r => r.activity === '體重測量' && typeof r.weight === 'number' && r.weight > 0)
+                    .filter(r => r.activity === '体重测量' && typeof r.weight === 'number' && r.weight > 0)
                     .map(r => {
                         const dateTimestamp = typeof r.date === 'number' ? Math.floor(r.date) : Date.parse(r.date) / 1000;
                         const d = new Date(dateTimestamp * 1000);
@@ -820,7 +824,7 @@
             weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    // 標籤現在是簡單的日期字符串，而不是 'time' 刻度的 Date 對象
+                    // 標籤是簡單的日期字符串，而不是 'time' 刻度的 Date 對象
                     labels: weightChartData.map(d => d.date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })),
                     datasets: [{
                         label: '質量 (g)',
@@ -938,7 +942,7 @@
             const prevY = currentRabbitY;
 
             const distanceX = targetX - currentRabbitX;
-            const distanceY = targetY - currentRabbitY; 
+            const distanceY = targetY - currentY; // Corrected: should be targetY - currentY, not targetY - currentRabbitY
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
             if (distance > 0) { // 只有當存在距離時才移動
@@ -1305,6 +1309,39 @@
             console.log("[DEBUG] 更新日誌已填充。");
         }
 
+        /**
+         * 設置所有 UI 按鈕的事件監聽器。
+         * 這是為了解決 `Uncaught SyntaxError: Unexpected identifier 'addEventListener'` 錯誤。
+         */
+        function setupEventListeners() {
+            console.log("[DEBUG] 設置事件監聽器。");
+            document.getElementById('changelog-btn')?.addEventListener('click', () => toggleModal('changelog-modal'));
+            document.getElementById('theme-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
+            document.getElementById('performance-btn')?.addEventListener('click', () => toggleModal('performance-modal'));
+            document.getElementById('fullscreen-btn')?.addEventListener('click', toggleFullscreen);
+
+            // 模態框關閉按鈕
+            document.getElementById('changelog-close-btn')?.addEventListener('click', () => toggleModal('changelog-modal'));
+            document.getElementById('theme-close-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
+            document.getElementById('performance-close-btn')?.addEventListener('click', () => toggleModal('performance-modal'));
+            
+            // 性能模態框中的激活感應器按鈕
+            document.getElementById('activate-sensor-btn')?.addEventListener('click', displayPerformanceMetrics);
+
+            // 模態框疊加層點擊關閉功能
+            document.getElementById('changelog-modal')?.addEventListener('click', (event) => {
+                if (event.target.id === 'changelog-modal') toggleModal('changelog-modal');
+            });
+            document.getElementById('theme-modal')?.addEventListener('click', (event) => {
+                if (event.target.id === 'theme-modal') toggleModal('theme-modal');
+            });
+            document.getElementById('performance-modal')?.addEventListener('click', (event) => {
+                if (event.target.id === 'performance-modal') toggleModal('performance-modal');
+            });
+
+            console.log("[DEBUG] 事件監聽器已設置。");
+        }
+
 
         // --- 主 window.onload 監聽器 ---
         // 使用 window.onload 以確保所有 DOM 元素在嘗試獲取其引用或附加事件監聽器之前已完全加載並可訪問。
@@ -1349,6 +1386,9 @@
                 console.error("[ERROR] 初始化時未找到頭像圖片元素。");
             }
 
+            // 設置事件監聽器
+            setupEventListeners();
+            
             // 開始計時器更新
             setInterval(updateTiming, 100);
             console.log("[DEBUG] 計時器更新已啟動。");
