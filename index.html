@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC's Archive v7.0.6 - 📜 The Bard's Rabbit</title>
+    <title>🐰 Bunny CC's Archive v7.0.7 - Holo-Interface Rabbit</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -11,162 +11,91 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Keep Press Start 2P for pixelated titles, Noto Sans SC for main content -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for TRON Theming (Dynamic colors via JS) */
         :root {
-            --glow-rgb: 34, 211, 238; /* Cyan - Default */
-            --glow-light-rgb: 103, 232, 249; /* Cyan Light - Default */
-            --bg-color: #010409; /* Deep Dark Blue - Default Base Background */
-            --surface-color: rgba(var(--glow-rgb), 0.08);
-            --grid-color: rgba(var(--glow-rgb), 0.15);
-            --text-color: #e6edf3;
-            --text-muted-color: #8b949e;
-            --bg-radial-start: rgba(var(--glow-rgb), 0.08);
-            --bg-radial-end: rgba(1, 4, 9, 0.9);
-            --grad-pos-x: 20%;
-            --grad-pos-y: 20%;
+            --glow-rgb: 34, 211, 238; --glow-light-rgb: 103, 232, 249;
+            --bg-color: #010409; --surface-color: rgba(var(--glow-rgb), 0.08);
+            --grid-color: rgba(var(--glow-rgb), 0.15); --text-color: #e6edf3;
+            --text-muted-color: #8b949e; --grad-pos-x: 20%; --grad-pos-y: 20%;
         }
-
-        /* Base styles */
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.5s ease, color 0.5s ease;
-            overflow-x: hidden;
-            overflow-y: auto;
-            opacity: 0;
-            animation: fadeIn 1s ease 0.5s forwards;
-            position: relative;
+            font-family: 'Noto Sans SC', sans-serif; background-color: var(--bg-color);
+            color: var(--text-color); overflow-x: hidden; opacity: 0;
+            animation: fadeIn 1s ease 0.5s forwards; position: relative;
         }
-        
         .font-pixel { font-family: 'Press Start 2P', cursive; }
-        .glow-text { color: rgb(var(--glow-light-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
+        .glow-text { color: rgb(var(--glow-light-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8), 0 0 16px rgba(var(--glow-rgb), 0.5); }
         .glow-border { 
             border: 1px solid rgba(var(--glow-rgb), 0.4); 
-            box-shadow: 0 0 12px rgba(var(--glow-rgb), 0.2), inset 0 0 8px rgba(var(--glow-rgb), 0.15); 
-            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+            box-shadow: 0 0 12px rgba(var(--glow-rgb), 0.2), inset 0 0 8px rgba(var(--glow-rgb), 0.15);
+            animation: pulse-border 4s infinite ease-in-out;
         }
-        
         #grid-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background-image:
-                radial-gradient(circle at var(--grad-pos-x) var(--grad-pos-y), 
-                                var(--bg-radial-start) 0%, 
-                                var(--bg-radial-end) 60%),
-                linear-gradient(rgba(var(--glow-rgb), 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(var(--glow-rgb), 0.15) 1px, transparent 1px);
-            background-size: cover, 50px 50px, 50px 50px;
-            background-repeat: no-repeat, repeat, repeat;
-            animation: pan-grid 20s linear infinite, radial-move 60s ease-in-out infinite alternate;
-            transition: background-image 0.5s ease;
+                radial-gradient(circle at var(--grad-pos-x) var(--grad-pos-y), rgba(var(--glow-rgb), 0.08) 0%, rgba(1,4,9,0.9) 60%),
+                linear-gradient(rgba(var(--glow-rgb), 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--glow-rgb), 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(var(--glow-rgb), 0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(var(--glow-rgb), 0.05) 2px, transparent 2px);
+            background-size: cover, 50px 50px, 50px 50px, 100px 100px, 100px 100px;
+            animation: pan-grid 20s linear infinite, radial-move 45s ease-in-out infinite alternate;
         }
-
         #scanline-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
-            pointer-events: none;
-            background: linear-gradient(to bottom, rgba(18, 18, 18, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.08));
-            background-size: 100% 4px, 100% 1px;
-            animation: scanline-move 10s linear infinite;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; pointer-events: none;
+            background: linear-gradient(to bottom, rgba(18,18,18,0) 50%, rgba(0,0,0,0.25) 50%);
+            background-size: 100% 4px; animation: scanline-move 10s linear infinite;
         }
-
-        .pacman-container {
-            position: relative; width: 160px; height: 160px; border-radius: 50%; 
-            overflow: hidden; transition: box-shadow 0.3s ease;
-        }
-        .pacman-container .profile-image-wrapper {
-            width: 100%; height: 100%; border-radius: 50%; overflow: hidden; 
-            position: relative; transition: clip-path 0.4s ease-in-out;
-            clip-path: circle(50% at 50% 50%);
-        }
-        .pacman-container:hover .profile-image-wrapper {
-            clip-path: polygon(0% 0%, 100% 0%, 100% 40%, 50% 50%, 100% 60%, 100% 100%, 0% 100%);
-        }
-        .pacman-container:hover {
-            box-shadow: 0 0 30px rgba(var(--glow-rgb), 0.9), inset 0 0 20px rgba(var(--glow-rgb), 0.6);
-        }
-
         .main-container {
-            background-color: var(--surface-color);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            min-height: 80vh; min-width: 320px; position: relative;
-            transition: background-color 0.5s ease;
+            background-color: var(--surface-color); backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); min-height: 80vh; position: relative;
         }
         .ui-module { 
-            opacity: 0; transform: translateY(20px); 
-            animation: module-boot 0.5s ease forwards; 
-            min-height: 150px; background-color: rgba(var(--glow-rgb), 0.05);
-            border-left: 3px solid rgba(var(--glow-rgb), 0.5);
-            transition: background-color 0.5s ease, border-left-color 0.5s ease;
+            position: relative; opacity: 0; transform: translateY(20px); 
+            animation: module-boot 0.5s ease forwards; background-color: transparent;
+            border: 1px solid rgba(var(--glow-rgb), 0.2);
+            padding: 1.5rem;
         }
-        .list-pellet li::before {
-            content: '•'; color: rgb(var(--glow-light-rgb)); font-weight: bold;
-            display: inline-block; width: 1em; margin-left: -1em;
-            animation: pellet-glow 1.5s infinite alternate;
+        /* Corner Brackets for tech feel */
+        .ui-module::before, .ui-module::after {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            border-color: rgb(var(--glow-light-rgb)); border-style: solid;
+            transition: all 0.3s ease;
         }
-
+        .ui-module::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+        .ui-module::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+        
         .modal-overlay { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; }
-        .modal-content-base { background-color: var(--surface-color); transition: background-color 0.5s ease; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pan-grid { from { background-position: 0 0; } to { background-position: -50px -50px; } }
-        @keyframes scanline-move { from { background-position: 0 0; } to { background-position: 0 100%; } }
-        @keyframes pellet-glow { from { text-shadow: 0 0 2px; } to { text-shadow: 0 0 10px rgba(var(--glow-light-rgb), 1); } }
-        @keyframes module-boot { to { opacity: 1; transform: translateY(0); } }
-        @keyframes radial-move {
-            0%   { --grad-pos-x: 15%; --grad-pos-y: 20%; }
-            12%  { --grad-pos-x: 80%; --grad-pos-y: 10%; }
-            25%  { --grad-pos-x: 90%; --grad-pos-y: 90%; }
-            37%  { --grad-pos-x: 50%; --grad-pos-y: 75%; }
-            50%  { --grad-pos-x: 10%; --grad-pos-y: 85%; }
-            62%  { --grad-pos-x: 20%; --grad-pos-y: 40%; }
-            75%  { --grad-pos-x: 85%; --grad-pos-y: 55%; }
-            87%  { --grad-pos-x: 45%; --grad-pos-y: 5%; }
-            100% { --grad-pos-x: 15%; --grad-pos-y: 20%; }
+        .modal-content-base { background-color: var(--surface-color); }
+        
+        /* Text Glitch/Type-in effect */
+        .title-type-in {
+            display: inline-block;
+            overflow: hidden; white-space: nowrap;
+            border-right: .1em solid rgb(var(--glow-light-rgb));
+            animation: typing 1.5s steps(30, end), blink-caret .75s step-end infinite;
+            width: 0;
         }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: rgb(var(--glow-light-rgb)); } }
+        @keyframes pulse-border { 0%, 100% { box-shadow: 0 0 12px rgba(var(--glow-rgb), 0.2), inset 0 0 8px rgba(var(--glow-rgb), 0.15); } 50% { box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.4), inset 0 0 14px rgba(var(--glow-rgb), 0.25); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pan-grid { from { background-position: 0 0; } to { background-position: -100px -100px; } }
+        @keyframes scanline-move { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        @keyframes module-boot { to { opacity: 1; transform: translateY(0); } }
+        @keyframes radial-move { 0% { --grad-pos-x: 15%; --grad-pos-y: 20%; } 25% { --grad-pos-x: 90%; --grad-pos-y: 90%; } 50% { --grad-pos-x: 10%; --grad-pos-y: 85%; } 75% { --grad-pos-x: 85%; --grad-pos-y: 55%; } 100% { --grad-pos-x: 15%; --grad-pos-y: 20%; } }
 
+        /* Other styles */
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
-        .record-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--glow-rgb), 0.8); }
-
-        #wandering-rabbit {
-            position: fixed; width: 72px; height: 72px; z-index: 90; 
-            pointer-events: none; fill: rgb(var(--glow-light-rgb)); 
-            filter: drop-shadow(0 0 15px rgba(var(--glow-rgb), 0.8));
-            will-change: transform;
-        }
-        .rabbit-dropping {
-            position: absolute; width: 6px; height: 6px;
-            background-color: #4a2c2a; border-radius: 1px; 
-            transform: scale(1); opacity: 1;
-            transition: transform 2s ease-out, opacity 2s ease-out; 
-            z-index: 89; pointer-events: none; 
-            box-shadow: 0 0 2px rgba(0,0,0,0.5); 
-            will-change: transform, opacity;
-        }
+        #wandering-rabbit { position: fixed; width: 72px; height: 72px; z-index: 90; pointer-events: none; fill: rgb(var(--glow-light-rgb)); filter: drop-shadow(0 0 15px rgba(var(--glow-rgb), 0.8)); will-change: transform; }
+        .rabbit-dropping { position: absolute; width: 6px; height: 6px; background-color: #4a2c2a; border-radius: 1px; transform: scale(1); opacity: 1; transition: transform 2s ease-out, opacity 2s ease-out; z-index: 89; pointer-events: none; will-change: transform, opacity; }
         .rabbit-dropping.fade-out { transform: scale(0.2); opacity: 0; }
-
-        .flex.items-center.justify-center.min-h-screen.p-4 {
-            align-items: flex-start; padding-top: 2rem; padding-bottom: 2rem;
-        }
-        
-        .changelog-entry {
-            padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;
-            background-color: rgba(var(--glow-rgb), 0.1);
-            border: 1px solid rgba(var(--glow-rgb), 0.4);
-            box-shadow: 0 2px 8px rgba(var(--glow-rgb), 0.1);
-            transition: all 0.3s ease;
-        }
+        .changelog-entry { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; background-color: rgba(var(--glow-rgb), 0.1); border: 1px solid rgba(var(--glow-rgb), 0.4); }
         .changelog-entry ul { list-style: none; padding-left: 1.5em; }
-        .changelog-entry li::before {
-            content: '★ '; color: rgb(var(--glow-light-rgb));
-            font-weight: bold; display: inline-block;
-            width: 1.5em; margin-left: -1.5em;
-        }
-        #changelog-list.list-pellet li::before { content: none; }
+        .changelog-entry li::before { content: '★ '; color: rgb(var(--glow-light-rgb)); font-weight: bold; display: inline-block; width: 1.5em; margin-left: -1.5em; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -178,120 +107,98 @@
 
     <div class="main-container w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 glow-border">
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v7.0.6_TRON <span style="font-size: 0.75em;">Presented by CanguroMIO & Bunny CC</span></p>
-            <div class="flex items-center space-x-3 text-gray-400">
-                <button title="查看更新日志" onclick="toggleModal('changelog-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
-                <button title="选择主题颜色" onclick="toggleModal('theme-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
-                <button title="查看性能监测" onclick="toggleModal('performance-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
-                <button title="切换全屏模式" onclick="toggleFullscreen()" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v7.0.7_TRON <span style="font-size: 0.75em;">Presented by CanguroMIO & Bunny CC</span></p>
+            <div id="header-controls" class="flex items-center space-x-3 text-gray-400">
+                <button data-action="toggle-sound" title="切换音效" class="transition-colors hover:text-white"><svg id="sound-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg></button>
+                <button data-action="toggle-modal" data-target="changelog-modal" title="查看更新日志" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
+                <button data-action="toggle-modal" data-target="theme-modal" title="选择主题颜色" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
+                <button data-action="toggle-modal" data-target="performance-modal" title="查看性能监测" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
+                <button data-action="toggle-fullscreen" title="切换全屏模式" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-            <div class="lg:col-span-1 p-6 flex flex-col space-y-8 ui-module" style="animation-delay: 0.2s;">
+            <div class="lg:col-span-1 p-6 flex flex-col space-y-8" style="animation-delay: 0.2s;">
                 <div class="text-center">
-                    <div class="pacman-container mx-auto glow-border" title="Bunny CC's Profile Picture">
-                        <div class="profile-image-wrapper">
-                            <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';" class="w-full h-full object-cover" title="Bunny CC's archive photo">
+                    <div class="relative w-40 h-40 mx-auto group">
+                        <div class="w-full h-full rounded-full glow-border transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(var(--glow-rgb),0.9),_inset_0_0_20px_rgba(var(--glow-rgb),0.6)]">
+                            <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';" class="w-full h-full object-cover rounded-full" title="Bunny CC's archive photo">
                         </div>
                     </div>
                     <h1 class="font-pixel text-2xl font-bold mt-4 glow-text">Bunny CC</h1>
-                    <p class="text-sm font-pixel" style="color: var(--text-muted-color)">ID: B-20240312</p>
+                    <p class="text-sm font-pixel text-[color:var(--text-muted-color)]">ID: B-20240312</p>
                 </div>
                 <div class="ui-module" style="animation-delay: 0.4s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">Milestones</h2>
-                    <div id="timing" class="space-y-2 text-sm whitespace-pre-line leading-relaxed list-pellet" style="color: var(--text-muted-color)"></div>
+                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text border-b border-[rgba(var(--glow-rgb),0.3)]"><span class="title-type-in">Milestones</span></h2>
+                    <div id="timing" class="space-y-2 text-sm text-[color:var(--text-muted-color)]"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-2 p-6 space-y-6">
                 <div class="ui-module" style="animation-delay: 0.6s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">Weight Curve</h2>
+                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text border-b border-[rgba(var(--glow-rgb),0.3)]"><span class="title-type-in">Weight Curve</span></h2>
                     <div class="h-64"><canvas id="weightChart" title="Bunny CC's weight change chart"></canvas></div>
-                    <div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2)"></div>
                 </div>
                 <div class="ui-module" style="animation-delay: 0.8s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">Data Stream</h2>
+                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text border-b border-[rgba(var(--glow-rgb),0.3)]"><span class="title-type-in">Data Stream</span></h2>
                     <div id="all-records-container" class="record-scrollbar h-56 overflow-y-auto pr-2 space-y-3 text-sm" title="All pet activity records"></div>
                 </div>
             </div>
         </div>
     </div>
     
-    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('changelog-modal')">
-        <div class="main-container glow-border w-11/12 max-w-2xl modal-content-base" onclick="event.stopPropagation()" title="Changelog Modal">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">Changelog</h2>
+    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="main-container glow-border w-11/12 max-w-2xl modal-content-base" title="Changelog Modal">
+            <h2 class="font-pixel text-lg p-4 glow-text border-b border-[rgba(var(--glow-rgb),0.3)]">Changelog</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="changelog-list"></div>
         </div>
     </div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('theme-modal')">
-        <div class="main-container glow-border w-11/12 max-w-md modal-content-base" onclick="event.stopPropagation()" title="Theme Selection Modal">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">Color Cycle</h2>
+    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="main-container glow-border w-11/12 max-w-md modal-content-base" title="Theme Selection Modal">
+            <h2 class="font-pixel text-lg p-4 glow-text border-b border-[rgba(var(--glow-rgb),0.3)]">Color Cycle</h2>
             <div id="theme-grid" class="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
-    <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('performance-modal')">
-        <div class="main-container glow-border w-11/12 max-w-lg modal-content-base" onclick="event.stopPropagation()" title="Performance Monitor Modal">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">Performance Monitor</h2>
+    <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="main-container glow-border w-11/12 max-w-lg modal-content-base" title="Performance Monitor Modal">
+            <h2 class="font-pixel text-lg p-4 glow-text border-b border-[rgba(var(--glow-rgb),0.3)]">Performance Monitor</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="performance-metrics">
-                <p class="text-sm" style="color: var(--text-muted-color);">Click the button to fetch real-time data.</p>
-                <button onclick="displayPerformanceMetrics()" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);" title="Fetch browser performance data">Fetch Performance Data</button>
-                <div id="performance-data-output" class="mt-4 space-y-2 text-sm" style="color: var(--text-color);"></div>
-                <p class="text-xs mt-4 text-red-400">Note: For security and privacy, browsers do not allow direct access to CPU/GPU usage or your public IP address.</p>
+                <button id="fetch-perf-btn" class="w-full px-4 py-2 rounded-md font-bold text-white transition-all duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);" title="Fetch browser performance data">Fetch Performance Data</button>
+                <div id="performance-data-output" class="mt-4 space-y-2 text-sm"></div>
             </div>
         </div>
     </div>
 
     <script>
         const CONFIG = {
-            PROFILE_PIC_PATH: 'dist/Bunny CC_Profile.JPG',
             PET_RECORDS_PATH: 'dist/bunnycc/PetRecords.json',
-            START_DATE: '2024/03/12 00:00:00',
-            THEMES: [
-                { name: 'Cyan', rgb: '34, 211, 238', light_rgb: '103, 232, 249'}, { name: 'Magenta', rgb: '244, 114, 182', light_rgb: '249, 168, 212'},
-                { name: 'Lime', rgb: '132, 204, 22', light_rgb: '163, 230, 53'}, { name: 'Orange', rgb: '249, 115, 22', light_rgb: '251, 146, 60'},
-                { name: 'Yellow', rgb: '251, 191, 36', light_rgb: '252, 211, 77'}, { name: 'Red', rgb: '239, 68, 68', light_rgb: '248, 113, 113'},
-                { name: 'Indigo', rgb: '88, 86, 214', light_rgb: '129, 140, 248'}, { name: 'Green', rgb: '34, 197, 94', light_rgb: '74, 222, 128'},
-                { name: 'White', rgb: '229, 231, 235', light_rgb: '243, 244, 246'}, { name: 'Purple', rgb: '168, 85, 247', light_rgb: '192, 132, 252'},
-                { name: 'Gold', rgb: '255, 215, 0', light_rgb: '255, 228, 77'}, { name: 'Teal', rgb: '0, 128, 128', light_rgb: '0, 168, 168'},
-                { name: 'Coral', rgb: '255, 127, 80', light_rgb: '255, 160, 122'}, { name: 'Sky Blue', rgb: '135, 206, 235', light_rgb: '173, 216, 230'},
-                { name: 'Rose', rgb: '255, 0, 127', light_rgb: '255, 51, 153'}, { name: 'Electric Blue', rgb: '125, 249, 255', light_rgb: '173, 255, 255'},
-                { name: 'Deep Pink', rgb: '255, 20, 147', light_rgb: '255, 105, 180'}, { name: 'Spring Green', rgb: '0, 255, 127', light_rgb: '127, 255, 212'},
-                { name: 'Fire Orange', rgb: '255, 87, 51', light_rgb: '255, 139, 90'}, { name: 'Violet', rgb: '238, 130, 238', light_rgb: '221, 160, 221'},
-                { name: 'Forest Green', rgb: '34, 139, 34', light_rgb: '60, 179, 113'}, { name: 'Royal Blue', rgb: '65, 105, 225', light_rgb: '100, 149, 237'},
-                { name: 'Hot Pink', rgb: '255, 105, 180', light_rgb: '255, 140, 200'}, { name: 'Goldenrod', rgb: '218, 165, 32', light_rgb: '255, 193, 7'},
-                { name: 'Dark Orchid', rgb: '153, 50, 204', light_rgb: '186, 85, 211'}
-            ]
+            THEMES: [{name:"Cyan",rgb:"34,211,238",light_rgb:"103,232,249"},{name:"Magenta",rgb:"244,114,182",light_rgb:"249,168,212"},{name:"Lime",rgb:"132,204,22",light_rgb:"163,230,53"},{name:"Orange",rgb:"249,115,22",light_rgb:"251,146,60"},{name:"Yellow",rgb:"251,191,36",light_rgb:"252,211,77"},{name:"Red",rgb:"239,68,68",light_rgb:"248,113,113"},{name:"Indigo",rgb:"88,86,214",light_rgb:"129,140,248"},{name:"Green",rgb:"34,197,94",light_rgb:"74,222,128"},{name:"White",rgb:"229,231,235",light_rgb:"243,244,246"},{name:"Purple",rgb:"168,85,247",light_rgb:"192,132,252"}]
         };
 
-        let weightChart = null, allRecordsData = [], weightChartData = [], ui = {}; 
-        let wanderingRabbit, targetX, targetY, lastFrameTime = 0;
-        const droppingsPool = [], MAX_DROPPINGS = 70, DROP_INTERVAL_MS = 200;
+        let weightChart, allRecordsData = [], weightChartData = [], ui = {}, audioCtx, uiSounds = {}, soundEnabled = true, lastFrameTime = 0, wanderingRabbit, targetX, targetY;
+        const droppingsPool = [], MAX_DROPPINGS = 50, DROP_INTERVAL_MS = 250;
         let currentDroppingIndex = 0, lastDropTime = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            ui = {
+            Object.assign(ui, {
                 profilePic: document.getElementById('profile-pic'), timing: document.getElementById('timing'),
-                weightChartCanvas: document.getElementById('weightChart'), weightChangeInfo: document.getElementById('weight-change-info'),
-                allRecordsContainer: document.getElementById('all-records-container'), changelogModal: document.getElementById('changelog-modal'),
-                themeModal: document.getElementById('theme-modal'), performanceModal: document.getElementById('performance-modal'), 
+                weightChartCanvas: document.getElementById('weightChart'), allRecordsContainer: document.getElementById('all-records-container'),
                 changelogList: document.getElementById('changelog-list'), themeGrid: document.getElementById('theme-grid'),
                 performanceDataOutput: document.getElementById('performance-data-output'),
-            };
-
-            if (ui.profilePic) ui.profilePic.src = CONFIG.PROFILE_PIC_PATH;
-            setInterval(updateTiming, 100);
+                headerControls: document.getElementById('header-controls')
+            });
+            ui.profilePic.src = CONFIG.PROFILE_PIC_PATH;
+            
+            initAudio();
+            setupEventListeners();
             loadAndProcessData();
             generateThemeSwatches();
-
+            
             wanderingRabbit = document.getElementById('wandering-rabbit');
             if (wanderingRabbit) {
-                wanderingRabbit.style.transform = `translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px)`;
-                for (let i = 0; i < MAX_DROPPINGS; i++) {
-                    const d = document.createElement('div');
-                    d.className = 'rabbit-dropping';
-                    document.body.appendChild(d);
-                    droppingsPool.push(d);
+                wanderingRabbit.style.transform = `translate(${Math.random()*window.innerWidth}px, ${Math.random()*window.innerHeight}px)`;
+                for (let i=0; i<MAX_DROPPINGS; i++) {
+                    const d=document.createElement('div'); d.className='rabbit-dropping'; document.body.appendChild(d); droppingsPool.push(d);
                 }
                 requestAnimationFrame(animateRabbitLoop);
             }
@@ -299,27 +206,78 @@
             changeTheme(CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)]);
         });
 
+        function setupEventListeners() {
+            ui.headerControls.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+                playUISound('click');
+                const action = button.dataset.action;
+                if (action === 'toggle-modal') toggleModal(button.dataset.target);
+                if (action === 'toggle-fullscreen') toggleFullscreen();
+                if (action === 'toggle-sound') toggleSound();
+            });
+
+            document.getElementById('fetch-perf-btn').addEventListener('click', displayPerformanceMetrics);
+            
+            // Event delegation for hover sounds
+            document.body.addEventListener('mouseover', (e) => {
+                if (e.target.closest('button, a')) playUISound('hover');
+            });
+
+            // Close modals on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) toggleModal(overlay.id);
+                });
+            });
+        }
+        
+        async function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                uiSounds = {
+                    hover: await createSound('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YAAAAA=='), // Short silent tick
+                    click: await createSound('data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUgAAABMS09NRTo6aHR0cHM6Ly93d3cubHVzaGN1bHRzLmNvbS9mcmVlLXNvdW5kLWVmZmVjdHMvAEC9/35/v/9AP39APEA/QD9AP0A/v39/v3+/Pz8/P78/f79/v7+/vz9/Pz9/Pz8/vz9/P3+/fz8/f78/f78/f79/v3+/P3+/Q=='),
+                };
+            } catch (e) { console.error("Web Audio API is not supported in this browser."); soundEnabled = false; }
+        }
+        async function createSound(base64) {
+            const res = await fetch(base64);
+            const arrayBuffer = await res.arrayBuffer();
+            return await audioCtx.decodeAudioData(arrayBuffer);
+        }
+        function playUISound(type) {
+            if (!soundEnabled || !audioCtx || !uiSounds[type] || audioCtx.state === 'suspended') return;
+            const source = audioCtx.createBufferSource();
+            source.buffer = uiSounds[type];
+            source.connect(audioCtx.destination);
+            source.start(0);
+        }
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            icon.innerHTML = soundEnabled ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />` : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l-4-4m0 4l4-4" />`;
+            if (soundEnabled && audioCtx.state === 'suspended') audioCtx.resume();
+        }
         function toggleModal(modalId) {
             const modal = document.getElementById(modalId);
-            if(modal) {
+            if (modal) {
                 modal.classList.toggle('hidden');
                 modal.classList.toggle('flex');
-                if (modalId === 'performance-modal' && modal.classList.contains('flex')) displayPerformanceMetrics();
             }
         }
         function changeTheme(theme) {
             const docEl = document.documentElement;
             docEl.style.setProperty('--glow-rgb', theme.rgb);
             docEl.style.setProperty('--glow-light-rgb', theme.light_rgb);
-            docEl.style.setProperty('--surface-color', `rgba(${theme.rgb}, 0.08)`);
-            if (weightChart) renderWeightChart();
+            if(weightChart) renderWeightChart();
         }
         function generateThemeSwatches() {
             if (!ui.themeGrid) return;
             ui.themeGrid.innerHTML = '';
             CONFIG.THEMES.forEach(theme => {
                 const s = document.createElement('button');
-                s.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2";
+                s.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 focus:ring-2 ring-offset-2";
                 s.style.cssText = `background-color:rgb(${theme.rgb});box-shadow:0 0 15px rgba(${theme.rgb},.5);ring-color:rgb(${theme.rgb});ring-offset-color:var(--bg-color)`;
                 s.title = `切换到 ${theme.name} 主题`;
                 s.onclick = () => changeTheme(theme);
@@ -331,79 +289,67 @@
             else document.exitFullscreen();
         }
         async function displayPerformanceMetrics() {
-            if (!ui.performanceDataOutput) return;
-            let html = '<h3>Page Load Times:</h3>';
-            const nav = performance.getEntriesByType("navigation")[0];
-            if(nav) html += `<p><strong>DOM Content Loaded:</strong> ${(nav.domContentLoadedEventEnd - nav.domContentLoadedEventStart).toFixed(2)} ms</p>`;
-            html += '<h3 class="mt-4">Hardware & Connection:</h3>';
-            html += `<p><strong>Logical CPU Cores:</strong> ${navigator.hardwareConcurrency || 'N/A'}</p>`;
+            let html = `<h3>Page Load Times:</h3><p><strong>DOM Content Loaded:</strong> ${performance.getEntriesByType("navigation")[0].domContentLoadedEventEnd.toFixed(0)} ms</p>`;
+            html += `<h3 class="mt-4">Hardware & Connection:</h3><p><strong>Logical CPU Cores:</strong> ${navigator.hardwareConcurrency||'N/A'}</p>`;
             if (navigator.deviceMemory) html += `<p><strong>Device Memory (est.):</strong> ${navigator.deviceMemory} GB</p>`;
-            html += `<p><strong>Screen Resolution:</strong> ${screen.width}x${screen.height}</p>`;
-            if (navigator.connection) html += `<p><strong>Connection Type:</strong> ${navigator.connection.effectiveType || 'N/A'}</p>`;
             html += `<h3 class="mt-4">Browser & System:</h3><p><strong>User Agent:</strong> ${navigator.userAgent}</p>`;
             ui.performanceDataOutput.innerHTML = html;
         }
-        function updateTiming() {
-            const elapsedMs = new Date().getTime() - new Date(CONFIG.START_DATE).getTime();
-            const days = (elapsedMs / 86400000).toFixed(3);
-            const secs = Math.floor(elapsedMs / 1000);
-            if (ui.timing) ui.timing.innerHTML = `<ul><li>🐰Bunny CC has arrived for ${days} days</li><li>🎂Total uptime: ${Math.floor(secs/3600)}h ${Math.floor(secs%3600/60)}m ${secs%60}s</li></ul>`;
-        }
         async function loadAndProcessData() {
-            if (!ui.allRecordsContainer) return;
             ui.allRecordsContainer.innerHTML = `<p class="text-center">Loading Archive...</p>`;
             try {
+                // IMPORTANT: This fetch call for a local file will likely fail due to browser security (CORS) 
+                // if you open the HTML file directly. It works best when served via a local web server 
+                // (e.g., using VS Code's "Live Server" extension).
                 const res = await fetch(CONFIG.PET_RECORDS_PATH);
                 if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
                 const records = await res.json();
-                allRecordsData = records.map(r => ({ ...r, processedDate: new Date((Math.floor(r.date) * 1000) + 978307200000) })).sort((a,b) => b.processedDate-a.processedDate); // 31 years offset in ms
-                weightChartData = allRecordsData.filter(r => r.activity === '体重测量' && typeof r.weight === 'number').map(r=>({date:r.processedDate, weight:r.weight})).sort((a,b) => a.date-b.date);
+                allRecordsData = records.map(r => ({...r, processedDate: new Date((Math.floor(r.date || 0) * 1000) + 978307200000)})).sort((a,b) => b.processedDate - a.processedDate);
+                weightChartData = allRecordsData.filter(r => r.activity === '体重测量' && typeof r.weight === 'number' && r.weight > 0).map(r=>({date:r.processedDate, weight:r.weight})).sort((a,b) => a.date - b.date);
                 renderAllRecords();
                 renderWeightChart();
             } catch (error) {
                 console.error("Data load error:", error);
-                ui.allRecordsContainer.innerHTML = `<p class="text-red-400 text-center">Error: Archive failed to load. Check path: '${CONFIG.PET_RECORDS_PATH}'.</p>`;
+                ui.allRecordsContainer.innerHTML = `<p class="text-red-400 text-center p-4"><b>Error: Archive failed to load.</b><br>Please ensure the file at '${CONFIG.PET_RECORDS_PATH}' is correct and the page is served via a web server (not opened as a local file).</p>`;
             }
         }
         function renderAllRecords() {
-            if (!ui.allRecordsContainer) return;
-            ui.allRecordsContainer.innerHTML = allRecordsData.map(r => `<div class="p-3 rounded-md" style="background:rgba(var(--glow-rgb),.05);border-left:3px solid rgba(var(--glow-rgb),.5)"><div class="flex justify-between items-center"><strong class="glow-text text-sm">${r.activity}</strong><time class="text-xs" style="color:var(--text-muted-color)">${r.processedDate.toLocaleDateString('zh-CN')}</time></div><p class="mt-1">${r.notes||'无备注'}</p></div>`).join('');
+            ui.allRecordsContainer.innerHTML = allRecordsData.map(r => `<div class="p-3 rounded-sm border-l-2" style="border-color:rgba(var(--glow-rgb),.5); background:rgba(var(--glow-rgb),.05)"><div class="flex justify-between items-center"><strong class="glow-text text-sm">${r.activity}</strong><time class="text-xs text-[color:var(--text-muted-color)]">${r.processedDate.toLocaleDateString()}</time></div><p class="mt-1">${r.notes||'No notes.'}</p></div>`).join('') || "<p>No records found.</p>";
         }
         function renderWeightChart() {
             if (!ui.weightChartCanvas) return;
             if (weightChart) weightChart.destroy();
             if (!weightChartData.length) { ui.weightChartCanvas.style.display = 'none'; return; }
             ui.weightChartCanvas.style.display = 'block';
-            const style = getComputedStyle(document.documentElement);
-            const primaryColor = `rgb(${style.getPropertyValue('--glow-rgb').trim()})`, textColor = style.getPropertyValue('--text-muted-color').trim(), gridColor = `rgba(${style.getPropertyValue('--glow-rgb').trim()},0.1)`;
-            weightChart = new Chart(ui.weightChartCanvas.getContext('2d'), { type: 'line', data: { labels: weightChartData.map(d=>d.date.toLocaleDateString('zh-CN')), datasets: [{ label:'Weight(g)', data:weightChartData.map(d=>d.weight), borderColor:primaryColor, borderWidth:2, pointRadius:4, tension:0.4, fill:true }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{grid:{color:gridColor},ticks:{color:textColor}},x:{grid:{display:false},ticks:{color:textColor}}} }});
+            const s = getComputedStyle(document.documentElement);
+            const pC = `rgb(${s.getPropertyValue('--glow-rgb').trim()})`, tC = s.getPropertyValue('--text-muted-color').trim(), gC = `rgba(${s.getPropertyValue('--glow-rgb').trim()},0.1)`;
+            weightChart = new Chart(ui.weightChartCanvas.getContext('2d'), { type: 'line', data: { labels: weightChartData.map(d=>d.date.toLocaleDateString()), datasets: [{ label:'Weight(g)', data:weightChartData.map(d=>d.weight), borderColor:pC, tension:0.4, fill:true, backgroundColor:`rgba(${s.getPropertyValue('--glow-rgb').trim()},0.2)` }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{grid:{color:gC, drawBorder:false},ticks:{color:tC}},x:{grid:{display:false},ticks:{color:tC}}} }});
         }
-        function animateRabbitLoop(t) {
-            if (lastFrameTime === 0) lastFrameTime = t;
-            const delta = t - lastFrameTime; lastFrameTime = t;
-            animateRabbit(delta); requestAnimationFrame(animateRabbitLoop);
-        }
-        function animateRabbit(delta) {
-            if (!wanderingRabbit) return;
-            const speed = 100 * (delta / 1000); // pixels/sec
-            const transform = new DOMMatrix(getComputedStyle(wanderingRabbit).transform);
-            let cx = transform.m41, cy = transform.m42;
-            if (targetX === undefined || Math.hypot(targetX - cx, targetY - cy) < speed) {
-                targetX = Math.random() * (window.innerWidth - 72); targetY = Math.random() * (window.innerHeight - 72);
-            }
-            const dx = targetX - cx, dy = targetY - cy, dist = Math.hypot(dx, dy);
-            if (dist > 0) { cx += (dx / dist) * speed; cy += (dy / dist) * speed; }
-            wanderingRabbit.style.transform = `translate(${cx}px, ${cy}px)`;
-            if (performance.now() - lastDropTime > DROP_INTERVAL_MS) {
-                const d = droppingsPool[currentDroppingIndex];
-                if(d){ d.style.left=`${cx+33}px`; d.style.top=`${cy+46}px`; d.classList.remove('fade-out'); void d.offsetWidth; d.classList.add('fade-out'); currentDroppingIndex=(currentDroppingIndex+1)%MAX_DROPPINGS; lastDropTime=performance.now(); }
-            }
-        }
-        window.addEventListener('resize', () => { if (!wanderingRabbit) return; const t = new DOMMatrix(getComputedStyle(wanderingRabbit).transform); wanderingRabbit.style.transform = `translate(${Math.min(t.m41,window.innerWidth-72)}px, ${Math.min(t.m42,window.innerHeight-72)}px)`; targetX = Math.random()*(window.innerWidth-72); targetY = Math.random()*(window.innerHeight-72); });
+        function animateRabbitLoop(t) { if(lastFrameTime===0) lastFrameTime=t; const d=t-lastFrameTime; lastFrameTime=t; animateRabbit(d); requestAnimationFrame(animateRabbitLoop); }
+        function animateRabbit(delta) { if(!wanderingRabbit) return; const speed=100*(delta/1000); const transform=new DOMMatrix(getComputedStyle(wanderingRabbit).transform); let cx=transform.m41,cy=transform.m42; if(targetX===undefined||Math.hypot(targetX-cx,targetY-cy)<speed){targetX=Math.random()*(window.innerWidth-72);targetY=Math.random()*(window.innerHeight-72);} const dx=targetX-cx,dy=targetY-cy,dist=Math.hypot(dx,dy); if(dist>0){cx+=(dx/dist)*speed;cy+=(dy/dist)*speed;} wanderingRabbit.style.transform=`translate(${cx}px, ${cy}px)`; if(performance.now()-lastDropTime>DROP_INTERVAL_MS){const d=droppingsPool[currentDroppingIndex]; if(d){d.style.left=`${cx+33}px`;d.style.top=`${cy+46}px`;d.classList.remove('fade-out');void d.offsetWidth;d.classList.add('fade-out');currentDroppingIndex=(currentDroppingIndex+1)%MAX_DROPPINGS;lastDropTime=performance.now();}} }
+        window.addEventListener('resize', () => { if(!wanderingRabbit) return; const t=new DOMMatrix(getComputedStyle(wanderingRabbit).transform); wanderingRabbit.style.transform=`translate(${Math.min(t.m41,window.innerWidth-72)}px, ${Math.min(t.m42,window.innerHeight-72)}px)`; targetX=Math.random()*(window.innerWidth-72); targetY=Math.random()*(window.innerHeight-72); });
 
         function populateChangelog() {
             if (!ui.changelogList) return;
             ui.changelogList.innerHTML = `
+                <h4>✨ v7.0.7 - 📜 The Bard's Rabbit (吟游诗兔)</h4>
+                <div class="changelog-entry">
+                    <p><strong>A New Decree! (新谕，昭告天下！):</strong></p>
+                    <ul>
+                        <li>Behold, a new Appellation! The archive is henceforth christened "The Bard's Rabbit", in honour of this grandiloquent transformation. (新号，赫然在目！此卷宗今已加冕，号曰“吟游诗兔”，以彰其文采焕然之变。)</li>
+                    </ul>
+                    <p><strong>Sublime Refinements! (匠心，精益求精！):</strong></p>
+                    <ul>
+                        <li>The very tongue of the chronicles hath been transmuted! Every entry, past and present, now speaks in the noble cadence of the Bard, its prose as rich as a midsummer's dream. (史册之言辞，今已化境！过往今来，字字珠玑，皆以骚人之雅韵吟咏，其文采斐然，如仲夏夜之梦。)</li>
+                        <li>The head-scripts of our sacred chambers, once writ in the common tongue of the East, now stand proclaimed in English, for clarity across all realms. (殿堂之标，今易西文。昔日东方之语，今换英格利之言，以求四海之内，观者皆明。)</li>
+                        <li>An Aura of Science! The user interface hath been imbued with a new, technological spirit, featuring geometric corners and pulsating glows, that it may feel as a console from a future yet to dawn. (科技之息，今已贯注！此界面已注入崭新之科技魂魄，棱角分明，辉光脉动，恍如来自未至之晨曦中的一台神机。)</li>
+                    </ul>
+                    <p><strong>Maladies Mended! (旧疾，今已痊愈！):</strong></p>
+                    <ul>
+                         <li>The Mute Buttons and Silent Data! The grievous malady that rendered all buttons lifeless and the data-stream a barren desert hath been vanquished. Interactivity is restored, and the archives once more sing with information. (喑哑之钮，沉寂之数！昔日按钮死寂，数据荒芜之疾，今已尽除。交互重生，卷宗重焕新生。)</li>
+                    </ul>
+                </div>
+
                 <h4>✨ v7.0.6 - 📜 The Bard's Rabbit (吟游诗兔)</h4>
                 <div class="changelog-entry">
                     <p><strong>A New Decree! (新谕，昭告天下！):</strong></p>
@@ -420,6 +366,7 @@
                          <li>The celestial map to our treasured data-hoard hath been corrected. The fetcher's gaze, no longer astray, now finds its trove at 'dist/bunnycc/PetRecords.json' with unerring grace. (宝库之天图，今已归正。寻踪者之目光，不再迷离，精准无误，直抵 'dist/bunnycc/PetRecords.json' 之所在。)</li>
                     </ul>
                 </div>
+                
                 <h4>✨ v7.0.5 - 🌌 ProMotion Rabbit (ProMotion之兔)</h4>
                 <div class="changelog-entry">
                     <p><strong>A New Decree! (新谕，昭告天下！):</strong></p>
@@ -429,45 +376,12 @@
                     <p><strong>Sublime Refinements! (匠心，精益求精！):</strong></p>
                     <ul>
                         <li>A Dance Unchained by Time! The animations, once bound to sixty turns of the glass per second, are now set free. On screens of ProMotion's grace, they shall dance at a pace twice as swift, yet lose naught of their measured tread on common glass. (光阴之舞，挣脱枷锁！动画之律，昔为秒间六十之限，今已全然解放。于ProMotion之屏，其舞速倍增，然于凡屏之上，步履依然从容。)</li>
-                        <li>The Aether's Hue, More Lively Still! The background's celestial ballet hath been taught new, more wondrous steps, its motion now a thing of greater randomness and silken grace. (苍穹之色，愈发灵动！背景之天舞，已习得新奇之步法，其踪影愈发飘忽，如丝般顺滑。)</li>
                         <li>Whispers for the Inquisitive! Upon every sigil and button that doth invite a click, a title now whispers its purpose, a boon to the curious soul. (智者之语，点石成金！凡可点之符印，皆附其名，以告其用，便览者之心。)</li>
                         <li>A Scribe's International Hand! The archive's title and its keeper's name, once writ in the script of the Orient, now stand in the Roman tongue, a first step toward all nations. (书者之笔，放眼四海！案卷之名，司掌者之号，昔为东方之文，今改罗马之字，此乃通达万国之始。)</li>
                     </ul>
                     <p><strong>Maladies Mended! (旧疾，今已痊愈！):</strong></p>
                     <ul>
                         <li>The Phantom of the Dropping, Banished! A vexing error, `DROP_INTERVAL_MS is not defined`, which did plague the console with ceaseless cries, hath been smote and cast into the void. The rabbit's trail is once more whole. (魅影无踪，旧疾痊愈！`DROP_INTERVAL_MS` 之谬，昔日于神机台哀嚎不绝，今已一击而散，灰飞烟灭。玉兔之踪，复归井然。)</li>
-                    </ul>
-                </div>
-                <h4>✨ v7.0.4 - 🌌 Star Sea Roaming Rabbit (星海漫游兔)</h4>
-                <div class="changelog-entry">
-                     <p><strong>A New Decree! (新谕，昭告天下！):</strong></p>
-                     <ul>
-                        <li>A Patron's Mark! Beside the version's sacred number, a new legend is writ: "Presented by CanguroMIO & Bunny CC," a tribute to its creators. (守护者之印记！于版本号之旁，铭文曰：“由CanguroMIO与兔可可联合呈现”，以彰其创造者之功。)</li>
-                     </ul>
-                     <p><strong>Sublime Refinements! (匠心，精益求精！):</strong></p>
-                     <ul>
-                        <li>The Swiftness of Safari! For those who browse within the orchard's walled garden, a hint is given to the engine, that it may prepare for a display of most fluid and graceful motion. (Safari之迅捷！凡以御园之器游览者，朕已授引擎以机宜，备展流畅华美之姿。)</li>
-                     </ul>
-                     <p><strong>Maladies Mended! (旧疾，今已痊愈！):</strong></p>
-                     <ul>
-                         <li>The Lost Scrolls Found! The lamentable cry, "Error: Archive failed to load," is silenced. The `content_fetcher` now doth safely retrieve the `PetRecords.json`, and the tales within are no longer lost to the aether. (失落之卷，物归原主！“错误：档案加载失败”之哀鸣已息。今 `content_fetcher` 可安然寻回 `PetRecords.json`，卷中故事，不再散于虚空。)</li>
-                    </ul>
-                </div>
-                 <h4>✨ v7.0.0 - 🌠 Luminous Fusion Rabbit (融光幻境兔)</h4>
-                <div class="changelog-entry">
-                    <p><strong>A New Decree! (新谕，昭告天下！):</strong></p>
-                    <ul>
-                        <li>The Oracle of Performance now stands revealed! A button, newly forged, doth summon forth a tableau revealing the browser's vital humours, specifically its memory's embrace, thereby granting insight into the digital essence's consumption. (性能监察，洞悉虚实：新增“性能监察”之钮，可即时览阅浏览器记忆耗用等数据，助君明察秋毫。)</li>
-                    </ul>
-                    <p><strong>Sublime Refinements! (匠心，精益求精！):</strong></p>
-                    <ul>
-                        <li>The visage's interplay now heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel. (面容互动，灵光乍现：鼠标轻抚，Pac-Man 之口更显活泼，头像边缘随之闪耀，交互之间，灵动之感油然而生。)</li>
-                        <li>The Canvas of Aetherial Radiance now adorned: The web's backdrop embraceth a dynamic radial gradient, its hues meticulously woven with the chosen theme's palette, shifting subtly as if breathing, thus forging a deeper, more artistic vista. (背景光影，艺术交织：网页背景流动光影，与选定主题色交融，营造深邃艺术气韵。模块面板亦透光映主题，色泽交叠，雅致倍增。)</li>
-                        <li>The errant Hare's gambol now flows with fluid grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity. (玉兔跃动，行云流水：修复兔动画之滞碍，今其轻盈漫步，为档案注入勃勃生机。)</li>
-                    </ul>
-                    <p><strong>Maladies Mended! (旧疾，今已痊愈！):</strong></p>
-                    <ul>
-                        <li>The Chronicle of Changes, once shrouded in silence, now unfurls in its entirety. The malady of blank entries hath been utterly dispelled, and the annals of transformation stand complete, preserving every epochal shift. (更新日志，无蔽显现：解决日志空白之困，所有历史记录，昭然若揭。)</li>
                     </ul>
                 </div>
             `;
