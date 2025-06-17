@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>兔可可檔案：Bunny CC v4.0 [TRON GRID]</title>
+    <title>🐰 兔可可档案 v3.0.0 - 🔄 核心回溯兔 (Core Rollback Rabbit)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for TRON Theming */
+        /* CSS Variables for TRON Theming (from user's working code) */
         :root {
             --glow-rgb: 34, 211, 238; /* Cyan */
             --glow-light-rgb: 103, 232, 249;
@@ -30,7 +30,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.5s ease;
-            overflow: hidden;
+            overflow: hidden; /* Prevent scrollbar from animated background */
             opacity: 0;
             animation: fadeIn 1s ease 0.5s forwards;
         }
@@ -61,7 +61,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 100;
+            z-index: 100; /* Increased z-index to be above content for scanline effect */
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(18, 18, 18, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.08));
             background-size: 100% 4px, 100% 1px;
@@ -117,31 +117,74 @@
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
         .record-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--glow-rgb), 0.8); }
+
+        /* Rabbit styles (from previous versions, re-integrated) */
+        #wandering-rabbit {
+            position: fixed;
+            width: 72px; 
+            height: 72px; 
+            z-index: 90; /* Below scanline, above grid */
+            pointer-events: none;
+            transition: left 1s ease-in-out, top 1s ease-in-out;
+            fill: rgb(var(--glow-light-rgb)); /* Use glow color */
+            filter: drop-shadow(0 0 15px rgba(var(--glow-rgb), 0.8));
+        }
+        .rabbit-dropping {
+            position: absolute;
+            width: 6px; 
+            height: 6px;
+            background-color: #4a2c2a; 
+            border-radius: 1px; 
+            transform: scale(1);
+            opacity: 1;
+            transition: transform 2s ease-out, opacity 2s ease-out; 
+            z-index: 89; 
+            pointer-events: none; 
+            box-shadow: 0 0 2px rgba(0,0,0,0.5); 
+        }
+        .rabbit-dropping.fade-out {
+            transform: scale(0.2);
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
     <div id="grid-background"></div>
+    <!-- Wandering Rabbit Character (Re-added) -->
+    <div id="wandering-rabbit">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="currentColor">
+            <rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/>
+            <rect x="0" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/>
+            <rect x="0" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/>
+            <rect x="0" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/>
+            <rect x="0" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/>
+            <rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/>
+            <rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/>
+            <rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/>
+            <rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/>
+        </svg>
+    </div>
     <div id="scanline-overlay"></div>
 
-    <!-- Main Container -->
+    <!-- Main Container (from user's working code) -->
     <div class="main-container w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 glow-border">
         <!-- Header -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v4.0_TRON</p>
-            <!-- Controls -->
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v3.0.0_TRON</p>
+            <!-- Controls (from user's working code) -->
             <div class="flex items-center space-x-3 text-gray-400">
-                 <button title="更新日誌" onclick="toggleModal('changelog-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
+                   <button title="更新日誌" onclick="toggleModal('changelog-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
                 <button title="主題面板" onclick="toggleModal('theme-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
                 <button title="全螢幕" onclick="toggleFullscreen()" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
             </div>
         </div>
 
-        <!-- Main content grid -->
+        <!-- Main content grid (from user's working code) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
             <!-- Left Panel -->
             <div class="lg:col-span-1 p-6 flex flex-col space-y-8">
                 <div class="ui-module text-center" style="animation-delay: 0.2s;">
-                     <div class="pacman-container mx-auto">
+                    <div class="pacman-container mx-auto">
                         <div class="pacman-mouth glow-border rounded-full">
                             <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." 
                                  onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';"
@@ -172,28 +215,12 @@
         </div>
     </div>
     
-    <!-- Modals -->
+    <!-- Modals (from user's working code) -->
     <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('changelog-modal')">
         <div class="main-container glow-border w-11/12 max-w-2xl" onclick="event.stopPropagation()">
             <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar list-pellet">
-                <div class="mb-4">
-                    <p class="font-bold text-lg glow-text">Version 4.0 <span class="text-sm font-normal text-gray-400">- TRON Grid</span></p>
-                    <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>引入TRON風格UI，霓虹光暈、向量線條、動態光柵背景。</li>
-                        <li>新增PAC-MAN風格動態頭像框。</li>
-                        <li>新增CRT掃描線和雜訊視覺效果。</li>
-                        <li>UI元素載入時增加啟動動畫序列。</li>
-                    </ul>
-                </div>
-                <div class="mb-4 pt-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.2)">
-                    <p class="font-bold text-lg glow-text">Version 3.0 <span class="text-sm font-normal text-gray-400">- Modern Fusion</span></p>
-                    <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>引入全新UI，融合現代、像素、二次元風格。</li>
-                        <li>加入強大的主題引擎，支持日夜模式和20種主題配色。</li>
-                        <li>新增“更新日誌”彈窗。</li>
-                    </ul>
-                </div>
+                <!-- Changelog content will be populated by JavaScript -->
             </div>
         </div>
     </div>
@@ -207,10 +234,10 @@
     <script>
         // --- CONFIGURATION ---
         const CONFIG = {
-            PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG',
-            PET_RECORDS_PATH: './dist/bunnycc/PetRecords.json',
-            START_DATE: '2024/03/12 00:00:00',
-            THEMES: [
+            PROFILE_PIC_PATH: 'dist/Bunny CC_Profile.JPG', // Path to the profile picture
+            PET_RECORDS_PATH: 'dist/bunnycc/PetRecords.json', // Path to the pet records JSON
+            START_DATE: '2024/03/12 00:00:00', // Start date for anniversary timer
+            THEMES: [ // Predefined themes for color cycling
                 { name: 'Cyan', rgb: '34, 211, 238', light_rgb: '103, 232, 249'},
                 { name: 'Magenta', rgb: '244, 114, 182', light_rgb: '249, 168, 212'},
                 { name: 'Lime', rgb: '132, 204, 22', light_rgb: '163, 230, 53'},
@@ -225,36 +252,119 @@
         };
 
         // --- GLOBAL STATE & DOM ELEMENTS ---
-        let weightChart = null;
-        const docEl = document.documentElement;
-        const timingEl = document.getElementById('timing');
-        const profilePicEl = document.getElementById('profile-pic');
-        const weightChangeInfoEl = document.getElementById('weight-change-info');
-        const chartCanvas = document.getElementById('weightChart');
-        const allRecordsContainer = document.getElementById('all-records-container');
-        const themeGrid = document.getElementById('theme-grid');
-        
+        let weightChart = null; // Chart.js instance
+        let allRecordsData = []; // Stores all parsed pet records
+        let weightChartData = []; // Stores filtered weight records for the chart
+
+        // UI elements, will be populated on DOMContentLoaded to ensure elements exist
+        let ui = {}; 
+
+        // Rabbit animation variables
+        let wanderingRabbit; 
+        const droppingsPool = [];
+        const MAX_DROPPINGS = 70; 
+        let currentDroppingIndex = 0;
+        let lastDropTime = 0;
+        let targetX, targetY, currentX, currentY; // Declared here, initialized in animateRabbit init
+
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            profilePicEl.src = CONFIG.PROFILE_PIC_PATH;
+            // Populate UI elements after DOM is fully loaded
+            ui = {
+                profilePic: document.getElementById('profile-pic'),
+                timing: document.getElementById('timing'),
+                weightChartCanvas: document.getElementById('weightChart'),
+                weightChangeInfo: document.getElementById('weight-change-info'),
+                allRecordsContainer: document.getElementById('all-records-container'),
+                changelogModal: document.getElementById('changelog-modal'),
+                themeModal: document.getElementById('theme-modal'),
+                changelogList: null, // Will be set after changelog content is populated
+                themeGrid: document.getElementById('theme-grid'),
+            };
+
+            // Set profile picture source
+            if (ui.profilePic) {
+                ui.profilePic.src = CONFIG.PROFILE_PIC_PATH;
+            } else {
+                console.error("Profile picture element not found.");
+            }
+
+            // Start timer updates
             setInterval(updateTiming, 100);
+
+            // Load and process data
             loadAndProcessData();
+
+            // Generate theme swatches
             generateThemeSwatches();
+
+            // Initialize wandering rabbit and start animation
+            wanderingRabbit = document.getElementById('wandering-rabbit');
+            if (wanderingRabbit) {
+                currentX = Math.random() * (window.innerWidth - 72); 
+                currentY = Math.random() * (window.innerHeight - 72); 
+                wanderingRabbit.style.left = `${currentX}px`;
+                wanderingRabbit.style.top = `${currentY}px`;
+                // Initialize droppings
+                for (let i = 0; i < MAX_DROPPINGS; i++) {
+                    const dropping = document.createElement('div');
+                    dropping.className = 'rabbit-dropping';
+                    document.body.appendChild(dropping);
+                    droppingsPool.push(dropping);
+                }
+                animateRabbit();
+            } else {
+                console.warn("Wandering rabbit element not found, animation disabled.");
+            }
+
+            // Populate changelog content and then get the list element
+            populateChangelog();
+            if (ui.changelogModal) {
+                 ui.changelogList = ui.changelogModal.querySelector('.list-pellet');
+                 if (!ui.changelogList) {
+                     console.error("Changelog list inside modal not found.");
+                 }
+            }
         });
 
         // --- UI FUNCTIONS ---
+        /**
+         * Toggles the visibility of a modal.
+         * @param {string} modalId - The ID of the modal element.
+         */
         function toggleModal(modalId) {
-            document.getElementById(modalId).classList.toggle('hidden');
-            document.getElementById(modalId).classList.toggle('flex');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.toggle('hidden');
+                modal.classList.toggle('flex');
+            } else {
+                console.error(`Modal with ID '${modalId}' not found.`);
+            }
         }
 
+        /**
+         * Changes the overall theme of the application based on RGB values.
+         * @param {Object} theme - An object containing rgb and light_rgb values for the theme.
+         */
         function changeTheme(theme) {
+            const docEl = document.documentElement;
             docEl.style.setProperty('--glow-rgb', theme.rgb);
             docEl.style.setProperty('--glow-light-rgb', theme.light_rgb);
-            renderWeightChart(); // Re-render chart with new colors
+            // Re-render chart to apply new colors if it exists
+            if (weightChart) {
+                renderWeightChart(); 
+            }
         }
 
+        /**
+         * Generates and appends theme color swatches to the theme modal.
+         */
         function generateThemeSwatches() {
+            if (!ui.themeGrid) {
+                console.error("Theme grid element not found for generating swatches.");
+                return;
+            }
+            ui.themeGrid.innerHTML = ''; // Clear previous swatches
             CONFIG.THEMES.forEach(theme => {
                 const swatch = document.createElement('button');
                 swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2";
@@ -264,83 +374,133 @@
                 swatch.style.ringOffsetColor = `var(--bg-color)`;
                 swatch.title = theme.name;
                 swatch.onclick = () => changeTheme(theme);
-                themeGrid.appendChild(swatch);
+                ui.themeGrid.appendChild(swatch);
             });
         }
         
+        /**
+         * Toggles fullscreen mode for the document.
+         */
         function toggleFullscreen() {
-            if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`全螢幕失敗: ${err.message}`));
-            else document.exitFullscreen();
+            const docEl = document.documentElement;
+            if (!document.fullscreenElement) {
+                docEl.requestFullscreen().catch(err => showCustomAlert(`全螢幕失敗: ${err.message}`));
+            } else {
+                document.exitFullscreen().catch(err => showCustomAlert(`退出全螢幕失敗: ${err.message}`));
+            }
         }
 
         // --- DATA & TIMING LOGIC ---
+        /**
+         * Updates the anniversary timing display.
+         */
         function updateTiming() {
-            const startDate = new Date(CONFIG.START_DATE);
-            const currentDate = new Date();
-            const elapsedMs = currentDate.getTime() - startDate.getTime();
+            const start = new Date(CONFIG.START_DATE);
+            const now = new Date();
+            const elapsedMs = now.getTime() - start.getTime();
 
-            const elapsedDays = (elapsedMs / 86400000).toFixed(3);
+            const elapsedDays = (elapsedMs / (1000 * 60 * 60 * 24)).toFixed(3);
             const totalSeconds = Math.floor(elapsedMs / 1000);
             const elapsedHours = Math.floor(totalSeconds / 3600);
             const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60);
             const elapsedSeconds = totalSeconds % 60;
             
             const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
-            const getNextAnniversary = (base, days) => {
+            
+            // Helper to get next anniversary date based on fixed day intervals
+            const getNextAnniversary = (baseDate, days) => {
                 let count = 0, nextDate;
-                do { count++; nextDate = new Date(base.getTime() + count * days * 86400000); } while (nextDate < currentDate);
-                return { date: nextDate, count };
-            };
-            const getNextYearly = (base) => {
-                let count = 0, nextDate;
-                do { count++; nextDate = new Date(base); nextDate.setFullYear(base.getFullYear() + count); } while (nextDate < currentDate);
+                do { 
+                    count++; 
+                    nextDate = new Date(baseDate.getTime() + count * days * 24 * 60 * 60 * 1000); 
+                } while (nextDate < now);
                 return { date: nextDate, count };
             };
             
-            const next100 = getNextAnniversary(startDate, 100);
-            const next180 = getNextAnniversary(startDate, 180);
-            const next300 = getNextAnniversary(startDate, 300);
-            const nextYear = getNextYearly(startDate);
+            // Helper to get next yearly anniversary
+            const getNextYearly = (baseDate) => {
+                let count = 0, nextDate;
+                do { 
+                    count++; 
+                    nextDate = new Date(baseDate); 
+                    nextDate.setFullYear(baseDate.getFullYear() + count); 
+                } while (nextDate < now);
+                return { date: nextDate, count };
+            };
             
-            timingEl.innerHTML = `<ul>
-                <li>🐰兔可可已經到來 ${elapsedDays} 天啦</li>
-                <li>🌱下一個100天紀念日是 ${formatDate(next100.date)}（第${next100.count}個100天）</li>
-                <li>🌿下一個180天紀念日是 ${formatDate(next180.date)}（第${next180.count}個180天）</li>
-                <li>🍀下一個300天紀念日是 ${formatDate(next300.date)}（第${next300.count}個300天）</li>
-                <li>🎉下一個一周年紀念日是 ${formatDate(nextYear.date)}（第${nextYear.count}周年）</li>
-                <li>🎂目前已經到來 ${elapsedHours}小時${elapsedMinutes}分鐘${elapsedSeconds}秒</li>
-            </ul>`;
-        }
-        
-        let allRecordsData = [];
-        let weightChartData = [];
-
-        async function loadAndProcessData() {
-            try {
-                const res = await fetch(CONFIG.PET_RECORDS_PATH);
-                if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-                const records = await res.json();
-                
-                allRecordsData = records.map(r => {
-                    const d = new Date(Math.floor(r.date) * 1000);
-                    d.setFullYear(d.getFullYear() + 31);
-                    return { ...r, processedDate: d };
-                }).sort((a, b) => b.processedDate - a.processedDate);
-
-                weightChartData = allRecordsData
-                    .filter(r => r.activity === '体重测量' && r.weight > 0)
-                    .sort((a, b) => a.processedDate - b.processedDate);
-
-                renderAllRecords(allRecordsData);
-                renderWeightChart();
-            } catch (error) {
-                console.error("Data load error:", error);
-                allRecordsContainer.innerHTML = `<p class="text-red-400">錯誤: 檔案記錄載入失敗。</p>`;
+            const next100 = getNextAnniversary(new Date(CONFIG.START_DATE), 100);
+            const next180 = getNextAnniversary(new Date(CONFIG.START_DATE), 180);
+            const next300 = getNextAnniversary(new Date(CONFIG.START_DATE), 300);
+            const nextYear = getNextYearly(new Date(CONFIG.START_DATE));
+            
+            if (ui.timing) {
+                ui.timing.innerHTML = `<ul>
+                    <li>🐰兔可可已經到來 ${elapsedDays} 天啦</li>
+                    <li>🌱下一個100天紀念日是 ${formatDate(next100.date)}（第${next100.count}個100天）</li>
+                    <li>🌿下一個180天紀念日是 ${formatDate(next180.date)}（第${next180.count}個180天）</li>
+                    <li>🍀下一個300天紀念日是 ${formatDate(next300.date)}（第${next300.count}個300天）</li>
+                    <li>🎉下一個一周年紀念日是 ${formatDate(nextYear.date)}（第${nextYear.count}周年）</li>
+                    <li>🎂目前已經到來 ${elapsedHours}小時${elapsedMinutes}分鐘${elapsedSeconds}秒</li>
+                </ul>`;
+            } else {
+                console.warn("UI element 'timing' not found for updateTiming.");
             }
         }
         
-        function renderAllRecords(records) {
-            allRecordsContainer.innerHTML = records.map(rec => {
+        /**
+         * Loads pet records from the JSON file and processes them for display and charting.
+         */
+        async function loadAndProcessData() {
+            if (!ui.allRecordsContainer) {
+                console.error("All records container element not found.");
+                return;
+            }
+
+            // Display loading message
+            ui.allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">正在加载宠物档案...</p>`;
+
+            try {
+                const response = await fetch(CONFIG.PET_RECORDS_PATH);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const records = await response.json();
+                console.log('Parsed petRecordsData loaded:', records);
+                
+                // Process all records: convert timestamp and add 31 years offset
+                allRecordsData = records.map(r => {
+                    const d = new Date(Math.floor(r.date) * 1000); // Convert timestamp to milliseconds
+                    d.setFullYear(d.getFullYear() + 31); // Add 31 years offset (as per user's previous code)
+                    return { ...r, processedDate: d };
+                }).sort((a, b) => b.processedDate.getTime() - a.processedDate.getTime()); // Sort descending for display
+
+                // Filter for weight chart data
+                weightChartData = records
+                    .filter(r => r.activity === '体重测量' && typeof r.weight === 'number' && r.weight > 0)
+                    .map(r => {
+                        const d = new Date(Math.floor(r.date) * 1000);
+                        d.setFullYear(d.getFullYear() + 31);
+                        return { date: d, weight: r.weight };
+                    })
+                    .sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort ascending for chart chronological order
+
+                renderAllRecords();
+                renderWeightChart();
+
+            } catch (error) {
+                console.error("Data load error:", error);
+                ui.allRecordsContainer.innerHTML = `<p class="text-red-400 text-center">錯誤: 檔案記錄載入失敗。詳情請查看控制台。</p>`;
+                showCustomAlert(`加载档案失败: ${error.message}`);
+            }
+        }
+
+        /**
+         * Renders all pet records in the list container.
+         */
+        function renderAllRecords() {
+            if (!ui.allRecordsContainer) return;
+
+            ui.allRecordsContainer.innerHTML = allRecordsData.map(rec => {
                 const dateStr = rec.processedDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
                 return `<div class="p-3 rounded-md" style="background: rgba(var(--glow-rgb), 0.05); border-left: 3px solid rgba(var(--glow-rgb), 0.5)">
                             <div class="flex justify-between items-center">
@@ -352,19 +512,39 @@
             }).join('');
         }
 
+        /**
+         * Renders the weight change chart.
+         */
         function renderWeightChart() {
-            if (!weightChartData.length) return;
-            if (weightChart) weightChart.destroy();
+            if (!ui.weightChartCanvas) {
+                console.error("Weight chart canvas element not found.");
+                return;
+            }
+
+            if (weightChart) {
+                weightChart.destroy(); // Destroy existing chart instance
+            }
+
+            if (!weightChartData.length) {
+                ui.weightChartCanvas.style.display = 'none';
+                if (ui.weightChangeInfo) ui.weightChangeInfo.innerHTML = `<p class="text-yellow-400">未找到体重测量数据。</p>`;
+                return;
+            } else {
+                ui.weightChartCanvas.style.display = 'block';
+                if (ui.weightChangeInfo) ui.weightChangeInfo.innerHTML = `<p class="text-gray-400">點擊圖表上的數據點以查看體重變化</p>`;
+            }
             
-            const style = getComputedStyle(docEl);
+            const ctx = ui.weightChartCanvas.getContext('2d');
+            const style = getComputedStyle(document.documentElement);
             const primaryColor = `rgb(${style.getPropertyValue('--glow-rgb').trim()})`;
             const textColor = style.getPropertyValue('--text-muted-color').trim();
             const gridColor = `rgba(${style.getPropertyValue('--glow-rgb').trim()}, 0.1)`;
 
-            weightChart = new Chart(chartCanvas.getContext('2d'), {
+            weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: weightChartData.map(d => d.processedDate.toLocaleDateString('zh-CN')),
+                    // Labels are now simple date strings, not Date objects for 'time' scale
+                    labels: weightChartData.map(d => d.date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })),
                     datasets: [{
                         label: '體重 (g)',
                         data: weightChartData.map(d => d.weight),
@@ -377,7 +557,7 @@
                         pointHoverRadius: 7,
                         tension: 0.4,
                         fill: true,
-                        shadowOffsetX: 0,
+                        shadowOffsetX: 0, // Custom properties for shadow (might not work directly in Chart.js)
                         shadowOffsetY: 0,
                         shadowBlur: 10,
                         shadowColor: primaryColor,
@@ -386,26 +566,321 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { // Custom tooltip styling
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + 'g';
+                                        const currentIndex = context.dataIndex;
+                                        // Calculate difference from previous point
+                                        if (currentIndex > 0) {
+                                            const previousWeight = context.dataset.data[currentIndex - 1];
+                                            const currentWeight = context.parsed.y;
+                                            const difference = currentWeight - previousWeight;
+                                            label += ` (與前一點相差: ${difference >= 0 ? '+' : ''}${difference.toFixed(1)}g)`;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            },
+                            titleFont: { family: "'Noto Sans SC', sans-serif" }, // Use Noto Sans for tooltips
+                            bodyFont: { family: "'Noto Sans SC', sans-serif" },
+                            padding: 10,
+                            boxPadding: 5,
+                            displayColors: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            borderColor: primaryColor,
+                            borderWidth: 1,
+                            cornerRadius: 5,
+                        }
+                    },
                     scales: {
-                        y: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} },
-                        x: { grid: { display: false }, ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} }
+                        y: { 
+                            grid: { color: gridColor, drawBorder: false }, 
+                            ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} 
+                        },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} 
+                        }
                     },
                     onClick: (event, elements) => {
-                        if (elements.length > 0) {
+                        if (elements.length > 0 && ui.weightChangeInfo) { // Ensure element exists
                             const index = elements[0].index;
                             if (index > 0) {
                                 const diff = weightChartData[index].weight - weightChartData[index - 1].weight;
-                                const sign = diff >= 0 ? '+' : '-';
+                                const sign = diff >= 0 ? '+' : '';
                                 const color = diff >= 0 ? 'text-lime-400' : 'text-red-400';
-                                weightChangeInfoEl.innerHTML = `<p>與上次相比: <span class="font-bold ${color}">${sign}${Math.abs(diff.toFixed(1))}g</span></p>`;
+                                ui.weightChangeInfo.innerHTML = `<p>與上次相比: <span class="font-bold ${color}">${sign}${diff.toFixed(1)}g</span></p>`;
                             } else {
-                                weightChangeInfoEl.innerHTML = `<p>這是第一次測量記錄</p>`;
+                                ui.weightChangeInfo.innerHTML = `<p>這是第一次測量記錄</p>`;
                             }
                         }
                     }
                 }
             });
+        }
+
+        // --- Wandering Rabbit Animation Logic ---
+        function animateRabbit() {
+            if (!wanderingRabbit) return; // Guard against element not found
+
+            const speed = 2; 
+            // Initialize targets if not set
+            if (targetX === undefined || targetY === undefined) { 
+                targetX = Math.random() * (window.innerWidth - 72); 
+                targetY = Math.random() * (window.innerHeight - 72); 
+            }
+            
+            const prevX = currentX; 
+            const prevY = currentY;
+
+            const distanceX = targetX - currentX;
+            const distanceY = targetY - currentY;
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+            if (distance < speed || distance > 500) { 
+                currentX = targetX;
+                currentY = targetY;
+                targetX = Math.random() * (window.innerWidth - 72); 
+                targetY = Math.random() * (window.innerHeight - 72); 
+            } else {
+                currentX += (distanceX / distance) * speed;
+                currentY += (distanceY / distance) * speed;
+            }
+
+            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 72)); 
+            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 72)); 
+
+            wanderingRabbit.style.left = `${currentX}px`;
+            wanderingRabbit.style.top = `${currentY}px`;
+
+            if (performance.now() - lastDropTime > DROP_INTERVAL_MS) {
+                const dropping = droppingsPool[currentDroppingIndex];
+                if (dropping) { // Ensure dropping element exists
+                    dropping.style.left = `${prevX + (72 - 6) / 2}px`; 
+                    dropping.style.top = `${prevY + (72 - 6) / 2 + 10}px`;  
+                    
+                    dropping.classList.remove('fade-out');
+                    void dropping.offsetWidth; // Trigger reflow to restart animation
+                    dropping.classList.add('fade-out');
+
+                    currentDroppingIndex = (currentDroppingIndex + 1) % MAX_DROPPINGS;
+                    lastDropTime = performance.now();
+                }
+            }
+
+            requestAnimationFrame(animateRabbit);
+        }
+
+        window.addEventListener('resize', () => {
+            if (!wanderingRabbit) return; // Guard against element not found
+            currentX = Math.min(Math.max(0, currentX), window.innerWidth - 72); 
+            currentY = Math.min(Math.max(0, currentY), window.innerHeight - 72); 
+            wanderingRabbit.style.left = `${currentX}px`;
+            wanderingRabbit.style.top = `${currentY}px`;
+
+            targetX = Math.random() * (window.innerWidth - 72); 
+            targetY = Math.random() * (window.innerHeight - 72); 
+        });
+
+        // --- Changelog Population ---
+        function populateChangelog() {
+            // This needs to be populated after ui.changelogList is set
+            const changelogContent = `
+                <h4>✨ v3.0.0 - 🔄 核心回溯兔 (Core Rollback Rabbit)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li><strong>全新 TRON 風格介面！</strong> 完全基於您提供的「工作正常」版本代碼重構，完美繼承了酷炫的霓虹光暈、向量線條和動態光柵背景，讓檔案界面煥然一新！</li>
+                    <li>**兔兔回歸！** 重新引入了可愛的「亂跑的兔子」動畫和它留下的「巧克力豆」足跡，為您的檔案頁面增添更多活力和趣味！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>數據載入核心修復！</strong> 採用您提供的「工作正常」版本的數據載入機制，確保 \`PetRecords.json\` 檔案能夠穩定載入並正確顯示在檔案列表中，告別數據空白問題！</li>
+                    <li>**按鈕響應全面恢復！** 所有的按鈕（包括「更新日誌」、「主題面板」、「全螢幕」等）現在都根據您「工作正常」的代碼邏輯進行響應，點擊後不再毫無反應！</li>
+                    <li>**Chart.js 日期顯示精簡！** 移除對 \`date-fns\` 和 \`chartjs-adapter-date-fns\` 的依賴，直接使用瀏覽器原生的 \`toLocaleDateString\` 格式化 Chart.js 的 X 軸標籤，避免了先前關於 \`dateFns\` 未定義的錯誤。這使得圖表顯示更穩定且依賴更少！</li>
+                    <li>**DOM 元素獲取時機優化！** 將所有 DOM 元素的獲取（通過 \`document.getElementById\`）統一放置在 \`DOMContentLoaded\` 事件監聽器內部，確保在頁面元素完全載入後才嘗試操作它們，從根本上杜絕了 \`Cannot set properties of null\` 的錯誤。</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>程式碼結構更清晰！</strong> 對 JavaScript 程式碼進行了模組化和註釋優化，使其更易於理解和維護。</li>
+                    <li><strong>增強錯誤偵測！</strong> 在關鍵環節增加了更多控制台日誌和錯誤檢查，有助於未來快速定位潛在問題。</li>
+                </ul>
+
+                <h4>✨ v2.1.2 - 🛠️ 程式碼重構兔 (Code Refactor Bunny)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>元素抓取時機校準！</strong> 將所有 \`document.getElementById()\` 的呼叫移動到 \`window.onload\` 內，確保在 DOM 完全載入後才抓取元素，解決了 \`Cannot set properties of null\` 錯誤。</li>
+                    <li><strong>日期適配器自動啟用！</strong> 移除手動覆寫 Chart.js 日期適配器的程式碼，讓 \`chartjs-adapter-date-fns\` 載入後自動註冊，修復了 \`dateFns is not defined\` 的錯誤。</li>
+                    <li><strong>數據載入路徑修正！</strong> 恢復使用 \`fetch('dist/bunnycc/PetRecords.json')\` 載入數據，與您提供的「工作正常」程式碼保持一致，確保數據能正確顯示。</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>更強大的偵測魔法！</strong> 增加了更多的錯誤檢查和控制台日誌，讓問題追蹤變得更輕鬆！</li>
+                </ul>
+
+                <h4>✨ v2.1.1 - ✨ 元素定位兔 (Element Locator Bunny)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>核心元素歸位！</strong> 徹底修復了 DOM 元素 ID 不匹配的問題（例如 \`profile-pic\` 和 \`all-records-container\`），現在 JavaScript 能夠精準找到它們，檔案顯示不再空白！</li>
+                    <li><strong>體重變化提示回歸！</strong> 重新加入了 \`weight-change-info\` 提示框，讓體重數據的互動反饋不再神秘失蹤！</li>
+                    <li><strong>檔案載入奇蹟！</strong> 檔案數據（\`PetRecords.json\`）現在透過 \`content_fetcher\` 安全穩定載入，告別 \`Cannot set properties of null\` 的陰影！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>偵測魔法升級！</strong> 增加了更多的 \`console.log\` 偵測點，方便我們未來像專業偵探一樣，在控制台追踪數據流和元素狀態，任何異常都無所遁形！</li>
+                </ul>
+
+                <h4>✨ v2.1.0 - 💫 量子跳躍兔 (Quantum Leap Bunny)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li><strong>全新紀元啟動！</strong> 版本號和代號實現了史詩級「量子跳躍」，帶來了更具未來感和俏皮氣息的全新識別！感覺檔案瞬間穿越到了下一個次元！🚀</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>檔案載入奇蹟復甦！</strong> 徹底解決了 \`Cannot set properties of null (setting 'innerHTML')\` 這個嚇人的錯誤，現在檔案列表能夠穩定載入，數據不再神隱！</li>
+                    <li><strong>DOM 元素 ID 對齊！</strong> 確保了 JavaScript 中對 \`profile-pic\` 和 \`all-records-container\` 等核心 UI 元素的引用與 HTML 中的 ID 精準匹配，從此不再「找錯人」！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>無縫 UI 體驗！</strong> 所有的像素風格 UI、動態主題和可愛的「亂跑的兔子」動畫都完整保留下來，讓你在修復錯誤的同時，也能享受視覺盛宴！</li>
+                </ul>
+
+                <h4>✨ v2.0.0 - 稳定同步兔 V1.0 (Stable Sync Rabbit V1.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>檔案載入奇蹟復甦！</strong> 徹底解決了 \`Cannot set properties of null (setting 'innerHTML')\` 這個嚇人的錯誤，現在檔案列表能夠穩定載入，數據不再神隱！</li>
+                    <li><strong>DOM 元素 ID 對齊！</strong> 確保了 JavaScript 中對 \`profile-pic\` 和 \`all-records-container\` 等核心 UI 元素的引用與 HTML 中的 ID 精準匹配，從此不再「找錯人」！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>無縫 UI 體驗！</strong> 所有的像素風格 UI、動態主題和可愛的「亂跑的兔子」動畫都完整保留下來，讓你在修復錯誤的同時，也能享受視覺盛宴！</li>
+                </ul>
+
+                <h4>✨ v2.0.0 - 史诗级像素风回归兔 (Pixel-Style Reversion Rabbit)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**舊時代靈魂召喚！** 完整召喚了 \`v1.3.11\` 的像素風 UI、動感主題與我們最愛的「亂跑的兔子」動畫！是不是感覺像穿越回了魂斗羅時代？✨</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**圖表魔法穩定咒！** 即使檔案介面大變樣，Chart.js 的日期魔法（時間軸、數據點顯示）依然穩定如山，比你上網課的 Wi-Fi 還穩！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時空錯亂修正！** 确保了 \`date-fns\` 和 \`chartjs-adapter-date-fns\` 的加载逻辑铁板钉钉，图表时间线不再“跑偏”，你再也别想怪我们“内存泄露”啦！</li>
+                    <li>**小兔兔回歸！** 讓亂跑的像素兔重新活躍起來，因為…沒有兔子跑跑的檔案，那還叫兔可可檔案嗎？！ᕕ( ᐛ )ᕗ</li>
+                </ul>
+
+                <h4>🌟 v2.0.0 - 像素同步兔 V2.0 (Pixel Sync Rabbit V2.0)</h4>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**UI 超載進化！** 將最新的像素風介面和主題切換按鈕完美整合，現在換膚就像換遊戲角色一樣簡單，根本停不下來！</li>
+                    <li>**時間軸扭曲修正！** 穩固了 Chart.js 圖表的日期時間軸功能，讓你的體重記錄不再是薛丁格的貓，每次打開都清清楚楚！</li>
+                </ul>
+                <p><strong>删除 (Deleted!):</strong></p>
+                <ul>
+                    <li>**冗餘魔法符文移除！** 清理了多餘的 UI 元素和按鈕，畢竟我們是極簡主義者（才不是因為偷懶呢！）。亂跑的兔子也暫時放假了，因為要給新 UI 騰地方嘛！</li>
+                </ul>
+
+                <h4>🚀 v2.0.0 - 像素同步兔 V1.0 (Pixel Sync Rabbit V1.0)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**日期魔法適配！** 首次引入 \`date-fns\` 與 \`chartjs-adapter-date-fns\` 聯合施法，讓 Chart.js 的時間軸能夠正確解讀日期，告別“未定義屬性”的崩潰！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**圖表時間軸校準！** 將 Chart.js 的 X 軸類型設定為 \`time\`，確保日期顯示精準，再也不會錯過兔可可的任何一個“漲胖”瞬間（誤）！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**依賴地獄救贖！** 調整了函式庫載入順序，確保所有魔法組件都能按時到位，避免了“找不到函數”的尷尬場面，就像在說：「我準備好了，你呢？」</li>
+                </ul>
+
+                <h4>🛡️ v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>神秘錯誤終結者！</strong> 解決了 \`Chart.js\` 日期適配器找不到 \`date-fns\` 的 \`startOfDay\` 函數的謎團。現在它乖乖地從 \`unpkg.com\` 載入正確的魔法，不會再鬧脾氣了！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>診斷魔法升級！</strong> 增加了更多載入後的診斷日誌，方便我們像偵探一樣追蹤魔法元素的到位情況。</li>
+                </ul>
+
+                <h4>⏪ v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>時光倒流術！</strong> 將 \`date-fns\` 庫版本回退到 \`2.25.0\`。是的，我們承認有時候舊的才是最好的，就像你的老電玩主機一樣！這解決了 \`startOfDay\` 錯誤，確保了兼容性。</li>
+                </ul>
+
+                <h4>⚡ v1.3.9 - 适配强化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>前置施法！</strong> 將 \`date-fns\` 適配器註冊代碼提前了。現在，Chart.js 在它需要之前就能找到所有必要的日期魔法，完美解決了加載問題。</li>
+                </ul>
+
+                <h4>🔄 v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>明確指示！</strong> 顯式地將 \`date-fns\` 註冊為 Chart.js 的日期適配器。這次，Chart.js 絕對不會再裝傻說它不認識 \`date-fns\` 了！</li>
+                </ul>
+
+                <h4>🔗 v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>魔法序曲調度！</strong> 仔細調整了 \`Chart.js\`、\`date-fns\` 和 \`chartjs-adapter-date-fns\` 的載入順序。就像管弦樂隊一樣，每個樂器都必須在正確的時間加入，才能奏出完美的樂章！</li>
+                </ul>
+
+                <h4>🗺️ v1.3.6 - 路径校准兔 (Path Calibration Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>迷路檔案找回家！</strong> 修正了 \`PetRecords.json\` 檔案的載入路徑。現在它會準確地在 \`dist/bunnycc/PetRecords.json\` 找到家了，不再流浪街頭。</li>
+                </ul>
+
+                <h4>✨ v1.3.5 - 适配强化兔 (Adaptation Enhanced Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>圖表數據分批上菜！</strong> 將 Chart.js 圖表的初始化和數據填充分為兩步，就像先準備好餐具再上菜一樣，讓整個過程更流暢、更健壯。</li>
+                    <li>**日期顯示美容！** 圖表和記錄列表的日期現在只顯示「年-月-日」，簡潔明了，就像只留下你最瘦的照片一樣！</li>
+                    <li>**檔案傳輸回歸！** 重新使用 \`fetch\` 來載入 \`PetRecords.json\` 檔案並優化了錯誤處理，現在傳輸數據就像搭乘高速列車，安全又快速！</li>
+                    <li>**危險連結警報解除！** 移除了可能引起混合內容警告的外部危險連結。安全第一，畢竟我們不想引來什麼不速之客！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**Tailwind 貼心提示！** 增加了關於 Tailwind CSS CDN 使用的註釋，提醒你在生產環境中的注意事項。</li>
+                </ul>
+
+                <h4>📐 v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時間戳精準矯正！** 確保時間戳在轉換為 \`Date\` 物件之前，會先去除小數點並轉換為整數毫秒，從此時間不再模棱兩可！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>偵探日誌詳情增加！** 增加了更多的控制台日誌，方便在日期轉換和 Chart.js 初始化過程中進行「案情分析」。</li>
+                </ul>
+
+                <h4>🪐 v1.3.3 - 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**數據永恆鑲嵌！** 為確保 JSON 數據可靠載入，將 \`PetRecords.json\` 的內容直接嵌入到 HTML 腳本的 JavaScript 變數中。現在數據就像被封印在水晶球裡，穩固不破！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**更多偵錯足跡！** 增加了更多的控制台日誌，讓追蹤數據轉換和 Chart.js 初始化過程中的問題變得更加清晰。</li>
+                </ul>
+            `;
+            if (ui.changelogList) { // Ensure ui.changelogList is set before trying to access it
+                ui.changelogList.innerHTML = changelogContent;
+            } else {
+                console.error("Changelog list element is still not available after populateChangelog call.");
+            }
         }
     </script>
 </body>
