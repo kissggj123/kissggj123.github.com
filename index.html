@@ -349,6 +349,11 @@
                 <button id="prev-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">上一頁</button>
                 <button id="next-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">下一頁</button>
             </div>
+            <!-- 模態框關閉按鈕 -->
+            <button id="theme-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
     </div>
     <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('performance-modal')">
         <div class="main-container glow-border w-11/12 max-w-lg modal-content-base" onclick="event.stopPropagation()">
@@ -464,6 +469,10 @@
                 changelogList: document.getElementById('changelog-list'), 
                 themeGrid: document.getElementById('theme-grid'),
                 performanceDataOutput: document.getElementById('performance-data-output'),
+                // --- HERE IS THE MODIFICATION ---
+                prevThemePageBtn: document.getElementById('prev-theme-page-btn'), // Added prev button to ui object
+                nextThemePageBtn: document.getElementById('next-theme-page-btn'), // Added next button to ui object
+                // --- END OF MODIFICATION ---
             };
 
             // Set profile picture source
@@ -515,23 +524,25 @@
          * Toggles the visibility of a modal.
          * @param {string} modalId - The ID of the modal element.
          */
-        function toggleModal(modalId) {
+             function toggleModal(modalId) {
             console.log(`[DEBUG] Attempting to toggle modal: ${modalId}`);
             const modal = document.getElementById(modalId);
             if (modal) {
                 const isHidden = modal.classList.contains('hidden');
                 modal.classList.toggle('hidden', !isHidden);
-                modal.classList.toggle('flex', isHidden); // Add flex when showing
+                modal.classList.toggle('flex', isHidden); // Ensure flex display when showing
 
-                // Only display performance metrics when the performance modal is shown
-                if (modalId === 'performance-modal' && isHidden) { 
-                    displayPerformanceMetrics(); // Call function
-                }
-                // When the theme modal is shown, regenerate theme swatches to ensure correct pagination
+                // When the theme modal is shown, regenerate theme swatches
                 if (modalId === 'theme-modal' && isHidden) {
-                    currentThemePage = 0; // Reset to the first page
-                    generateThemeSwatches();
+                    currentThemePage = 0; // Always reset to the first page when opening
+                    // Use setTimeout to ensure DOM elements inside the modal are fully rendered
+                    // before attempting to find and populate them.
+                    setTimeout(() => {
+                        generateThemeSwatches();
+                    }, 0); 
                 }
+                // Optional: For other modals, if you had them
+                // if (modalId === 'other-modal-id' && isHidden) { /* do something else */ }
             } else {
                 console.error(`[ERROR] Modal with ID '${modalId}' not found during toggleModal execution.`);
             }
@@ -611,39 +622,89 @@
          * Generates and appends theme color swatches to the theme modal.
          */
         function generateThemeSwatches() {
-            console.log("[DEBUG] 生成主題樣本。");
-            const themeGrid = document.getElementById('theme-grid');
-            const prevBtn = document.getElementById('prev-theme-page-btn');
-            const nextBtn = document.getElementById('next-theme-page-btn');
-
-            if (!themeGrid || !prevBtn || !nextBtn) {
-                console.error("[ERROR] 未找到主題網格或分頁按鈕元素以生成樣本。");
+            console.log("[DEBUG] 生成主題樣本。當前頁面:", currentThemePage);
+            
+            // Use the ui object references for DOM elements
+            if (!ui.themeGrid || !ui.prevThemePageBtn || !ui.nextThemePageBtn) {
+                console.error("[ERROR] 未找到主題網格或分頁按鈕元素以生成樣本。這可能是由於 DOM 元素尚未完全加載或模態框隱藏。"); 
                 return;
             }
 
-            themeGrid.innerHTML = ''; // Clear previous swatches
+            ui.themeGrid.innerHTML = ''; // Clear previously generated swatches
 
             const startIndex = currentThemePage * CONFIG.THEMES_PER_PAGE;
             const endIndex = startIndex + CONFIG.THEMES_PER_PAGE;
+            // Slice the themes array to get only the themes for the current page
             const themesToShow = CONFIG.THEMES.slice(startIndex, endIndex);
 
             themesToShow.forEach(theme => {
                 const swatch = document.createElement('button');
                 swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2";
                 swatch.style.backgroundColor = `rgb(${theme.rgb})`;
+                // For a minimal example, hardcoding generic glow/ring colors.
+                // In your full app, use actual CSS variables like `var(--glow-rgb)`
                 swatch.style.boxShadow = `0 0 15px rgba(${theme.rgb}, 0.5)`;
                 swatch.style.ringColor = `rgb(${theme.rgb})`;
-                swatch.style.ringOffsetColor = `var(--bg-color)`;
-                swatch.title = theme.name;
-                swatch.addEventListener('click', () => changeTheme(theme));
-                themeGrid.appendChild(swatch);
+                swatch.style.ringOffsetColor = `#1a1a1a`; /* Example offset color for dark mode */
+                swatch.title = theme.name; // Display theme name on hover
+                swatch.addEventListener('click', () => changeTheme(theme)); // Attach click event
+                ui.themeGrid.appendChild(swatch); // Add swatch to the grid
             });
 
-            // Update pagination button states
-            prevBtn.disabled = currentThemePage === 0;
-            nextBtn.disabled = endIndex >= CONFIG.THEMES.length;
-
+            // Update pagination button states (disabled/enabled)
+            ui.prevThemePageBtn.disabled = currentThemePage === 0; // Disable "Previous" if on the first page
+            // Disable "Next" if the end index is beyond or at the total number of themes
+            ui.nextThemePageBtn.disabled = endIndex >= CONFIG.THEMES.length; 
+            
+            console.log(`[DEBUG] 分頁按鈕狀態更新: prevBtn.disabled=${ui.prevThemePageBtn.disabled}, nextBtn.disabled=${ui.nextThemePageBtn.disabled}`);
             console.log("[DEBUG] 主題樣本已生成。");
+        }
+
+        /**
+         * Sets up all necessary event listeners for UI interactions.
+         */
+        function setupEventListeners() {
+            console.log("[DEBUG] Setting up event listeners.");
+            
+            // Event listener for the button that opens the theme modal
+            document.getElementById('open-theme-modal-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
+            
+            // Event listener for the close button inside the theme modal
+            ui.themeCloseBtn?.addEventListener('click', () => toggleModal('theme-modal'));
+            
+            // Event listeners for pagination buttons (Previous and Next)
+            if (ui.prevThemePageBtn && ui.nextThemePageBtn) { 
+                ui.prevThemePageBtn.addEventListener('click', () => {
+                    console.log("[DEBUG] '上一頁' 按鈕被點擊。");
+                    if (currentThemePage > 0) { // Check if not on the first page
+                        currentThemePage--; // Decrement page number
+                        generateThemeSwatches(); // Re-render themes for the new page
+                    } else {
+                        console.log("[DEBUG] 已經在第一頁，'上一頁' 無效。");
+                    }
+                });
+                ui.nextThemePageBtn.addEventListener('click', () => {
+                    console.log("[DEBUG] '下一頁' 按鈕被點擊。");
+                    // Calculate total pages needed
+                    const totalPages = Math.ceil(CONFIG.THEMES.length / CONFIG.THEMES_PER_PAGE);
+                    if (currentThemePage < totalPages - 1) { // Check if not on the last page
+                        currentThemePage++; // Increment page number
+                        generateThemeSwatches(); // Re-render themes for the new page
+                    } else {
+                        console.log("[DEBUG] 已經在最後一頁，'下一頁' 無效。");
+                    }
+                });
+            } else {
+                console.error("[ERROR] 主題分頁按鈕 (上一頁/下一頁) 未找到。請檢查 HTML IDs。");
+            }
+            // Optional: Event listener for clicking outside the modal to close it
+            ui.themeModal?.addEventListener('click', (event) => {
+                if (event.target.id === 'theme-modal') { // Only close if the overlay itself is clicked
+                    toggleModal('theme-modal');
+                }
+            });
+
+            console.log("[DEBUG] Event listeners set up.");
         }
         
         /**
