@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC Archive v8.0.0 - 🐇 Arcane Chronos Rabbit</title>
+    <title>🐰 Bunny CC Archive v8.0.1 - 🐛 Bug Fix Rabbit</title>
     <!-- Tailwind CSS CDN - 注意：用於生產環境時，請作為 PostCSS 插件安裝或使用 Tailwind CLI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -290,7 +290,7 @@
         <!-- 頁眉 -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
             <!-- 更新標題文字以模仿終端提示符 -->
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.0_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.1_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
             <!-- 控制按鈕（現在使用 ID 和 programmatically 綁定事件） -->
             <div class="flex items-center space-x-3 text-gray-400">
                 <button id="changelog-btn" title="更新日誌" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
@@ -377,8 +377,8 @@
     </div>
 
     <script type="module">
-        // 導入 content_fetcher 以加載上傳的文件
-        import { content_fetcher } from 'content_fetcher';
+        // content_fetcher 是全域可用的，不需要 import
+        // import { content_fetcher } from 'content_fetcher'; // 移除此行
 
         // --- 配置 ---
         const CONFIG = {
@@ -448,7 +448,6 @@
         };
 
         // --- 全局狀態與 UI 元素 ---
-        // 這些將在 window.onload 中初始化，以確保 DOM 元素存在。
         let weightChart = null; // Chart.js 實例
         let allRecordsData = []; // 儲存所有解析後的寵物記錄
         let weightChartData = []; // 儲存用於圖表的過濾體重記錄
@@ -741,7 +740,7 @@
                     return { ...r, processedDate: d };
                 }).sort((a, b) => b.processedDate.getTime() - a.processedDate.getTime()); // 降序排序以供顯示
 
-                // 過濾體重圖表數據
+                // 過濾體重圖表數據 - 注意這裡的 '体重测量'
                 weightChartData = records
                     .filter(r => r.activity === '体重测量' && typeof r.weight === 'number' && r.weight > 0)
                     .map(r => {
@@ -926,6 +925,7 @@
                 currentRabbitY = matrix.m42;
             } else {
                 // 對不支持 style.transform 的 DOMMatrix 或 transform 尚未設置的瀏覽器進行回退。
+                // 這裡我們需要解析當前樣式而不是依賴於 prevX/prevY
                 currentRabbitX = parseFloat(wanderingRabbit.style.transform.match(/translateX\(([^)]+)px\)/)?.[1] || '0');
                 currentRabbitY = parseFloat(wanderingRabbit.style.transform.match(/translateY\(([^)]+)px\)/)?.[1] || '0');
             }
@@ -938,11 +938,11 @@
                 targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
             }
             
-            const prevX = currentRabbitX; 
+            const prevX = currentRabbitX; // 儲存兔子移動前的位置用於掉落物
             const prevY = currentRabbitY;
 
             const distanceX = targetX - currentRabbitX;
-            const distanceY = targetY - currentY; // Corrected: should be targetY - currentY, not targetY - currentRabbitY
+            const distanceY = targetY - currentRabbitY; // 修正：應使用 currentRabbitY
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
             if (distance > 0) { // 只有當存在距離時才移動
@@ -985,6 +985,16 @@
                 return;
             }
             const changelogContent = `
+                <h4>✨ v8.0.1 - 🐛 Bug Fix Rabbit</h4>
+                <div class="changelog-entry">
+                    <p><strong>修正之錄 (The Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li><span style="color: red;"><strong>Edge 瀏覽器執行錯誤已修正！</strong></span> 移除 HTML 中所有 <code>onclick</code> 屬性，改為在 JavaScript 中使用 <code>addEventListener</code> 動態綁定事件，解決了 <code>Uncaught SyntaxError: Unexpected identifier 'addEventListener'</code> 和 <code>Uncaught ReferenceError: toggleModal is not defined</code> 等問題。</li>
+                        <li><span style="color: red;"><strong>體重圖表數據載入已修正！</strong></span> 將體重數據篩選的活動名稱從 '體重測量' (繁體) 修正為 '体重测量' (簡體)，確保正確載入並顯示來自 <code>PetRecords.json</code> 的體重數據。</li>
+                        <li><code>content_fetcher</code> 模組引入錯誤已修正。現在直接使用全域的 <code>content_fetcher</code> 物件，不再嘗試透過 <code>import</code> 引入。</li>
+                        <li>遊走兔動畫路徑邏輯已微調，使其移動更加平滑。</li>
+                    </ul>
+                </div>
                 <h4>✨ v8.0.0 - 🐇 Arcane Chronos Rabbit</h4>
                 <div class="changelog-entry">
                     <p><strong>新增之光 (A Light Newly Cast!):</strong></p>
@@ -1081,7 +1091,7 @@
                         <li>The Visage's Frame now Perfect: The Pac-Man's border, which once obscured a portion of the noble image, hath been meticulously adjusted, ensuring the portrait's pristine and complete presentation.</li>
                         <li>The Hare's Motion now Flows with Greater Artistry: The elusive rabbit's wandering animated dance hath been refined, its movements rendered with a newfound fluidity, and the vexing impediment to its journey upon certain browsers hath been vanquished.</li>
                         <li>The Responsive Layout, a Bastion of Strength! The interface's adaptability across diverse digital realms, especially the challenging Edge, and screens of manifold dimensions, hath been fortified, ensuring the content's unblemished display.</li>
-                        <li>The Lexicon now a Native Tongue! The core script is now rendered in Noto Sans SC, a font chosen for its harmonious rendering of the simplified Chinese characters, thereby granting the reader a more serene and unhindered passage through wisdom. Only the sacred titles retain the venerable pixelated script.</li>
+                        <li>The Lexicon now a Native Tongue! The core script is now rendered in Noto Sans SC for clarity's sake, granting the gaze an unobstructed passage through knowledge. Furthermore, our chromatic repertoire hath expanded by five, presenting a grand total of fifteen vibrant themes, inviting the connoisseur to adorn the archive in a vestment of light and shade.</li>
                     </ul>
                     <p><strong>Fixes (The Vexing Maladies Vanquished!):</p>
                     <ul>
@@ -1328,7 +1338,7 @@
             // 性能模態框中的激活感應器按鈕
             document.getElementById('activate-sensor-btn')?.addEventListener('click', displayPerformanceMetrics);
 
-            // 模態框疊加層點擊關閉功能
+            // 模態框疊加層點擊關閉功能 (僅當點擊疊加層本身時)
             document.getElementById('changelog-modal')?.addEventListener('click', (event) => {
                 if (event.target.id === 'changelog-modal') toggleModal('changelog-modal');
             });
