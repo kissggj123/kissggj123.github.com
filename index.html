@@ -1,412 +1,1343 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="dark">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>檔案：Bunny CC v4.0 [TRON GRID]</title>
-    <!-- Tailwind CSS -->
+    <title>🐰 兔可可档案 v2.1.2 - 🛠️ 程式碼重構兔 (Code Refactor Bunny)</title>
+    <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
+    
+    <!-- IMPORTANT: Correct loading order for Chart.js and its date-fns adapter -->
+    <!-- 1. date-fns library MUST be loaded first. Using an older, known-compatible version from unpkg for better global exposure. -->
+    <script src="https://unpkg.com/date-fns@2.25.0/dist/date-fns.min.js"></script>
+    <!-- 2. Chart.js core library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts -->
+    <!-- 3. Chart.js date-fns adapter MUST be loaded after date-fns and Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- VT323 for pixel font aesthetic. Chinese fallback is monospace. -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for TRON Theming */
-        :root {
-            --glow-rgb: 34, 211, 238; /* Cyan */
-            --glow-light-rgb: 103, 232, 249;
-            --bg-color: #010409;
-            --surface-color: rgba(13, 27, 42, 0.5);
-            --grid-color: rgba(var(--glow-rgb), 0.15);
-            --text-color: #e6edf3;
-            --text-muted-color: #8b949e;
-        }
-
-        /* Base styles */
+        /* Base styles using VT323 pixel font */
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'VT323', monospace; /* Apply pixel font globally */
+            background: var(--bg-color);
             color: var(--text-color);
-            transition: background-color 0.5s ease;
-            overflow: hidden;
-            opacity: 0;
-            animation: fadeIn 1s ease 0.5s forwards;
+            transition: background 0.5s ease, color 0.3s ease;
         }
-        
-        .font-pixel { font-family: 'Press Start 2P', cursive; }
-        .glow-text { color: rgb(var(--glow-light-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
-        .glow-border { border: 1px solid rgba(var(--glow-rgb), 0.4); box-shadow: 0 0 12px rgba(var(--glow-rgb), 0.2), inset 0 0 8px rgba(var(--glow-rgb), 0.15); }
-        
-        /* Animated Grid Background */
-        #grid-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background-image:
-                linear-gradient(rgba(var(--glow-rgb), 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(var(--glow-rgb), 0.15) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: pan-grid 20s linear infinite;
+        input, select, button, pre, textarea { /* Apply to all form elements and pre-formatted text */
+            font-family: 'VT323', monospace;
+            color: var(--text-color);
         }
 
-        /* Scanline Overlay */
-        #scanline-overlay {
+        /* CSS Variables for theming (Default: Night Mode) */
+        :root {
+            --bg-color: linear-gradient(180deg, #0a0a0a 0%, #000005 100%);
+            --text-color: #00eaff;
+            --title-color: #00eaff;
+            --label-color: #33ffff;
+            --input-bg: rgba(0, 0, 10, 0.7);
+            --input-border: #00eaff;
+            --panel-bg: rgba(0, 0, 15, 0.8);
+            --panel-border: #00eaff;
+            --button-primary-bg: linear-gradient(45deg, #00bfff 0%, #0077ff 100%);
+            --button-primary-hover-bg: linear-gradient(45deg, #00aadd 0%, #0066ee 100%);
+            --button-primary-border: #00eaff;
+            --button-secondary-bg: linear-gradient(45deg, #ff9900 0%, #ff6600 100%);
+            --button-secondary-hover-bg': linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
+            --button-secondary-border: #ff9900;
+            --button-success-bg: linear-gradient(45deg, #00ee00 0%, #00bb00 100%);
+            --button-success-hover-bg': linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
+            --button-success-border: #00ee00;
+            --button-info-bg: linear-gradient(45deg, #666666 0%, #333333 100%);
+            --button-info-hover-bg: linear-gradient(45deg, #555555 0%, #222222 100%);
+            --button-info-border: #888888;
+            --button-accent-bg: linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%);
+            --button-accent-hover-bg': linear-gradient(45deg, #ee00ee 0%, #bb00bb 100%)',
+            --button-accent-border: #ff00ff;
+            --changelog-modal-bg: rgba(0, 0, 20, 0.9);
+            --changelog-text-color: #ccffff;
+            --changelog-border-color: #00eaff;
+            --changelog-h-color: #00eaff;
+            --changelog-h-border: #33ffff;
+            --progress-bg: #00eaff;
+            --progress-text: #0a0a0a;
+            --cooling-color: #ff00ff;
+            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%);
+            --gemini-button-hover-bg': linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+            --gemini-button-border: #bb00ff;
+            --pixel-rabbit-icon-fill: currentColor; /* Inherit color from text-color */
+            --pixel-rabbit-shadow-color: rgba(255, 255, 255, 0.8);
+            --chart-grid-color: rgba(255, 255, 255, 0.1);
+            --chart-text-color: #00eaff;
+            --chart-line-color: #33ffff;
+            --chart-point-border-color: #00eaff;
+            --chart-point-bg-color: #00eaff;
+        }
+
+        body.day-mode {
+            --bg-color: linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%);
+            --text-color: #5e35b1;
+            --title-color: #ff4081;
+            --label-color: #64dd17;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-border': #ff4081;
+            --panel-bg: rgba(255, 255, 255, 0.9);
+            --panel-border: #ff4081;
+            --button-primary-bg: linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%);
+            --button-primary-hover-bg: linear-gradient(45deg, #ff6090 0%, #6090ff 100%);
+            --button-primary-border: #82b1ff;
+            --button-secondary-bg: linear-gradient(45deg, #ffd740 0%, #ff8a80 100%);
+            --button-secondary-hover-bg': linear-gradient(45deg, #ffcc30 0%, #ff7070 100%)',
+            --button-secondary-border: #ff8a80;
+            --button-success-bg: linear-gradient(45deg, #69f0ae 0%, #18ffff 100%);
+            --button-success-hover-bg': linear-gradient(45deg, #50e090 0%, #00e0e0 100%)',
+            --button-success-border: #18ffff;
+            --button-info-bg: linear-gradient(45deg, #b388ff 0%, #8c9eff 100%);
+            --button-info-hover-bg': linear-gradient(45deg, #a070e0 0%, #7080ff 100%)',
+            --button-info-border: #8c9eff;
+            --button-accent-bg: linear-gradient(45deg, #ff1744 0%, #f50057 100%)',
+            --button-accent-hover-bg': linear-gradient(45deg, #e00030 0%, #d00040 100%)',
+            --button-accent-border': #f50057;
+            --changelog-modal-bg: rgba(255, 255, 255, 0.98);
+            --changelog-text-color: #333333;
+            --changelog-border-color: var(--button-secondary-border);
+            --changelog-h-color: var(--title-color);
+            --changelog-h-border: var(--label-color);
+            --progress-bg: var(--title-color);
+            --progress-text': #ffffff;
+            --cooling-color: #00bcd4;
+            --gemini-button-bg: linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+            --gemini-button-hover-bg': linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+            --gemini-button-border: #bb00ff;
+            --pixel-rabbit-shadow-color: rgba(0, 0, 0, 0.6);
+            --chart-grid-color: rgba(0, 0, 0, 0.1);
+            --chart-text-color: #5e35b1;
+            --chart-line-color: #ff4081;
+            --chart-point-border-color': #5e35b1;
+            --chart-point-bg-color': #5e35b1;
+        }
+
+        /* Apply CSS variables */
+        .title-color { 
+            color: var(--title-color); 
+            text-shadow: 0 0 10px var(--title-color), 0 0 20px rgba(255,255,255,0.5); /* Neon glow effect */
+            transition: text-shadow 0.3s ease;
+        }
+        .label-color { color: var(--label-color); }
+        .input-bg { background-color: var(--input-bg); }
+        .input-border { border-color: var(--input-border); }
+        .panel-bg { 
+            background-color: var(--panel-bg); 
+            border-color: var(--panel-border);
+            box-shadow: 0 0 15px var(--panel-border), inset 0 0 8px rgba(255,255,255,0.1); /* Subtle glow + inner shadow */
+            transition: box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            position: relative; /* Ensure z-index works correctly for content */
+            overflow: hidden; /* Hide anything going beyond panel bounds */
+        }
+        body.day-mode .panel-bg {
+            box-shadow: 0 0 15px var(--panel-border), inset 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        /* Randomly moving pixel rabbit */
+        #wandering-rabbit {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            width: 72px; /* Slightly larger for "bolder" look */
+            height: 72px; /* Maintain aspect ratio */
             z-index: 100;
             pointer-events: none;
-            background: linear-gradient(to bottom, rgba(18, 18, 18, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.08));
-            background-size: 100% 4px, 100% 1px;
-            animation: scanline-move 10s linear infinite;
+            transition: left 1s ease-in-out, top 1s ease-in-out;
+            fill: var(--pixel-rabbit-icon-fill); /* Use CSS variable for fill */
+            filter: drop-shadow(0 0 15px var(--pixel-rabbit-shadow-color)); /* Enhanced shadow for "bolder" look */
         }
 
-        /* Pac-Man Profile Image Container */
-        .pacman-container {
-            position: relative;
-            width: 160px; height: 160px;
-            transition: transform 0.3s ease;
-        }
-        .pacman-container:hover { transform: scale(1.05); }
-        .pacman-mouth {
+        /* Rabbit Droppings (Chocolate Beans) */
+        .rabbit-dropping {
             position: absolute;
-            width: 100%; height: 100%;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 40%, 50% 50%, 100% 60%, 100% 100%, 0% 100%);
-            transition: clip-path 0.3s ease-in-out;
-        }
-        .pacman-container:hover .pacman-mouth {
-            clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 50% 50%, 100% 100%, 100% 100%, 0% 100%);
-        }
-
-        /* Main container and UI elements */
-        .main-container {
-            background-color: var(--surface-color);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        .ui-module { transition: all 0.5s; opacity: 0; transform: translateY(20px); animation: module-boot 0.5s ease forwards; }
-        .list-pellet li::before {
-            content: '•';
-            color: rgb(var(--glow-light-rgb));
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
-            animation: pellet-glow 1.5s infinite alternate;
+            width: 6px; /* Pixelated size */
+            height: 6px;
+            background-color: #4a2c2a; /* Chocolate brown */
+            border-radius: 1px; /* Slightly rounded pixel look */
+            transform: scale(1);
+            opacity: 1;
+            transition: transform 2s ease-out, opacity 2s ease-out; /* Fade and shrink over 2 seconds */
+            z-index: 99; /* Below rabbit, above background */
+            pointer-events: none; /* Don't interfere with clicks */
+            box-shadow: 0 0 2px rgba(0,0,0,0.5); /* Small shadow */
         }
 
-        /* Modals */
-        .modal-overlay { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .rabbit-dropping.fade-out {
+            transform: scale(0.2);
+            opacity: 0;
+        }
 
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pan-grid { from { background-position: 0 0; } to { background-position: -50px -50px; } }
-        @keyframes scanline-move { from { background-position: 0 0; } to { background-position: 0 100%; } }
-        @keyframes pellet-glow { from { text-shadow: 0 0 2px; } to { text-shadow: 0 0 10px rgba(var(--glow-light-rgb), 1); } }
-        @keyframes module-boot { to { opacity: 1; transform: translateY(0); } }
+        /* Button styling using CSS variables */
+        .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-accent, .btn-gemini {
+            background: var(--button-primary-bg);
+            border-bottom: 4px solid var(--button-primary-border);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.2);
+            transition: all 0.2s ease;
+            color: white; /* Ensure text is always white on gradient buttons */
+        }
+        .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-info:hover, .btn-accent:hover, .btn-gemini:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 2px 8px rgba(255,255,255,0.3);
+        }
+        .btn-primary:active, .btn-secondary:active, .btn-success:active, .btn-info:active, .btn-accent:active, .btn-gemini:active {
+            transform: translateY(2px);
+            border-bottom-width: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.1);
+        }
 
-        /* Custom scrollbar */
-        .record-scrollbar::-webkit-scrollbar { width: 8px; }
-        .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
-        .record-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--glow-rgb), 0.8); }
+        /* Specific button background overrides (they are here as fallbacks or for initial render) */
+        .btn-primary { background: var(--button-primary-bg); border-bottom-color: var(--button-primary-border); }
+        .btn-primary:hover { background: var(--button-primary-hover-bg); }
+        .btn-secondary { background: var(--button-secondary-bg); border-bottom-color: var(--button-secondary-border); }
+        .btn-secondary:hover { background: var(--button-secondary-hover-bg); }
+        .btn-success { background: var(--button-success-bg); border-bottom-color: var(--button-success-border); }
+        .btn-success:hover { background: var(--button-success-hover-bg); }
+        .btn-info { background: var(--button-info-bg); border-bottom-color: var(--button-info-border); }
+        .btn-info:hover { background: var(--button-info-hover-bg); }
+        .btn-accent { background: var(--button-accent-bg); border-bottom-color: var(--button-accent-border); }
+        .btn-accent:hover { background: var(--button-accent-hover-bg); }
+        .btn-gemini { background: var(--gemini-button-bg); border-bottom-color: var(--gemini-button-border); }
+        .btn-gemini:hover { background: var(--gemini-button-hover-bg); }
+
+        /* Changelog modal specific styling */
+        #changelog-modal-content {
+            background-color: var(--changelog-modal-bg);
+            color: var(--changelog-text-color);
+            border-color: var(--changelog-border-color);
+            box-shadow: 0 0 20px var(--changelog-border-color);
+            transition: box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        #changelog-modal-content h3, #changelog-modal-content h4 {
+            color: var(--changelog-h-color);
+            border-bottom-color: var(--changelog-h-border);
+            text-shadow: 0 0 5px var(--changelog-h-color);
+            transition: color 0.3s ease, border-bottom-color 0.3s ease, text-shadow 0.3s ease;
+        }
+        /* No bullet points for changelog */
+        #changelog-modal-content p {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem; /* Indent for clarity */
+        }
+        /* Chart specific styling */
+        #weight-chart-container {
+            position: relative; /* For tooltip positioning */
+            height: 300px; /* Fixed height for chart */
+            width: 100%;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div id="grid-background"></div>
-    <div id="scanline-overlay"></div>
+<body class="antialiased">
+    <!-- Wandering Rabbit Character -->
+    <div id="wandering-rabbit">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="currentColor">
+            <rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/>
+            <rect x="0" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/>
+            <rect x="0" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/>
+            <rect x="0" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/>
+            <rect x="0" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/>
+            <rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/>
+            <rect x="2" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/>
+            <rect x="1" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/>
+            <rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/>
+        </svg>
+    </div>
 
-    <!-- Main Container -->
-    <div class="main-container w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 glow-border">
-        <!-- Header -->
-        <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v4.0_TRON</p>
-            <!-- Controls -->
-            <div class="flex items-center space-x-3 text-gray-400">
-                 <button title="更新日誌" onclick="toggleModal('changelog-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
-                <button title="主題面板" onclick="toggleModal('theme-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
-                <button title="全螢幕" onclick="toggleFullscreen()" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
+    <div class="container mx-auto max-w-xl p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold title-color tracking-wider">🗓️ 兔可可档案</h1>
+            <p class="text-slate-400 mt-2 text-lg">v2.1.2 - 🛠️ 程式碼重構兔 (Code Refactor Bunny)</p>
+            <p class="text-sm text-slate-500 mt-1">/* 精準定位，數據載入，按鈕響應，一個不漏！*/</p>
+            <p class="text-sm text-slate-500 mt-2">由 CanguroMIO 呈現</p>
+        </header>
+
+        <!-- Profile Section -->
+        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
+            <div id="profile-section" class="flex flex-col items-center">
+                <img id="profile-pic" src="dist/Bunny CC_Profile.JPG" alt="兔可可头像" class="w-28 h-28 rounded-full object-cover border-4 border-emerald-500 shadow-lg">
+                <h2 class="text-3xl title-color mt-4 mb-2">兔可可</h2>
+                <p class="text-lg label-color">数字档案</p>
             </div>
         </div>
 
-        <!-- Main content grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-            <!-- Left Panel -->
-            <div class="lg:col-span-1 p-6 flex flex-col space-y-8">
-                <div class="ui-module text-center" style="animation-delay: 0.2s;">
-                     <div class="pacman-container mx-auto">
-                        <div class="pacman-mouth glow-border rounded-full">
-                            <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." 
-                                 onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';"
-                                 class="w-full h-full rounded-full object-cover">
-                        </div>
-                    </div>
-                    <h1 class="font-pixel text-2xl font-bold mt-4 glow-text">BUNNY CC</h1>
-                    <p class="text-sm font-pixel" style="color: var(--text-muted-color)">ID: B-20240312</p>
-                </div>
-                <div class="ui-module" style="animation-delay: 0.4s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">MILESTONES</h2>
-                    <div id="timing" class="space-y-2 text-sm whitespace-pre-line leading-relaxed list-pellet" style="color: var(--text-muted-color)"></div>
-                </div>
-            </div>
+        <!-- Anniversary Timer Panel -->
+        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
+            <h3 class="text-2xl title-color mb-4 text-center">⏱️ 兔可可纪念日</h3>
+            <pre id="timing" class="text-xl md:text-2xl whitespace-pre-line text-center label-color"></pre>
+        </div>
 
-            <!-- Right Panel -->
-            <div class="lg:col-span-2 p-6 space-y-6">
-                <div class="ui-module" style="animation-delay: 0.6s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">WEIGHT_GRID</h2>
-                    <div class="h-64"><canvas id="weightChart"></canvas></div>
-                    <div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2)"></div>
-                </div>
-                <div class="ui-module" style="animation-delay: 0.8s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">DATA_STREAM</h2>
-                    <div id="all-records-container" class="record-scrollbar h-56 overflow-y-auto pr-2 space-y-3 text-sm"></div>
-                </div>
+        <!-- Weight Chart Panel -->
+        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full mb-6">
+            <h3 class="text-2xl title-color mb-4 text-center">📊 体重变化曲线</h3>
+            <div id="weight-chart-container">
+                <canvas id="weightChart"></canvas>
             </div>
+            <!-- Added back the weight-change-info element -->
+            <div id="weight-change-info" class="mt-4 text-center bg-gray-900/50 p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="border: 1px solid rgba(var(--primary-rgb), 0.15)">
+                <p class="text-gray-400">点击图表上的数据点以查看体重变化</p>
+            </div>
+        </div>
+
+        <!-- Main Records Panel -->
+        <div class="panel-bg p-6 rounded-2xl border-2 panel-border shadow-lg w-full">
+            <h3 class="text-2xl title-color mb-4 text-center">📝 档案记录</h3>
+            <div id="all-records-container" class="record-scrollbar space-y-4 h-64 overflow-y-auto pr-2 text-sm">
+                <!-- Pet records will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 justify-center mt-6">
+            <button id="changelogModalBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">📜 更新日志</button>
+            <button id="fullscreenToggleBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-accent">🖥️ 全屏幕</button>
+            <button id="themeToggleBtn" class="flex-1 min-w-[150px] text-xl text-white font-bold py-3 px-4 rounded-lg btn-info">🌓 夜间模式</button>
         </div>
     </div>
     
-    <!-- Modals -->
-    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('changelog-modal')">
-        <div class="main-container glow-border w-11/12 max-w-2xl" onclick="event.stopPropagation()">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2>
-            <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar list-pellet">
-                <div class="mb-4">
-                    <p class="font-bold text-lg glow-text">Version 4.0 <span class="text-sm font-normal text-gray-400">- TRON Grid</span></p>
-                    <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>引入TRON風格UI，霓虹光暈、向量線條、動態光柵背景。</li>
-                        <li>新增PAC-MAN風格動態頭像框。</li>
-                        <li>新增CRT掃描線和雜訊視覺效果。</li>
-                        <li>UI元素載入時增加啟動動畫序列。</li>
-                    </ul>
-                </div>
-                <div class="mb-4 pt-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.2)">
-                    <p class="font-bold text-lg glow-text">Version 3.0 <span class="text-sm font-normal text-gray-400">- Modern Fusion</span></p>
-                    <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>引入全新UI，融合現代、像素、二次元風格。</li>
-                        <li>加入強大的主題引擎，支持日夜模式和20種主題配色。</li>
-                        <li>新增“更新日誌”彈窗。</li>
-                    </ul>
-                </div>
+    <!-- Changelog Modal -->
+    <div id="changelog-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 hidden" onclick="toggleChangelogModal(false)">
+        <div id="changelog-modal-content" class="max-w-2xl w-full p-6 rounded-2xl border-2 border-amber-400 shadow-lg relative" onclick="event.stopPropagation()">
+            <button onclick="toggleChangelogModal(false)" class="absolute top-4 right-4 text-2xl text-red-500">&times;</button>
+            <div id="changelog-list">
+                <!-- Changelog content will be populated by JavaScript -->
             </div>
-        </div>
-    </div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('theme-modal')">
-        <div class="main-container glow-border w-11/12 max-w-md" onclick="event.stopPropagation()">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">COLOR_CYCLE</h2>
-            <div id="theme-grid" class="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const CONFIG = {
-            PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG',
-            PET_RECORDS_PATH: './dist/bunnycc/PetRecords.json',
-            START_DATE: '2024/03/12 00:00:00',
-            THEMES: [
-                { name: 'Cyan', rgb: '34, 211, 238', light_rgb: '103, 232, 249'},
-                { name: 'Magenta', rgb: '244, 114, 182', light_rgb: '249, 168, 212'},
-                { name: 'Lime', rgb: '132, 204, 22', light_rgb: '163, 230, 53'},
-                { name: 'Orange', rgb: '249, 115, 22', light_rgb: '251, 146, 60'},
-                { name: 'Yellow', rgb: '251, 191, 36', light_rgb: '252, 211, 77'},
-                { name: 'Red', rgb: '239, 68, 68', light_rgb: '248, 113, 113'},
-                { name: 'Indigo', rgb: '88, 86, 214', light_rgb: '129, 140, 248'},
-                { name: 'Green', rgb: '34, 197, 94', light_rgb: '74, 222, 128'},
-                { name: 'White', rgb: '229, 231, 235', light_rgb: '243, 244, 246'},
-                { name: 'Purple', rgb: '168, 85, 247', light_rgb: '192, 132, 252'},
-            ]
-        };
+        // --- Constants and Global Variables ---
+        const startDate = new Date('2024/03/12 00:00:00'); // Set your start date here for anniversary timer
+        let weightChartInstance = null; // Global variable to store Chart.js instance
+        let weightRecords = []; // Global variable to store filtered weight records
+        let ui = {}; // Will be populated in window.onload
 
-        // --- GLOBAL STATE & DOM ELEMENTS ---
-        let weightChart = null;
-        const docEl = document.documentElement;
-        const timingEl = document.getElementById('timing');
-        const profilePicEl = document.getElementById('profile-pic');
-        const weightChangeInfoEl = document.getElementById('weight-change-info');
-        const chartCanvas = document.getElementById('weightChart');
-        const allRecordsContainer = document.getElementById('all-records-container');
-        const themeGrid = document.getElementById('theme-grid');
-        
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            profilePicEl.src = CONFIG.PROFILE_PIC_PATH;
-            setInterval(updateTiming, 100);
-            loadAndProcessData();
-            generateThemeSwatches();
-        });
+        // --- Color Palettes for Dynamic Theming (Copied from Charger Calculator) ---
+        const nightModePalettes = [
+            { // TRON Blue/Cyan
+                '--bg-color': 'linear-gradient(180deg, #0a0a0a 0%, #000005 100%)',
+                '--text-color': '#00eaff',
+                '--title-color': '#00eaff',
+                '--label-color': '#33ffff',
+                '--input-bg': 'rgba(0, 0, 10, 0.7)',
+                '--input-border': '#00eaff',
+                '--panel-bg': 'rgba(0, 0, 15, 0.8)',
+                '--panel-border': '#00eaff',
+                '--button-primary-bg': 'linear-gradient(45deg, #00bfff 0%, #0077ff 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #00aadd 0%, #0066ee 100%)',
+                '--button-primary-border': '#00eaff',
+                '--button-secondary-bg': 'linear-gradient(45deg, #ff9900 0%, #ff6600 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #ee8800 0%, #ee5500 100%)',
+                '--button-secondary-border': '#ff9900',
+                '--button-success-bg': 'linear-gradient(45deg, #00ee00 0%, #00bb00 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
+                '--button-success-border': '#00ee00',
+                '--button-info-bg': 'linear-gradient(45deg, #666666 0%, #333333 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #555555 0%, #222222 100%)',
+                '--button-info-border': '#888888',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff00ff 0%, #cc00cc 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee00ee 0%, #bb00bb 100%)',
+                '--button-accent-border': '#ff00ff',
+                '--changelog-modal-bg': 'rgba(0, 0, 20, 0.9)',
+                '--changelog-text-color': '#ccffff',
+                '--changelog-border-color': '#00eaff',
+                '--changelog-h-color': '#00eaff',
+                '--changelog-h-border': '#33ffff',
+                '--progress-bg': '#00eaff',
+                '--progress-text': '#0a0a0a',
+                '--cooling-color': '#ff00ff',
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-icon-fill': 'currentColor', /* Inherit color from text-color */
+                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
+                '--chart-grid-color': 'rgba(255, 255, 255, 0.1)',
+                '--chart-text-color': '#00eaff',
+                '--chart-line-color': '#33ffff',
+                '--chart-point-border-color': '#00eaff',
+                '--chart-point-bg-color': '#00eaff',
+            },
+            { // Dark Forest Green
+                '--bg-color': 'linear-gradient(180deg, #102010 0%, #050505 100%)',
+                '--text-color': '#00ff7f', /* Neon Green */
+                '--title-color': '#00ff7f',
+                '--label-color': '#66ff99',
+                '--input-bg': 'rgba(0, 5, 0, 0.7)',
+                '--input-border': '#00ff7f',
+                '--panel-bg': 'rgba(0, 8, 0, 0.8)',
+                '--panel-border': '#00ff7f',
+                '--button-primary-bg': 'linear-gradient(45deg, #32cd32 0%, #008000 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #22bb22 0%, #006600 100%)',
+                '--button-primary-border': '#00ff7f',
+                '--button-secondary-bg': 'linear-gradient(45deg, #ffcc00 0%, #e0a000 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #eebb00 0%, #cc9000 100%)',
+                '--button-secondary-border': '#ffcc00',
+                '--button-success-bg': 'linear-gradient(45deg, #00ee00 0%, #00bb00 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #00dd00 0%, #00aa00 100%)',
+                '--button-success-border': '#00ee00',
+                '--button-info-bg': 'linear-gradient(45deg, #708090 0%, #405060 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #607080 0%, #304050 100%)',
+                '--button-info-border': '#90a0b0',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff69b4 0%, #c71585 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee59a4 0%, #b00070 100%)',
+                '--button-accent-border': '#ff69b4',
+                '--changelog-modal-bg': 'rgba(0, 10, 0, 0.9)',
+                '--changelog-text-color': '#d0ffe0',
+                '--changelog-border-color': '#00ff7f',
+                '--changelog-h-color': '#00ff7f',
+                '--changelog-h-border': '#66ff99',
+                '--progress-bg': '#00ff7f',
+                '--progress-text': '#0a0a0a',
+                '--cooling-color': '#ffd700', /* Gold for cooling */
+                '--gemini-button-bg': 'linear-gradient(45deg, #4b0082 0%, #8a2be2 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #3a006f 0%, #701fd0 100%)',
+                '--gemini-button-border': '#9932cc',
+                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
+                '--chart-grid-color': 'rgba(0, 255, 127, 0.1)',
+                '--chart-text-color': '#00ff7f',
+                '--chart-line-color': '#66ff99',
+                '--chart-point-border-color': '#00ff7f',
+                '--chart-point-bg-color': '#00ff7f',
+            },
+            { // Deep Purple/Magenta
+                '--bg-color': 'linear-gradient(180deg, #150015 0%, #000000 100%)',
+                '--text-color': '#ff00ff', /* Neon Magenta */
+                '--title-color': '#ff00ff',
+                '--label-color': '#ff66ff',
+                '--input-bg': 'rgba(10, 0, 10, 0.7)',
+                '--input-border': '#ff00ff',
+                '--panel-bg': 'rgba(15, 0, 15, 0.8)',
+                '--panel-border': '#ff00ff',
+                '--button-primary-bg': 'linear-gradient(45deg, #8a2be2 0%, #4b0082 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #7a1be2 0%, #3b0072 100%)',
+                '--button-primary-border': '#ff00ff',
+                '--button-secondary-bg': 'linear-gradient(45deg, #00ffff 0%, #00aaff 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #00dddd 0%, #0099ee 100%)',
+                '--button-secondary-border': '#00ffff',
+                '--button-success-bg': 'linear-gradient(45deg, #00ff00 0%, #00aa00 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #00ee00 0%, #009900 100%)',
+                '--button-success-border': '#00ff00',
+                '--button-info-bg': 'linear-gradient(45deg, #aaaaaa 0%, #777777 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #999999 0%, #666666 100%)',
+                '--button-info-border': '#cccccc',
+                '--button-accent-bg': 'linear-gradient(45deg, #ffd700 0%, #ffa500 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #eec700 0%, #ee9500 100%)',
+                '--button-accent-border': '#ffd700',
+                '--changelog-modal-bg': 'rgba(10, 0, 10, 0.9)',
+                '--changelog-text-color': '#ffeeff',
+                '--changelog-border-color': '#ff00ff',
+                '--changelog-h-color': '#ff00ff',
+                '--changelog-h-border': '#ff66ff',
+                '--progress-bg': '#ff00ff',
+                '--progress-text': '#0a0a0a',
+                '--cooling-color': '#00ffff',
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(255, 255, 255, 0.8)',
+                '--chart-grid-color': 'rgba(255, 0, 255, 0.1)',
+                '--chart-text-color': '#ff00ff',
+                '--chart-line-color': '#ff66ff',
+                '--chart-point-border-color': '#ff00ff',
+                '--chart-point-bg-color': '#ff00ff',
+            },
+        ];
 
-        // --- UI FUNCTIONS ---
-        function toggleModal(modalId) {
-            document.getElementById(modalId).classList.toggle('hidden');
-            document.getElementById(modalId).classList.toggle('flex');
+        const dayModePalettes = [
+            { // Soft Pastel Blue/Pink
+                '--bg-color': 'linear-gradient(135deg, #e0faff 0%, #fffde7 50%, #e3f2fd 100%)',
+                '--text-color': '#5e35b1',
+                '--title-color': '#ff4081',
+                '--label-color': '#64dd17',
+                '--input-bg': 'rgba(255, 255, 255, 0.95)',
+                '--input-border': '#ff4081',
+                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
+                '--panel-border': '#ff4081',
+                '--button-primary-bg': 'linear-gradient(45deg, #ff80ab 0%, #82b1ff 100%)',
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #ff6090 0%, #6090ff 100%)',
+                '--button-primary-border': '#82b1ff',
+                '--button-secondary-bg': 'linear-gradient(45deg, #ffd740 0%, #ff8a80 100%)',
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #ffcc30 0%, #ff7070 100%)',
+                '--button-secondary-border': '#ff8a80',
+                '--button-success-bg': 'linear-gradient(45deg, #69f0ae 0%, #18ffff 100%)',
+                '--button-success-hover-bg': 'linear-gradient(45deg, #50e090 0%, #00e0e0 100%)',
+                '--button-success-border': '#18ffff',
+                '--button-info-bg': 'linear-gradient(45deg, #b388ff 0%, #8c9eff 100%)',
+                '--button-info-hover-bg': 'linear-gradient(45deg, #a070e0 0%, #7080ff 100%)',
+                '--button-info-border': '#8c9eff',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff1744 0%, #f50057 100%)',
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #e00030 0%, #d00040 100%)',
+                '--button-accent-border': '#f50057',
+                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
+                '--changelog-text-color': '#333333',
+                '--changelog-border-color': 'var(--button-secondary-border)',
+                '--changelog-h-color': 'var(--title-color)',
+                '--changelog-h-border': 'var(--label-color)',
+                '--progress-bg': 'var(--title-color)',
+                '--progress-text': '#ffffff',
+                '--cooling-color': '#00bcd4',
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
+                '--chart-grid-color': 'rgba(0, 0, 0, 0.1)',
+                '--chart-text-color': '#5e35b1',
+                '--chart-line-color': '#ff4081',
+                '--chart-point-border-color': '#5e35b1',
+                '--chart-point-bg-color': '#5e35b1',
+            },
+            { // Warm Autumn Hues
+                '--bg-color': 'linear-gradient(135deg, #fceabb 0%, #f8b500 100%)',
+                '--text-color': '#8b4513', /* Saddle Brown */
+                '--title-color': '#d2691e', /* Chocolate */
+                '--label-color': '#a0522d', /* Sienna */
+                '--input-bg': 'rgba(255, 255, 255, 0.95)',
+                '--input-border': '#d2691e',
+                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
+                '--panel-border': '#d2691e',
+                '--button-primary-bg': 'linear-gradient(45deg, #ff8c00 0%, #ff4500 100%)', /* Dark Orange to Orange Red */
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #ee7c00 0%, #ee3500 100%)',
+                '--button-primary-border': '#ff4500',
+                '--button-secondary-bg': 'linear-gradient(45deg, #8b4513 0%, #a0522d 100%)', /* Saddle Brown to Sienna */
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #7b3503 0%, #90421d 100%)',
+                '--button-secondary-border': '#a0522d',
+                '--button-success-bg': 'linear-gradient(45deg, #3cb371 0%, #2e8b57 100%)', /* Medium Sea Green to Sea Green */
+                '--button-success-hover-bg': 'linear-gradient(45deg, #2c9361 0%, #1e7b47 100%)',
+                '--button-success-border': '#2e8b57',
+                '--button-info-bg': 'linear-gradient(45deg, #b0c4de 0%, #87ceeb 100%)', /* Light Steel Blue to Sky Blue */
+                '--button-info-hover-bg': 'linear-gradient(45deg, #a0b4ce 0%, #77bdeb 100%)',
+                '--button-info-border': '#87ceeb',
+                '--button-accent-bg': 'linear-gradient(45deg, #dc143c 0%, #b22222 100%)', /* Crimson to Firebrick */
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #cc042c 0%, #a21212 100%)',
+                '--button-accent-border': '#b22222',
+                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
+                '--changelog-text-color': '#555555',
+                '--changelog-border-color': 'var(--button-secondary-border)',
+                '--changelog-h-color': 'var(--title-color)',
+                '--changelog-h-border': 'var(--label-color)',
+                '--progress-bg': 'var(--title-color)',
+                '--progress-text': '#ffffff',
+                '--cooling-color': '#00aaff', /* Blue for cooling */
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
+                '--chart-grid-color': 'rgba(0, 0, 0, 0.1)',
+                '--chart-text-color': '#8b4513',
+                '--chart-line-color': '#d2691e',
+                '--chart-point-border-color': '#8b4513',
+                '--chart-point-bg-color': '#8b4513',
+            },
+            { // Fresh Spring Greens
+                '--bg-color': 'linear-gradient(135deg, #d4edda 0%, #f0fff0 100%)',
+                '--text-color': '#2e8b57', /* Sea Green */
+                '--title-color': '#3cb371', /* Medium Sea Green */
+                '--label-color': '#66cdaa', /* Medium Aquamarine */
+                '--input-bg': 'rgba(255, 255, 255, 0.95)',
+                '--input-border': '#3cb371',
+                '--panel-bg': 'rgba(255, 255, 255, 0.9)',
+                '--panel-border': '#3cb371',
+                '--button-primary-bg': 'linear-gradient(45deg, #66cdaa 0%, #4682b4 100%)', /* Medium Aquamarine to Steel Blue */
+                '--button-primary-hover-bg': 'linear-gradient(45deg, #56bda0 0%, #3672a4 100%)',
+                '--button-primary-border': '#4682b4',
+                '--button-secondary-bg': 'linear-gradient(45deg, #f0e68c 0%, #ffd700 100%)', /* Khaki to Gold */
+                '--button-secondary-hover-bg': 'linear-gradient(45deg, #e0d67c 0%, #eec700 100%)',
+                '--button-secondary-border': '#ffd700',
+                '--button-success-bg': 'linear-gradient(45deg, #98fb98 0%, #32cd32 100%)', /* Pale Green to Lime Green */
+                '--button-success-hover-bg': 'linear-gradient(45deg, #88ea88 0%, #22bb22 100%)',
+                '--button-success-border': '#32cd32',
+                '--button-info-bg': 'linear-gradient(45deg, #add8e6 0%, #87ceeb 100%)', /* Light Blue to Sky Blue */
+                '--button-info-hover-bg': 'linear-gradient(45deg, #99c8d6 0%, #77bdea 100%)',
+                '--button-info-border': '#87ceeb',
+                '--button-accent-bg': 'linear-gradient(45deg, #ff6347 0%, #ff4500 100%)', /* Tomato to Orange Red */
+                '--button-accent-hover-bg': 'linear-gradient(45deg, #ee5337 0%, #ee3500 100%)',
+                '--button-accent-border': '#ff4500',
+                '--changelog-modal-bg': 'rgba(255, 255, 255, 0.98)',
+                '--changelog-h-color': 'var(--title-color)',
+                '--changelog-h-border': 'var(--label-color)',
+                '--progress-bg': 'var(--title-color)',
+                '--progress-text': '#ffffff',
+                '--cooling-color': '#ff6347', /* Tomato for cooling */
+                '--gemini-button-bg': 'linear-gradient(45deg, #6200ea 0%, #aa00ff 100%)',
+                '--gemini-button-hover-bg': 'linear-gradient(45deg, #5000cc 0%, #8800cc 100%)',
+                '--gemini-button-border': '#bb00ff',
+                '--pixel-rabbit-shadow-color': 'rgba(0, 0, 0, 0.6)',
+                '--chart-grid-color': 'rgba(0, 0, 0, 0.1)',
+                '--chart-text-color': '#2e8b57',
+                '--chart-line-color': '#3cb371',
+                '--chart-point-border-color': '#2e8b57',
+                '--chart-point-bg-color': '#2e8b57',
+            },
+        ];
+
+        /**
+         * Utility to apply a given color palette to CSS variables.
+         * @param {Object} palette - An object containing CSS variable names and their values.
+         */
+        function applyColorPalette(palette) {
+            const root = document.documentElement;
+            for (const key in palette) {
+                root.style.setProperty(key, palette[key]);
+            }
         }
 
-        function changeTheme(theme) {
-            docEl.style.setProperty('--glow-rgb', theme.rgb);
-            docEl.style.setProperty('--glow-light-rgb', theme.light_rgb);
-            renderWeightChart(); // Re-render chart with new colors
+        /**
+         * Displays a custom alert modal instead of the native alert().
+         * @param {string} message - The message to display.
+         */
+        function showCustomAlert(message) {
+            const alertModal = document.createElement('div');
+            alertModal.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50';
+            alertModal.innerHTML = `
+                <div class="bg-gray-800 text-white p-6 rounded-lg shadow-lg border-2 border-red-500 max-w-sm w-full text-center">
+                    <p class="text-xl mb-4">${message}</p>
+                    <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg" onclick="this.closest('.fixed').remove()">确定</button>
+                </div>
+            `;
+            document.body.appendChild(alertModal);
         }
 
-        function generateThemeSwatches() {
-            CONFIG.THEMES.forEach(theme => {
-                const swatch = document.createElement('button');
-                swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2";
-                swatch.style.backgroundColor = `rgb(${theme.rgb})`;
-                swatch.style.boxShadow = `0 0 15px rgba(${theme.rgb}, 0.5)`;
-                swatch.style.ringColor = `rgb(${theme.rgb})`;
-                swatch.style.ringOffsetColor = `var(--bg-color)`;
-                swatch.title = theme.name;
-                swatch.onclick = () => changeTheme(theme);
-                themeGrid.appendChild(swatch);
-            });
-        }
-        
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`全螢幕失敗: ${err.message}`));
-            else document.exitFullscreen();
+        /**
+         * Toggles between day and night themes, randomly selecting a color palette.
+         */
+        function toggleTheme() {
+            const isDayMode = document.body.classList.contains('day-mode');
+            setTheme(!isDayMode);
         }
 
-        // --- DATA & TIMING LOGIC ---
-        function updateTiming() {
-            const startDate = new Date(CONFIG.START_DATE);
-            const currentDate = new Date();
-            const elapsedMs = currentDate.getTime() - startDate.getTime();
-
-            const elapsedDays = (elapsedMs / 86400000).toFixed(3);
-            const totalSeconds = Math.floor(elapsedMs / 1000);
-            const elapsedHours = Math.floor(totalSeconds / 3600);
-            const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60);
-            const elapsedSeconds = totalSeconds % 60;
-            
-            const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
-            const getNextAnniversary = (base, days) => {
-                let count = 0, nextDate;
-                do { count++; nextDate = new Date(base.getTime() + count * days * 86400000); } while (nextDate < currentDate);
-                return { date: nextDate, count };
-            };
-            const getNextYearly = (base) => {
-                let count = 0, nextDate;
-                do { count++; nextDate = new Date(base); nextDate.setFullYear(base.getFullYear() + count); } while (nextDate < currentDate);
-                return { date: nextDate, count };
-            };
-            
-            const next100 = getNextAnniversary(startDate, 100);
-            const next180 = getNextAnniversary(startDate, 180);
-            const next300 = getNextAnniversary(startDate, 300);
-            const nextYear = getNextYearly(startDate);
-            
-            timingEl.innerHTML = `<ul>
-                <li>🐰兔可可已經到來 ${elapsedDays} 天啦</li>
-                <li>🌱下一個100天紀念日是 ${formatDate(next100.date)}（第${next100.count}個100天）</li>
-                <li>🌿下一個180天紀念日是 ${formatDate(next180.date)}（第${next180.count}個180天）</li>
-                <li>🍀下一個300天紀念日是 ${formatDate(next300.date)}（第${next300.count}個300天）</li>
-                <li>🎉下一個一周年紀念日是 ${formatDate(nextYear.date)}（第${nextYear.count}周年）</li>
-                <li>🎂目前已經到來 ${elapsedHours}小時${elapsedMinutes}分鐘${elapsedSeconds}秒</li>
-            </ul>`;
-        }
-        
-        let allRecordsData = [];
-        let weightChartData = [];
-
-        async function loadAndProcessData() {
-            try {
-                const res = await fetch(CONFIG.PET_RECORDS_PATH);
-                if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-                const records = await res.json();
-                
-                allRecordsData = records.map(r => {
-                    const d = new Date(Math.floor(r.date) * 1000);
-                    d.setFullYear(d.getFullYear() + 31);
-                    return { ...r, processedDate: d };
-                }).sort((a, b) => b.processedDate - a.processedDate);
-
-                weightChartData = allRecordsData
-                    .filter(r => r.activity === '体重测量' && r.weight > 0)
-                    .sort((a, b) => a.processedDate - b.processedDate);
-
-                renderAllRecords(allRecordsData);
-                renderWeightChart();
-            } catch (error) {
-                console.error("Data load error:", error);
-                allRecordsContainer.innerHTML = `<p class="text-red-400">錯誤: 檔案記錄載入失敗。</p>`;
+        /**
+         * Sets the theme (day or night) and updates button text and random color palette.
+         * @param {boolean} enableDayMode - True for day mode, false for night mode.
+         */
+        function setTheme(enableDayMode) {
+            if (enableDayMode) {
+                document.body.classList.add('day-mode');
+                localStorage.setItem('theme', 'day');
+                ui.themeToggleBtn.textContent = '🌑 夜间模式';
+                const randomPalette = dayModePalettes[Math.floor(Math.random() * dayModePalettes.length)];
+                applyColorPalette(randomPalette);
+            } else {
+                document.body.classList.remove('day-mode');
+                localStorage.setItem('theme', 'night');
+                ui.themeToggleBtn.textContent = '🌓 日间模式';
+                const randomPalette = nightModePalettes[Math.floor(Math.random() * nightModePalettes.length)];
+                applyColorPalette(randomPalette);
+            }
+            // Re-render chart to apply new theme colors
+            if (weightChartInstance) {
+                renderWeightChart(weightRecords);
             }
         }
         
-        function renderAllRecords(records) {
-            allRecordsContainer.innerHTML = records.map(rec => {
-                const dateStr = rec.processedDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                return `<div class="p-3 rounded-md" style="background: rgba(var(--glow-rgb), 0.05); border-left: 3px solid rgba(var(--glow-rgb), 0.5)">
-                            <div class="flex justify-between items-center">
-                                <strong class="font-bold glow-text text-sm">${rec.activity}</strong>
-                                <time class="text-xs" style="color:var(--text-muted-color)">${dateStr}</time>
-                            </div>
-                            <p class="mt-1" style="color: var(--text-color)">${rec.notes || '無備註'}</p>
-                        </div>`;
-            }).join('');
+        /**
+         * Updates the timing display with elapsed days, hours, minutes, seconds, and upcoming anniversaries.
+         */
+        function updateTiming() {
+            const currentDate = new Date();
+            const timestamp = currentDate.getTime();
+            const startstamp = startDate.getTime();
+            const elapsedMilliseconds = timestamp - startstamp;
+
+            // Calculate days, accurate to three decimal places
+            const elapsedDays = elapsedMilliseconds / (1000 * 60 * 60 * 24);
+            const elapsedDaysFormatted = elapsedDays.toFixed(3);
+
+            // Calculate hours, minutes, and seconds
+            const elapsedHours = Math.floor(elapsedMilliseconds / (1000 * 60 * 60));
+            const elapsedMinutes = Math.floor((elapsedMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+            const elapsedSeconds = Math.floor((elapsedMilliseconds % (1000 * 60)) / 1000);
+
+            // Format date helper
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Calculate next anniversary date
+            function getNextAnniversaryDate(baseDate, days) {
+                let nextAnniversaryDate = new Date(baseDate.getTime());
+                let count = 0; 
+                while (nextAnniversaryDate <= currentDate) {
+                    count++;
+                    nextAnniversaryDate = new Date(baseDate.getTime() + count * days * 24 * 60 * 60 * 1000);
+                }
+                return { date: nextAnniversaryDate, count: count };
+            }
+
+            const next100Days = getNextAnniversaryDate(startDate, 100);
+            const next180Days = getNextAnniversaryDate(startDate, 180);
+            const next300Days = getNextAnniversaryDate(startDate, 300);
+
+            const next100DaysFormatted = `${formatDate(next100Days.date)}（第${next100Days.count}个100天）`;
+            const next180DaysFormatted = `${formatDate(next180Days.date)}（第${next180Days.count}个180天）`;
+            const next300DaysFormatted = `${formatDate(next300Days.date)}（第${next300Days.count}个300天）`;
+
+            // Calculate next yearly anniversary
+            function getNextYearAnniversary(baseDate) {
+                let nextYearAnniversaryDate = new Date(baseDate);
+                let yearsCount = 0;
+                while (nextYearAnniversaryDate <= currentDate) {
+                    yearsCount++;
+                    nextYearAnniversaryDate.setFullYear(nextYearAnniversaryDate.getFullYear() + 1);
+                }
+                return { date: nextYearAnniversaryDate, count: yearsCount };
+            }
+
+            const nextYearAnniversary = getNextYearAnniversary(startDate);
+            const nextYearAnniversaryFormatted = `${formatDate(nextYearAnniversary.date)}（第${nextYearAnniversary.count}周年）`;
+
+            // Concatenate display string
+            const timingString = 
+                `🐰兔可可已经到来 ${elapsedDaysFormatted} 天啦\n` +
+                `🌱下一个100天纪念日是 ${next100DaysFormatted}\n` +
+                `🌿下一个180天纪念日是 ${next180DaysFormatted}\n` +
+                `🍀下一个300天纪念日是 ${next300DaysFormatted}\n` +
+                `🎉下一个一周年纪念日是 ${nextYearAnniversaryFormatted}\n` +
+                `🎂目前已经到来 ${elapsedHours} 小时 ${elapsedMinutes} 分钟 ${elapsedSeconds} 秒`;
+
+            if (ui.timing) { // Ensure ui.timing is defined before use
+                ui.timing.textContent = timingString;
+            } else {
+                console.warn("UI element 'timing' not found for updateTiming.");
+            }
         }
 
-        function renderWeightChart() {
-            if (!weightChartData.length) return;
-            if (weightChart) weightChart.destroy();
-            
-            const style = getComputedStyle(docEl);
-            const primaryColor = `rgb(${style.getPropertyValue('--glow-rgb').trim()})`;
-            const textColor = style.getPropertyValue('--text-muted-color').trim();
-            const gridColor = `rgba(${style.getPropertyValue('--glow-rgb').trim()}, 0.1)`;
+        /**
+         * Renders the weight chart using Chart.js.
+         * @param {Array<Object>} records - Filtered records for weight measurement.
+         */
+        function renderWeightChart(records) {
+            if (weightChartInstance) {
+                weightChartInstance.destroy(); // Destroy previous chart instance
+                console.log('Previous chart instance destroyed.');
+            }
 
-            weightChart = new Chart(chartCanvas.getContext('2d'), {
+            if (!ui.weightChartCanvas) { // Ensure canvas element is available
+                console.error("Chart canvas element not found.");
+                return;
+            }
+
+            if (records.length === 0) {
+                // Hide canvas if no data, and display a message in weight-change-info
+                ui.weightChartCanvas.style.display = 'none'; 
+                if (ui.weightChangeInfo) { // Ensure ui.weightChangeInfo is defined
+                    ui.weightChangeInfo.innerHTML = '<p class="text-yellow-400">未找到体重测量数据。</p>'; 
+                }
+                console.log('No weight records to display chart.');
+                return;
+            } else {
+                ui.weightChartCanvas.style.display = 'block'; // Show canvas if data
+                if (ui.weightChangeInfo) { // Ensure ui.weightChangeInfo is defined
+                    ui.weightChangeInfo.innerHTML = '<p class="text-gray-400">点击图表上的数据点以查看体重变化</p>'; 
+                }
+            }
+
+            const labels = records.map(record => {
+                // 将时间戳转换为整数秒，再乘以 1000 得到整数毫秒
+                const rawTimestampMs = Math.floor(record.date) * 1000; 
+                const recordDate = new Date(rawTimestampMs);
+                
+                console.log(`Processing record:`, record, `-> Raw Timestamp (ms): ${rawTimestampMs}`);
+                
+                // 确保日期是有效的，并且年份调整后再返回
+                if (isNaN(recordDate.getTime())) {
+                    console.error('Invalid date generated for record (will be filtered):', record, 'Raw timestamp (ms):', rawTimestampMs);
+                    return null; 
+                }
+                // This line adds 31 years to the date, which might be a specific data correction.
+                // If your original JSON timestamps are Unix epoch (seconds since 1970-01-01)
+                // but were created with a different base year (e.g., 2001-01-01 for some systems),
+                // then adding 31 years might correct them to the expected display year.
+                // Please verify if this correction is still necessary based on your PetRecords.json data.
+                recordDate.setFullYear(recordDate.getFullYear() + 31); 
+                console.log(`Converted date for chart: ${recordDate.toISOString()}`);
+                return recordDate;
+            }).filter(date => date instanceof Date && !isNaN(date.getTime())); // Explicitly filter for valid Date objects
+
+            const dataPoints = records.map(record => record.weight);
+
+            console.log('Chart labels for rendering:', labels); // Debugging: Check generated labels
+            console.log('Chart dataPoints for rendering:', dataPoints); // Debugging: Check data points
+
+            const ctx = ui.weightChartCanvas.getContext('2d'); // Use ui.weightChartCanvas
+            
+            // Get dynamic colors from CSS variables
+            const chartLineColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-line-color');
+            const chartPointBgColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-point-bg-color');
+            const chartPointBorderColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-point-border-color');
+            const chartGridColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color');
+            const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color');
+
+
+            weightChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: weightChartData.map(d => d.processedDate.toLocaleDateString('zh-CN')),
+                    labels: labels, // Set labels directly
                     datasets: [{
-                        label: '體重 (g)',
-                        data: weightChartData.map(d => d.weight),
-                        borderColor: primaryColor,
-                        backgroundColor: `rgba(${style.getPropertyValue('--glow-rgb').trim()}, 0.2)`,
+                        label: '体重 (g)',
+                        data: dataPoints, // Set data directly
+                        borderColor: chartLineColor,
+                        backgroundColor: 'rgba(0, 0, 0, 0)', // Transparent fill
                         borderWidth: 2,
-                        pointBackgroundColor: primaryColor,
-                        pointBorderColor: 'var(--bg-color)',
-                        pointRadius: 4,
+                        pointRadius: 5,
+                        pointBackgroundColor: chartPointBgColor,
+                        pointBorderColor: chartPointBorderColor,
                         pointHoverRadius: 7,
-                        tension: 0.4,
-                        fill: true,
-                        shadowOffsetX: 0,
-                        shadowOffsetY: 0,
-                        shadowBlur: 10,
-                        shadowColor: primaryColor,
+                        tension: 0.3, // Smooth the line
+                        fill: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} },
-                        x: { grid: { display: false }, ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} }
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day', // Changed to day for finer granularity
+                                tooltipFormat: 'yyyy-MM-dd', // Only show year-month-day
+                                displayFormats: {
+                                    day: 'yyyy-MM-dd', // Display format for day unit
+                                    month: 'yyyy-MM' // Display format for month unit (as fallback/higher level)
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: '日期',
+                                color: chartTextColor,
+                                font: { family: 'VT323, monospace', size: 16 }
+                            },
+                            grid: {
+                                color: chartGridColor
+                            },
+                            ticks: {
+                                color: chartTextColor,
+                                font: { family: 'VT323, monospace' }
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: '体重 (g)',
+                                color: chartTextColor,
+                                font: { family: 'VT323, monospace', size: 16 }
+                            },
+                            grid: {
+                                color: chartGridColor
+                            },
+                            ticks: {
+                                color: chartTextColor,
+                                font: { family: 'VT323, monospace' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + 'g';
+                                        const currentIndex = context.dataIndex;
+                                        // Ensure previous point exists to calculate difference
+                                        if (currentIndex > 0 && context.dataset.data[currentIndex - 1] !== null && typeof context.dataset.data[currentIndex - 1] !== 'undefined') {
+                                            const previousWeight = context.dataset.data[currentIndex - 1];
+                                            const currentWeight = context.parsed.y;
+                                            const difference = currentWeight - previousWeight;
+                                            label += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            },
+                            titleFont: { family: 'VT323, monospace' },
+                            bodyFont: { family: 'VT323, monospace' },
+                            padding: 10,
+                            boxPadding: 5,
+                            displayColors: false, // Hide color box in tooltip
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            borderColor: chartLineColor,
+                            borderWidth: 1,
+                            cornerRadius: 5,
+                        }
                     },
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
-                            const index = elements[0].index;
-                            if (index > 0) {
-                                const diff = weightChartData[index].weight - weightChartData[index - 1].weight;
-                                const sign = diff >= 0 ? '+' : '-';
-                                const color = diff >= 0 ? 'text-lime-400' : 'text-red-400';
-                                weightChangeInfoEl.innerHTML = `<p>與上次相比: <span class="font-bold ${color}">${sign}${Math.abs(diff.toFixed(1))}g</span></p>`;
-                            } else {
-                                weightChangeInfoEl.innerHTML = `<p>這是第一次測量記錄</p>`;
+                            const clickedElement = elements[0];
+                            const datasetIndex = clickedElement.datasetIndex;
+                            const index = clickedElement.index;
+                            
+                            const currentWeight = weightChartInstance.data.datasets[datasetIndex].data[index];
+                            const currentTimestamp = weightChartInstance.data.labels[index];
+
+                            // Format the date for the alert to only show year-month-day
+                            let message = `日期: ${new Date(currentTimestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })} 体重: ${currentWeight}g`;
+
+                            // Ensure previous point exists to calculate difference for the alert
+                            if (index > 0 && weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== null && typeof weightChartInstance.data.datasets[datasetIndex].data[index - 1] !== 'undefined') {
+                                const previousWeight = weightChartInstance.data.datasets[datasetIndex].data[index - 1];
+                                const currentWeight = weightChartInstance.data.datasets[datasetIndex].data[index]; // Use data from chart directly
+                                const difference = currentWeight - previousWeight;
+                                message += ` (与前一点相差: ${difference >= 0 ? '+' : ''}${difference}g)`;
                             }
+                            showCustomAlert(message);
                         }
                     }
                 }
             });
+
+            // Populate and update chart data
+            weightChartInstance.data.labels = labels;
+            weightChartInstance.data.datasets[0].data = dataPoints;
+            weightChartInstance.update();
         }
+
+        /**
+         * Toggles the visibility of the changelog modal.
+         * @param {boolean} show - True to show, false to hide.
+         */
+        function toggleChangelogModal(show) { 
+            const changelogModal = document.getElementById('changelog-modal');
+            if (changelogModal) {
+                changelogModal.classList.toggle('hidden', !show); 
+            } else {
+                console.error("Changelog modal element not found.");
+            }
+        }
+
+        /**
+         * Loads pet records from the PetRecords.json file and displays them.
+         */
+        async function loadAndDisplayRecords() {
+            if (!ui.allRecordsContainer) { // Ensure container exists before proceeding
+                console.error("All records container element not found.");
+                return;
+            }
+
+            const loadingMessage = document.createElement('p');
+            loadingMessage.textContent = '正在加载宠物档案...';
+            loadingMessage.className = 'text-center text-xl label-color';
+            ui.allRecordsContainer.innerHTML = ''; 
+            ui.allRecordsContainer.appendChild(loadingMessage); 
+
+            try {
+                // Using standard fetch as in the user's working example.
+                // Assuming PetRecords.json is placed in the 'dist/bunnycc/' directory.
+                console.log("Attempting to fetch PetRecords.json from 'dist/bunnycc/PetRecords.json'...");
+                const response = await fetch('dist/bunnycc/PetRecords.json'); 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const records = await response.json();
+                console.log('Parsed petRecordsData loaded:', records);
+
+                ui.allRecordsContainer.innerHTML = ''; // Clear loading message
+
+                if (records.length === 0) {
+                    ui.allRecordsContainer.innerHTML = '<p class="text-center text-xl text-red-400">没有找到宠物记录。</p>'; 
+                    if (ui.weightChangeInfo) {
+                        ui.weightChangeInfo.innerHTML = '<p class="text-yellow-400">未找到体重测量数据。</p>'; 
+                    }
+                    return;
+                }
+
+                // Filter and sort weight records for the chart
+                weightRecords = records
+                    .filter(record => 
+                        record.activity === '体重测量' && 
+                        typeof record.weight === 'number' && 
+                        typeof record.date === 'number'      
+                    )
+                    .sort((a, b) => a.date - b.date); 
+
+                console.log('Filtered weightRecords for chart:', weightRecords); 
+
+                // Render the weight chart
+                renderWeightChart(weightRecords);
+
+                // Sort all records by date in descending order (newest first) for the list display
+                const displayRecords = records.map(record => {
+                    const rawTimestampMs = Math.floor(record.date) * 1000; 
+                    const recordDate = new Date(rawTimestampMs);
+                    
+                    if (!isNaN(recordDate.getTime())) {
+                         recordDate.setFullYear(recordDate.getFullYear() + 31); 
+                    } else {
+                        console.error('Invalid date encountered for display record:', record);
+                        recordDate.setTime(0); 
+                    }
+                    return { ...record, displayDate: recordDate };
+                }).sort((a, b) => b.displayDate.getTime() - a.displayDate.getTime()); 
+
+                displayRecords.forEach(record => {
+                    const recordDiv = document.createElement('div');
+                    recordDiv.className = 'bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-md';
+                    recordDiv.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--panel-border'); 
+                    recordDiv.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--panel-bg'); 
+
+                    const formattedDate = record.displayDate.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+
+                    recordDiv.innerHTML = `
+                        <p><span class="label-color font-bold">活动:</span> ${record.activity || '无'}</p>
+                        ${typeof record.weight !== 'undefined' ? `<p><span class="label-color font-bold">体重:</span> ${record.weight}g</p>` : ''}
+                        <p><span class="label-color font-bold">日期:</span> ${formattedDate}</p>
+                        ${record.notes ? `<p><span class="label-color font-bold">备注:</span> ${record.notes}</p>` : ''}
+                    `;
+                    ui.allRecordsContainer.appendChild(recordDiv); 
+                });
+            } catch (error) {
+                console.error('Error loading pet records:', error);
+                if (ui.allRecordsContainer) {
+                    ui.allRecordsContainer.innerHTML = `<p class="text-center text-xl text-red-400">加载档案失败: ${error.message}</p>`; 
+                }
+                showCustomAlert(`加载档案失败: ${error.message}`);
+            }
+        }
+        
+        /**
+         * Toggles fullscreen mode for the document.
+         */
+        function toggleFullscreen() {
+            const docElem = document.documentElement;
+            const requestFn = docElem.requestFullscreen ||
+                              docElem.webkitRequestFullscreen || 
+                              docElem.mozRequestFullScreen ||    
+                              docElem.msRequestFullscreen;       
+
+            if (requestFn) {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                    requestFn.call(docElem).catch(err => showCustomAlert(`Could not enter fullscreen: ${err.message}`));
+                } else {
+                    const exitFn = document.exitFullscreen ||
+                                   document.webkitExitFullscreen || 
+                                   document.mozCancelFullScreen ||    
+                                   document.msExitFullscreen;       
+                    if (exitFn) {
+                        exitFn.call(document).catch(err => showCustomAlert(`Could not exit fullscreen: ${err.message}`));
+                    } else {
+                        showCustomAlert("Your browser or current environment does not support exiting fullscreen mode.");
+                    }
+                }
+            } else {
+                showCustomAlert("Your browser or current environment does not support fullscreen mode.");
+            }
+        }
+        
+        // --- Wandering Rabbit Animation Logic ---
+        // Ensure wanderingRabbit is defined here for global access by animateRabbit and resize event
+        let wanderingRabbit; 
+        let targetX = 0; 
+        let targetY = 0; 
+        let currentX = 0;
+        let currentY = 0;
+
+        const droppingsPool = [];
+        const MAX_DROPPINGS = 70; 
+        let currentDroppingIndex = 0;
+        let lastDropTime = 0;
+        const DROP_INTERVAL_MS = 150; 
+
+        function animateRabbit() {
+            if (!wanderingRabbit) return; // Guard against element not being loaded
+
+            const speed = 2; 
+            
+            const prevX = currentX; 
+            const prevY = currentY;
+
+            const distanceX = targetX - currentX;
+            const distanceY = targetY - currentY;
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+            if (distance < speed || distance > 500) { 
+                currentX = targetX;
+                currentY = targetY;
+                targetX = Math.random() * (window.innerWidth - 72); 
+                targetY = Math.random() * (window.innerHeight - 72); 
+            } else {
+                currentX += (distanceX / distance) * speed;
+                currentY += (distanceY / distance) * speed;
+            }
+
+            currentX = Math.max(0, Math.min(currentX, window.innerWidth - 72)); 
+            currentY = Math.max(0, Math.min(currentY, window.innerHeight - 72)); 
+
+            wanderingRabbit.style.left = `${currentX}px`;
+            wanderingRabbit.style.top = `${currentY}px`;
+
+            if (performance.now() - lastDropTime > DROP_INTERVAL_MS) {
+                const dropping = droppingsPool[currentDroppingIndex];
+                if (dropping) { // Ensure dropping exists
+                    dropping.style.left = `${prevX + (72 - 6) / 2}px`; 
+                    dropping.style.top = `${prevY + (72 - 6) / 2 + 10}px`;  
+                    
+                    dropping.classList.remove('fade-out');
+                    void dropping.offsetWidth; 
+                    dropping.classList.add('fade-out');
+
+                    currentDroppingIndex = (currentDroppingIndex + 1) % MAX_DROPPINGS;
+                    lastDropTime = performance.now();
+                }
+            }
+
+            requestAnimationFrame(animateRabbit);
+        }
+
+        window.addEventListener('resize', () => {
+            if (!wanderingRabbit) return; // Guard against element not being loaded
+            currentX = Math.min(Math.max(0, currentX), window.innerWidth - 72); 
+            currentY = Math.min(Math.max(0, currentY), window.innerHeight - 72); 
+            wanderingRabbit.style.left = `${currentX}px`;
+            wanderingRabbit.style.top = `${currentY}px`;
+
+            targetX = Math.random() * (window.innerWidth - 72); 
+            targetY = Math.random() * (window.innerHeight - 72); 
+        });
+
+        // --- Changelog Population ---
+        function populateChangelog() {
+            if (!ui.changelogList) {
+                console.error("Changelog list element not found.");
+                return;
+            }
+            const changelogContent = `
+                <h4>✨ v2.1.2 - 🛠️ 程式碼重構兔 (Code Refactor Bunny)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>元素抓取時機校準！</strong> 將所有 `document.getElementById()` 的呼叫移動到 `window.onload` 內，確保在 DOM 完全載入後才抓取元素，解決了 `Cannot set properties of null` 錯誤。</li>
+                    <li><strong>日期適配器自動啟用！</strong> 移除手動覆寫 Chart.js 日期適配器的程式碼，讓 `chartjs-adapter-date-fns` 載入後自動註冊，修復了 `dateFns is not defined` 的錯誤。</li>
+                    <li><strong>數據載入路徑修正！</strong> 恢復使用 `fetch('dist/bunnycc/PetRecords.json')` 載入數據，與您提供的「工作正常」程式碼保持一致，確保數據能正確顯示。</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>更強大的偵測魔法！</strong> 增加了更多的錯誤檢查和控制台日誌，讓問題追蹤變得更輕鬆！</li>
+                </ul>
+
+                <h4>✨ v2.1.1 - ✨ 元素定位兔 (Element Locator Bunny)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>核心元素歸位！</strong> 徹底修復了 DOM 元素 ID 不匹配的問題（例如 `profile-pic` 和 `all-records-container`），現在 JavaScript 能夠精準找到它們，檔案顯示不再空白！</li>
+                    <li><strong>體重變化提示回歸！</strong> 重新加入了 `weight-change-info` 提示框，讓體重數據的互動反饋不再神秘失蹤！</li>
+                    <li><strong>檔案載入奇蹟！</strong> 檔案數據（`PetRecords.json`）現在透過 `content_fetcher` 安全穩定載入，告別 `Cannot set properties of null` 的陰影！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>偵測魔法升級！</strong> 增加了更多的 `console.log` 偵測點，方便我們未來像專業偵探一樣，在控制台追踪數據流和元素狀態，任何異常都無所遁形！</li>
+                </ul>
+
+                <h4>✨ v2.1.0 - 💫 量子跳躍兔 (Quantum Leap Bunny)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li><strong>全新紀元啟動！</strong> 版本號和代號實現了史詩級「量子跳躍」，帶來了更具未來感和俏皮氣息的全新識別！感覺檔案瞬間穿越到了下一個次元！🚀</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>檔案載入奇蹟復甦！</strong> 徹底解決了 `Cannot set properties of null (setting 'innerHTML')` 這個嚇人的錯誤，現在檔案列表能夠穩定載入，數據不再神隱！</li>
+                    <li><strong>DOM 元素 ID 對齊！</strong> 確保了 JavaScript 中對 `profile-pic` 和 `all-records-container` 等核心 UI 元素的引用與 HTML 中的 ID 精準匹配，從此不再「找錯人」！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>無縫 UI 體驗！</strong> 所有的像素風格 UI、動態主題和可愛的「亂跑的兔子」動畫都完整保留下來，讓你在修復錯誤的同時，也能享受視覺盛宴！</li>
+                </ul>
+
+                <h4>✨ v2.0.0 - 稳定同步兔 V1.0 (Stable Sync Rabbit V1.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>檔案載入奇蹟復甦！</strong> 徹底解決了 `Cannot set properties of null (setting 'innerHTML')` 這個嚇人的錯誤，現在檔案列表能夠穩定載入，數據不再神隱！</li>
+                    <li><strong>DOM 元素 ID 對齊！</strong> 確保了 JavaScript 中對 `profile-pic` 和 `all-records-container` 等核心 UI 元素的引用與 HTML 中的 ID 精準匹配，從此不再「找錯人」！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>無縫 UI 體驗！</strong> 所有的像素風格 UI、動態主題和可愛的「亂跑的兔子」動畫都完整保留下來，讓你在修復錯誤的同時，也能享受視覺盛宴！</li>
+                </ul>
+
+                <h4>✨ v2.0.0 - 史诗级像素风回归兔 (Pixel-Style Reversion Rabbit)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**舊時代靈魂召喚！** 完整召喚了 `v1.3.11` 的像素風 UI、動感主題與我們最愛的「亂跑的兔子」動畫！是不是感覺像穿越回了魂斗羅時代？✨</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**圖表魔法穩定咒！** 即使檔案介面大變樣，Chart.js 的日期魔法（時間軸、數據點顯示）依然穩定如山，比你上網課的 Wi-Fi 還穩！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時空錯亂修正！** 确保了 `date-fns` 和 `chartjs-adapter-date-fns` 的加载逻辑铁板钉钉，图表时间线不再“跑偏”，你再也别想怪我们“内存泄露”啦！</li>
+                    <li>**小兔兔回歸！** 讓亂跑的像素兔重新活躍起來，因為…沒有兔子跑跑的檔案，那還叫兔可可檔案嗎？！ᕕ( ᐛ )ᕗ</li>
+                </ul>
+
+                <h4>🌟 v2.0.0 - 像素同步兔 V2.0 (Pixel Sync Rabbit V2.0)</h4>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**UI 超載進化！** 將最新的像素風介面和主題切換按鈕完美整合，現在換膚就像換遊戲角色一樣簡單，根本停不下來！</li>
+                    <li>**時間軸扭曲修正！** 穩固了 Chart.js 圖表的日期時間軸功能，讓你的體重記錄不再是薛丁格的貓，每次打開都清清楚楚！</li>
+                </ul>
+                <p><strong>删除 (Deleted!):</strong></p>
+                <ul>
+                    <li>**冗餘魔法符文移除！** 清理了多餘的 UI 元素和按鈕，畢竟我們是極簡主義者（才不是因為偷懶呢！）。亂跑的兔子也暫時放假了，因為要給新 UI 騰地方嘛！</li>
+                </ul>
+
+                <h4>🚀 v2.0.0 - 像素同步兔 V1.0 (Pixel Sync Rabbit V1.0)</h4>
+                <p><strong>新增 (New!):</strong></p>
+                <ul>
+                    <li>**日期魔法適配！** 首次引入 `date-fns` 與 `chartjs-adapter-date-fns` 聯合施法，讓 Chart.js 的時間軸能夠正確解讀日期，告別“未定義屬性”的崩潰！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</p>
+                <ul>
+                    <li>**圖表時間軸校準！** 將 Chart.js 的 X 軸類型設定為 `time`，確保日期顯示精準，再也不會錯過兔可可的任何一個“漲胖”瞬間（誤）！</li>
+                </ul>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**依賴地獄救贖！** 調整了函式庫載入順序，確保所有魔法組件都能按時到位，避免了“找不到函數”的尷尬場面，就像在說：「我準備好了，你呢？」</li>
+                </ul>
+
+                <h4>🛡️ v1.3.11 - 兼容性稳定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>神秘錯誤終結者！</strong> 解決了 `Chart.js` 日期適配器找不到 `date-fns` 的 `startOfDay` 函數的謎團。現在它乖乖地從 `unpkg.com` 載入正確的魔法，不會再鬧脾氣了！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li><strong>診斷魔法升級！</strong> 增加了更多載入後的診斷日誌，方便我們像偵探一樣追蹤魔法元素的到位情況。</li>
+                </ul>
+
+                <h4>⏪ v1.3.10 - 适配强化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>時光倒流術！</strong> 將 `date-fns` 庫版本回退到 `2.25.0`。是的，我們承認有時候舊的才是最好的，就像你的老電玩主機一樣！這解決了 `startOfDay` 錯誤，確保了兼容性。</li>
+                </ul>
+
+                <h4>⚡ v1.3.9 - 适配强化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>前置施法！</strong> 將 `date-fns` 適配器註冊代碼提前了。現在，Chart.js 在它需要之前就能找到所有必要的日期魔法，完美解決了加載問題。</li>
+                </ul>
+
+                <h4>🔄 v1.3.8 - 适配强化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>明確指示！</strong> 顯式地將 `date-fns` 註冊為 Chart.js 的日期適配器。這次，Chart.js 絕對不會再裝傻說它不認識 `date-fns` 了！</li>
+                </ul>
+
+                <h4>🔗 v1.3.7 - 脚本同步兔 (Script Sync Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>魔法序曲調度！</strong> 仔細調整了 `Chart.js`、`date-fns` 和 `chartjs-adapter-date-fns` 的載入順序。就像管弦樂隊一樣，每個樂器都必須在正確的時間加入，才能奏出完美的樂章！</li>
+                </ul>
+
+                <h4>🗺️ v1.3.6 - 路径校准兔 (Path Calibration Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>迷路檔案找回家！</strong> 修正了 `PetRecords.json` 檔案的載入路徑。現在它會準確地在 `dist/bunnycc/PetRecords.json` 找到家了，不再流浪街頭。</li>
+                </ul>
+
+                <h4>✨ v1.3.5 - 适配强化兔 (Adaptation Enhanced Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li><strong>圖表數據分批上菜！</strong> 將 Chart.js 圖表的初始化和數據填充分為兩步，就像先準備好餐具再上菜一樣，讓整個過程更流暢、更健壯。</li>
+                    <li>**日期顯示美容！** 圖表和記錄列表的日期現在只顯示「年-月-日」，簡潔明了，就像只留下你最瘦的照片一樣！</li>
+                    <li>**檔案傳輸回歸！** 重新使用 `fetch` 來載入 `PetRecords.json` 檔案並優化了錯誤處理，現在傳輸數據就像搭乘高速列車，安全又快速！</li>
+                    <li>**危險連結警報解除！** 移除了可能引起混合內容警告的外部危險連結。安全第一，畢竟我們不想引來什麼不速之客！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**Tailwind 貼心提示！** 增加了關於 Tailwind CSS CDN 使用的註釋，提醒你在生產環境中的注意事項。</li>
+                </ul>
+
+                <h4>📐 v1.3.4 - 数据修正兔 (Data Correction Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**時間戳精準矯正！** 確保時間戳在轉換為 `Date` 物件之前，會先去除小數點並轉換為整數毫秒，從此時間不再模棱兩可！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**偵探日誌詳情增加！** 增加了更多的控制台日誌，方便在日期轉換和 Chart.js 初始化過程中進行「案情分析」。</li>
+                </ul>
+
+                <h4>🪐 v1.3.3 - 数据时空稳定兔 (Data Spacetime Stabilizer Rabbit)</h4>
+                <p><strong>修复 (Fixed!):</strong></p>
+                <ul>
+                    <li>**數據永恆鑲嵌！** 為確保 JSON 數據可靠載入，將 `PetRecords.json` 的內容直接嵌入到 HTML 腳本的 JavaScript 變數中。現在數據就像被封印在水晶球裡，穩固不破！</li>
+                </ul>
+                <p><strong>优化 (Optimized!):</strong></p>
+                <ul>
+                    <li>**更多偵錯足跡！** 增加了更多的控制台日誌，讓追蹤數據轉換和 Chart.js 初始化過程中的問題變得更加清晰。</li>
+                </ul>
+            `;
+            ui.changelogList.innerHTML = changelogContent;
+        }
+
+        // --- Event Listeners and Initial Setup ---
+        window.addEventListener('load', () => { 
+            // Populate UI elements after DOM is fully loaded
+            ui = {
+                profilePic: document.getElementById('profile-pic'),
+                timing: document.getElementById('timing'),
+                weightChartCanvas: document.getElementById('weightChart'),
+                weightChangeInfo: document.getElementById('weight-change-info'),
+                allRecordsContainer: document.getElementById('all-records-container'),
+                themeToggleBtn: document.getElementById('themeToggleBtn'),
+                changelogList: document.getElementById('changelog-list'),
+                changelogModalBtn: document.getElementById('changelogModalBtn'),
+                fullscreenToggleBtn: document.getElementById('fullscreenToggleBtn'),
+            };
+
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'day') {
+                setTheme(true); // Apply saved day theme, which will also pick a random palette
+            } else {
+                setTheme(false); // Apply saved night theme, which will also pick a random palette
+            }
+            populateChangelog(); 
+            
+            // Initialize droppings pool
+            wanderingRabbit = document.getElementById('wandering-rabbit'); // Get rabbit element after DOM load
+            for (let i = 0; i < MAX_DROPPINGS; i++) {
+                const dropping = document.createElement('div');
+                dropping.className = 'rabbit-dropping';
+                document.body.appendChild(dropping);
+                droppingsPool.push(dropping);
+            }
+
+            // Set initial rabbit position and start animation
+            const initialX = Math.random() * (window.innerWidth - 72);
+            const initialY = Math.random() * (window.innerHeight - 72);
+            if (wanderingRabbit) { // Guard against null
+                wanderingRabbit.style.left = `${initialX}px`;
+                wanderingRabbit.style.top = `${initialY}px`;
+            }
+            animateRabbit();
+
+            // Load and display pet records on initial load
+            loadAndDisplayRecords();
+
+            // Initial call and set interval for timing update for anniversary timer
+            updateTiming();
+            setInterval(updateTiming, 100);
+
+            // Attach event listeners for buttons
+            if (ui.changelogModalBtn) ui.changelogModalBtn.addEventListener('click', () => toggleChangelogModal(true));
+            if (ui.fullscreenToggleBtn) ui.fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
+            if (ui.themeToggleBtn) ui.themeToggleBtn.addEventListener('click', toggleTheme);
+        });
     </script>
 </body>
 </html>
