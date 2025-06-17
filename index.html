@@ -1,114 +1,113 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Bunny CC Archive v8.0.4 - ⚙️ Data Resilience Rabbit</title>
-    <!-- Tailwind CSS CDN - 注意：用於生產環境時，請作為 PostCSS 插件安裝或使用 Tailwind CLI -->
+    <title>🐰 兔可可档案 v7.0.1 - 🌌 星際交響兔 (Cosmic Symphony Rabbit)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Press Start 2P 用於像素化標題, Noto Sans SC 用於主要內容 -->
+    <!-- Keep Press Start 2P for pixelated titles, Noto Sans SC for main content -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS 變數用於 TRON 主題 (顏色透過 JS 動態設置) */
+        /* CSS Variables for TRON Theming (Dynamic colors via JS) */
         :root {
-            --glow-rgb: 34, 211, 238; /* 青色 - 預設 */
-            --glow-light-rgb: 103, 232, 249; /* 淺青色 - 預設 */
-            --bg-color: #010409; /* 深藍色 - 預設基礎背景 */
-            /* 面板表面顏色現在動態使用 glow-rgb 並帶有透明度 */
-            --surface-color: rgba(var(--glow-rgb), 0.08); /* 面板的微妙發光色調 */
-            --grid-color: rgba(var(--glow-rgb), 0.15); /* 網格線顏色基於發光色 */
-            --text-color: #e6edf3; /* 淺灰白色文字 */
-            --text-muted-color: #8b949e; /* 柔和灰色文字 */
+            --glow-rgb: 34, 211, 238; /* Cyan - Default */
+            --glow-light-rgb: 103, 232, 249; /* Cyan Light - Default */
+            --bg-color: #010409; /* Deep Dark Blue - Default Base Background */
+            /* Panel surface color now dynamically uses glow-rgb with alpha */
+            --surface-color: rgba(var(--glow-rgb), 0.08); /* Subtle tint of glow color for panels */
+            --grid-color: rgba(var(--glow-rgb), 0.15); /* Grid line color based on glow */
+            --text-color: #e6edf3; /* Light Off-White text */
+            --text-muted-color: #8b949e; /* Muted grey text */
 
-            /* 新增: 背景徑向漸變顏色 (透過 JS 動態設置) */
-            --bg-radial-start: rgba(var(--glow-rgb), 0.08); /* 中心微弱發光 */
-            --bg-radial-end: rgba(1, 4, 9, 0.9); /* 融入深色背景 */
-            --grad-pos-x: 20%; /* 透過 CSS 關鍵幀動畫 */
-            --grad-pos-y: 20%; /* 透過 CSS 關鍵幀動畫 */
+            /* New: Background Radial Gradient Colors (Dynamic via JS) */
+            --bg-radial-start: rgba(var(--glow-rgb), 0.08); /* Faint glow from center */
+            --bg-radial-end: rgba(1, 4, 9, 0.9); /* Blends into dark background */
+            --grad-pos-x: 20%; /* Animated via CSS Keyframes */
+            --grad-pos-y: 20%; /* Animated via CSS Keyframes */
         }
 
-        /* 日間模式特定覆蓋 (透過 JS 激活) */
+        /* Day Mode specific overrides (activated by JS) */
         body.day-mode {
-            --bg-color: #f0f8ff; /* 淺藍色作為較淺的基礎色 */
-            --text-color: #333333; /* 較深的文字用於對比 */
-            --text-muted-color: #666666; /* 日間模式的柔和灰色 */
-            --surface-color: rgba(var(--glow-rgb), 0.15); /* 面板的較淺發光色調 */
+            --bg-color: #f0f8ff; /* AliceBlue for lighter base */
+            --text-color: #333333; /* Darker text for contrast */
+            --text-muted-color: #666666; /* Muted grey for day mode */
+            --surface-color: rgba(var(--glow-rgb), 0.15); /* Lighter subtle tint of glow color for panels */
 
-            /* 日間模式徑向漸變調整 */
-            --bg-radial-start: rgba(var(--glow-rgb), 0.15); /* 較強的發光起始 */
-            --bg-radial-end: rgba(240, 248, 255, 0.9); /* 融入淺色背景 */
+            /* Day Mode Radial Gradient Adjustments */
+            --bg-radial-start: rgba(var(--glow-rgb), 0.15); /* Slightly stronger glow start */
+            --bg-radial-end: rgba(240, 248, 255, 0.9); /* Blends into light background */
         }
 
-        /* 基本樣式 */
+        /* Base styles */
         body {
-            font-family: 'Noto Sans SC', sans-serif; /* 主要內容使用 Noto Sans SC 字體 */
-            background-color: var(--bg-color); /* 基礎背景色 */
+            font-family: 'Noto Sans SC', sans-serif; /* Use Noto Sans SC for main body text */
+            background-color: var(--bg-color); /* Base background color */
             color: var(--text-color);
-            transition: background-color 0.5s ease, color 0.5s ease; /* 主題切換平滑過渡 */
-            overflow-x: hidden; /* 防止水平滾動條 */
-            overflow-y: auto; /* 允許內容垂直滾動 */
+            transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for theme change */
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+            overflow-y: auto; /* Allow vertical scroll for content if needed */
             opacity: 0;
             animation: fadeIn 1s ease 0.5s forwards;
-            position: relative; /* 用於疊加層的 z-index 上下文 */
+            position: relative; /* For z-index context of overlays */
         }
         
-        .font-pixel { font-family: 'Press Start 2P', cursive; } /* 僅對特定元素應用像素字體 */
+        .font-pixel { font-family: 'Press Start 2P', cursive; } /* Apply pixel font only to specific elements */
         .glow-text { color: rgb(var(--glow-light-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
         .glow-border { 
             border: 1px solid rgba(var(--glow-rgb), 0.4); 
             box-shadow: 0 0 12px rgba(var(--glow-rgb), 0.2), inset 0 0 8px rgba(var(--glow-rgb), 0.15); 
-            transition: border-color 0.5s ease, box-shadow 0.5s ease; /* 平滑過渡 */
+            transition: border-color 0.5s ease, box-shadow 0.5s ease; /* Smooth transition */
         }
         
-        /* 動畫網格和徑向漸變背景 */
+        /* Animated Grid and Radial Gradient Background */
         #grid-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -2; /* 位於所有內容之下 */
+            z-index: -2; /* Below all content */
             background-image:
-                /* 徑向漸變用於光影效果 - 第一層 */
+                /* Radial gradient for light/shadow effect - FIRST LAYER */
                 radial-gradient(circle at var(--grad-pos-x) var(--grad-pos-y), 
                                 var(--bg-radial-start) 0%, 
                                 var(--bg-radial-end) 60%),
-                /* 現有網格線 - 第二層 */
+                /* Existing grid lines - SECOND LAYER */
                 linear-gradient(rgba(var(--glow-rgb), 0.15) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(var(--glow-rgb), 0.15) 1px, transparent 1px);
-            background-size: cover, 50px 50px, 50px 50px; /* 徑向覆蓋，網格 50px */
-            background-repeat: no-repeat, repeat, repeat; /* 徑向不重複，網格重複 */
-            /* 徑向漸變移動路徑更新為更隨機和流暢 */
-            animation: pan-grid 20s linear infinite, radial-move 60s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
-            transition: background-image 0.5s ease; /* 主題顏色切換的平滑過渡 */
+            background-size: cover, 50px 50px, 50px 50px; /* Cover for radial, 50px for grid */
+            background-repeat: no-repeat, repeat, repeat; /* Radial no-repeat, grid repeat */
+            animation: pan-grid 20s linear infinite, radial-move 30s ease-in-out infinite alternate;
+            transition: background-image 0.5s ease; /* Smooth transition for theme color change in gradient */
         }
 
-        /* 掃描線疊加 */
+        /* Scanline Overlay */
         #scanline-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 100; /* 位於大多數內容之上，模態框之下 */
-            pointer-events: none; /* 允許點擊穿透 */
+            z-index: 100; /* Above most content, below modals */
+            pointer-events: none; /* Allows clicks to pass through */
             background: linear-gradient(to bottom, rgba(18, 18, 18, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.08));
             background-size: 100% 4px, 100% 1px;
             animation: scanline-move 10s linear infinite;
         }
 
-        /* 派克曼頭像容器 - 增強動態效果 */
+        /* Pac-Man Profile Image Container - Enhanced for dynamic effect */
         .pacman-container {
             position: relative;
             width: 160px; height: 160px;
             border-radius: 50%; 
             overflow: hidden; 
-            transition: box-shadow 0.3s ease; /* 平滑發光過渡 */
+            transition: box-shadow 0.3s ease; /* Smooth glow transition */
         }
         .pacman-container .profile-image-wrapper {
             width: 100%;
@@ -116,32 +115,31 @@
             border-radius: 50%;
             overflow: hidden; 
             position: relative; 
-            transition: clip-path 0.4s ease-in-out; /* 平滑嘴巴動畫 */
-            /* 初始狀態: 完整圓形 */
+            transition: clip-path 0.4s ease-in-out; /* Smooth mouth animation */
+            /* Initial state: full circle */
             clip-path: circle(50% at 50% 50%);
         }
 
         .pacman-container:hover .profile-image-wrapper {
-            /* 懸停時，創建派克曼嘴巴效果 */
+            /* On hover, create Pac-Man mouth effect */
             clip-path: polygon(0% 0%, 100% 0%, 100% 40%, 50% 50%, 100% 60%, 100% 100%, 0% 100%);
         }
         
-        /* 懸停時添加動態發光效果 */
+        /* Added a dynamic glow effect on hover */
         .pacman-container:hover {
-            box-shadow: 0 0 30px rgba(var(--glow-rgb), 0.9), inset 0 0 20px rgba(var(--glow-rgb), 0.6); /* 懸停時強烈發光 */
+            box-shadow: 0 0 30px rgba(var(--glow-rgb), 0.9), inset 0 0 20px rgba(var(--glow-rgb), 0.6); /* Intense glow on hover */
         }
 
 
-        /* 主容器和 UI 元素 */
+        /* Main container and UI elements */
         .main-container {
-            background-color: var(--surface-color); /* 現在使用動態表面色 */
+            background-color: var(--surface-color); /* Now uses dynamic surface-color */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             min-height: 80vh; 
-            min-width: 320px; /* 確保小螢幕的最小寬度 */
-            position: relative; /* 用於模塊的 z-index 上下文 */
-            transition: background-color 0.5s ease; /* 主題切換平滑過渡 */
-            border-radius: 1rem; /* 更圓潤的現代科技感 */
+            min-width: 320px; /* Ensures minimum width for small screens */
+            position: relative; /* For z-index context of modules */
+            transition: background-color 0.5s ease; /* Smooth transition for theme change */
         }
         .ui-module { 
             transition: all 0.5s; 
@@ -149,11 +147,9 @@
             transform: translateY(20px); 
             animation: module-boot 0.5s ease forwards; 
             min-height: 150px; 
-            background-color: rgba(var(--glow-rgb), 0.05); /* 基於主題的微妙模塊背景 */
-            border-left: 3px solid rgba(var(--glow-rgb), 0.5); /* 左側邊框也基於主題 */
-            transition: background-color 0.5s ease, border-left-color 0.5s ease; /* 平滑過渡 */
-            border-radius: 0.75rem; /* 模塊一致的圓角 */
-            box-shadow: 0 4px 15px rgba(var(--glow-rgb), 0.1); /* 更明顯的微妙陰影 */
+            background-color: rgba(var(--glow-rgb), 0.05); /* Subtle module background based on theme */
+            border-left: 3px solid rgba(var(--glow-rgb), 0.5); /* Left border also based on theme */
+            transition: background-color 0.5s ease, border-left-color 0.5s ease; /* Smooth transition */
         }
         .list-pellet li::before {
             content: '•';
@@ -165,7 +161,7 @@
             animation: pellet-glow 1.5s infinite alternate;
         }
 
-        /* 模態框 */
+         /* 模態框 */
         .modal-overlay { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; } /* 確保模態框位於頂部 */
         .modal-content-base {
             background-color: var(--surface-color); /* 模態框也使用動態表面色 */
@@ -191,13 +187,13 @@
             100% { --grad-pos-x: 10%; --grad-pos-y: 10%; }
         }
 
-        /* 自定義滾動條 */
+        /* Custom scrollbar */
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
         .record-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--glow-rgb), 0.8); }
 
-        /* 兔子樣式 */
+        /* Rabbit styles */
         #wandering-rabbit {
             position: fixed;
             width: 72px; 
@@ -225,51 +221,51 @@
             opacity: 0;
         }
 
-        /* 確保主容器居中並佔用適當寬度 */
+        /* Ensure main container is centered and takes appropriate width */
         .flex.items-center.justify-center.min-h-screen.p-4 {
-            align-items: flex-start; /* 頂部對齊以更好地利用垂直空間 */
-            padding-top: 2rem; /* 添加一些頂部內邊距 */
-            padding-bottom: 2rem; /* 添加一些底部內邊距 */
+            align-items: flex-start; /* Align to top for better vertical space usage */
+            padding-top: 2rem; /* Add some top padding */
+            padding-bottom: 2rem; /* Add some bottom padding */
         }
-        /* 主內容的 flex 擴展以填充可用空間 */
+        /* Flex grow for main content to fill available space */
         .lg\\:col-span-1.p-6.flex.flex-col.space-y-8, .lg\\:col-span-2.p-6.space-y-6 {
             flex-grow: 1;
         }
 
-        /* 更新日誌條目樣式 */
+        /* Changelog entry box style */
         .changelog-entry {
             padding: 1rem; /* p-4 */
             border-radius: 0.5rem; /* rounded-lg */
             margin-bottom: 1rem; /* mb-4 */
-            background-color: rgba(var(--glow-rgb), 0.1); /* bg-gray-800 等效，但動態 */
-            border: 1px solid rgba(var(--glow-rgb), 0.4); /* border-gray-700 等效，但動態 */
-            box-shadow: 0 2px 8px rgba(var(--glow-rgb), 0.1); /* 微妙陰影 */
-            transition: all 0.3s ease; /* 主題切換平滑過渡 */
+            background-color: rgba(var(--glow-rgb), 0.1); /* bg-gray-800 equivalent, but dynamic */
+            border: 1px solid rgba(var(--glow-rgb), 0.4); /* border-gray-700 equivalent, but dynamic */
+            box-shadow: 0 2px 8px rgba(var(--glow-rgb), 0.1); /* subtle shadow */
+            transition: all 0.3s ease; /* smooth transitions on theme change */
         }
 
         .changelog-entry ul {
-            list-style: none; /* 移除預設項目符號 */
-            padding-left: 1.5em; /* 為自定義項目符號縮進 */
+            list-style: none; /* Remove default bullet points */
+            padding-left: 1.5em; /* Indent for custom bullet */
         }
 
         .changelog-entry li::before {
-            content: '★ '; /* 更新日誌的自定義星號項目符號 */
-            color: rgb(var(--glow-light-rgb)); /* 使用發光色 */
+            content: '★ '; /* Custom star bullet point for changelog */
+            color: rgb(var(--glow-light-rgb)); /* Use glow color */
             font-weight: bold;
             display: inline-block;
-            width: 1.5em; /* 星號的空間 */
+            width: 1.5em; /* Space for the star */
             margin-left: -1.5em;
         }
-        /* 從全局更新日誌列表中移除彈丸樣式（如果已全局應用） */
+        /* Remove pellet style from the overall changelog list if it was applied globally */
         #changelog-list.list-pellet li::before {
-            content: none; /* 覆蓋以在此處移除全局彈丸 */
+            content: none; /* Override to remove global pellet from here */
         }
 
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
     <div id="grid-background"></div>
-    <!-- 遊走兔角色 -->
+    <!-- Wandering Rabbit Character -->
     <div id="wandering-rabbit">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" fill="currentColor">
             <rect x="1" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/>
@@ -285,29 +281,28 @@
     </div>
     <div id="scanline-overlay"></div>
 
-    <!-- 主容器 -->
+    <!-- Main Container -->
     <div class="main-container w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 glow-border">
-        <!-- 頁眉 -->
+        <!-- Header -->
         <div class="px-4 py-2 flex items-center justify-between border-b" style="border-color: rgba(var(--glow-rgb), 0.3)">
-            <!-- 更新標題文字以模仿終端提示符 -->
-            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v8.0.4_TRON <span style="font-size: 0.75em;">CANGUROMIO_BCC@ARCHIVE:~$</span></p>
-            <!-- 控制按鈕（現在使用 ID 和 programmatically 綁定事件） -->
+            <p class="font-pixel text-xs sm:text-sm tracking-widest glow-text">BCC_SYS_v7.0.1_TRON</p>
+            <!-- Controls -->
             <div class="flex items-center space-x-3 text-gray-400">
-                <button id="changelog-btn" title="更新日誌" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
-                <button id="theme-btn" title="色彩循環" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
-                <button id="performance-btn" title="性能監控" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
-                <button id="fullscreen-btn" title="全螢幕" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
+                   <button title="更新日誌" onclick="toggleModal('changelog-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
+                <button title="主題面板" onclick="toggleModal('theme-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg></button>
+                <button title="性能監測" onclick="toggleModal('performance-modal')" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
+                <button title="全螢幕" onclick="toggleFullscreen()" class="transition-colors hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg></button>
             </div>
         </div>
 
-        <!-- 主內容網格 -->
+        <!-- Main content grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-            <!-- 左側面板 -->
+            <!-- Left Panel -->
             <div class="lg:col-span-1 p-6 flex flex-col space-y-8 ui-module" style="animation-delay: 0.2s;">
                 <div class="text-center">
                     <div class="pacman-container mx-auto glow-border">
                         <div class="profile-image-wrapper">
-                            <img id="profile-pic" src="./dist/Bunny CC_Profile.JPG" 
+                            <img id="profile-pic" src="https://placehold.co/160x160/010409/22d3ee?text=Loading..." 
                                  onerror="this.onerror=null; this.src='https://placehold.co/160x160/010409/22d3ee?text=Error';"
                                  class="w-full h-full object-cover">
                         </div>
@@ -316,80 +311,59 @@
                     <p class="text-sm font-pixel" style="color: var(--text-muted-color)">ID: B-20240312</p>
                 </div>
                 <div class="ui-module" style="animation-delay: 0.4s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">里程碑</h2>
+                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">MILESTONES</h2>
                     <div id="timing" class="space-y-2 text-sm whitespace-pre-line leading-relaxed list-pellet" style="color: var(--text-muted-color)"></div>
                 </div>
             </div>
 
-            <!-- 右側面板 -->
+            <!-- Right Panel -->
             <div class="lg:col-span-2 p-6 space-y-6">
                 <div class="ui-module" style="animation-delay: 0.6s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">體重軌跡</h2>
+                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">WEIGHT_GRID</h2>
                     <div class="h-64"><canvas id="weightChart"></canvas></div>
                     <div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2)"></div>
                 </div>
                 <div class="ui-module" style="animation-delay: 0.8s;">
-                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">數據流</h2>
+                    <h2 class="font-pixel text-base pb-2 mb-4 glow-text" style="border-bottom: 1px solid rgba(var(--glow-rgb), 0.3)">DATA_STREAM</h2>
                     <div id="all-records-container" class="record-scrollbar h-56 overflow-y-auto pr-2 space-y-3 text-sm"></div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- 模態框 -->
-    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
+    <!-- Modals -->
+    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('changelog-modal')">
         <div class="main-container glow-border w-11/12 max-w-2xl modal-content-base" onclick="event.stopPropagation()">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">更新日誌</h2>
+            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="changelog-list">
-                <!-- 更新日誌內容將由 JavaScript 填充 -->
+                <!-- Changelog content will be populated by JavaScript -->
             </div>
-            <!-- 模態框關閉按鈕 -->
-            <button id="changelog-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
         </div>
     </div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
+    <div id="theme-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('theme-modal')">
         <div class="main-container glow-border w-11/12 max-w-md modal-content-base" onclick="event.stopPropagation()">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">色彩循環</h2>
-            <div id="theme-grid" class="p-6 grid grid-cols-3 sm:grid-cols-4 gap-4"></div>
-            <div class="flex justify-between p-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.3)">
-                <button id="prev-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">上一頁</button>
-                <button id="next-theme-page-btn" class="px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">下一頁</button>
-            </div>
-            <!-- 模態框關閉按鈕 -->
-            <button id="theme-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
+            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">COLOR_CYCLE</h2>
+            <div id="theme-grid" class="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
         </div>
     </div>
-    <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center">
+    <div id="performance-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center" onclick="toggleModal('performance-modal')">
         <div class="main-container glow-border w-11/12 max-w-lg modal-content-base" onclick="event.stopPropagation()">
-            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">性能監控</h2>
+            <h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">PERFORMANCE_MONITOR</h2>
             <div class="p-6 max-h-[70vh] overflow-y-auto record-scrollbar" id="performance-metrics">
-                <p class="text-sm" style="color: var(--text-muted-color);">激活感應器陣列以獲取實時指標。</p>
-                <!-- 按鈕現在使用 ID 並 programmatically 綁定事件 -->
-                <button id="activate-sensor-btn" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">激活感應器陣列</button>
+                <p class="text-sm" style="color: var(--text-muted-color);">點擊按鈕獲取實時數據。</p>
+                <button onclick="displayPerformanceMetrics()" class="mt-4 px-4 py-2 rounded-md font-bold text-white transition-colors duration-200" style="background-color: rgb(var(--glow-rgb)); hover:background-color: rgba(var(--glow-rgb), 0.8);">獲取性能數據</button>
                 <div id="performance-data-output" class="mt-4 space-y-2 text-sm" style="color: var(--text-color);"></div>
-                <p class="text-xs mt-4 text-red-400">注意: 由於安全協議，無法直接訪問 CPU/GPU 利用率和公共 IP。</p>
             </div>
-            <!-- 模態框關閉按鈕 -->
-            <button id="performance-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
         </div>
     </div>
 
     <script>
-        // --- 配置 ---
+        // --- CONFIGURATION ---
         const CONFIG = {
-            PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG', // Path for profile picture
-            // Changed to a relative path for a static asset. 
-            // If you want to use the uploaded file, change this back to 'uploaded:PetRecords.json'
-            PET_RECORDS_FETCH_ID: './dist/bunnycc/PetRecords.json', 
-            START_DATE: '2024/03/12 00:00:00', // Anniversary timer start date
-            // Extended THEMES array to 56 unique color schemes
-            THEMES: [
+            PROFILE_PIC_PATH: 'dist/Bunny CC_Profile.JPG', // Path to the profile picture
+            PET_RECORDS_PATH: 'dist/bunnycc/PetRecords.json', // Path to the pet records JSON
+            START_DATE: '2024/03/12 00:00:00', // Start date for anniversary timer
+        THEMES: [
                 { name: '青色', rgb: '34, 211, 238', light_rgb: '103, 232, 249'},
                 { name: '品紅', rgb: '244, 114, 182', light_rgb: '249, 168, 212'},
                 { name: '檸檬綠', rgb: '132, 204, 22', light_rgb: '163, 230, 53'},
@@ -451,13 +425,16 @@
             THEMES_PER_PAGE: 8 // Number of themes to display per page (8*7 pages for 56 themes)
         };
 
-        // --- Global State and UI Elements ---
+              // --- Global State and UI Elements ---
         let weightChart = null; // Chart.js instance
         let allRecordsData = []; // Stores all parsed pet records
         let weightChartData = []; // Stores filtered weight records for the chart
         let currentThemePage = 0; // Current page index for themes
 
-        // Rabbit animation variables
+        // UI elements, will be populated on DOMContentLoaded to ensure elements exist
+        let ui = {}; 
+
+             // Rabbit animation variables
         let wanderingRabbit; 
         const droppingsPool = [];
         const MAX_DROPPINGS = 70; 
@@ -467,152 +444,110 @@
         let animationSpeedMultiplier = 1; // Animation speed multiplier for Safari optimization
         let DROP_INTERVAL_MS = 150; // Interval for dropping "chocolate beans"
 
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate UI elements after DOM is fully loaded
+            ui = {
+                profilePic: document.getElementById('profile-pic'),
+                timing: document.getElementById('timing'),
+                weightChartCanvas: document.getElementById('weightChart'),
+                weightChangeInfo: document.getElementById('weight-change-info'),
+                allRecordsContainer: document.getElementById('all-records-container'),
+                changelogModal: document.getElementById('changelog-modal'),
+                themeModal: document.getElementById('theme-modal'),
+                performanceModal: document.getElementById('performance-modal'), // New performance modal
+                changelogList: document.getElementById('changelog-list'), 
+                themeGrid: document.getElementById('theme-grid'),
+                performanceDataOutput: document.getElementById('performance-data-output'),
+            };
+
+            // Set profile picture source
+            if (ui.profilePic) {
+                ui.profilePic.src = CONFIG.PROFILE_PIC_PATH;
+            } else {
+                console.error("Profile picture element not found.");
+            }
+
+            // Start timer updates
+            setInterval(updateTiming, 100);
+
+            // Load and process data
+            loadAndProcessData();
+
+            // Generate theme swatches
+            generateThemeSwatches();
+
+            // Initialize wandering rabbit and start animation
+            wanderingRabbit = document.getElementById('wandering-rabbit');
+            if (wanderingRabbit) {
+                // Initialize currentX, currentY to a random starting position
+                currentX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
+                currentY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
+                wanderingRabbit.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                
+                // Initialize droppings pool
+                for (let i = 0; i < MAX_DROPPINGS; i++) {
+                    const dropping = document.createElement('div');
+                    dropping.className = 'rabbit-dropping';
+                    document.body.appendChild(dropping);
+                    droppingsPool.push(dropping);
+                }
+                animateRabbit(); // Start the animation loop
+            } else {
+                console.warn("Wandering rabbit element not found, animation disabled.");
+            }
+
+            // Populate changelog content
+            populateChangelog();
+            
+            // Set initial random theme
+            const initialTheme = CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)];
+            changeTheme(initialTheme);
+        });
+
+        // --- UI FUNCTIONS ---
         /**
-         * Toggles the display state of a modal element.
-         * @param {string} modalId - The ID of the modal element to toggle.
+         * Toggles the visibility of a modal.
+         * @param {string} modalId - The ID of the modal element.
          */
         function toggleModal(modalId) {
-            console.log(`[DEBUG] Attempting to toggle modal: ${modalId}`);
             const modal = document.getElementById(modalId);
             if (modal) {
-                const isHidden = modal.classList.contains('hidden');
-                modal.classList.toggle('hidden', !isHidden);
-                modal.classList.toggle('flex', isHidden); // Add flex when showing
-
-                // Only display performance metrics when the performance modal is shown
-                if (modalId === 'performance-modal' && isHidden) { 
-                    displayPerformanceMetrics(); // Call function
-                }
-                // When the theme modal is shown, regenerate theme swatches to ensure correct pagination
-                if (modalId === 'theme-modal' && isHidden) {
-                    currentThemePage = 0; // Reset to the first page
-                    generateThemeSwatches();
+                modal.classList.toggle('hidden');
+                modal.classList.toggle('flex');
+                if (modalId === 'performance-modal' && modal.classList.contains('flex')) {
+                    // Automatically display metrics when performance modal is opened
+                    displayPerformanceMetrics();
                 }
             } else {
-                console.error(`[ERROR] Modal with ID '${modalId}' not found during toggleModal execution.`);
+                console.error(`Modal with ID '${modalId}' not found.`);
             }
         }
-
-        /**
-         * Toggles the document's fullscreen mode.
-         */
-        function toggleFullscreen() {
-            console.log("[DEBUG] Attempting to toggle fullscreen.");
-            const docEl = document.documentElement;
-            if (!document.fullscreenElement) {
-                docEl.requestFullscreen().catch(err => console.error(`[ERROR] Failed to enter fullscreen: ${err.message}`));
-            } else {
-                document.exitFullscreen().catch(err => console.error(`[ERROR] Failed to exit fullscreen: ${err.message}`));
-            }
-        }
-
-        /**
-         * Displays browser performance metrics in the performance modal.
-         */
-        function displayPerformanceMetrics() {
-            console.log("[DEBUG] Displaying performance metrics.");
-            const performanceDataOutput = document.getElementById('performance-data-output');
-            if (!performanceDataOutput) {
-                console.error("[ERROR] Performance data output element not found for display.");
-                return;
-            }
-
-            let outputHtml = '<h3>Current Performance Data:</h3>';
-
-            // Memory usage (non-standard, primarily for Chrome)
-            if (window.performance && window.performance.memory) {
-                const memory = window.performance.memory;
-                outputHtml += `<p><strong>JS Heap Used:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>Total JS Heap:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
-                outputHtml += `<p><strong>JS Heap Limit:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
-            } else {
-                outputHtml += `<p><em>Performance.memory API not available.</em></p>`;
-            }
-
-            // Navigation Timing API
-            if (window.performance && window.performance.getEntriesByType) {
-                const navTiming = performance.getEntriesByType("navigation")[0];
-                if (navTiming) {
-                    outputHtml += `<h3>Page Load Times:</h3>`;
-                    outputHtml += `<p><strong>DOM Content Loaded:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>Total Load Time:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>DNS Resolution:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>TCP Handshake:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
-                    outputHtml += `<p><strong>Request-Response Latency:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
-                }
-            } else {
-                outputHtml += `<p><em>Performance Timing API not available.</em></p>`;
-            }
-
-            // Network Information API (experimental, not supported by all browsers)
-            if (navigator.connection) {
-                const connection = navigator.connection;
-                outputHtml += `<h3>Network Subsystem Info:</h3>`;
-                outputHtml += `<p><strong>Effective Type:</strong> ${connection.effectiveType || 'N/A'}</p>`;
-                outputHtml += `<p><strong>Round Trip Time (RTT):</strong> ${connection.rtt || 'N/A'} ms</p>`;
-                outputHtml += `<p><strong>Downlink Bandwidth:</strong> ${connection.downlink || 'N/A'} Mbps</p>`;
-                outputHtml += `<p><strong>Data Saver Mode:</strong> ${connection.saveData ? 'Enabled' : 'Disabled'}</p>`;
-            } else {
-                outputHtml += `<p><em>Network Information API not available.</em></p>`;
-            }
-
-            // Hardware Concurrency (number of CPU cores)
-            if (navigator.hardwareConcurrency) {
-                outputHtml += `<h3>Hardware Subsystem Info:</h3>`;
-                outputHtml += `<p><strong>Processor Cores:</strong> ${navigator.hardwareConcurrency}</p>`;
-            } else {
-                outputHtml += `<p><em>Processor core count not detectable.</em></p>`;
-            }
-
-            // Device Memory (experimental)
-            if (navigator.deviceMemory) {
-                outputHtml += `<p><strong>System Memory (Approx.):</strong> ${navigator.deviceMemory} GB</p>`;
-            } else {
-                outputHtml += `<p><em>System memory not detectable.</em></p>`;
-            }
-
-            // Browser User Agent and OS (from navigator.userAgent)
-            outputHtml += `<h3>Browser and OS Diagnostics:</h3>`;
-            if (navigator && navigator.userAgent) {
-                outputHtml += `<p><strong>User Agent (UA):</strong> ${navigator.userAgent}</p>`;
-                let os = "Unknown";
-                if (navigator.userAgent.includes("Win")) os = "Windows";
-                else if (navigator.userAgent.includes("Mac")) os = "macOS";
-                else if (navigator.userAgent.includes("Linux")) os = "Linux";
-                else if (navigator.userAgent.includes("Android")) os = "Android";
-                else if (navigator.userAgent.includes("iPad")) os = "iPadOS";
-                else if (navigator.userAgent.includes("iPhone")) os = "iOS";
-                outputHtml += `<p><strong>Operating System (Estimated):</strong> ${os}</p>`;
-            } else {
-                outputHtml += `<p><em>User Agent information not accessible.</em></p>`;
-            }
-            
-            performanceDataOutput.innerHTML = outputHtml;
-        }
-
 
         /**
          * Changes the overall theme of the application based on RGB values.
          * This function now also updates the background radial gradient colors.
-         * @param {Object} theme - An object containing the theme's RGB and light_rgb values.
+         * @param {Object} theme - An object containing rgb and light_rgb values for the theme.
          */
         function changeTheme(theme) {
-            console.log(`[DEBUG] Changing theme to: ${theme.name}`);
             const docEl = document.documentElement;
             docEl.style.setProperty('--glow-rgb', theme.rgb);
             docEl.style.setProperty('--glow-light-rgb', theme.light_rgb);
 
-            // Dynamically set background radial gradient colors, based on theme and day/night mode
+            // Dynamically set background radial gradient colors based on theme and day/night mode
             const isDayMode = document.body.classList.contains('day-mode');
+            // Get current base background color, ensuring it's in a parseable format (e.g., if it's a gradient, get its primary color)
             const currentBgColor = getComputedStyle(docEl).getPropertyValue('--bg-color');
             let baseBgColorRgb;
-            // Attempt to parse base background color
-            const match = currentBgColor.match(/\d+/g);
-            if (match && match.length >= 3) {
-                baseBgColorRgb = [parseInt(match[0]), parseInt(match[1]), parseInt(match[2])];
+            if (currentBgColor.startsWith('linear-gradient')) {
+                // For gradients, try to extract a dominant color from the gradient string,
+                // or fall back to the default base colors.
+                // A more robust solution would be to store solid base colors as variables too.
+                baseBgColorRgb = isDayMode ? [240, 248, 255] : [1, 4, 9]; // AliceBlue or Deep Dark Blue
             } else {
-                // Fallback to default dark/light if parsing fails
-                baseBgColorRgb = isDayMode ? [240, 248, 255] : [1, 4, 9]; 
+                // If it's a solid color, extract its RGB
+                baseBgColorRgb = getRGBValues(currentBgColor);
             }
             
             const radialStartAlpha = isDayMode ? 0.15 : 0.08;
@@ -621,39 +556,55 @@
             docEl.style.setProperty('--bg-radial-start', `rgba(${theme.rgb}, ${radialStartAlpha})`);
             docEl.style.setProperty('--bg-radial-end', `rgba(${baseBgColorRgb.join(', ')}, ${radialEndAlpha})`);
 
-            // Also update the surface color for panels and modals based on the new theme's glow color
+            // Also update the surface-color for panels and modals based on the new theme's glow color
             const surfaceAlpha = isDayMode ? 0.15 : 0.08;
             docEl.style.setProperty('--surface-color', `rgba(${theme.rgb}, ${surfaceAlpha})`);
 
 
-            // If the chart exists, re-render the chart to apply new colors
+            // Re-render chart to apply new colors if it exists
             if (weightChart) {
                 renderWeightChart(); 
             }
         }
 
+        // Helper to convert hex color to RGB array
+        function getRGBValues(colorStr) {
+            if (colorStr.startsWith('#')) {
+                let r = 0, g = 0, b = 0;
+                // Handle 3-digit hex
+                if (colorStr.length === 4) {
+                    r = parseInt(colorStr[1] + colorStr[1], 16);
+                    g = parseInt(colorStr[2] + colorStr[2], 16);
+                    b = parseInt(colorStr[3] + colorStr[3], 16);
+                }
+                // Handle 6-digit hex
+                else if (colorStr.length === 7) {
+                    r = parseInt(colorStr.substring(1, 3), 16);
+                    g = parseInt(colorStr.substring(3, 5), 16);
+                    b = parseInt(colorStr.substring(5, 7), 16);
+                }
+                return [r, g, b];
+            } else if (colorStr.startsWith('rgb')) {
+                // Extract numbers from rgb(a) string
+                const match = colorStr.match(/\d+/g);
+                if (match && match.length >= 3) {
+                    return [parseInt(match[0]), parseInt(match[1]), parseInt(match[2])];
+                }
+            }
+            // Fallback for unrecognized formats
+            return [0, 0, 0]; 
+        }
+
         /**
          * Generates and appends theme color swatches to the theme modal.
-         * Implements pagination for themes.
          */
         function generateThemeSwatches() {
-            console.log("[DEBUG] Generating theme swatches.");
-            const themeGrid = document.getElementById('theme-grid');
-            const prevBtn = document.getElementById('prev-theme-page-btn');
-            const nextBtn = document.getElementById('next-theme-page-btn');
-
-            if (!themeGrid || !prevBtn || !nextBtn) {
-                console.error("[ERROR] Theme grid or pagination buttons not found for swatch generation.");
+            if (!ui.themeGrid) {
+                console.error("Theme grid element not found for generating swatches.");
                 return;
             }
-
-            themeGrid.innerHTML = ''; // Clear previous swatches
-
-            const startIndex = currentThemePage * CONFIG.THEMES_PER_PAGE;
-            const endIndex = startIndex + CONFIG.THEMES_PER_PAGE;
-            const themesToShow = CONFIG.THEMES.slice(startIndex, endIndex);
-
-            themesToShow.forEach(theme => {
+            ui.themeGrid.innerHTML = ''; // Clear previous swatches
+            CONFIG.THEMES.forEach(theme => {
                 const swatch = document.createElement('button');
                 swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2";
                 swatch.style.backgroundColor = `rgb(${theme.rgb})`;
@@ -661,28 +612,67 @@
                 swatch.style.ringColor = `rgb(${theme.rgb})`;
                 swatch.style.ringOffsetColor = `var(--bg-color)`;
                 swatch.title = theme.name;
-                swatch.addEventListener('click', () => changeTheme(theme));
-                themeGrid.appendChild(swatch);
+                swatch.onclick = () => changeTheme(theme); // Use the new, unified changeTheme
+                ui.themeGrid.appendChild(swatch);
             });
-
-            // Update pagination button states
-            prevBtn.disabled = currentThemePage === 0;
-            nextBtn.disabled = endIndex >= CONFIG.THEMES.length;
-
-            console.log("[DEBUG] Theme swatches generated for page", currentThemePage);
         }
         
-        // --- Data and Timing Logic ---
         /**
-         * Updates the anniversary timer display.
+         * Toggles fullscreen mode for the document.
          */
-        function updateTiming() {
-            const timingElement = document.getElementById('timing');
-            if (!timingElement) {
-                console.warn("[WARN] UI element 'timing' not found for updateTiming. Skipping.");
+        function toggleFullscreen() {
+            const docEl = document.documentElement;
+            if (!document.fullscreenElement) {
+                docEl.requestFullscreen().catch(err => console.error(`Failed to enter fullscreen: ${err.message}`));
+            } else {
+                document.exitFullscreen().catch(err => console.error(`Failed to exit fullscreen: ${err.message}`));
+            }
+        }
+
+        /**
+         * Displays browser performance metrics in the performance modal.
+         */
+        function displayPerformanceMetrics() {
+            if (!ui.performanceDataOutput) {
+                console.error("Performance data output element not found.");
                 return;
             }
 
+            let outputHtml = '<h3>當前性能數據:</h3>';
+
+            // Memory usage (non-standard, primarily Chrome)
+            if (window.performance && window.performance.memory) {
+                const memory = window.performance.memory;
+                outputHtml += `<p><strong>JS Heap 使用量:</strong> ${(memory.usedJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS Heap 總量:</strong> ${(memory.totalJSHeapSize / (1024 * 1024)).toFixed(2)} MB</p>`;
+                outputHtml += `<p><strong>JS Heap 限制:</strong> ${(memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2)} MB</p>`;
+            } else {
+                outputHtml += `<p><em>瀏覽器不支持 Performance.memory API。</em></p>`;
+            }
+
+            // Navigation Timing API
+            if (window.performance && window.performance.getEntriesByType) {
+                const navTiming = performance.getEntriesByType("navigation")[0];
+                if (navTiming) {
+                    outputHtml += `<h3>頁面載入時間:</h3>`;
+                    outputHtml += `<p><strong>DOM 內容載入:</strong> ${(navTiming.domContentLoadedEventEnd - navTiming.domContentLoadedEventStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>總載入時間:</strong> ${(navTiming.loadEventEnd - navTiming.startTime).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>DNS 查詢:</strong> ${(navTiming.domainLookupEnd - navTiming.domainLookupStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>TCP 連接:</strong> ${(navTiming.connectEnd - navTiming.connectStart).toFixed(2)} ms</p>`;
+                    outputHtml += `<p><strong>請求響應:</strong> ${(navTiming.responseEnd - navTiming.requestStart).toFixed(2)} ms</p>`;
+                }
+            } else {
+                outputHtml += `<p><em>瀏覽器不支持 Performance Timing API。</em></p>`;
+            }
+            
+            ui.performanceDataOutput.innerHTML = outputHtml;
+        }
+
+        // --- DATA & TIMING LOGIC ---
+        /**
+         * Updates the anniversary timing display.
+         */
+        function updateTiming() {
             const start = new Date(CONFIG.START_DATE);
             const now = new Date();
             const elapsedMs = now.getTime() - start.getTime();
@@ -695,7 +685,7 @@
             
             const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
             
-            // Helper function: get next anniversary date based on fixed day intervals
+            // Helper to get next anniversary date based on fixed day intervals
             const getNextAnniversary = (baseDate, days) => {
                 let count = 0, nextDate;
                 do { 
@@ -705,7 +695,7 @@
                 return { date: nextDate, count };
             };
             
-            // Helper function: get next yearly anniversary date
+            // Helper to get next yearly anniversary
             const getNextYearly = (baseDate) => {
                 let count = 0, nextDate;
                 do { 
@@ -721,77 +711,63 @@
             const next300 = getNextAnniversary(new Date(CONFIG.START_DATE), 300);
             const nextYear = getNextYearly(new Date(CONFIG.START_DATE));
             
-            timingElement.innerHTML = `<ul>
-                <li>Bunny CC 已與吾等共度 ${elapsedDays} 太陽週期。</li>
-                <li>下個百年標記: ${formatDate(next100.date)} (週期 ${next100.count})。</li>
-                <li>下個 180 日標記: ${formatDate(next180.date)} (週期 ${next180.count})。</li>
-                <li>下個 300 日標記: ${formatDate(next300.date)} (週期 ${next300.count})。</li>
-                <li>下個星辰年標記: ${formatDate(nextYear.date)} (第 ${nextYear.count} 年)。</li>
-                <li>逝去時光: ${elapsedHours}時 ${elapsedMinutes}分 ${elapsedSeconds}秒。</li>
-            </ul>`;
+            if (ui.timing) {
+                ui.timing.innerHTML = `<ul>
+                    <li>🐰兔可可已經到來 ${elapsedDays} 天啦</li>
+                    <li>🌱下一個100天紀念日是 ${formatDate(next100.date)}（第${next100.count}個100天）</li>
+                    <li>🌿下一個180天紀念日是 ${formatDate(next180.date)}（第${next180.count}個180天）</li>
+                    <li>🍀下一個300天紀念日是 ${formatDate(next300.date)}（第${next300.count}個300天）</li>
+                    <li>🎉下一個一周年紀念日是 ${formatDate(nextYear.date)}（第${nextYear.count}周年）</li>
+                    <li>🎂目前已經到來 ${elapsedHours}小時${elapsedMinutes}分鐘${elapsedSeconds}秒</li>
+                </ul>`;
+            } else {
+                console.warn("UI element 'timing' not found for updateTiming.");
+            }
         }
         
         /**
-         * Loads pet records from a JSON file and processes them for display and charting.
-         * Now uses standard fetch for a relative path with enhanced error handling.
+         * Loads pet records from the JSON file and processes them for display and charting.
          */
         async function loadAndProcessData() {
-            console.log("[DEBUG] Starting data load and processing.");
-            const allRecordsContainer = document.getElementById('all-records-container');
-            if (!allRecordsContainer) {
-                console.error("[ERROR] All records container element not found for data loading.");
+            if (!ui.allRecordsContainer) {
+                console.error("All records container element not found.");
                 return;
             }
 
             // Display loading message
-            allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">Initiating pet archive retrieval... stand by.</p>`;
+            ui.allRecordsContainer.innerHTML = `<p class="text-center text-xl" style="color: var(--text-muted-color);">正在加载宠物档案...</p>`;
 
             try {
-                const response = await fetch(CONFIG.PET_RECORDS_FETCH_ID);
+                const response = await fetch(CONFIG.PET_RECORDS_PATH);
                 if (!response.ok) {
-                    const errorResponseText = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status} (${response.statusText}). Could not load data from '${CONFIG.PET_RECORDS_FETCH_ID}'. Server response: ${errorResponseText.substring(0, 200)}...`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                const records = await response.json();
+                console.log('Parsed petRecordsData loaded:', records);
                 
-                const responseText = await response.text(); // Get raw text first for detailed error logging
-                console.log('[DEBUG] Raw response text (first 500 chars):', responseText.substring(0, 500));
-
-                let records;
-                try {
-                    records = JSON.parse(responseText); // Explicitly parse the text content
-                } catch (jsonError) {
-                    throw new Error(`JSON parsing error for '${CONFIG.PET_RECORDS_FETCH_ID}': ${jsonError.message}. The file content might be malformed JSON. Content starts with: ${responseText.substring(0, 200)}...`);
-                }
-                
-                console.log('[DEBUG] Pet records data loaded and parsed:', records);
-                
-                // Process all records: convert timestamps and add 31-year offset
+                // Process all records: convert timestamp and add 31 years offset
                 allRecordsData = records.map(r => {
-                    // Ensure r.date is a number and convert to milliseconds
-                    const dateTimestamp = typeof r.date === 'number' ? Math.floor(r.date) : Date.parse(r.date) / 1000;
-                    const d = new Date(dateTimestamp * 1000); 
-                    d.setFullYear(d.getFullYear() + 31); // Add 31-year offset (as per user's previous code)
+                    const d = new Date(Math.floor(r.date) * 1000); // Convert timestamp to milliseconds
+                    d.setFullYear(d.getFullYear() + 31); // Add 31 years offset (as per user's previous code)
                     return { ...r, processedDate: d };
-                }).sort((a, b) => b.processedDate.getTime() - a.processedDate.getTime()); // Sort in descending order for display
+                }).sort((a, b) => b.processedDate.getTime() - a.processedDate.getTime()); // Sort descending for display
 
-                // Filter weight chart data - note '体重测量' (simplified Chinese)
+                // Filter for weight chart data
                 weightChartData = records
                     .filter(r => r.activity === '体重测量' && typeof r.weight === 'number' && r.weight > 0)
                     .map(r => {
-                        const dateTimestamp = typeof r.date === 'number' ? Math.floor(r.date) : Date.parse(r.date) / 1000;
-                        const d = new Date(dateTimestamp * 1000);
+                        const d = new Date(Math.floor(r.date) * 1000);
                         d.setFullYear(d.getFullYear() + 31);
                         return { date: d, weight: r.weight };
                     })
-                    .sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort in ascending order for chart chronological display
+                    .sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort ascending for chart chronological order
 
                 renderAllRecords();
                 renderWeightChart();
-                console.log("[DEBUG] Data load and processing complete.");
 
             } catch (error) {
-                console.error("[ERROR] Data loading error:", error);
-                allRecordsContainer.innerHTML = `<p class="text-red-400 text-center">ERROR: Archive retrieval failed. Consult logs. (${error.message})</p>`;
+                console.error("Data load error:", error);
+                ui.allRecordsContainer.innerHTML = `<p class="text-red-400 text-center">錯誤: 檔案記錄載入失敗。詳情請查看控制台。</p>`;
             }
         }
 
@@ -799,56 +775,43 @@
          * Renders all pet records in the list container.
          */
         function renderAllRecords() {
-            console.log("[DEBUG] Rendering all records.");
-            const allRecordsContainer = document.getElementById('all-records-container');
-            if (!allRecordsContainer) return;
+            if (!ui.allRecordsContainer) return;
 
-            allRecordsContainer.innerHTML = allRecordsData.map(rec => {
-                const dateStr = rec.processedDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            ui.allRecordsContainer.innerHTML = allRecordsData.map(rec => {
+                const dateStr = rec.processedDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
                 return `<div class="p-3 rounded-md" style="background: rgba(var(--glow-rgb), 0.05); border-left: 3px solid rgba(var(--glow-rgb), 0.5)">
                             <div class="flex justify-between items-center">
-                                <strong class="font-bold glow-text text-sm">Activity: ${rec.activity}</strong>
-                                <time class="text-xs" style="color:var(--text-muted-color)">Timestamp: ${dateStr}</time>
+                                <strong class="font-bold glow-text text-sm">${rec.activity}</strong>
+                                <time class="text-xs" style="color:var(--text-muted-color)">${dateStr}</time>
                             </div>
-                            <p class="mt-1" style="color: var(--text-color)">Notes: ${rec.notes || 'N/A'}</p>
+                            <p class="mt-1" style="color: var(--text-color)">${rec.notes || '無備註'}</p>
                         </div>`;
             }).join('');
-            // If no records, display a message
-            if (allRecordsData.length === 0) {
-                allRecordsContainer.innerHTML = `<p class="text-center text-xl text-gray-500 mt-8">No records found in this archive.</p>`;
-            }
-            console.log("[DEBUG] All records rendered.");
         }
 
         /**
          * Renders the weight change chart.
          */
         function renderWeightChart() {
-            console.log("[DEBUG] Rendering weight chart.");
-            const weightChartCanvas = document.getElementById('weightChart');
-            const weightChangeInfo = document.getElementById('weight-change-info');
-
-            if (!weightChartCanvas) {
-                console.error("[ERROR] Weight chart canvas element not found for rendering.");
+            if (!ui.weightChartCanvas) {
+                console.error("Weight chart canvas element not found.");
                 return;
             }
 
             if (weightChart) {
                 weightChart.destroy(); // Destroy existing chart instance
-                console.log("[DEBUG] Existing chart destroyed.");
             }
 
             if (!weightChartData.length) {
-                weightChartCanvas.style.display = 'none';
-                if (weightChangeInfo) weightChangeInfo.innerHTML = `<p class="text-yellow-400">No mass data detected.</p>`;
-                console.log("[DEBUG] No weight data to render chart.");
+                ui.weightChartCanvas.style.display = 'none';
+                if (ui.weightChangeInfo) ui.weightChangeInfo.innerHTML = `<p class="text-yellow-400">未找到体重测量数据。</p>`;
                 return;
             } else {
-                weightChartCanvas.style.display = 'block';
-                if (weightChangeInfo) weightChangeInfo.innerHTML = `<p class="text-gray-400">Click data points for mass fluctuation analysis.</p>`;
+                ui.weightChartCanvas.style.display = 'block';
+                if (ui.weightChangeInfo) ui.weightChangeInfo.innerHTML = `<p class="text-gray-400">點擊圖表上的數據點以查看體重變化</p>`;
             }
             
-            const ctx = weightChartCanvas.getContext('2d');
+            const ctx = ui.weightChartCanvas.getContext('2d');
             const style = getComputedStyle(document.documentElement);
             const primaryColor = `rgb(${style.getPropertyValue('--glow-rgb').trim()})`;
             const textColor = style.getPropertyValue('--text-muted-color').trim();
@@ -857,10 +820,10 @@
             weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    // Labels are simple date strings, not Date objects for 'time' scale
-                    labels: weightChartData.map(d => d.date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })),
+                    // Labels are now simple date strings, not Date objects for 'time' scale
+                    labels: weightChartData.map(d => d.date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })),
                     datasets: [{
-                        label: 'Mass (g)',
+                        label: '體重 (g)',
                         data: weightChartData.map(d => d.weight),
                         borderColor: primaryColor,
                         backgroundColor: `rgba(${style.getPropertyValue('--glow-rgb').trim()}, 0.2)`,
@@ -878,7 +841,7 @@
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { display: false },
-                        tooltip: { // Custom tooltip style
+                        tooltip: { // Custom tooltip styling
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';
@@ -893,13 +856,13 @@
                                             const previousWeight = context.dataset.data[currentIndex - 1];
                                             const currentWeight = context.parsed.y;
                                             const difference = currentWeight - previousWeight;
-                                            label += ` (Increment: ${difference >= 0 ? '+' : ''}${difference.toFixed(1)}g)`;
+                                            label += ` (與前一點相差: ${difference >= 0 ? '+' : ''}${difference.toFixed(1)}g)`;
                                         }
                                     }
                                     return label;
                                 }
                             },
-                            titleFont: { family: "'Noto Sans SC', sans-serif" }, // Tooltip uses Noto Sans
+                            titleFont: { family: "'Noto Sans SC', sans-serif" }, // Use Noto Sans for tooltips
                             bodyFont: { family: "'Noto Sans SC', sans-serif" },
                             padding: 10,
                             boxPadding: 5,
@@ -919,36 +882,35 @@
                             grid: { display: false }, 
                             ticks: { color: textColor, font: { family: "'Noto Sans SC', sans-serif" }} 
                         }
-                    }
-                    ,
+                    },
                     onClick: (event, elements) => {
-                        if (elements.length > 0 && weightChangeInfo) { // Ensure elements exist
+                        if (elements.length > 0 && ui.weightChangeInfo) { // Ensure element exists
                             const index = elements[0].index;
                             if (index > 0) {
                                 const diff = weightChartData[index].weight - weightChartData[index - 1].weight;
                                 const sign = diff >= 0 ? '+' : '';
                                 const color = diff >= 0 ? 'text-lime-400' : 'text-red-400';
-                                weightChangeInfo.innerHTML = `<p>Increment: <span class="font-bold ${color}">${sign}${diff.toFixed(1)}g</span></p>`;
+                                ui.weightChangeInfo.innerHTML = `<p>與上次相比: <span class="font-bold ${color}">${sign}${diff.toFixed(1)}g</span></p>`;
                             } else {
-                                weightChangeInfo.innerHTML = `<p>Initial mass scan.</p>`;
+                                ui.weightChangeInfo.innerHTML = `<p>這是第一次測量記錄</p>`;
                             }
                         }
                     }
                 }
             });
-            console.log("[DEBUG] Weight chart rendered.");
         }
 
         // --- Wandering Rabbit Animation Logic ---
         function animateRabbit() {
             if (!wanderingRabbit) {
-                console.warn("[WARN] Wandering rabbit element not found, stopping animation.");
+                console.warn("Wandering rabbit element not found, stopping animation.");
                 return;
             }
 
-            const speed = 2.5 * animationSpeedMultiplier; 
+            const speed = 2.5; 
             
             // Get current position from transform
+            // Using getComputedStyle and parsing transform matrix for more reliable position
             const style = window.getComputedStyle(wanderingRabbit);
             const transform = style.transform || style.webkitTransform || style.mozTransform;
             let currentRabbitX = 0, currentRabbitY = 0;
@@ -958,10 +920,8 @@
                 currentRabbitX = matrix.m41;
                 currentRabbitY = matrix.m42;
             } else {
-                // Fallback for browsers that don't support DOMMatrix or transform not yet set.
-                // Here we need to parse current style instead of relying on prevX/prevY
-                currentRabbitX = parseFloat(wanderingRabbit.style.transform.match(/translateX\(([^)]+)px\)/)?.[1] || '0');
-                currentRabbitY = parseFloat(wanderingRabbit.style.transform.match(/translateY\(([^)]+)px\)/)?.[1] || '0');
+                currentRabbitX = parseFloat(wanderingRabbit.style.left || '0');
+                currentRabbitY = parseFloat(wanderingRabbit.style.top || '0');
             }
 
 
@@ -972,22 +932,22 @@
                 targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
             }
             
-            const prevX = currentRabbitX; // Store rabbit's position before moving for dropping
+            const prevX = currentRabbitX; 
             const prevY = currentRabbitY;
 
             const distanceX = targetX - currentRabbitX;
-            const distanceY = targetY - currentRabbitY; // Corrected: should use currentRabbitY
+            const distanceY = targetY - currentRabbitY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            if (distance > 0) { // Only move if there is a distance
+            if (distance > 0) { // Only move if there's a distance
                 currentX = currentRabbitX + (distanceX / distance) * speed;
                 currentY = currentRabbitY + (distanceY / distance) * speed;
-            } else { // If already at target, stay or recalculate (handled by above condition)
+            } else { // If already at target, stay put or recalculate (handled by the if condition above)
                 currentX = targetX;
                 currentY = targetY;
             }
 
-            // Constrain position within boundaries
+            // Clamp positions to stay within bounds
             currentX = Math.max(0, Math.min(currentX, window.innerWidth - wanderingRabbit.offsetWidth)); 
             currentY = Math.max(0, Math.min(currentY, window.innerHeight - wanderingRabbit.offsetHeight)); 
 
@@ -1007,249 +967,339 @@
                     lastDropTime = performance.now();
                 }
             }
-            window.requestAnimationFrame(animateRabbit);
+
+            requestAnimationFrame(animateRabbit);
         }
+
+        window.addEventListener('resize', () => {
+            if (!wanderingRabbit) return; 
+            // Recalculate current position relative to new window size
+            const style = window.getComputedStyle(wanderingRabbit);
+            const transform = style.transform || style.webkitTransform || style.mozTransform;
+            let currentRabbitX = 0, currentRabbitY = 0;
+
+            if (transform && transform !== 'none') {
+                const matrix = new DOMMatrix(transform);
+                currentRabbitX = matrix.m41;
+                currentRabbitY = matrix.m42;
+            }
+
+            currentX = Math.min(Math.max(0, currentRabbitX), window.innerWidth - wanderingRabbit.offsetWidth); 
+            currentY = Math.min(Math.max(0, currentRabbitY), window.innerHeight - wanderingRabbit.offsetHeight); 
+            wanderingRabbit.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+            // Set a new random target within the new window bounds
+            targetX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
+            targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
+        });
 
         // --- Changelog Population ---
         function populateChangelog() {
-            console.log("[DEBUG] Populating changelog.");
-            const changelogList = document.getElementById('changelog-list');
-            if (!changelogList) {
-                console.error("[ERROR] Changelog list element not found for population.");
+            if (!ui.changelogList) {
+                console.error("Changelog list element not found.");
                 return;
             }
             const changelogContent = `
-                <h4>✨ v8.0.4 - ⚙️ Data Resilience Rabbit (數據韌性兔)</h4>
+                <h4>✨ v7.0.1 - 🌌 星際交響兔 (Cosmic Symphony Rabbit)</h4>
                 <div class="changelog-entry">
-                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</strong></p>
                     <ul>
-                        <li><span style="color: red;"><strong>The Oracle's Whispers, Now Clearer! (神諭低語，更顯澄澈！):</strong></span> The elusive error, which oft whispered of "Unexpected identifier 'PetRecords'" when our scrolls were read, hath been tamed! We have imbued our reading ritual with greater wisdom, to divine whether the very fabric of the data be sound, or perchance, broken. Thus, when the archive doth fail to yield its secrets in proper JSON tongue, a clearer warning shall appear, guiding thee to mend its fractured syntax! (數據解析錯誤時，錯誤訊息更詳細，方便您檢查 JSON 格式！🔍)</li>
+                        <li>A grand decree for Chronological Scrolls: Each sagacious update, henceforth, shall reside within its own hallowed frame, distinctly marked for ease of contemplation and historical traverse.</li>
                     </ul>
-                </div>
-                <h4>✨ v8.0.3 - 🛤️ Path Weaver Rabbit (路徑編織兔)</h4>
-                <div class="changelog-entry">
-                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
                     <ul>
-                        <li><span style="color: red;"><strong>The Archive's Trajectory, Now Fixed! (檔案軌跡，現已固定！):</strong></span> The esteemed `PetRecords.json` archive, which once sought its solace via arcane `content_fetcher` from the ethereal uploads, now doth heed a more earthly decree! Its path is now bound directly to `dist/bunnycc/PetRecords.json` within the very fabric of this application. This change, though profound, ensures its unwavering presence, yet know, good sir, it shall no longer consult the uploaded scrolls! (數據路徑已強制寫入 `dist/bunnycc/PetRecords.json`，直接讀取！📦 但記得這不再是您上傳的那個文件了哦！🤔)</li>
-                    </ul>
-                </div>
-                <h4>✨ v8.0.2 - 🌟 Grand Revival Rabbit (王者歸來兔)</h4>
-                <div class="changelog-entry">
-                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
-                    <ul>
-                        <li><span style="color: red;"><strong>The Oracle's Tongue Now Loosened! (神諭之舌終復甦！):</strong></span> The vexing silence of the <code>content_fetcher</code>, which oft whispered of its undefined nature, hath been banished! By removing the shroud of 'module' from our chief script, this noble oracle now speaketh freely, and the data, which once lay hidden, doth now cascade forth in its full glory! Henceforth, no more blank pages shall greet thine eyes, for the archives are fully restored! (數據空白問題已徹底解決！🎉)</li>
-                        <li>The Hare's Gambit, More Precise! (玉兔之行，更趨精準！): The labyrinthine path of the wandering rabbit's journey hath been fine-tuned. Its steps, once prone to a slight miscalculation, now tread with an unparalleled accuracy, ensuring its playful dance is flawless upon the digital stage! (兔子亂跑的 bug 已修復！🥳)</li>
-                    </ul>
-                </div>
-                <h4>✨ v8.0.1 - 🐛 Bug Fix Rabbit (除蟲兔)</h4>
-                <div class="changelog-entry">
-                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
-                    <ul>
-                        <li><span style="color: red;"><strong>Edge Browser's Folly Cured! (Edge 瀏覽器之蠢病已癒！):</strong></span> The peculiar ailment in Edge, which caused our script to stumble with an 'Unexpected identifier 'addEventListener',' hath been utterly vanquished! We have, with cunning, removed all direct 'onclick' attributes from our HTML, and now, our buttons heed the whispers of JavaScript's 'addEventListener', thereby ensuring their proper conduct and the swift flow of interaction! (Edge 瀏覽器執行錯誤已修正！🎉)</li>
-                        <li><span style="color: red;"><strong>Weight Chart's Data Unveiled! (體重圖表數據終現世！):</strong></span> The cryptic absence of data from our weight chart, which stemmed from a subtle discord in the naming of 'weight measurement' activities, hath been resolved! We now heed the simpler tongue of '体重测量' (simplified Chinese), and lo, the cherished records of mass are now laid bare for all to witness! (體重圖表數據載入已修正！📈)</li>
-                        <li>The 'Content_Fetcher' No Longer a Mystery! (內容抓取者不再是謎！): The perplexing error of 'content_fetcher module import' hath been set right. This noble tool, being a gift of the very environment, now serves without need of explicit import, answering to our call as a trusted companion! (<code>content_fetcher</code> 模組引入錯誤已修正！🛠️)</li>
-                        <li>The Wandering Hare's Path Refined! (遊走兔之徑路更精！): The whimsical trajectory of our wandering rabbit's animation hath been subtly adjusted, ensuring its movements are now as graceful as a zephyr's dance! (遊走兔動畫路徑邏輯已微調！🏃‍♀️)</li>
-                    </ul>
-                </div>
-                <h4>✨ v8.0.0 - 🐇 Arcane Chronos Rabbit (奧秘時序兔)</h4>
-                <div class="changelog-entry">
-                    <p><strong>New Illuminations (A Light Newly Cast! 新光乍現！):</strong></p>
-                    <ul>
-                        <li>The Axis of Time, Flowing Anew! (時光之軸，流轉不息！): The sprite of the wandering rabbit doth now animate with renewed vigour, its steps as fluid as a river's course, a veritable cascade of frames, breathing boundless life into this archive! (兔子動畫回來啦！🐰)</li>
-                        <li>The Spectrum's Grand Embrace! (虹彩之譜，廣納天地！): Our palette of thematic colours hath expanded to fifty-six distinct hues, each a radiant spark, waiting to adorn this archive in garments of unparalleled splendor! (主題顏色多達 56 種！🌈)</li>
-                        <li>The Arcana of Measure, Unveiling Performance! (術數之奧，洞悉性能！): Our method of performance scrutiny hath been refined, now capable of revealing the browser's secret whispers, the depths of its memory, and the pulse of its network! Yet, the CPU's core, the GPU's might, and the IP's hidden trail, remain shrouded in mystery, beyond our common ken. (新增性能監控模塊！💻)</li>
-                        <li>Ancient Texts Reborn, Scented with Ink! (古籍新生，筆墨留香！): This chronicle of updates hath been re-penned with the quill of Shakespeare, each word imbued with antique grace and profound depth, offering a feast of eloquence to the discerning reader! (更新日誌變成古風英語了！📜)</li>
-                        <li>The Prologue's Mark, A Terminal's Soul! (始頁標記，終端之靈！): The inscription at the page's head, which once spoke of shared archives, hath transformed into the style of a terminal's command prompt, lending this archive a fresh, technological allure! (標題變成終端機風格！😎)</li>
-                    </ul>
-                    <p><strong>Refinements (An Ode to Refinement! 精進頌歌！):</strong></p>
-                    <ul>
-                        <li>Data's Flow, Unhindered! (數據流轉，無礙暢行！): The core mechanisms for data processing and element interplay have reverted to their former robust foundation, ensuring all logic proceeds as seamlessly as in days of yore, without a single hitch! (數據加載和頁面交互邏輯回歸穩定！👍)</li>
-                    </ul>
-                    <p><strong>Fixes (The Maladies Vanquished! 痼疾盡除！):</strong></p>
-                    <ul>
-                        <li>Woes of Yore, Now Dispelled! (往昔之困，盡皆消弭！): All manner of runtime afflictions, such as 'Unexpected identifier 'addEventListener'' and 'window.toggleModal is not a function', have been utterly uprooted in this iteration, rendering the archive stable and serene! (各種報錯都沒了！🥳)</li>
-                    </ul>
-                </div>
-                <!-- Previous Changelog Entries (此處為節選，完整的日誌將包含所有舊版本條目，並已進行風格轉換) -->
-
-                <h4>✨ v7.0.1 - 🌌 Cosmic Symphony Rabbit (宇宙交響兔)</h4>
-                <div class="changelog-entry">
-                    <p><strong>Additions (A New Decree Hath Been Issued! 新令已頒！):</p>
-                    <ul>
-                        <li>A grand decree for Chronological Scrolls: Each sagacious update, henceforth, shall reside within its own hallowed frame, distinctly marked for ease of contemplation and historical traverse. (更新日誌現在獨立成頁，方便查閱！📖)</li>
-                    </ul>
-                    <p><strong>Optimizations (Improvements of Noble Bearing! 精進頌歌！):</p>
-                    <ul>
-                        <li>The arcane glyphs and solitary marks, which once obscured the pristine pronouncements within these chronicles, have been expunged, that truth may shine unblemished, free from the shackles of superfluous punctuation. (那些多餘的符號和單個標記都清理掉了！✨)</li>
-                    </ul>
-                    <p><strong>Fixes (The Vexing Maladies Vanquished! 痼疾盡除！):</p>
-                    <ul>
-                        <li>A whisper of correction for the Temporal Weaver, ensuring the epochal calculations remain true, unaffected by the whispers of future dawns. (時間計算的 bug 也修復了，不會亂跳了！🕰️)</li>
+                        <li>The arcane glyphs and solitary marks, which once obscured the pristine pronouncements within these chronicles, have been expunged, that truth may shine unblemished, free from the shackles of superfluous punctuation.</li>
                     </ul>
                 </div>
 
-                <h4>✨ v7.0.0 - 🌠 Luminous Fusion Rabbit (炫光融合兔)</h4>
+                <h4>✨ v7.0.0 - 🌠 融光幻境兔 (Luminous Fusion Rabbit)</h4>
                 <div class="changelog-entry">
-                    <p><strong>Optimizations (Improvements of Noble Bearing! 精進頌歌！):</p>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
                     <ul>
-                        <li>The Visage's Interplay now Heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel. (頭像互動效果更炫酷了！🤩)</li>
-                        <li>The Canvas of Aetherial Radiance now Adorned: The web's backdrop embraceth a dynamic radial gradient, its hues meticulously woven with the chosen theme's palette, shifting subtly as if breathing, thus forging a deeper, more artistic vista. (背景增加了動態光暈效果，超級夢幻！💫)</li>
-                        <li>The Errant Hare's Gambol now Flows with Fluid Grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity. (兔子跑起來更流暢了，像在飛！💨)</li>
-                        <li>Universal Accord for Digital Scrolls: The interface's harmony across all digital realms, from the venerable Edge to the swift Chrome, and adapting to screens of manifold sizes, hath been fortified, ensuring an impeccable and beauteous presentation. (跨瀏覽器和響應式佈局更棒了！📱💻)</li>
-                        <li>The Lexicon and Chroma Elevated: The primary script now rendered in Noto Sans SC for clarity's sake, granting the gaze an unobstructed passage through knowledge. Furthermore, our chromatic repertoire hath expanded by five, presenting a grand total of twenty vibrant themes, inviting the connoisseur to adorn the archive in a vestment of light and shade. (字體更清晰，主題顏色增加了 5 種！🎨)</li>
+                        <li>The visage's interplay now heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel.</li>
+                        <li>The Canvas of Aetherial Radiance now adorned: The web's backdrop embraceth a dynamic radial gradient, its hues meticulously woven with the chosen theme's palette, shifting subtly as if breathing, thus forging a deeper, more artistic vista.</li>
+                        <li>The errant Hare's gambol now flows with fluid grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity.</li>
+                        <li>Universal Accord for Digital Scrolls: The interface's harmony across all digital realms, from the venerable Edge to the swift Chrome, and adapting to screens of manifold sizes, hath been fortified, ensuring an impeccable and beauteous presentation.</li>
+                        <li>The Lexicon and Chroma elevated: The primary script now rendered in Noto Sans SC for clarity's sake, granting the gaze an unobstructed passage through knowledge. Furthermore, our chromatic repertoire hath expanded by five, presenting a grand total of twenty vibrant themes, inviting the connoisseur to adorn the archive in a vestment of light and shade.</li>
                     </ul>
-                    <p><strong>Additions (A New Decree Hath Been Issued! 新令已頒！):</p>
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</strong></p>
                     <ul>
-                        <li>The Oracle of Performance now stands Revealed! A button, newly forged, doth summon forth a tableau revealing the browser's vital humours, specifically its memory's embrace, thereby granting insight into the digital essence's consumption. (新增性能監控按鈕，可以看瀏覽器內存佔用了！📊)</li>
+                        <li>The Oracle of Performance now stands revealed! A button, newly forged, doth summon forth a tableau revealing the browser's vital humours, specifically its memory's embrace, thereby granting insight into the digital essence's consumption.</li>
                     </ul>
-                    <p><strong>Fixes (The Vexing Maladies Vanquished! 痼疾盡除！):</p>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
                     <ul>
-                        <li>The Chronicle of Changes, once shrouded in silence, now Unfurls in its Entirety. The malady of blank entries hath been utterly dispelled, and the annals of transformation stand complete, preserving every epochal shift. (更新日誌空白問題終於解決了！🎉)</li>
+                        <li>The Chronicle of Changes, once shrouded in silence, now unfurls in its entirety. The malady of blank entries hath been utterly dispelled, and the annals of transformation stand complete, preserving every epochal shift.</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v6.0.0 - 🌌 幻彩星塵兔 (KaleidoDust Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
+                    <ul>
+                        <li>The visage's interplay now heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel.</li>
+                        <li>The Canvas of Aetherial Radiance now adorned: The web's backdrop embraceth a dynamic radial gradient, its hues meticulously woven with the chosen theme's palette, shifting subtly as if breathing, thus forging a deeper, more artistic vista.</li>
+                        <li>The errant Hare's gambol now flows with fluid grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity.</li>
+                        <li>Universal Accord for Digital Scrolls: The interface's harmony across all digital realms, from the venerable Edge to the swift Chrome, and adapting to screens of manifold sizes, hath been fortified, ensuring an impeccable and beauteous presentation.</li>
+                        <li>The Lexicon and Chroma elevated: The primary script now rendered in Noto Sans SC for clarity's sake, granting the gaze an unobstructed passage through knowledge. Furthermore, our chromatic repertoire hath expanded by five, presenting a grand total of fifteen vibrant themes, inviting the connoisseur to adorn the archive in a vestment of light and shade.</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Chronicle of Changes, once shrouded in silence, now unfurls in its entirety. The malady of blank entries hath been utterly dispelled, and the annals of transformation stand complete, preserving every epochal shift.</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v5.0.0 - 💫 動感光影兔 (Kinetic Glint Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
+                    <ul>
+                        <li>The visage's interplay now heightened: Upon the mouse's approach, the Pac-Man's maw doth gape with greater vigour, and a radiant flash illuminates the portrait's bounds, thereby elevating the interactive marvel.</li>
+                        <li>The errant Hare's gambol now flows with fluid grace: The elusive rabbit's peregrinations across the display, once plagued by stuttering, now proceed with an unblemished rhythm, infusing the archive with newfound vivacity.</li>
+                        <li>Universal Accord for Digital Scrolls: The interface's harmony across all digital realms, from the venerable Edge to the swift Chrome, and adapting to screens of manifold sizes, hath been fortified, ensuring an impeccable and beauteous presentation.</li>
+                        <li>The Lexicon and Chroma elevated: The primary script now rendered in Noto Sans SC for clarity's sake, granting the gaze an unobstructed passage through knowledge. Furthermore, our chromatic repertoire hath expanded by five, presenting a grand total of fifteen vibrant themes, inviting the connoisseur to adorn the archive in a vestment of light and shade.</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Chronicle of Changes, once shrouded in silence, now unfurls in its entirety. The malady of blank entries hath been utterly dispelled, and the annals of transformation stand complete, preserving every epochal shift.</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v4.0.0 - ✨ 像素超進化兔 (Pixel Evolution Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</strong></p>
+                    <ul>
+                        <li>The Chromatic Vault now expanded: Five additional palettes of theme now grace our repertoire, offering a richer tapestry of visual choices.</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
+                    <ul>
+                        <li>The Visage's Frame now perfect: The Pac-Man's border, which once obscured a portion of the noble image, hath been meticulously adjusted, ensuring the portrait's pristine and complete presentation.</li>
+                        <li>The Hare's motion now flows with greater artistry: The elusive rabbit's wandering animated dance hath been refined, its movements rendered with a newfound fluidity, and the vexing impediment to its journey upon certain browsers hath been vanquished.</li>
+                        <li>The Responsive Layout, a bastion of strength! The interface's adaptability across diverse digital realms, especially the challenging Edge, and screens of manifold dimensions, hath been fortified, ensuring the content's unblemished display.</li>
+                        <li>The Lexicon now a native tongue! The core script is now rendered in Noto Sans SC, a font chosen for its harmonious rendering of the simplified Chinese characters, thereby granting the reader a more serene and unhindered passage through wisdom. Only the sacred titles retain the venerable pixelated script.</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Chronicle of Changes, once a canvas of void, now pulsates with the echoes of history! The malady of absent entries hath been utterly dispelled, and the full parchment of transformations, from the earliest whispers to the latest pronouncements, now stands revealed.</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v3.0.0 - 🔄 核心回溯兔 (Core Rollback Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</strong></p>
+                    <ul>
+                        <li>A Grand Tableau in the Spirit of TRON now unfurls! Behold, the interface, reborn from the very essence of the working code, embraceth the luminous glow, the vector's sharp line, and the dynamic raster's dance, adorning the archives with a fresh, digital majesty!</li>
+                        <li>The Hare's Return! The endearing, wandering rabbit, along with the charming chocolate bean footprints it leaves in its wake, hath been reinstated, imbuing the archive's scroll with renewed vitality and playful spirit!</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Core of Data Retrieval now mended! The very mechanism by which the PetRecords.json archive doth yield its secrets hath been fortified, ensuring a steadfast transfer and a flawless display within the archive's lists, thereby banishing the phantom of absent data!</li>
+                        <li>The Buttons' Response, now in full accord! All interactive glyphs, including those for the Chronicle of Changes, the Palette's Dial, and the Full-Screen's Dominion, now respond with the precise and unwavering logic inherited from the working code, no longer mute to your esteemed commands!</li>
+                        <li>The Chronological Chart's Dates, now succinct! The reliance upon date-fns and chartjs-adapter-date-fns hath been gracefully retired. The browser's native wisdom now formats the chart's temporal axis, thus dispelling past vexations concerning 'dateFns' being an unknown entity. This doth render the graphical display more stable and free from encumbrances!</li>
+                        <li>The Elements' Grasp, perfected in time! The acquisition of all digital components (by means of document.getElementById) hath been meticulously orchestrated to occur only upon the full and proper loading of the page's fabric (within the DOMContentLoaded event), thereby eradicating the troublesome 'Cannot set properties of null' errors at their root!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
+                    <ul>
+                        <li>The Script's Structure, now a clear tapestry! The JavaScript's arcane verses have been modularized and adorned with sagacious commentaries, rendering them more comprehensible and amenable to future stewardship.</li>
+                        <li>Enhanced Foresight of Error! In the crucible of vital operations, additional pronouncements to the console have been inscribed, along with robust validations, aiding in the swift discernment of any burgeoning anomaly.</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v2.1.2 - 🛠️ 程式碼重構兔 (Code Refactor Bunny)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Elements' Grasp now timely calibrated! All invocations of document.getElementById have been meticulously placed within the window.onload event's embrace, ensuring the digital components are secured only when the document's structure is fully erect, thereby vanquishing the 'Cannot set properties of null' error.</li>
+                        <li>The Temporal Adapter, now autonomously awakened! The manual impositions upon Chart.js's date adapter have been rescinded, allowing chartjs-adapter-date-fns to register its arcane knowledge automatically upon its loading, thus mending the 'dateFns is not defined' vexation.</li>
+                        <li>The Data's Path, now precisely charted! The loading trajectory for PetRecords.json hath been restored to its rightful course, in harmony with the working code, ensuring the flawless revelation of information.</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>A Mightier Scrutiny of Malady! Additional examinations and chronicle entries to the console have been infused, rendering the pursuit of anomalies a more facile endeavour!</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v2.1.1 - ✨ 元素定位兔 (Element Locator Bunny)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Core Elements, now in their rightful place! The discord of mismatched DOM element identifiers (such as profile-pic and all-records-container) hath been utterly rectified. The JavaScript now doth find them with unerring precision, and the archive's display is no longer a desolate void!</li>
+                        <li>The Weight's Shifting Oracle, now returned! The informational prompt for weight fluctuations, once mysteriously absent, hath been reinstated, ensuring that the interactive feedback of corporeal data is no longer shrouded in enigma!</li>
+                        <li>The Archive's Lore, miraculously restored! The sacred PetRecords.json data, by means of the content_fetcher, now doth load with steadfast reliability, banishing the specter of 'Cannot set properties of null'!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Scrutiny's Arcana, elevated! Additional chronicles to the console have been inscribed, enabling us, like master sleuths, to trace the currents of data and the states of elements, leaving no anomaly unrevealed!</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v2.1.0 - 💫 量子跳躍兔 (Quantum Leap Bunny)</h4>
+                <div class="changelog-entry">
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</strong></p>
+                    <ul>
+                        <li>A New Epoch now commenceth! The version's numeral and its chosen appellation hath undergone a quantum leap of epic proportion, bringing forth a new identification imbued with the spirit of the future and whimsical charm! Doth not the archive now feel as though it hath traversed dimensions?</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Archive's Lore, miraculously restored! The dreadful 'Cannot set properties of null (setting 'innerHTML')' malady hath been utterly vanquished! The lists of lore now load with unwavering stability, and the sacred data no longer absconds into the ether!</li>
+                        <li>The DOM Elements' Alignment, now perfect! The JavaScript's references to the vital components of the interface (such as profile-pic and all-records-container) now align with unerring precision to their counterparts within the HTML, henceforth ensuring that no entity doth mistake another!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
+                    <ul>
+                        <li>A Seamless Interplay of Visage! All the pixelated artistry of the interface, the dynamic themes, and the endearing, wandering rabbit's animated dance, remain fully preserved, allowing you, even amidst the vanquishing of errors, to luxuriate in a visual feast!</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v2.0.0 - 穩定同步兔 V1.0 (Stable Sync Rabbit V1.0)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</strong></p>
+                    <ul>
+                        <li>The Archive's Lore, miraculously restored! The dreadful 'Cannot set properties of null (setting 'innerHTML')' malady hath been utterly vanquished! The lists of lore now load with unwavering stability, and the sacred data no longer absconds into the ether!</li>
+                        <li>The DOM Elements' Alignment, now perfect! The JavaScript's references to the vital components of the interface (such as profile-pic and all-records-container) now align with unerring precision to their counterparts within the HTML, henceforth ensuring that no entity doth mistake another!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</strong></p>
+                    <ul>
+                        <li>A Seamless Interplay of Visage! All the pixelated artistry of the interface, the dynamic themes, and the endearing, wandering rabbit's animated dance, remain fully preserved, allowing you, even amidst the vanquishing of errors, to luxuriate in a visual feast!</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v2.0.0 - 史诗级像素风回归兔 (Pixel-Style Reversion Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</p>
+                    <ul>
+                        <li>The Soul of Yesteryear now summoned! The very essence of v1.3.11's pixelated interface, its dynamic themes, and our most cherished wandering rabbit's animated dance, hath been fully invoked! Doth it not feel as though one hath traversed time to the epoch of classic arcade machines?</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Chart's Mystical Stability! Even as the archive's visage underwent a grand metamorphosis, the Chart.js's temporal enchantment (its axis of time, its data points' revelation) remained as steadfast as the mountains, more stable than a scholar's steadfast gaze!</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Discord of Time, now harmonized! The loading mechanisms of date-fns and chartjs-adapter-date-fns have been fortified with an ironclad resolve. The chart's temporal tapestry shall no longer stray from its designated path, and never again shalt thou accuse us of 'memory leakage'!</li>
+                        <li>The Little Hare's Return! The wandering pixelated rabbit hath been reanimated with renewed vigour, for an archive devoid of its playful gambols is, verily, no Bunny CC Archive at all!</li>
+                    </ul>
+                </div>
+
+                <h4>🌟 v2.0.0 - 像素同步兔 V2.0 (Pixel Sync Rabbit V2.0)</h4>
+                <div class="changelog-entry">
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Interface's Burden, now wondrously enhanced! The most recent pixelated visage and the very controls for chromatic shifting have been seamlessly interwoven, allowing the transformation of appearance to be as effortless as the changing of a hero's guise in a grand saga, a task one cannot desist from!</li>
+                        <li>The Temporal Axis's Distortion, now rectified! The Chart.js's mystical temporal axis hath been firmly stabilized, ensuring that the chronicles of corporeal mass are unveiled with crystalline clarity, never again to resemble a quantum enigma!</li>
+                    </ul>
+                    <p><strong>刪除 (Banished to Oblivion!):</p>
+                    <ul>
+                        <li>Superfluous Runes of Enchantment, now expunged! The redundant components of the interface and their corresponding controls have been purged, for we are practitioners of elegant brevity! The wandering rabbit, too, hath been granted a temporary respite, that space might be made for the advent of the new visage!</li>
+                    </ul>
+                </div>
+
+                <h4>🚀 v2.0.0 - 像素同步兔 V1.0 (Pixel Sync Rabbit V1.0)</h4>
+                <div class="changelog-entry">
+                    <p><strong>新增 (A New Edict Hath Been Issued!):</p>
+                    <ul>
+                        <li>The Date's Arcane Adaptation! For the first time, date-fns and chartjs-adapter-date-fns unite in a grand conjuration, empowering the Chart.js's temporal axis to decipher the chronology with unerring precision, thereby banishing the spectre of 'undefined properties'!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Chart's Temporal Axis, now calibrated! The X-axis of Chart.js hath been declared of the 'time' type, ensuring the chronological display is of utmost exactitude, lest a single increment of Bunny CC's growth be lost to obscurity!</li>
+                    </ul>
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Abyss of Dependencies, now redeemed! The very order of the arcane libraries' invocation hath been meticulously adjusted, ensuring that every magical component doth arrive at its appointed hour, thereby circumventing the ignominious plight of 'function not found'!</li>
+                    </ul>
+                </div>
+
+                <h4>🛡️ v1.3.11 - 兼容性穩定兔 V1.0 (Compatibility Stability Rabbit V1.0)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Enigma of Error, now dispelled! The mysterious affliction where the Chart.js date adapter failed to discern the 'startOfDay' function from date-fns hath been resolved. It now, with utmost docility, doth retrieve the correct arcane knowledge from 'unpkg.com', no longer prone to vexatious fits!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Arcana of Diagnosis, elevated! Further chronicles of diagnostic insight have been inscribed following the loading rituals, aiding us, like seasoned investigators, in tracking the precise arrival of each magical element.</li>
+                    </ul>
+                </div>
+
+                <h4>⏪ v1.3.10 - 適配強化兔 V2.2 (Adapter Enhancement Rabbit V2.2)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Temporal Reversion, accomplished! The date-fns library, by a deliberate act of will, hath been rolled back to version 2.25.0. Yea, we confess that at times, the ancient ways hold more potency, akin to thine venerable gaming console! This act doth mend the 'startOfDay' error, ensuring enduring harmony.</li>
+                    </ul>
+                </div>
+
+                <h4>⚡ v1.3.9 - 適配強化兔 V2.1 (Adapter Enhancement Rabbit V2.1)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Pre-Emptive Incantation, uttered! The sacred verses for registering the date-fns adapter have been invoked with greater haste. Now, Chart.js, ere it requires them, doth find all necessary temporal arcana, thereby banishing the loading impediments with perfect efficacy.</li>
+                    </ul>
+                </div>
+
+                <h4>🔄 v1.3.8 - 適配強化兔 V2.0 (Adapter Enhancement Rabbit V2.0)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Explicit Command, issued! The date-fns hath been, with clarity, declared unto Chart.js as its appointed temporal adapter. Henceforth, Chart.js shall feign no ignorance of date-fns's very existence!</li>
+                    </ul>
+                </div>
+
+                <h4>🔗 v1.3.7 - 腳本同步兔 (Script Sync Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Orchestration of Arcane Overtures, now perfected! The very sequence of Chart.js, date-fns, and chartjs-adapter-date-fns's invocation hath been meticulously arranged. For like a grand orchestra, each instrument must play its part in its appointed moment, that a symphony most perfect may resound!</li>
+                    </ul>
+                </div>
+
+                <h4>🗺️ v1.3.6 - 路徑校準兔 (Path Calibration Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Lost Archive, now Guided Home! The very trajectory for the loading of the PetRecords.json archive hath been corrected. Henceforth, it shall unerringly find its abode within 'dist/bunnycc/PetRecords.json', no longer condemned to wander the digital wastes.</li>
+                    </ul>
+                </div>
+
+                <h4>✨ v1.3.5 - 適配強化兔 (Adaptation Enhanced Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Chart's Provisions, now served in due course! The initialization of the Chart.js graph and the infusion of its data have been sundered into two distinct rites, akin to preparing the feast's vessels ere the courses are presented, thereby rendering the process more fluid and robust.</li>
+                        <li>The Dates' Visage, now rendered comely! The chronicles of time within both the chart and the register's scrolls now bear only the year, month, and day, thereby achieving a clarity most succinct, as if retaining only the most svelte of portraits!</li>
+                        <li>The Archive's Transference, now restored! The fetching of the PetRecords.json archive hath been re-instituted and its handling of unforeseen adversities fortified. Now, the transfer of data doth proceed with the speed and security of a swift carriage upon a highway!</li>
+                        <li>The Perilous Links, now severed! The external connections that once whispered of mixed content, thereby conjuring vexatious warnings, have been expunged. For safety is paramount, lest unwelcome specters be drawn to our digital hearth!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>Tailwind's Sagacious Admonition! Further notes concerning the deployment of Tailwind CSS CDN have been inscribed, serving as a reminder for the vigilant considerations required in the grand theatre of production.</li>
+                    </ul>
+                </div>
+
+                <h4>📐 v1.3.4 - 數據修正兔 (Data Correction Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Temporal Seals, now precisely rectified! Ere the epochal markers are transmuted into Date objects, their fractional whispers shall be silenced and their essence rendered into whole milliseconds, that time may never again be shrouded in ambiguity!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Detective's Chronicle, now replete with detail! Further chronicles to the console have been inscribed, facilitating the discerning analysis of anomalies during the transmutation of time and the genesis of the Chart.js.</li>
+                    </ul>
+                </div>
+
+                <h4>🪐 v1.3.3 - 數據時空穩定兔 (Data Spacetime Stabilizer Rabbit)</h4>
+                <div class="changelog-entry">
+                    <p><strong>修復 (The Vexing Maladies Vanquished!):</p>
+                    <ul>
+                        <li>The Data, eternally enshrined! To ensure the unwavering retrieval of JSON data, the very essence of PetRecords.json hath been embedded directly into the JavaScript verses of the HTML script. Now, the data, like a relic sealed within a crystal sphere, remains steadfast and incorruptible!</li>
+                    </ul>
+                    <p><strong>優化 (Optimizations of Sublime Echelons!):</p>
+                    <ul>
+                        <li>The Scrutiny's Footprints, now more numerous! Further chronicles to the console have been inscribed, thereby rendering the pursuit of anomalies during the transmutation of data and the genesis of the Chart.js with greater clarity.</li>
                     </ul>
                 </div>
             `;
-            changelogList.innerHTML = changelogContent;
-            console.log("[DEBUG] Changelog populated.");
+            ui.changelogList.innerHTML = changelogContent;
         }
-
-        /**
-         * Sets up event listeners for all UI buttons.
-         */
-        function setupEventListeners() {
-            console.log("[DEBUG] Setting up event listeners.");
-            document.getElementById('changelog-btn')?.addEventListener('click', () => toggleModal('changelog-modal'));
-            document.getElementById('theme-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
-            document.getElementById('performance-btn')?.addEventListener('click', () => toggleModal('performance-modal'));
-            document.getElementById('fullscreen-btn')?.addEventListener('click', toggleFullscreen);
-
-            // Modal close buttons
-            document.getElementById('changelog-close-btn')?.addEventListener('click', () => toggleModal('changelog-modal'));
-            document.getElementById('theme-close-btn')?.addEventListener('click', () => toggleModal('theme-modal'));
-            document.getElementById('performance-close-btn')?.addEventListener('click', () => toggleModal('performance-modal'));
-            
-            // Activate sensor button in performance modal
-            document.getElementById('activate-sensor-btn')?.addEventListener('click', displayPerformanceMetrics);
-
-            // Theme pagination buttons
-            document.getElementById('prev-theme-page-btn')?.addEventListener('click', () => {
-                if (currentThemePage > 0) {
-                    currentThemePage--;
-                    generateThemeSwatches();
-                }
-            });
-            document.getElementById('next-theme-page-btn')?.addEventListener('click', () => {
-                const totalPages = Math.ceil(CONFIG.THEMES.length / CONFIG.THEMES_PER_PAGE);
-                if (currentThemePage < totalPages - 1) {
-                    currentThemePage++;
-                    generateThemeSwatches();
-                }
-            });
-
-            // Modal overlay click-to-close functionality (only if clicking the overlay itself)
-            document.getElementById('changelog-modal')?.addEventListener('click', (event) => {
-                if (event.target.id === 'changelog-modal') toggleModal('changelog-modal');
-            });
-            document.getElementById('theme-modal')?.addEventListener('click', (event) => {
-                if (event.target.id === 'theme-modal') toggleModal('theme-modal');
-            });
-            document.getElementById('performance-modal')?.addEventListener('click', (event) => {
-                if (event.target.id === 'performance-modal') toggleModal('performance-modal');
-            });
-
-            console.log("[DEBUG] Event listeners set up.");
-        }
-
-
-        // --- Main window.onload listener ---
-        // Use window.onload to ensure all DOM elements are fully loaded and accessible before attempting to get their references or attach event listeners.
-        window.onload = function() {
-            console.log("[DEBUG] window.onload event triggered. Starting initialization...");
-
-            // Initialize rabbit element and its position
-            wanderingRabbit = document.getElementById('wandering-rabbit');
-            if (wanderingRabbit) {
-                // Initialize currentX, currentY to a random starting position
-                currentX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
-                currentY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
-                wanderingRabbit.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                
-                // Initialize droppings pool
-                for (let i = 0; i < MAX_DROPPINGS; i++) {
-                    const dropping = document.createElement('div');
-                    dropping.className = 'rabbit-dropping';
-                    document.body.appendChild(dropping);
-                    droppingsPool.push(dropping);
-                }
-                console.log("[DEBUG] Rabbit droppings pool initialized.");
-                window.requestAnimationFrame(animateRabbit); // Start animation loop
-                console.log("[DEBUG] Rabbit animation started.");
-            } else {
-                console.warn("[WARN] Wandering rabbit element not found, animation disabled.");
-            }
-
-            // Detect Safari and adjust animation framerate for perceived smoothness
-            const isSafari = navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
-            if (isSafari) {
-                animationSpeedMultiplier = 1.2; 
-                DROP_INTERVAL_MS = 100; 
-                console.log("[DEBUG] Safari browser detected, animation speed optimized.");
-            }
-
-            // Set profile picture source
-            const profilePic = document.getElementById('profile-pic');
-            if (profilePic) {
-                profilePic.src = CONFIG.PROFILE_PIC_PATH;
-            } else {
-                console.error("[ERROR] Profile picture element not found during initialization.");
-            }
-
-            // Set up event listeners
-            setupEventListeners();
-            
-            // Start timer updates
-            setInterval(updateTiming, 100);
-            console.log("[DEBUG] Timer updates started.");
-
-            // Load and process data
-            loadAndProcessData();
-
-            // Generate theme swatches (will display the first page initially)
-            generateThemeSwatches();
-
-            // Add resize listener to adjust rabbit animation boundaries
-            window.addEventListener('resize', () => {
-                if (!wanderingRabbit) return; 
-                const style = window.getComputedStyle(wanderingRabbit);
-                const transform = style.transform || style.webkitTransform || style.mozTransform;
-                let currentRabbitX = 0, currentRabbitY = 0;
-
-                if (transform && transform !== 'none') {
-                    const matrix = new DOMMatrix(transform);
-                    currentRabbitX = matrix.m41;
-                    currentRabbitY = matrix.m42;
-                } else {
-                    currentRabbitX = parseFloat(wanderingRabbit.style.transform.match(/translateX\(([^)]+)px\)/)?.[1] || '0');
-                    currentRabbitY = parseFloat(wanderingRabbit.style.transform.match(/translateY\(([^)]+)px\)/)?.[1] || '0');
-                }
-
-                currentX = Math.min(Math.max(0, currentRabbitX), window.innerWidth - wanderingRabbit.offsetWidth); 
-                currentY = Math.min(Math.max(0, currentRabbitY), window.innerHeight - wanderingRabbit.offsetHeight); 
-                wanderingRabbit.style.transform = `translate(${currentX}px, ${currentY}px)`;
-
-                targetX = Math.random() * (window.innerWidth - wanderingRabbit.offsetWidth); 
-                targetY = Math.random() * (window.innerHeight - wanderingRabbit.offsetHeight); 
-                console.log("[DEBUG] Window resized, rabbit position and target updated.");
-            });
-
-            // Populate changelog content
-            populateChangelog();
-            
-            // Set initial random theme
-            const initialTheme = CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)];
-            changeTheme(initialTheme);
-            console.log("[DEBUG] Initial theme set.");
-            console.log("[DEBUG] Initialization complete.");
-        };
     </script>
 </body>
 </html>
