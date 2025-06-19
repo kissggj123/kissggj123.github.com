@@ -23,14 +23,13 @@
             font-family: 'Noto Sans SC', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            overflow: hidden;
+            overflow: hidden; /* Prevent full page scroll */
             opacity: 0;
             animation: fadeIn 1.5s ease 0.5s forwards;
             cursor: none;
-            position: relative; /* For background pseudo-element */
+            position: relative;
             z-index: 0;
         }
-        /* NEW: Animated Grid Background */
         body::before {
             content: '';
             position: fixed;
@@ -65,8 +64,8 @@
         
         /* LCARS UI Elements */
         .lcars-container { display: flex; height: 100vh; padding: 1rem; gap: 1rem; }
-        .lcars-sidebar { width: 150px; display: flex; flex-direction: column; gap: 1rem; }
-        .lcars-main { flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; }
+        .lcars-sidebar { width: 150px; display: flex; flex-direction: column; gap: 1rem; flex-shrink: 0; }
+        .lcars-main { flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 0; } /* min-width:0 for flexbox fix */
         .lcars-element { background: rgb(var(--glow-rgb)); transition: all 0.3s ease; }
         .lcars-elbow {
             width: 100%; height: 60px;
@@ -82,7 +81,8 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            overflow: hidden;
+            overflow-y: auto; /* CHANGE: Enable scrolling for this panel */
+            min-height: 0; /* Important for flex-grow with overflow */
         }
         .lcars-button {
             background: #080808;
@@ -111,7 +111,7 @@
         @keyframes module-boot { to { opacity: 1; transform: translateY(0); } }
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); }
+        .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
         .has-tooltip:hover .tooltip { visibility: visible; opacity: 1; }
         .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; }
         
@@ -137,15 +137,16 @@
 
         <!-- LCARS Main Content -->
         <div class="lcars-main">
-            <div class="h-16 flex justify-between items-center">
+            <div class="h-16 flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
                     <div class="ml-4"><p class="font-pixel text-xl sm:text-2xl tracking-widest glow-text">BCC_SYS_v6.2</p><p class="accent-text text-sm">Starfleet Command Archives</p></div>
                 </div>
                 <div id="performance-panel" class="hidden md:flex items-center text-xs font-pixel space-x-4 text-gray-400"></div>
             </div>
-            <div class="lcars-content-panel">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+            <!-- ADDED record-scrollbar class here -->
+            <div class="lcars-content-panel record-scrollbar">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Left Panel -->
                     <div class="md:col-span-1 flex flex-col space-y-6">
                         <div class="ui-module text-center" style="animation-delay: 0.2s;">
@@ -155,15 +156,15 @@
                             </div>
                             <h1 class="font-pixel text-2xl font-bold mt-4 glow-text">BUNNY CC</h1>
                         </div>
-                        <div class="ui-module flex-grow" style="animation-delay: 0.4s;">
+                        <div class="ui-module" style="animation-delay: 0.4s;">
                             <h2 class="font-pixel text-base pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">MILESTONES</h2>
                             <div id="timing" class="space-y-2 text-sm whitespace-pre-line leading-relaxed" style="color: var(--text-muted-color)"></div>
                         </div>
                     </div>
                     <!-- Right Panel -->
                     <div class="md:col-span-2 flex flex-col space-y-6">
-                        <div class="ui-module" style="animation-delay: 0.6s;"><h2 class="font-pixel text-base pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">WEIGHT_GRID</h2><div class="h-48 md:h-64"><canvas id="weightChart"></canvas></div><div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2)"></div></div>
-                        <div class="ui-module flex-grow" style="animation-delay: 0.8s;"><h2 class="font-pixel text-base pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">DATA_STREAM</h2><div id="all-records-container" class="record-scrollbar h-40 md:h-56 overflow-y-auto pr-2 space-y-3 text-sm"></div></div>
+                        <div class="ui-module" style="animation-delay: 0.6s;"><h2 class="font-pixel text-base pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">WEIGHT_GRID</h2><div class="h-64"><canvas id="weightChart"></canvas></div><div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-sm" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2)"></div></div>
+                        <div class="ui-module flex-grow flex flex-col" style="animation-delay: 0.8s;"><h2 class="font-pixel text-base pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">DATA_STREAM</h2><div id="all-records-container" class="record-scrollbar flex-grow pr-2 space-y-3 text-sm"></div></div>
                     </div>
                 </div>
             </div>
@@ -193,7 +194,7 @@
         let snake = [];
         const SNAKE_LENGTH = 20;
         let chart; // Chart instance
-        let allRecords = []; // Store all records globally
+        let allRecords = [], weightRecords = []; // Store processed data globally
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -203,12 +204,130 @@
             setupThemeEngine();
             initBunnySnake();
             requestAnimationFrame(animationLoop);
-            // FIX: Start timing updates
             updateTiming();
             setInterval(updateTiming, 1000);
         });
+        
+        // --- DATA LOGIC (REFINED) ---
+        async function loadAndProcessData() {
+            try {
+                const response = await fetch(CONFIG.PET_RECORDS_PATH);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const rawRecords = await response.json();
 
-        // --- MOUSE & ANIMATION LOOP ---
+                // Process all records: floor timestamp, convert to ms, add 31 years
+                const processedRecords = rawRecords.map(r => {
+                    const d = new Date(Math.floor(r.date) * 1000);
+                    d.setFullYear(d.getFullYear() + 31);
+                    return { ...r, processedDate: d };
+                });
+
+                // Sort all records for DATA_STREAM (newest first)
+                allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate);
+
+                // Filter and sort records for WEIGHT_GRID (oldest first for charting)
+                weightRecords = processedRecords
+                    .filter(r => r.activity === '体重测量' && r.weight > 0)
+                    .sort((a, b) => a.processedDate - b.processedDate);
+                
+            } catch (error) {
+                console.error("無法從檔案加載數據，將使用內置示例數據:", error);
+                // Fallback to sample data if fetch fails
+                const fallbackData = [
+                    { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 },
+                    { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 },
+                    { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 },
+                    { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" },
+                    { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 },
+                    { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" },
+                    { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 }
+                ];
+                const processedFallback = fallbackData.map(r => {
+                    const d = new Date(Math.floor(r.date) * 1000);
+                    d.setFullYear(d.getFullYear() + 31);
+                    return { ...r, processedDate: d };
+                });
+                allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate);
+                weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate);
+            }
+            
+            renderAllRecords(allRecords);
+            renderWeightChart(weightRecords);
+        }
+
+        function renderAllRecords(records) {
+            const container = document.getElementById('all-records-container');
+            if (!records || records.length === 0) {
+                container.innerHTML = '<p>無數據流記錄。</p>';
+                return;
+            }
+            container.innerHTML = records.map(rec => {
+                const dateStr = rec.processedDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                const weightInfo = rec.weight > 0 ? ` - 體重: <span class="glow-text">${rec.weight}g</span>` : '';
+                return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);">
+                            <div class="flex justify-between items-center">
+                                <p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p>
+                                <time class="text-xs flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time>
+                            </div>
+                            <p class="text-xs mt-1" style="color: var(--text-muted-color)">備註: ${rec.notes || '無'}</p>
+                        </div>`;
+            }).join('');
+        }
+        
+        function renderWeightChart(records) {
+            if (chart) chart.destroy();
+
+            const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`;
+            const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`;
+            
+            const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN'));
+            const data = records.map(r => r.weight);
+
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '體重 (克)',
+                        data: data,
+                        borderColor: glowColor,
+                        backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'),
+                        pointBackgroundColor: accentColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: accentColor,
+                        tension: 0.3,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)' }, grid: { color: 'rgba(var(--glow-rgb), 0.1)' } },
+                        y: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)', callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)' } }
+                    }
+                }
+            });
+            
+            const weightInfoEl = document.getElementById('weight-change-info');
+            if (records.length >= 2) {
+                const latest = records[records.length - 1].weight;
+                const previous = records[records.length - 2].weight;
+                const change = latest - previous;
+                const changeText = change > 0 ? `增加 ${change}g` : (change < 0 ? `減少 ${Math.abs(change)}g` : '持平');
+                const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-500' : 'text-gray-400');
+                weightInfoEl.innerHTML = `最新記錄: <strong class="glow-text">${latest}g</strong>. 與上次相比: <strong class="${changeColorClass}">${changeText}</strong>.`;
+            } else if (records.length === 1) {
+                weightInfoEl.innerHTML = `初始記錄: <strong class="glow-text">${records[0].weight}g</strong>. 等待下一次測量.`;
+            } else {
+                weightInfoEl.innerHTML = `等待體重數據...`;
+            }
+        }
+        
+        // --- MOUSE & ANIMATION LOOP (Unchanged) ---
         function setupEventListeners() {
             window.addEventListener('mousemove', e => {
                 mouse.x = e.clientX;
@@ -225,19 +344,15 @@
             document.getElementById('next-theme-page').addEventListener('click', () => changeThemePage(1));
             document.getElementById('custom-color-input').addEventListener('change', applyCustomColor);
         }
-        
         let lastTime = 0;
         function animationLoop(currentTime) {
             if(!lastTime) lastTime = currentTime;
             const deltaTime = currentTime - lastTime;
-            // ... (Performance panel logic can be added here) ...
             bunnyCtx.clearRect(0, 0, bunnyCanvas.width, bunnyCanvas.height);
             updateAndDrawBunnySnake();
             lastTime = currentTime;
             requestAnimationFrame(animationLoop);
         }
-
-        // --- BUNNY SNAKE GAME ---
         function initBunnySnake() {
             bunnyCanvas.width = window.innerWidth;
             bunnyCanvas.height = window.innerHeight;
@@ -245,20 +360,17 @@
                 snake.push({ x: mouse.x, y: mouse.y });
             }
         }
-
         function updateAndDrawBunnySnake() {
             let head = { ...snake[0] };
             head.x += (mouse.x - head.x) * 0.2;
             head.y += (mouse.y - head.y) * 0.2;
             snake.unshift(head);
             if (snake.length > SNAKE_LENGTH) snake.pop();
-            
             for(let i = snake.length - 1; i > 0; i--) {
                 const segment = snake[i];
                 const prevSegment = snake[i-1];
                 const opacity = 1 - (i / snake.length) * 0.8;
                 const radius = 2 + (snake.length - i) * 0.2;
-                
                 bunnyCtx.beginPath();
                 bunnyCtx.moveTo(prevSegment.x, prevSegment.y);
                 bunnyCtx.lineTo(segment.x, segment.y);
@@ -267,7 +379,6 @@
                 bunnyCtx.lineCap = 'round';
                 bunnyCtx.stroke();
             }
-            
             bunnyCtx.beginPath();
             bunnyCtx.arc(snake[0].x, snake[0].y, 5, 0, Math.PI * 2);
             bunnyCtx.fillStyle = `rgb(var(--glow-rgb))`;
@@ -277,6 +388,7 @@
             bunnyCtx.shadowBlur = 0;
         }
 
+        // --- UI & THEME (Mostly Unchanged) ---
         function toggleModal(modalId) {
             document.getElementById(modalId).classList.toggle('hidden');
             document.getElementById(modalId).classList.toggle('flex');
@@ -288,8 +400,6 @@
             if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`全螢幕失敗: ${err.message}`));
             else document.exitFullscreen();
         }
-        
-        // --- THEME ENGINE ---
         let currentThemePage = 0;
         const themeGrid = document.getElementById('theme-grid');
         function setupThemeEngine() {
@@ -334,10 +444,10 @@
             docEl.style.setProperty('--glow-rgb', theme.r);
             const orangeTheme = CONFIG.THEMES.find(t => t.n === 'orange');
             if(orangeTheme) docEl.style.setProperty('--accent-rgb', orangeTheme.r);
-            if (chart) renderWeightChart(allRecords); // Re-render chart with new colors
+            if (chart) renderWeightChart(weightRecords); // Re-render chart with new colors
         }
         
-        // --- DATA & TIMING LOGIC ---
+        // --- TIMING & CHANGELOG (Unchanged) ---
         const timingEl = document.getElementById('timing');
         function updateTiming() {
              const startDate = new Date(CONFIG.START_DATE);
@@ -366,130 +476,14 @@
                     <p>🎉 下一個一周年紀念日是 <strong class="accent-text">${formatDate(nextYear.date)}</strong>（第${nextYear.count}周年）</p>
                 </div>`;
         }
-        
-        // FIX: Implemented full data loading and processing
-        async function loadAndProcessData() {
-            try {
-                const response = await fetch(CONFIG.PET_RECORDS_PATH);
-                if (!response.ok) throw new Error('Network response was not ok.');
-                allRecords = await response.json();
-            } catch (error) {
-                console.error("無法從檔案加載數據，將使用內置示例數據:", error);
-                // Fallback to sample data if fetch fails
-                allRecords = [
-                    { "date": "2024-03-15", "weight": 450, "note": "首次體檢，一切正常" },
-                    { "date": "2024-03-22", "weight": 510, "note": "食慾很好，開始熟悉環境" },
-                    { "date": "2024-03-29", "weight": 580, "note": "學會使用飲水器" },
-                    { "date": "2024-04-05", "weight": 650, "note": "體重穩定增長" },
-                    { "date": "2024-04-12", "weight": 720, "note": "換毛期，需要多梳理" },
-                    { "date": "2024-04-19", "weight": 780, "note": "非常活潑，喜歡跳躍" },
-                    { "date": "2024-04-26", "weight": 830, "note": "嘗試了新口味的牧草" },
-                    { "date": "2024-05-03", "weight": 870, "note": "體重接近成年標準" }
-                ];
-            }
-            
-            if (allRecords && allRecords.length > 0) {
-                renderWeightChart(allRecords);
-                renderAllRecords(allRecords);
-            } else {
-                 document.getElementById('weight-change-info').innerText = '無可用數據記錄。';
-                 document.getElementById('all-records-container').innerText = '無可用數據流。';
-            }
-        }
-        
-        // FIX: Implemented chart rendering
-        function renderWeightChart(records) {
-            if (chart) chart.destroy(); // Destroy previous instance for theme changes
-
-            const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`;
-            const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`;
-            
-            const labels = records.map(r => r.date);
-            const data = records.map(r => r.weight);
-
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '體重 (克)',
-                        data: data,
-                        borderColor: glowColor,
-                        backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'),
-                        pointBackgroundColor: accentColor,
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: accentColor,
-                        tension: 0.3,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(0,0,0,0.7)',
-                            titleColor: accentColor,
-                            bodyColor: '#e6edf3',
-                            callbacks: {
-                                label: (context) => `${context.dataset.label}: ${context.parsed.y} 克`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: 'rgba(var(--text-muted-color), 0.7)' },
-                            grid: { color: 'rgba(var(--glow-rgb), 0.1)' }
-                        },
-                        y: {
-                            ticks: { color: 'rgba(var(--text-muted-color), 0.7)', callback: (value) => `${value}g` },
-                            grid: { color: 'rgba(var(--glow-rgb), 0.1)' }
-                        }
-                    }
-                }
-            });
-            
-            // Update weight change info
-            const weightInfoEl = document.getElementById('weight-change-info');
-            if (records.length >= 2) {
-                const latest = records[records.length - 1].weight;
-                const previous = records[records.length - 2].weight;
-                const change = latest - previous;
-                const changeText = change > 0 ? `增加 ${change}g` : (change < 0 ? `減少 ${Math.abs(change)}g` : '持平');
-                const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-500' : 'text-gray-400');
-                weightInfoEl.innerHTML = `最新記錄: <strong class="glow-text">${latest}g</strong>. 與上次相比: <strong class="${changeColorClass}">${changeText}</strong>.`;
-            } else if (records.length === 1) {
-                weightInfoEl.innerHTML = `初始記錄: <strong class="glow-text">${records[0].weight}g</strong>. 等待下一次測量.`;
-            } else {
-                weightInfoEl.innerHTML = `等待數據輸入...`;
-            }
-        }
-        
-        // NEW: Function to render all records in the data stream panel
-        function renderAllRecords(records) {
-            const container = document.getElementById('all-records-container');
-            if (!records || records.length === 0) {
-                container.innerHTML = '<p>無數據流記錄。</p>';
-                return;
-            }
-            // Reverse records to show latest first
-            container.innerHTML = [...records].reverse().map(record => `
-                <div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05);">
-                    <p class="font-bold"><span class="accent-text">${record.date}</span> - 體重: <span class="glow-text">${record.weight}g</span></p>
-                    <p class="text-xs mt-1" style="color: var(--text-muted-color)">備註: ${record.note || '無'}</p>
-                </div>
-            `).join('');
-        }
-
         function renderChangelog() {
             const changelogData = [
-                { version: "v6.2", date: "STABLE", items: [
+                { version: "v6.2", date: "LOGIC-REFINED", items: [
                     { type: "🐛 修復 (Fix)", en: "Fixed an issue where timing counters and data sections (chart, log) were not loading due to uninitialized function calls.", zh: "修復了因函數未初始化調用而導致計時器和數據區塊（圖表、日誌）無法加載的問題。" },
                     { type: "🚀 新功能 (New)", en: "Implemented a fallback mechanism with sample data to ensure the UI is populated even if the primary JSON data source fails to load.", zh: "實現了示例數據回退機制，確保在主JSON數據源加載失敗時UI依然能夠填充內容。" },
                     { type: "✨ 優化 (Improved)", en: "Added a dynamic, theme-aware animated grid to the background for enhanced visual depth.", zh: "為背景添加了與主題聯動的動態網格動畫，以增強視覺深度。" },
+                    { type: "♻️ 重構 (Refactor)", en: "Refactored data loading logic to precisely match specifications: +31 years to timestamps, DATA_STREAM shows all records, WEIGHT_GRID shows only weight measurements.", zh: "重構了數據加載邏輯以精確匹配規範：時間戳增加31年，DATA_STREAM顯示所有記錄，WEIGHT_GRID僅顯示體重測量記錄。" },
+                    { type: "✨ 優化 (Improved)", en: "Made the main content panel scrollable on smaller viewports to prevent layout clipping and improve responsiveness.", zh: "在較小的視窗上使主內容面板可滾動，以防止佈局被裁切並提高響應性。" },
                 ]},
                 { version: "v6.1", date: "STABLE", items: [
                     { type: "🐛 修復 (Fix)", en: "Patched a case-sensitive issue in theme engine causing a TypeError when finding the default accent color.", zh: "修復了主題引擎中因大小寫敏感而導致尋找預設輔助色時出現的TypeError。" },
@@ -500,29 +494,6 @@
                     { type: "🚀 新功能 (New)", en: "Implemented an interactive 'photon snake' bunny that follows the mouse cursor with a fluid tail.", zh: "實現了互動式「光子蛇」兔子，其流暢的尾巴會跟隨滑鼠游標。" },
                     { type: "✨ 優化 (Improved)", en: "Added multiple random hover effects to the profile picture, such as glitch and holographic scan.", zh: "為頭像增加了多種隨機懸浮特效，如數位雜訊和全息掃描。" },
                 ]},
-                { version: "v5.0", date: "NEBULA-GRID", items: [
-                     { type: "🚀 新功能 (New)", en: "Added a real-time performance panel (FPS, Memory, Render Time).", zh: "新增了即時性能監控面板（FPS、記憶體、渲染時間）。" },
-                     { type: "🚀 新功能 (New)", en: "Introduced a roaming pixel bunny mascot that leaves... 'chocolate beans'.", zh: "引入了會隨機漫步並留下「巧克力豆」的像素兔子夥伴。" },
-                     { type: "✨ 優化 (Improved)", en: "Expanded theme palette to 60+ options with pagination & custom color input.", zh: "將主題庫擴展至60+選項，並支持翻頁及自定義顏色。" },
-                ]},
-                 { version: "v4.0", date: "TRON Grid", items: [
-                     { type: "🚀 新功能 (New)", en: "Re-engineered the entire UI with a TRON-inspired aesthetic, featuring neon glows and a dynamic grid background.", zh: "以TRON為靈感重構整個UI，引入霓虹光暈和動態光柵背景。" },
-                     { type: "🚀 新功能 (New)", en: "Added a Pac-Man style animated container for the profile picture.", zh: "為頭像增加了吃豆人風格的動態容器。" },
-                ]},
-                { version: "v3.0", date: "Modern Fusion", items: [
-                     { type: "🚀 新功能 (New)", en: "Introduced a powerful theme engine with day/night mode and 20 color schemes.", zh: "引入了強大的主題引擎，支持日夜模式和20種主題配色。" },
-                     { type: "🚀 新功能 (New)", en: "Added a changelog modal to track version updates.", zh: "新增了“更新日誌”彈窗來追蹤版本更新。" },
-                ]},
-                { version: "v2.0", date: "Pixel Upgrade", items: [
-                     { type: "🚀 新功能 (New)", en: "Added theme switching (3 themes) and a fullscreen mode.", zh: "新增主題切換（3種）和全螢幕模式。" },
-                     { type: "🚀 新功能 (New)", en: "Added a complete, scrollable archive log below the weight chart.", zh: "在體重圖表下方新增了完整的可滾動歷史檔案記錄列表。" },
-                     { type: "✨ 優化 (Improved)", en: "Switched to a pixel font for a more retro feel.", zh: "更換為像素字體，增強復古感。" },
-                ]},
-                { version: "v1.0", date: "Initial Commit", items: [
-                     { type: "🚀 新功能 (New)", en: "Project initialized with a dossier-style UI.", zh: "專案初始化，建立檔案風格UI。" },
-                     { type: "🚀 新功能 (New)", en: "Implemented real-time anniversary and countdown timer.", zh: "實現了紀念日和即時倒數計時功能。" },
-                     { type: "🚀 新功能 (New)", en: "Implemented weight data parsing and chart visualization from JSON file.", zh: "實現了從JSON檔案讀取體重資料並進行圖表可視化。" },
-                ]}
             ];
             const contentEl = document.getElementById('changelog-content');
             contentEl.innerHTML = changelogData.map(log => `<div class="mb-6 p-4 border rounded-lg" style="border-color:rgba(var(--accent-rgb), 0.5)"><p class="font-pixel text-lg accent-text">${log.version} <span class="text-sm font-normal text-gray-400">- ${log.date}</span></p><ul class="mt-3 space-y-2 text-sm">${log.items.map(item => `<li class="pl-2 border-l-2" style="border-color: rgba(var(--glow-rgb), 0.5)"><p class="font-bold">${item.type}</p><p class="text-gray-300">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`).join('');
