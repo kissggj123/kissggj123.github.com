@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>檔案：Bunny CC v11.3 [ETERNITY_DRIVE_FINAL]</title>
+    <title>檔案：Bunny CC v12.0 [ETERNAL_AEGIS]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
         body::after { content: ''; position: fixed; inset: 0; z-index: -2; background: radial-gradient(800px at var(--mouse-x) var(--mouse-y), rgba(var(--glow-rgb), 0.18), transparent 80%); pointer-events: none; }
         
         .effect-canvas { position: fixed; inset: 0; pointer-events: none; }
-        #vfx-canvas { z-index: -1; }
+        #vfx-canvas { z-index: 11; } /* Raised z-index for avatar effect */
         #bunny-trail-canvas { z-index: 9998; }
 
         .pixel-entity { position: fixed; width: 32px; height: 32px; background-size: contain; pointer-events: none; transform: translate(-50%, -50%); transition: filter 0.5s, opacity 0.5s; will-change: transform, left, top; }
@@ -65,22 +65,8 @@
         @keyframes module-boot { to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes border-glow-in { from { box-shadow: 0 0 0px rgba(var(--glow-rgb), 0); } to { box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.3); } }
         #avatar-container { position: relative; cursor: pointer; }
-        #profile-pic { transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), filter 0.5s, opacity 0.5s; will-change: transform, filter, opacity; }
-        #avatar-container.charging #profile-pic { transform: scale(1.1) translateY(-10px); filter: drop-shadow(0 0 20px white) brightness(1.5); }
-        #avatar-container.transforming #profile-pic { animation: transform-fly-in 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards; }
-        #magic-circle { position: absolute; inset: -20%; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='2.5' result='coloredBlur'/%3E%3CfeMerge%3E%3CfeMergeNode in='coloredBlur'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M50,10 A40,40 0 0,1 90,50 A20,20 0 0,0 70,50 A40,40 0 0,1 50,90 A20,20 0 0,0 50,70 A40,40 0 0,1 10,50 A20,20 0 0,0 30,50 A40,40 0 0,1 50,10 A20,20 0 0,0 50,30Z' fill='rgba(var(--accent-rgb),0.5)' stroke='rgb(var(--accent-rgb))' stroke-width='1.5' filter='url(%23glow)'/%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='rgb(var(--glow-rgb))' stroke-width='0.5'/%3E%3Cpath d='M50,2 C65,15 80,35 98,50 C80,65 65,85 50,98 C35,85 20,65 2,50 C20,35 35,15 50,2Z' fill='rgba(var(--glow-rgb), 0.1)'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0; transform: scale(0.8); transition: opacity 0.5s, transform 0.5s; pointer-events: none; }
-        #avatar-container.charging #magic-circle { opacity: 1; transform: scale(1); }
-        #avatar-container.transforming #magic-circle { animation: magic-circle-spin 0.8s ease-in-out forwards; }
-        .crystal-bunny, .final-carrot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); width: 60px; height: 60px; opacity: 0; pointer-events: none; }
-        #avatar-container.transformed .crystal-bunny { animation: item-appear 0.5s 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        #avatar-container.carrot-summoned .final-carrot { animation: item-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        .crystal-bunny.leaving { animation: item-leave 0.5s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
-        @keyframes transform-fly-in { from { opacity:1; transform: scale(1.1) translateY(-10px); } to { opacity:0; transform: scale(0.2) translateY(0) rotate(360deg); } }
-        @keyframes magic-circle-spin { 0% { opacity:1; transform: scale(1) rotate(0deg); } 80% { opacity:1; transform: scale(1.3) rotate(720deg); filter: brightness(2); } 100% { opacity:0; transform: scale(0.5) rotate(720deg); } }
-        @keyframes item-appear { to { opacity:1; transform: translate(-50%,-50%) scale(1); } }
-        @keyframes item-leave { to { opacity:0; transform: translate(-50%, -150%) scale(0.5) rotate(90deg); } }
-        #sand-particles .sand-particle { position: absolute; width: 4px; height: 4px; background-color: rgb(var(--accent-rgb)); border-radius: 50%; animation: sand-implode 2s ease-in-out forwards; box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); }
-        @keyframes sand-implode { from { opacity: 1; transform: rotate(0deg) scale(1); } to { top: 50%; left: 50%; width: 0; height: 0; opacity: 0; transform: rotate(720deg) scale(0); } }
+        #profile-pic { transition: opacity 0.5s ease; will-change: opacity; }
+        
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
@@ -113,7 +99,7 @@
             <div class="h-16 flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_v11.3</p><p class="accent-text text-sm">ETERNITY_DRIVE_FINAL</p></div>
+                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_vFINAL</p><p class="accent-text text-sm">ETERNAL_AEGIS</p></div>
                 </div>
             </div>
             <div class="lcars-content-panel record-scrollbar">
@@ -122,12 +108,6 @@
                         <div class="ui-module text-center">
                             <div id="avatar-container" class="w-40 h-40 mx-auto">
                                 <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));">
-                                <div id="magic-circle"></div>
-                                <div id="fx-container">
-                                    <div class="crystal-bunny"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g filter="url(#glow)"><path d="M50 20 C 25 20, 25 60, 50 60 C 75 60, 75 20, 50 20 Z" fill="rgba(255,255,255,0.8)"/><path d="M50 55 C 40 70, 60 70, 50 55" fill="none" stroke="white" stroke-width="4"/><path d="M35 15 Q 30 0, 40 5" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M65 15 Q 70 0, 60 5" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M50 35 C 40 45, 60 45, 50 35" fill="rgb(var(--glow-rgb))"/><path d="M42 45 h16 v5 h-16 z" fill="rgb(var(--accent-rgb))"/></g></svg></div>
-                                    <div class="final-carrot"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="carrot-gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#fdba74;"/><stop offset="100%" style="stop-color:#f97316;"/></linearGradient><linearGradient id="leaves-gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#4ade80;"/><stop offset="100%" style="stop-color:#16a34a;"/></linearGradient></defs><path d="M65,35 C75,20 80,15 75,5 C70,-5 60,0 55,10 L50,15 L45,10 C40,0 30,-5 25,5 C20,15 25,20 35,35 L40,40 C30,50 25,60 35,70 L50,95 L65,70 C75,60 70,50 60,40 Z" fill="url(#leaves-gradient)"/><path d="M50,45 C65,55 75,70 65,85 C55,100 45,100 35,85 C25,70 35,55 50,45 Z" fill="url(#carrot-gradient)"/><path d="M50,45 C55,55 58,65 50,80 C42,65 45,55 50,45" fill="#fb923c" opacity="0.5"/></svg></div>
-                                    <div id="sand-particles"></div>
-                                </div>
                             </div>
                             <h1 class="text-2xl font-bold mt-4 glow-text">BUNNY CC</h1>
                         </div>
@@ -164,22 +144,21 @@
         const CONFIG = { PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG', PET_RECORDS_PATH: './dist/bunnycc/PetRecords.json', START_DATE: '2024/03/12 00:00:00', MOUSE_SNAKE_LENGTH: 20, COSMIC_DUST_COUNT: 250, THEMES: `pink/236,72,153 gold/251,191,36 cyan/34,211,238 magenta/244,114,182 lime/132,204,22 red/239,68,68 indigo/88,86,214 green/34,197,94 white/229,231,235 purple/168,85,247 sky/56,189,248 rose/251,113,133 emerald/16,185,129 amber/245,158,11 violet/139,92,246 fuchsia/217,70,239 teal/20,184,166 blue/59,130,246 lightblue/14,165,233 forest/22,163,74 crimson/220,38,38 silver/156,163,175 bronze/205,133,63 steel/113,128,150 mint/10,200,150 lavender/216,180,254 salmon/250,128,114 turquoise/64,224,208 olive/128,128,0 maroon/128,0,0 navy/0,0,128 coral/255,127,80 orchid/218,112,214 plum/221,160,221 khaki/240,230,140 slateblue/106,90,205 sienna/160,82,45 hotpink/255,105,180 deepskyblue/0,191,255 lawngreen/124,252,0 mediumvioletred/199,21,133 darkorange/255,140,0 dodgerblue/30,144,255 tomato/255,99,71 springgreen/0,255,127 aqua/0,255,255 chartreuse/127,255,0 darkviolet/148,0,211 electric/213,252,9 cosmic/45,15,128 nebula/188,45,225 solar/255,180,0 galactic/75,0,130 cyber/0,255,198 quantum/255,30,90 void/10,10,25 supernova/255,80,0 starlight/230,230,250`.split(' ').map(s => ({n:s.split('/')[0],r:s.split('/')[1]})) };
         const docEl = document.documentElement, bodyEl = document.body;
         const avatarContainer = document.getElementById('avatar-container');
-        const fxContainer = document.getElementById('fx-container'), sandParticlesContainer = document.getElementById('sand-particles');
         const mouseBunnyEl = document.getElementById('mouse-bunny'), mouseTrailCanvas = document.getElementById('bunny-trail-canvas'), mouseTrailCtx = mouseTrailCanvas.getContext('2d');
         const petBunnyEl = document.getElementById('pet-bunny'), vfxCanvas = document.getElementById('vfx-canvas'), vfxCtx = vfxCanvas.getContext('2d');
         const aiScreen = document.getElementById('ai-screen'), aiFeedButton = document.getElementById('ai-feed-button'), aiPlayButton = document.getElementById('ai-play-button'), aiStatusButton = document.getElementById('ai-status-button');
         let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, dx: 0, lastX: 0 }, mouseSnake = [];
         let pet = { x: 0, y: 0, dx: 0, lastX: 0, hunger: 100, happiness: 100, isSad: false, lastInteractionTime: 0 };
         let chart, allRecords = [], weightRecords = [];
-        let lastPerfUpdateTime = 0, frameCount = 0, lastFrameTime = 0, cosmicDust = [], clickRipples = [], forceParticles = [];
+        let lastPerfUpdateTime = 0, frameCount = 0, lastFrameTime = 0, cosmicDust = [], clickRipples = [], forceParticles = [], celestialParticles = [];
         let currentThemePage = 0, audioCtx;
         let avatarState = 'normal';
 
         document.addEventListener('DOMContentLoaded', () => { document.getElementById('profile-pic').src = CONFIG.PROFILE_PIC_PATH; Chart.defaults.font.family = "'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 12; setupEventListeners(); initVFX(); loadAndProcessData(); setupThemeEngine(); initMouseBunny(); initPetBunny(); lastFrameTime = performance.now(); requestAnimationFrame(animationLoop); });
-        function setupEventListeners() { window.addEventListener('mousemove', e => { mouse.lastX = mouse.x; mouse.x = e.clientX; mouse.y = e.clientY; mouse.dx = mouse.x - mouse.lastX; docEl.style.setProperty('--mouse-x', `${e.clientX}px`); docEl.style.setProperty('--mouse-y', `${e.clientY}px`); }); window.addEventListener('resize', () => { [mouseTrailCanvas, vfxCanvas].forEach(c => {c.width = window.innerWidth; c.height = window.innerHeight;}); }); window.addEventListener('mousedown', e => { createClickRipple(e.clientX, e.clientY); initAudio(); }); avatarContainer.addEventListener('mouseenter', handleAvatarHover); avatarContainer.addEventListener('mouseleave', handleAvatarLeave); avatarContainer.addEventListener('click', handleAvatarClick); petBunnyEl.addEventListener('click', handlePetting); aiFeedButton.addEventListener('click', handleFeeding); aiPlayButton.addEventListener('click', handlePlaying); aiStatusButton.addEventListener('click', handleStatusCheck); document.getElementById('font-toggle-button').addEventListener('click', toggleFont); document.getElementById('prev-theme-page').addEventListener('click', () => changeThemePage(-1)); document.getElementById('next-theme-page').addEventListener('click', () => changeThemePage(1)); document.getElementById('custom-color-input').addEventListener('change', applyCustomColor); }
-        function animationLoop(currentTime) { const deltaTime = currentTime - lastFrameTime; lastFrameTime = currentTime; vfxCtx.clearRect(0, 0, vfxCanvas.width, vfxCanvas.height); updateAndDrawCosmicDust(); updateAndDrawClickRipples(); updateAndDrawForceParticles(); updateAndDrawMouseBunny(); updatePet(deltaTime); frameCount++; if (currentTime - lastPerfUpdateTime > 500) { updatePerfPanel(currentTime); } requestAnimationFrame(animationLoop); }
+        function setupEventListeners() { window.addEventListener('mousemove', e => { mouse.lastX = mouse.x; mouse.x = e.clientX; mouse.y = e.clientY; mouse.dx = mouse.x - mouse.lastX; docEl.style.setProperty('--mouse-x', `${e.clientX}px`); docEl.style.setProperty('--mouse-y', `${e.clientY}px`); }); window.addEventListener('resize', () => { [mouseTrailCanvas, vfxCanvas].forEach(c => {c.width = window.innerWidth; c.height = window.innerHeight;}); }); window.addEventListener('mousedown', e => { createClickRipple(e.clientX, e.clientY); initAudio(); }); avatarContainer.addEventListener('click', handleAvatarClick); petBunnyEl.addEventListener('click', handlePetting); aiFeedButton.addEventListener('click', handleFeeding); aiPlayButton.addEventListener('click', handlePlaying); aiStatusButton.addEventListener('click', handleStatusCheck); document.getElementById('font-toggle-button').addEventListener('click', toggleFont); document.getElementById('prev-theme-page').addEventListener('click', () => changeThemePage(-1)); document.getElementById('next-theme-page').addEventListener('click', () => changeThemePage(1)); document.getElementById('custom-color-input').addEventListener('change', applyCustomColor); }
+        function animationLoop(currentTime) { const deltaTime = currentTime - lastFrameTime; lastFrameTime = currentTime; vfxCtx.clearRect(0, 0, vfxCanvas.width, vfxCanvas.height); updateAndDrawCosmicDust(); updateAndDrawClickRipples(); updateAndDrawForceParticles(); updateAndDrawMouseBunny(); updatePet(deltaTime); updateAndDrawCelestialParticles(deltaTime); frameCount++; if (currentTime - lastPerfUpdateTime > 500) { updatePerfPanel(currentTime); } requestAnimationFrame(animationLoop); }
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-        function playSound(type) { if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); if (type === 'transform') { o.type = 'sine'; g.gain.setValueAtTime(0.15, audioCtx.currentTime); o.frequency.setValueAtTime(440, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.8); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1); } if (type === 'rebuild') { o.type = 'sine'; g.gain.setValueAtTime(0.12, audioCtx.currentTime); o.frequency.setValueAtTime(100, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 1.5); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5); } if (type === 'pet') { o.type = 'triangle'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(880, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2); } if (type === 'confirm') { o.type = 'sine'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(600, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1); } o.start(); o.stop(audioCtx.currentTime + 2); }
+        function playSound(type) { if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); if (type === 'dissolve') { o.type = 'triangle'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(1200, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.5); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1); } if (type === 'rebuild') { o.type = 'sine'; g.gain.setValueAtTime(0.12, audioCtx.currentTime); o.frequency.setValueAtTime(100, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 1.5); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.8); } if (type === 'pet') { o.type = 'triangle'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(880, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2); } if (type === 'confirm') { o.type = 'sine'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(600, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1); } o.start(); o.stop(audioCtx.currentTime + 2); }
         function initVFX() { [vfxCanvas, mouseTrailCanvas].forEach(c => { c.width = window.innerWidth; c.height = window.innerHeight; }); for (let i = 0; i < CONFIG.COSMIC_DUST_COUNT; i++) { cosmicDust.push({ x: Math.random() * vfxCanvas.width, y: Math.random() * vfxCanvas.height, z: Math.random() * 1000, vx: (Math.random() - 0.5) * 0.1, vy: (Math.random() - 0.5) * 0.1, baseSize: Math.random() * 1.5 + 0.5 }); } }
         function updateAndDrawCosmicDust() { vfxCtx.fillStyle = `rgba(var(--text-color-rgb), 0.5)`; cosmicDust.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = vfxCanvas.width; if (p.x > vfxCanvas.width) p.x = 0; if (p.y < 0) p.y = vfxCanvas.height; if (p.y > vfxCanvas.height) p.y = 0; vfxCtx.beginPath(); vfxCtx.arc(p.x, p.y, p.baseSize, 0, Math.PI * 2); vfxCtx.fill(); }); }
         function createClickRipple(x, y) { clickRipples.push({ x, y, radius: 0, maxRadius: 60, life: 1 }); }
@@ -193,68 +172,63 @@
         function handlePetting() { pet.happiness = Math.min(100, pet.happiness + 15); pet.lastInteractionTime = Date.now(); createHeartParticles(pet.x, pet.y); playSound('pet'); }
         function createHeartParticles(x, y) { for (let i = 0; i < 5; i++) { const heart = document.createElement('div'); heart.className = 'heart-particle'; heart.innerHTML = '♥'; heart.style.left = `${x + (Math.random() - 0.5) * 20}px`; heart.style.top = `${y}px`; heart.style.animationDelay = `${Math.random() * 0.2}s`; document.body.appendChild(heart); setTimeout(() => heart.remove(), 1500); } }
         
-        function handleAvatarHover() { if (avatarState === 'normal') avatarContainer.classList.add('charging'); }
-        function handleAvatarLeave() { if (avatarState === 'charging') avatarContainer.classList.remove('charging'); }
-        function handleAvatarClick() {
-            if (avatarState === 'animating' || avatarState === 'rebuilding') return;
-            const profilePic = document.getElementById('profile-pic');
-            const crystalBunny = fxContainer.querySelector('.crystal-bunny');
-            switch (avatarState) {
-                case 'charging':
-                case 'normal':
-                    avatarState = 'animating';
-                    avatarContainer.classList.remove('charging');
-                    avatarContainer.classList.add('transforming');
-                    playSound('transform');
-                    profilePic.addEventListener('animationend', () => {
-                        avatarState = 'transformed';
-                        avatarContainer.classList.remove('transforming');
-                        avatarContainer.classList.add('transformed');
-                    }, {once: true});
-                    break;
-                case 'transformed':
-                    avatarState = 'animating';
-                    crystalBunny.classList.add('leaving');
-                    crystalBunny.addEventListener('animationend', () => {
-                        crystalBunny.classList.remove('leaving');
-                        avatarState = 'carrot_summoned';
-                        avatarContainer.classList.remove('transformed');
-                        avatarContainer.classList.add('carrot-summoned');
-                    }, {once: true});
-                    break;
-                case 'carrot_summoned':
-                    avatarState = 'rebuilding';
-                    avatarContainer.classList.remove('carrot-summoned');
-                    playSound('rebuild');
-                    playSandstormEffect();
-                    setTimeout(() => {
-                        profilePic.style.opacity = '1';
-                        createForceBurst(30);
-                        avatarState = 'normal';
-                    }, 1800);
-                    break;
+        function handleAvatarClick() { if (avatarState === 'normal') { dissolveAvatar(); } }
+        function dissolveAvatar() {
+            if(avatarState !== 'normal') return;
+            avatarState = 'dissolving';
+            playSound('dissolve');
+            document.getElementById('profile-pic').style.opacity = '0';
+            const rect = avatarContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const EMOJIS = ['✨', '🌟', '💖', '🌙', '💫', '💎', '🌈', '🐰', '🥕'];
+            
+            for (let i = 0; i < 200; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const isEmoji = Math.random() > 0.8;
+                celestialParticles.push({
+                    x: centerX, y: centerY,
+                    vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                    radius: Math.random() * 200 + 80,
+                    angle: angle,
+                    speed: (Math.random() * 0.01 + 0.005) * (Math.random() > 0.5 ? 1 : -1),
+                    life: 1,
+                    type: isEmoji ? 'emoji' : 'glimmer',
+                    content: isEmoji ? EMOJIS[Math.floor(Math.random() * EMOJIS.length)] : null,
+                    size: isEmoji ? Math.random() * 20 + 15 : Math.random() * 2 + 1,
+                    color: `rgba(${Math.random() > 0.5 ? 'var(--glow-rgb)' : 'var(--accent-rgb)'}, ${Math.random() * 0.5 + 0.5})`,
+                    state: 'expanding',
+                    startTime: Date.now(),
+                    duration: 25000
+                });
             }
+
+            setTimeout(() => celestialParticles.forEach(p => p.state = 'swirling'), 2000);
+            setTimeout(() => { playSound('rebuild'); celestialParticles.forEach(p => p.state = 'converging'); }, 22000);
+            setTimeout(() => { celestialParticles = []; createForceBurst(50, centerX, centerY); document.getElementById('profile-pic').style.opacity = '1'; avatarState = 'normal'; }, 25000);
         }
-        function playSandstormEffect() { sandParticlesContainer.innerHTML = ''; for (let i = 0; i < 150; i++) { const p = document.createElement('div'); p.className = 'sand-particle'; const angle = Math.random() * Math.PI * 2, radius = 70 + Math.random() * 50; p.style.left = `${50 + radius * Math.cos(angle)}%`; p.style.top = `${50 + radius * Math.sin(angle)}%`; p.style.animationDelay = `${Math.random() * 0.2}s`; sandParticlesContainer.appendChild(p); } setTimeout(() => { sandParticlesContainer.innerHTML = ''; }, 2000); }
+        function updateAndDrawCelestialParticles(deltaTime) {
+            if (celestialParticles.length === 0) return;
+            const rect = avatarContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            celestialParticles.forEach(p => {
+                if (p.state === 'expanding') { p.x += p.vx; p.y += p.vy; p.vx *= 0.96; p.vy *= 0.96; } 
+                else if (p.state === 'swirling') { p.angle += p.speed; p.x = centerX + Math.cos(p.angle) * p.radius; p.y = centerY + Math.sin(p.angle) * p.radius; p.radius *= 0.9995; } 
+                else if (p.state === 'converging') { const dx = centerX - p.x; const dy = centerY - p.y; p.x += dx * 0.05; p.y += dy * 0.05; p.size *= 0.96; }
+                vfxCtx.globalAlpha = p.life > 0.5 ? 1 : p.life * 2;
+                if (p.type === 'emoji') { vfxCtx.font = `${p.size}px sans-serif`; vfxCtx.fillText(p.content, p.x, p.y); } 
+                else { vfxCtx.fillStyle = p.color; vfxCtx.beginPath(); vfxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); vfxCtx.fill(); }
+                vfxCtx.globalAlpha = 1;
+            });
+        }
         
         function handleFeeding() { pet.hunger = Math.min(100, pet.hunger + 25); pet.happiness = Math.min(100, pet.happiness + 5); pet.lastInteractionTime = Date.now(); updateAiScreen("已喂食！\nBCC-01 的饥饿度得到补充。"); playSound('confirm'); }
         function handlePlaying() { pet.happiness = Math.min(100, pet.happiness + 20); pet.hunger = Math.max(0, pet.hunger - 5); pet.lastInteractionTime = Date.now(); updateAiScreen("互动完成。\nBCC-01 的幸福度提升了！"); playSound('confirm'); }
         function handleStatusCheck() { let statusReport = "BCC-01 状态分析：\n"; if (pet.isSad) { statusReport += "警告！幸福度或饥饿度过低，需要立即关注。"; } else if (pet.happiness > 80 && pet.hunger > 80) { statusReport += "状态极佳，所有指标均在最佳范围。"; } else { statusReport += "状态稳定，各项指标均在安全范围内。"; } updateAiScreen(statusReport); playSound('confirm'); }
         function updateAiScreen(text) { aiScreen.textContent = text; }
         
-        function updatePerfPanel(currentTime) {
-            const perfContent = document.getElementById('perf-modal-content');
-            if (!perfContent || document.getElementById('performance-modal').classList.contains('hidden')) return;
-            const interval = currentTime - lastPerfUpdateTime;
-            const fps = Math.round((frameCount / interval) * 1000);
-            const realTimeContainer = perfContent.querySelector('#realtime-metrics-container');
-            if(realTimeContainer) {
-                 realTimeContainer.innerHTML = `<div class="col-span-2 text-lg glow-text mb-2">Real-time Metrics</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4"><span class="text-gray-400">FPS:</span><span class="text-white text-right">${fps}</span><span class="text-gray-400">FRAME TIME:</span><span class="text-white text-right">${(1000/fps || 0).toFixed(2)}ms</span><span class="text-gray-400">PARTICLES:</span><span class="text-white text-right">${cosmicDust.length + clickRipples.length + forceParticles.length + mouseSnake.length + document.querySelectorAll('.heart-particle').length}</span><span class="text-gray-400">DOM NODES:</span><span class="text-white text-right">${document.getElementsByTagName('*').length}</span></div>`;
-            }
-            lastPerfUpdateTime = currentTime;
-            frameCount = 0;
-        }
-        
+        function updatePerfPanel(currentTime) { const perfContent = document.getElementById('perf-modal-content'); if (!perfContent || document.getElementById('performance-modal').classList.contains('hidden')) return; const interval = currentTime - lastPerfUpdateTime; const fps = Math.round((frameCount / interval) * 1000); const realTimeContainer = perfContent.querySelector('#realtime-metrics-container'); if(realTimeContainer) { realTimeContainer.innerHTML = `<div class="col-span-2 text-lg glow-text mb-2">Real-time Metrics</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4"><span class="text-gray-400">FPS:</span><span class="text-white text-right">${fps}</span><span class="text-gray-400">FRAME TIME:</span><span class="text-white text-right">${(1000/fps || 0).toFixed(2)}ms</span><span class="text-gray-400">PARTICLES:</span><span class="text-white text-right">${cosmicDust.length + clickRipples.length + forceParticles.length + mouseSnake.length + document.querySelectorAll('.heart-particle').length + celestialParticles.length}</span><span class="text-gray-400">DOM NODES:</span><span class="text-white text-right">${document.getElementsByTagName('*').length}</span></div>`; } lastPerfUpdateTime = currentTime; frameCount = 0; }
         async function getStaticPerfData() { const perfContent = document.getElementById('perf-modal-content'); if (!perfContent) return; perfContent.innerHTML = `<div id="realtime-metrics-container"></div>`; let staticHtml = ''; let memHtml = '<div class="col-span-2 text-lg glow-text mt-4 mb-2">Memory Subsystem</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4">'; if (performance.memory) { memHtml += `<span class="text-gray-400">JS HEAP USED:</span><span class="text-white text-right">${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)} MB</span>`; memHtml += `<span class="text-gray-400">JS HEAP TOTAL:</span><span class="text-white text-right">${(performance.memory.totalJSHeapSize / 1048576).toFixed(1)} MB</span>`; memHtml += `<span class="text-gray-400">JS HEAP LIMIT:</span><span class="text-white text-right">${(performance.memory.jsHeapSizeLimit / 1048576).toFixed(1)} MB</span>`; } else { memHtml += '<span class="col-span-2">Memory API N/A</span>'; } memHtml += '</div>'; staticHtml += memHtml; const navTiming = performance.getEntriesByType("navigation")[0]; const paintTimings = performance.getEntriesByType("paint"); if (navTiming || paintTimings.length > 0) { let pageHtml = '<div class="col-span-2 text-lg glow-text mt-4 mb-2">Page Vitals & Load</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4">'; const fcp = paintTimings.find(p => p.name === 'first-contentful-paint'); if(fcp) pageHtml += `<span class="text-gray-400">FIRST PAINT:</span><span class="text-white text-right">${fcp.startTime.toFixed(0)} ms</span>`; if(navTiming) pageHtml += `<span class="text-gray-400">TOTAL LOAD:</span><span class="text-white text-right">${navTiming.duration.toFixed(0)} ms</span>`; pageHtml += '</div>'; staticHtml += pageHtml; } const resources = performance.getEntriesByType("resource"); if(resources.length > 0) { let resHtml = '<div class="col-span-2 text-lg glow-text mt-4 mb-2">Resource Analysis</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4">'; const totalSize = resources.reduce((acc, r) => acc + (r.transferSize || 0), 0); resHtml += `<span class="text-gray-400">TOTAL ASSETS:</span><span class="text-white text-right">${resources.length}</span>`; resHtml += `<span class="text-gray-400">PAGE WEIGHT:</span><span class="text-white text-right">${(totalSize / 1024).toFixed(1)} KB</span>`; const slowest = [...resources].sort((a,b) => b.duration - a.duration)[0]; if(slowest) resHtml += `<span class="text-gray-400 col-span-2">SLOWEST:</span><span class="text-white col-span-2 break-all text-right">${slowest.name.split('/').pop()} (${slowest.duration.toFixed(0)}ms)</span>`; resHtml += '</div>'; staticHtml += resHtml; } let sysHtml = '<div class="col-span-2 text-lg glow-text mt-4 mb-2">Hardware & System</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4">'; if(navigator.hardwareConcurrency) sysHtml += `<span class="text-gray-400">CPU CORES:</span><span class="text-white text-right">${navigator.hardwareConcurrency}</span>`; if(navigator.deviceMemory) sysHtml += `<span class="text-gray-400">SYS MEMORY:</span><span class="text-white text-right">~${navigator.deviceMemory} GB</span>`; if(navigator.getBattery) { try { const battery = await navigator.getBattery(); sysHtml += `<span class="text-gray-400">BATTERY:</span><span class="text-white text-right">${(battery.level * 100).toFixed(0)}% ${battery.charging ? '(Charging)' : ''}</span>`; } catch(e) {} } if (navigator.userAgent) { let os = "Unknown"; if (navigator.userAgent.includes("Win")) os = "Windows"; else if (navigator.userAgent.includes("Mac")) os = "macOS"; else if (navigator.userAgent.includes("Linux")) os = "Linux"; else if (navigator.userAgent.includes("Android")) os = "Android"; else if (navigator.userAgent.includes("iPad")) os = "iPadOS"; else if (navigator.userAgent.includes("iPhone")) os = "iOS"; sysHtml += `<span class="text-gray-400">OS:</span><span class="text-white text-right">${os}</span>`; } sysHtml += '</div>'; staticHtml += sysHtml; perfContent.innerHTML += staticHtml; }
         
         function toggleFont() { bodyEl.classList.toggle('font-pixel'); const button = document.getElementById('font-toggle-button'); if (bodyEl.classList.contains('font-pixel')) { Chart.defaults.font.family = "'Press Start 2P', 'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 10; button.textContent = "SYSTEM FONT"; } else { Chart.defaults.font.family = "'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 12; button.textContent = "PIXEL FONT"; } if (chart) renderWeightChart(weightRecords); }
@@ -272,7 +246,8 @@
         
         function renderChangelog() {
             const changelogData = [
-                { version: "v11.3", date: "ETERNITY_DRIVE_FINAL", items: [ { type: "🐛 修復 (Fix)", en: "Fixed a critical execution-halting error in the mouse trail renderer caused by attempting to use a CSS variable directly in the Canvas API.", zh: "修复了因尝试在Canvas API中直接使用CSS变量而导致的、会使程序停止执行的鼠标光轨渲染器致命错误。" }, { type: "🐛 修復 (Fix)", en: "Fixed a bug where the avatar transformation sequence would stall.", zh: "修复了头像变身序列会卡死的错误。" }, { type: "✨ 優化 (Improved)", en: "Re-enabled the full professional-grade performance monitor and ensured it is scrollable.", zh: "重新启用了完整的专业级性能监视器，并确保其可滚动。" } ]},
+                { version: "v12.0", date: "CELESTIAL_FINALE", items: [ { type: "🚀 新功能 (New)", en: "Replaced the entire avatar transformation with a 25-second 'Celestial Finale' particle dissolution and reconstitution effect.", zh: "将整个头像变身动画替换为一个长达25秒的“天穹终章”粒子分解与重组特效。" }, { type: "✨ 優化 (Improved)", en: "The new effect resolves all previous rendering artifacts by using a pure canvas-based particle system, incorporating emojis.", zh: "新的特效通过使用纯粹基于Canvas的粒子系统（并融合了Emoji），解决了所有之前的渲染瑕疵。" }, { type: "✨ 優化 (Improved)", en: "The final performance monitor is scrollable and features the most extensive data set yet.", zh: "最终版的性能监视器可滚动，并提供了迄今为止最广泛的数据集。" }, { type: "✅ 確認 (Verified)", en: "This version includes all features and fixes from v1.0 through v11.3, representing the complete, stable, and final state of the project.", zh: "此版本包含从v1.0到v11.3的所有功能和修复，代表了项目的完整、稳定和最终状态。" } ]},
+                { version: "v11.3", date: "ETERNITY_DRIVE_FINAL", items: [ { type: "🐛 修復 (Fix)", en: "Fixed a critical execution-halting error in the mouse trail renderer.", zh: "修复了鼠标光轨渲染器中导致程序停止执行的致命错误。" }, { type: "🐛 修復 (Fix)", en: "Fixed a bug where the avatar transformation sequence would stall.", zh: "修复了头像变身序列会卡死的错误。" }, { type: "✨ 優化 (Improved)", en: "Re-enabled the full professional-grade performance monitor and ensured it is scrollable.", zh: "重新启用了完整的专业级性能监视器，并确保其可滚动。" } ]},
                 { version: "v11.0", date: "CRYSTAL_HEART", items: [ { type: "🚀 新功能 (New)", en: "Implemented a multi-stage 'Sailor Moon' transformation sequence for the avatar.", zh: "为头像实现了多阶段的“美少女战士”变身序列。" } ]},
                 { version: "v10.1", date: "OBSERVER_PRIME", items: [ { type: "✨ 優化 (Improved)", en: "Upgraded the Performance Monitor to a professional-grade 'Observer Core'.", zh: "将性能监视器升级为专业级“观察者核心”。" } ]},
                 { version: "v10.0", date: "AEGIS_PRIME", items: [ { type: "🐛 修復 (Fix)", en: "Fixed a critical regression bug with JSON date parsing.", zh: "修复了JSON日期解析的关键回归性Bug。" } ]},
