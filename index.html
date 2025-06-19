@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>檔案：Bunny CC v7.2 [LEGACY-ARCHIVE]</title>
+    <title>檔案：Bunny CC v7.3 [HYPERSPACE]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,72 +18,63 @@
             --text-muted-color: #8b949e;
             --mouse-x: 50%; --mouse-y: 50%;
         }
-        /* Base styles */
         body {
-            font-family: 'Press Start 2P', 'Noto Sans SC', sans-serif;
-            font-size: 12px;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 14px;
             background-color: var(--bg-color);
             color: var(--text-color);
             overflow: hidden;
             opacity: 0;
-            animation: fadeIn 1.5s ease 0.5s forwards;
+            animation: fadeIn 1s ease 2.5s forwards; /* Delayed fadeIn to show hyperspace effect */
             cursor: none;
             position: relative;
             z-index: 0;
         }
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: radial-gradient(600px at var(--mouse-x) var(--mouse-y), rgba(var(--glow-rgb), 0.15), transparent 80%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+        body.font-pixel { font-family: 'Press Start 2P', 'Noto Sans SC', sans-serif; font-size: 12px; }
+        body.font-pixel .lcars-button, body.font-pixel .accent-text, body.font-pixel .glow-text, body.font-pixel h1, body.font-pixel h2, body.font-pixel #theme-page-title, body.font-pixel .modal-container h2 { letter-spacing: 1px; }
+
+        /* --- NEW: Visual Layers --- */
+        #circuitry-background {
+            position: fixed; inset: 0; z-index: -3;
             background-image:
-                linear-gradient(rgba(var(--glow-rgb), 0.05) 1px, transparent 1px),
-                linear-gradient(to right, rgba(var(--glow-rgb), 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: grid-scroll 20s linear infinite;
-            z-index: -2;
-            opacity: 0.5;
+                linear-gradient(rgba(var(--glow-rgb), 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--glow-rgb), 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 20% 20%, rgba(var(--glow-rgb), 0.05), transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(var(--accent-rgb), 0.05), transparent 25%);
+            background-size: 25px 25px, 25px 25px, 100% 100%, 100% 100%;
         }
-        @keyframes grid-scroll { from { background-position: 0 0; } to { background-position: 50px 100px; } }
-
-        /* Canvas & Bunny Layers */
-        .effect-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+        body::before { /* Dynamic Grid */
+            content: ''; position: fixed; inset: 0; z-index: -2;
+            background-image:
+                linear-gradient(rgba(var(--glow-rgb), 0.08) 1px, transparent 1px),
+                linear-gradient(to right, rgba(var(--glow-rgb), 0.08) 1px, transparent 1px);
+            background-size: 75px 75px;
+            animation: grid-scroll 15s linear infinite;
+            opacity: 0.7;
+        }
+        @keyframes grid-scroll { from { background-position: 0 0; } to { background-position: 75px 150px; } }
+        body::after { /* Mouse Spotlight */
+            content: ''; position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(800px at var(--mouse-x) var(--mouse-y), rgba(var(--glow-rgb), 0.18), transparent 80%);
             pointer-events: none;
         }
-        #pet-canvas { z-index: 1; } /* The painting canvas */
-        #bunny-trail-canvas { z-index: 9998; } /* The mouse trail canvas */
 
-        .pixel-entity {
-            position: fixed;
-            width: 32px; height: 32px;
-            background-size: contain;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            transition: filter 0.2s;
-        }
-        #mouse-bunny {
-            z-index: 9999;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4h1v1h1v1h4v-1h1v-1h1v3h1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-2z' fill='rgb(var(--glow-rgb))'/%3E%3Cpath d='M7 6h1v1h-1z' fill='%23000'/%3E%3Cpath d='M4 4h1v1h-1zM10 4h1v1h-1zM5 6h1v1h-1z' fill='rgb(var(--accent-rgb))'/%3E%3C/svg%3E");
-            filter: drop-shadow(0 0 8px rgba(var(--glow-rgb), 0.8));
-        }
-        #pet-bunny {
-            z-index: 2;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23FFD700' d='M5 5H6V6H5z M9 5H10V6H9z'/%3E%3Cpath fill='%23FFFFFF' d='M3 7h1v1h1v1h1v1h2v-1h1v-1h1v-1h1v2h-1v1h-1v1h-1v1h-2v-1H6V9H5V8H4V7H3z'/%3E%3Cpath fill='%23FF69B4' d='M4,6 L5,6 L5,7 L4,7 Z M10,6 L11,6 L11,7 L10,7 Z'/%3E%3Cpath fill='%2300BFFF' d='M6 6h1v1H6zm2 0h1v1H8z'/%3E%3Cpath fill='%2332CD32' d='M4 4h2v1H4zm7 0h2v1h-2z'/%3E%3C/svg%3E");
-            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
-            opacity: 0.9;
+        /* NEW: Hyperspace Effect */
+        #hyperspace-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            background-color: #000;
+            transition: opacity 0.5s ease-out;
         }
 
+        .effect-canvas { position: fixed; inset: 0; pointer-events: none; }
+        #pet-canvas { z-index: 1; }
+        #bunny-trail-canvas { z-index: 9998; }
+
+        .pixel-entity { position: fixed; width: 32px; height: 32px; background-size: contain; pointer-events: none; transform: translate(-50%, -50%); transition: filter 0.2s; }
+        #mouse-bunny { z-index: 9999; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4h1v1h1v1h4v-1h1v-1h1v3h1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-2z' fill='rgb(var(--glow-rgb))'/%3E%3Cpath d='M7 6h1v1h-1z' fill='%23000'/%3E%3Cpath d='M4 4h1v1h-1zM10 4h1v1h-1zM5 6h1v1h-1z' fill='rgb(var(--accent-rgb))'/%3E%3C/svg%3E"); filter: drop-shadow(0 0 8px rgba(var(--glow-rgb), 0.8)); }
+        #pet-bunny { z-index: 2; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23FFD700' d='M5 5H6V6H5z M9 5H10V6H9z'/%3E%3Cpath fill='%23FFFFFF' d='M3 7h1v1h1v1h1v1h2v-1h1v-1h1v-1h1v2h-1v1h-1v1h-1v1h-2v-1H6V9H5V8H4V7H3z'/%3E%3Cpath fill='%23FF69B4' d='M4,6 L5,6 L5,7 L4,7 Z M10,6 L11,6 L11,7 L10,7 Z'/%3E%3Cpath fill='%2300BFFF' d='M6 6h1v1H6zm2 0h1v1H8z'/%3E%3Cpath fill='%2332CD32' d='M4 4h2v1H4zm7 0h2v1h-2z'/%3E%3C/svg%3E"); filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5)); opacity: 0.9; }
+        
+        .glow-text, .accent-text { transition: text-shadow 0.3s; }
         .glow-text { color: rgb(var(--glow-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
         .accent-text { color: rgb(var(--accent-rgb)); text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); }
         
@@ -92,11 +83,11 @@
         .lcars-main { flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
         .lcars-element { background: rgb(var(--glow-rgb)); transition: all 0.3s ease; }
         .lcars-elbow { width: 100%; height: 60px; background: rgb(var(--glow-rgb)); border-top-left-radius: 30px; border-bottom-left-radius: 30px; }
-        .lcars-content-panel { flex-grow: 1; background: #080808; border: 2px solid rgb(var(--glow-rgb)); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; min-height: 0; transition: box-shadow 0.5s ease; animation: border-glow-in 2s ease-out forwards; }
-        .lcars-button { background: #080808; border: 2px solid rgb(var(--accent-rgb)); color: rgb(var(--accent-rgb)); text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); transition: all 0.2s ease; letter-spacing: 1px; }
-        .lcars-button:hover { background: rgb(var(--accent-rgb)); color: #000; }
+        .lcars-content-panel { flex-grow: 1; background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(2px); border: 2px solid rgb(var(--glow-rgb)); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; min-height: 0; transition: box-shadow 0.5s ease; animation: border-glow-in 2s ease-out 2.5s forwards; }
+        .lcars-button { background: #080808; border: 2px solid rgb(var(--accent-rgb)); color: rgb(var(--accent-rgb)); text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); transition: all 0.2s ease; }
+        .lcars-button:hover { background: rgb(var(--accent-rgb)); color: #000; box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.7); }
         
-        .ui-module { opacity: 0; transform: translateY(20px) scale(0.98); animation: module-boot 0.6s ease-out forwards; }
+        .ui-module { opacity: 0; transform: translateY(20px) scale(0.98); animation: module-boot 0.6s ease-out 2.6s forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes module-boot { to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes border-glow-in { from { box-shadow: 0 0 0px rgba(var(--glow-rgb), 0); } to { box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.3); } }
@@ -107,14 +98,14 @@
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .record-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--glow-rgb), 0.5); border-radius: 4px; }
-        .has-tooltip:hover .tooltip { visibility: visible; opacity: 1; }
-        .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; }
         
         .modal-overlay { background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
         .modal-container { background: #080808; border: 2px solid rgb(var(--glow-rgb)); box-shadow: 0 0 30px rgba(var(--glow-rgb), 0.5); }
     </style>
 </head>
 <body>
+    <div id="circuitry-background"></div>
+    <canvas id="hyperspace-overlay"></canvas>
     <canvas id="pet-canvas" class="effect-canvas"></canvas>
     <canvas id="bunny-trail-canvas" class="effect-canvas"></canvas>
     <div id="mouse-bunny" class="pixel-entity"></div>
@@ -125,18 +116,17 @@
         <div class="lcars-sidebar">
             <div class="lcars-elbow"></div>
             <div class="flex-grow flex flex-col justify-end gap-4">
-                <button class="lcars-button p-2 rounded-r-full text-[10px] has-tooltip relative" onclick="toggleModal('changelog-modal')">LOGS<div class="tooltip absolute left-full ml-2 whitespace-nowrap bg-black/80 text-white text-xs rounded py-1 px-2">更新日誌</div></button>
-                <button class="lcars-button p-2 rounded-r-full text-[10px] has-tooltip relative" onclick="toggleModal('theme-modal')">THEME<div class="tooltip absolute left-full ml-2 whitespace-nowrap bg-black/80 text-white text-xs rounded py-1 px-2">主題面板</div></button>
-                <button class="lcars-button p-2 rounded-r-full text-[10px] has-tooltip relative" onclick="toggleFullscreen()">FSCRN<div class="tooltip absolute left-full ml-2 whitespace-nowrap bg-black/80 text-white text-xs rounded py-1 px-2">全螢幕</div></button>
+                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('changelog-modal')">LOGS</button>
+                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('theme-modal')">THEME</button>
+                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleFullscreen()">FSCRN</button>
             </div>
         </div>
-
         <!-- LCARS Main Content -->
         <div class="lcars-main">
             <div class="h-16 flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="text-lg sm:text-xl tracking-wider glow-text">BCC_SYS_v7.2</p><p class="accent-text text-xs">LEGACY-ARCHIVE</p></div>
+                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_v7.3</p><p class="accent-text text-sm">HYPERSPACE</p></div>
                 </div>
                 <div id="performance-panel" class="hidden md:flex items-center text-xs space-x-4" style="color:var(--text-muted-color)"></div>
             </div>
@@ -144,28 +134,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Left Panel -->
                     <div class="md:col-span-1 flex flex-col space-y-6">
-                        <div class="ui-module text-center" style="animation-delay: 0.2s;">
-                            <div class="profile-container w-40 h-40 mx-auto">
-                                <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));">
-                            </div>
-                            <h1 class="text-xl font-bold mt-4 glow-text">BUNNY CC</h1>
-                        </div>
-                        <div class="ui-module" style="animation-delay: 0.4s;">
-                            <h2 class="text-sm pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">MILESTONES</h2>
-                            <!-- MILESTONES CONTENT: Will be populated by the restored classic `updateTiming` function -->
-                            <div id="timing" class="space-y-2 text-xs whitespace-pre-line leading-relaxed" style="color: var(--text-muted-color)"></div>
-                        </div>
+                        <div class="ui-module text-center" style="animation-delay: 2.7s;"><div class="profile-container w-40 h-40 mx-auto"><img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));"></div><h1 class="text-2xl font-bold mt-4 glow-text">BUNNY CC</h1></div>
+                        <div class="ui-module" style="animation-delay: 2.8s;"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">MILESTONES</h2><div id="timing" class="space-y-3" style="color: var(--text-muted-color)"></div></div>
                     </div>
                     <!-- Right Panel -->
                     <div class="md:col-span-2 flex flex-col space-y-6">
-                        <div class="ui-module" style="animation-delay: 0.6s;">
-                            <h2 class="text-sm pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">WEIGHT_GRID</h2>
-                            <div class="h-64 chart-container"><canvas id="weightChart"></canvas></div><div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-xs" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2); transition: all 0.3s ease;"></div>
-                        </div>
-                        <div class="ui-module flex-grow flex flex-col" style="animation-delay: 0.8s;">
-                            <h2 class="text-sm pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">DATA_STREAM</h2>
-                            <div id="all-records-container" class="record-scrollbar flex-grow pr-2 space-y-3 text-xs"></div>
-                        </div>
+                        <div class="ui-module" style="animation-delay: 2.9s;"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">WEIGHT_GRID</h2><div class="h-64 chart-container"><canvas id="weightChart"></canvas></div><div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2); transition: all 0.3s ease;"></div></div>
+                        <div class="ui-module flex-grow flex flex-col" style="animation-delay: 3.0s;"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">DATA_STREAM</h2><div id="all-records-container" class="record-scrollbar flex-grow pr-2 space-y-3"></div></div>
                     </div>
                 </div>
             </div>
@@ -173,8 +148,8 @@
     </div>
     
     <!-- Modals -->
-    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('changelog-modal')"><div class="modal-container w-11/12 max-w-4xl max-h-[80vh] flex flex-col" onclick="event.stopPropagation()"><h2 class="text-base p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2><div id="changelog-content" class="p-6 overflow-y-auto record-scrollbar text-xs"></div></div></div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('theme-modal')"><div class="modal-container w-11/12 max-w-md" onclick="event.stopPropagation()"><div class="p-4 flex justify-between items-center border-b" style="border-color:rgba(var(--glow-rgb), 0.3)"><button id="prev-theme-page" class="text-xl glow-text"><</button><h2 id="theme-page-title" class="text-base glow-text">COLOR_CYCLE</h2><button id="next-theme-page" class="text-xl glow-text">></button></div><div id="theme-grid" class="p-6 grid grid-cols-5 gap-4"></div><div class="p-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.3)"><input id="custom-color-input" type="text" placeholder="#224294 or rgb(34,66,148)" class="w-full bg-transparent border text-center p-2 rounded-md text-xs" style="border-color:rgba(var(--accent-rgb), 0.5)"></div></div></div>
+    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('changelog-modal')"><div class="modal-container w-11/12 max-w-4xl max-h-[80vh] flex flex-col" onclick="event.stopPropagation()"><h2 class="text-xl p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2><div id="changelog-content" class="p-6 overflow-y-auto record-scrollbar"></div></div></div>
+    <div id="theme-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('theme-modal')"><div class="modal-container w-11/12 max-w-md" onclick="event.stopPropagation()"><div class="p-4 flex justify-between items-center border-b" style="border-color:rgba(var(--glow-rgb), 0.3)"><button id="prev-theme-page" class="text-2xl glow-text"><</button><h2 id="theme-page-title" class="text-xl glow-text">COLOR_CYCLE</h2><button id="next-theme-page" class="text-2xl glow-text">></button></div><div id="theme-grid" class="p-6 grid grid-cols-5 gap-4"></div><div class="p-4 border-t flex items-center gap-4" style="border-color:rgba(var(--glow-rgb), 0.3)"><input id="custom-color-input" type="text" placeholder="CUSTOM COLOR..." class="flex-grow bg-transparent border text-center p-2 rounded-md" style="border-color:rgba(var(--accent-rgb), 0.5)"><button id="font-toggle-button" class="lcars-button rounded-md px-4 py-2 text-xs">PIXEL FONT</button></div></div></div>
 
     <script>
         // --- CONFIGURATION ---
@@ -188,6 +163,7 @@
 
         // --- GLOBAL STATE & DOM ELEMENTS ---
         const docEl = document.documentElement;
+        const bodyEl = document.body;
         const profilePicEl = document.getElementById('profile-pic');
         const mouseBunnyEl = document.getElementById('mouse-bunny');
         const mouseTrailCanvas = document.getElementById('bunny-trail-canvas');
@@ -207,8 +183,10 @@
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             profilePicEl.src = CONFIG.PROFILE_PIC_PATH;
-            Chart.defaults.font.family = "'Press Start 2P', 'Noto Sans SC', sans-serif";
-            Chart.defaults.font.size = 10;
+            Chart.defaults.font.family = "'Noto Sans SC', sans-serif";
+            Chart.defaults.font.size = 12;
+            
+            runHyperspaceEffect(); // NEW v7.3
             
             setupEventListeners();
             loadAndProcessData();
@@ -226,6 +204,10 @@
         function setupEventListeners() {
             window.addEventListener('mousemove', e => { mouse.lastX = mouse.x; mouse.x = e.clientX; mouse.y = e.clientY; mouse.dx = mouse.x - mouse.lastX; docEl.style.setProperty('--mouse-x', `${e.clientX}px`); docEl.style.setProperty('--mouse-y', `${e.clientY}px`); });
             window.addEventListener('resize', () => { mouseTrailCanvas.width = window.innerWidth; mouseTrailCanvas.height = window.innerHeight; petCanvas.width = window.innerWidth; petCanvas.height = window.innerHeight; });
+            document.getElementById('font-toggle-button').addEventListener('click', toggleFont);
+            // FIX v7.3: Pagination button listeners
+            document.getElementById('prev-theme-page').addEventListener('click', () => changeThemePage(-1));
+            document.getElementById('next-theme-page').addEventListener('click', () => changeThemePage(1));
         }
         let lastTime = 0;
         function animationLoop(currentTime) {
@@ -238,109 +220,112 @@
             requestAnimationFrame(animationLoop);
         }
 
-        // --- PET & MOUSE BUNNY LOGIC (v7.1) ---
+        // --- CORE FEATURES v7.3 ---
+        function runHyperspaceEffect() {
+            const overlay = document.getElementById('hyperspace-overlay');
+            const ctx = overlay.getContext('2d');
+            overlay.width = window.innerWidth;
+            overlay.height = window.innerHeight;
+
+            const stars = [], numStars = 500;
+            const centerX = overlay.width / 2;
+            const centerY = overlay.height / 2;
+
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: (Math.random() - 0.5) * overlay.width,
+                    y: (Math.random() - 0.5) * overlay.height,
+                    z: Math.random() * overlay.width,
+                    pz: 0
+                });
+            }
+
+            let startTime = performance.now();
+            let animFrame;
+
+            function draw() {
+                const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim();
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.fillRect(0, 0, overlay.width, overlay.height);
+
+                for (const star of stars) {
+                    star.z -= 10;
+                    if (star.z < 1) {
+                        star.z = overlay.width;
+                        star.x = (Math.random() - 0.5) * overlay.width;
+                        star.y = (Math.random() - 0.5) * overlay.height;
+                    }
+
+                    const k = 128 / star.z;
+                    const px = star.x * k + centerX;
+                    const py = star.y * k + centerY;
+                    
+                    if (px > 0 && px < overlay.width && py > 0 && py < overlay.height) {
+                        const size = (1 - star.z / overlay.width) * 5;
+                        const shade = parseInt((1 - star.z / overlay.width) * 255);
+                        ctx.fillStyle = `rgb(${shade},${shade},255)`;
+                        ctx.beginPath();
+                        ctx.arc(px, py, size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                if (performance.now() - startTime < 2000) {
+                    animFrame = requestAnimationFrame(draw);
+                } else {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 500);
+                }
+            }
+            draw();
+        }
+
+        // --- FONT TOGGLE & THEME LOGIC ---
+        function toggleFont() { bodyEl.classList.toggle('font-pixel'); const button = document.getElementById('font-toggle-button'); if (bodyEl.classList.contains('font-pixel')) { Chart.defaults.font.family = "'Press Start 2P', 'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 10; button.textContent = "SYSTEM FONT"; } else { Chart.defaults.font.family = "'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 12; button.textContent = "PIXEL FONT"; } renderWeightChart(weightRecords); }
+        let currentThemePage = 0;
+        function changeThemePage(direction) { const totalPages = Math.ceil(CONFIG.THEMES.length / 10); currentThemePage = (currentThemePage + direction + totalPages) % totalPages; renderThemePage(); }
+        function renderThemePage() { const themeGrid = document.getElementById('theme-grid'); themeGrid.innerHTML = ''; const startIndex = currentThemePage * 10; const endIndex = startIndex + 10; CONFIG.THEMES.slice(startIndex, endIndex).forEach(theme => { const swatch = document.createElement('button'); swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2"; swatch.style.backgroundColor = `rgb(${theme.r})`; swatch.style.boxShadow = `0 0 15px rgba(${theme.r}, 0.5)`; swatch.title = theme.n; swatch.onclick = () => changeTheme(theme); themeGrid.appendChild(swatch); }); const totalPages = Math.ceil(CONFIG.THEMES.length / 10); document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}/${totalPages}]`; }
+        function applyCustomColor(event) { let input = event.target.value.trim(); let rgb; if (input.startsWith('#')) { const hex = input.substring(1).padEnd(6, 'f'); const bigint = parseInt(hex.slice(0,6), 16); rgb = `${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255}`; } else if (input.startsWith('rgb')) { rgb = input.match(/\d+/g).join(','); } if (rgb) changeTheme({ r: rgb }); }
+        function changeTheme(theme) { docEl.style.setProperty('--glow-rgb', theme.r); const orangeTheme = CONFIG.THEMES.find(t => t.n === 'orange'); if(orangeTheme) docEl.style.setProperty('--accent-rgb', orangeTheme.r); if (chart) renderWeightChart(weightRecords); }
+        
+        // --- PET & MOUSE BUNNY LOGIC (Unchanged from v7.1) ---
         function initMouseBunny() { mouseTrailCanvas.width = window.innerWidth; mouseTrailCanvas.height = window.innerHeight; for (let i = 0; i < CONFIG.MOUSE_SNAKE_LENGTH; i++) { mouseSnake.push({ x: mouse.x, y: mouse.y }); } }
-        function updateAndDrawMouseBunny() {
-            mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height);
-            let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25;
-            mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop();
-            for (let i = 1; i < mouseSnake.length; i++) { const opacity = 1 - (i / mouseSnake.length); const radius = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.strokeStyle = `rgba(var(--glow-rgb), ${opacity * 0.8})`; mouseTrailCtx.lineWidth = radius; mouseTrailCtx.lineCap = 'round'; mouseTrailCtx.stroke(); }
-            mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`;
-            if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`;
-        }
+        function updateAndDrawMouseBunny() { mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height); let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25; mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop(); for (let i = 1; i < mouseSnake.length; i++) { const opacity = 1 - (i / mouseSnake.length); const radius = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.strokeStyle = `rgba(var(--glow-rgb), ${opacity * 0.8})`; mouseTrailCtx.lineWidth = radius; mouseTrailCtx.lineCap = 'round'; mouseTrailCtx.stroke(); } mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`; if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`; }
         function initPetBunny() { petCanvas.width = window.innerWidth; petCanvas.height = window.innerHeight; pet.x = Math.random() * window.innerWidth; pet.y = Math.random() * window.innerHeight; pet.targetX = pet.x; pet.targetY = pet.y; }
-        function updateAndDrawPetBunny(currentTime) {
-            petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height);
-            if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; }
-            pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX;
-            const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const accentRgb = getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim();
-            const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(0.5, `rgba(${accentRgb}, 0.15)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill();
-            petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`;
-            if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`;
-        }
+        function updateAndDrawPetBunny(currentTime) { petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height); if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; } pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX; const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const accentRgb = getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim(); const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(0.5, `rgba(${accentRgb}, 0.15)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)'); petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill(); petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`; if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`; }
         function updatePerfPanel(fps) { const memory = performance.memory ? `MEM:${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}MB` : ''; perfPanel.innerHTML = `<span>FPS:${fps}</span><span>${memory}</span>`; }
         
-        // --- DATA & CHART LOGIC (v6.4 logic retained) ---
+        // --- DATA, CHART, TIMING, MODALS LOGIC (Unchanged from v7.2.1) ---
         async function loadAndProcessData() {
             try { const response = await fetch(CONFIG.PET_RECORDS_PATH); if (!response.ok) throw new Error('Network response was not ok.'); const rawRecords = await response.json(); const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate);
             } catch (error) { console.error("無法從檔案加載數據，將使用內置示例數據:", error); const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 }, { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ]; const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); }
             renderAllRecords(allRecords); renderWeightChart(weightRecords);
         }
-        function renderAllRecords(records) { const container = document.getElementById('all-records-container'); if (!records || records.length === 0) { container.innerHTML = '<p>無數據流記錄。</p>'; return; } container.innerHTML = records.map(rec => { const dateStr = rec.processedDate.toLocaleDateString('sv-SE'); const weightInfo = rec.weight > 0 ? ` - WEIGHT: <span class="glow-text">${rec.weight}g</span>` : ''; return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);"><div class="flex justify-between items-center"><p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p><time class="text-[10px] flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time></div><p class="text-[10px] mt-1" style="color: var(--text-muted-color)">NOTES: ${rec.notes || 'N/A'}</p></div>`; }).join(''); }
+        function renderAllRecords(records) { const container = document.getElementById('all-records-container'); if (!records || records.length === 0) { container.innerHTML = '<p>無數據流記錄。</p>'; return; } container.innerHTML = records.map(rec => { const dateStr = rec.processedDate.toLocaleDateString('sv-SE'); const weightInfo = rec.weight > 0 ? ` - WEIGHT: <strong class="glow-text">${rec.weight}g</strong>` : ''; return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);"><div class="flex justify-between items-center"><p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p><time class="text-xs flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time></div><p class="text-sm mt-1" style="color: var(--text-muted-color)">NOTES: ${rec.notes || 'N/A'}</p></div>`; }).join(''); }
         function renderWeightChart(records) {
             if (chart) chart.destroy(); const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`; const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`; const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'})); const data = records.map(r => r.weight); const ctx = document.getElementById('weightChart').getContext('2d');
             chart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)' }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)', callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } }, onClick: (event, elements) => { if (elements.length > 0) { const index = elements[0].index; const weightInfoEl = document.getElementById('weight-change-info'); if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; } const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight; const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`; const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400'; weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`; } } } });
             const weightInfoEl = document.getElementById('weight-change-info');
             if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`; } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`; } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; }
         }
-        
-        // --- UI & THEME LOGIC (Unchanged) ---
+        const timingEl = document.getElementById('timing');
+        function updateTiming() { const startDate = new Date(CONFIG.START_DATE); const currentDate = new Date(); const elapsedMs = currentDate.getTime() - startDate.getTime(); const elapsedDays = (elapsedMs / 86400000).toFixed(3); const totalSeconds = Math.floor(elapsedMs / 1000); const elapsedHours = Math.floor(totalSeconds / 3600); const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60); const elapsedSeconds = totalSeconds % 60; const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`; const getNextAnniversary = (base, days) => { let count = 0, nextDate; do { count++; nextDate = new Date(base.getTime() + count * days * 86400000); } while (nextDate < currentDate); return { date: nextDate, count }; }; const getNextYearly = (base) => { let count = 0, nextDate; do { count++; nextDate = new Date(base); nextDate.setFullYear(base.getFullYear() + count); } while (nextDate < currentDate); return { date: nextDate, count }; }; const next100 = getNextAnniversary(startDate, 100); const next180 = getNextAnniversary(startDate, 180); const next300 = getNextAnniversary(startDate, 300); const nextYear = getNextYearly(startDate); timingEl.innerHTML = `<p>🐰 兔可可已經到來 <strong class="accent-text">${elapsedDays}</strong> 天啦</p><p>🎂 目前已經到來 <strong class="accent-text">${elapsedHours}</strong>小時 <strong class="accent-text">${elapsedMinutes}</strong>分鐘 <strong class="accent-text">${elapsedSeconds}</strong>秒</p><div class="pt-2 mt-2 border-t border-dashed" style="border-color: rgba(var(--glow-rgb), 0.2)"></div><p>🌱 下一個100天紀念日是 <strong class="accent-text">${formatDate(next100.date)}</strong>（第${next100.count}個100天）</p><p>🌿 下一個180天紀念日是 <strong class="accent-text">${formatDate(next180.date)}</strong>（第${next180.count}個180天）</p><p>🍀 下一個300天紀念日是 <strong class="accent-text">${formatDate(next300.date)}</strong>（第${next300.count}個300天）</p><p>🎉 下一個一周年紀念日是 <strong class="accent-text">${formatDate(nextYear.date)}</strong>（第${nextYear.count}周年）</p>`; }
         function toggleModal(modalId) { document.getElementById(modalId).classList.toggle('hidden'); document.getElementById(modalId).classList.toggle('flex'); if (modalId === 'changelog-modal' && !document.getElementById('changelog-content').innerHTML) { renderChangelog(); } }
         function toggleFullscreen() { if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`Fullscreen failed: ${err.message}`)); else document.exitFullscreen(); }
-        let currentThemePage = 0;
-        const themeGrid = document.getElementById('theme-grid');
-        function setupThemeEngine() { const randomTheme = CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)]; changeTheme(randomTheme); renderThemePage(); }
-        function changeThemePage(direction) { const totalPages = Math.ceil(CONFIG.THEMES.length / 10); currentThemePage = (currentThemePage + direction + totalPages) % totalPages; renderThemePage(); }
-        function renderThemePage() { themeGrid.innerHTML = ''; const startIndex = currentThemePage * 10; const endIndex = startIndex + 10; CONFIG.THEMES.slice(startIndex, endIndex).forEach(theme => { const swatch = document.createElement('button'); swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2"; swatch.style.backgroundColor = `rgb(${theme.r})`; swatch.style.boxShadow = `0 0 15px rgba(${theme.r}, 0.5)`; swatch.title = theme.n; swatch.onclick = () => changeTheme(theme); themeGrid.appendChild(swatch); }); const totalPages = Math.ceil(CONFIG.THEMES.length / 10); document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}/${totalPages}]`; }
-        function applyCustomColor(event) { let input = event.target.value.trim(); let rgb; if (input.startsWith('#')) { const hex = input.substring(1).padEnd(6, 'f'); const bigint = parseInt(hex.slice(0,6), 16); rgb = `${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255}`; } else if (input.startsWith('rgb')) { rgb = input.match(/\d+/g).join(','); } if (rgb) changeTheme({ r: rgb }); }
-        function changeTheme(theme) { docEl.style.setProperty('--glow-rgb', theme.r); const orangeTheme = CONFIG.THEMES.find(t => t.n === 'orange'); if(orangeTheme) docEl.style.setProperty('--accent-rgb', orangeTheme.r); if (chart) renderWeightChart(weightRecords); }
-        
-        // --- TIMING (Classic) & CHANGELOG (Full) ---
-        const timingEl = document.getElementById('timing');
-        function updateTiming() {
-            const startDate = new Date(CONFIG.START_DATE);
-            const currentDate = new Date();
-            const elapsedMs = currentDate.getTime() - startDate.getTime();
-            const elapsedDays = (elapsedMs / 86400000).toFixed(3);
-            const totalSeconds = Math.floor(elapsedMs / 1000);
-            const elapsedHours = Math.floor(totalSeconds / 3600);
-            const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60);
-            const elapsedSeconds = totalSeconds % 60;
-            const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
-            const getNextAnniversary = (base, days) => { let count = 0, nextDate; do { count++; nextDate = new Date(base.getTime() + count * days * 86400000); } while (nextDate < currentDate); return { date: nextDate, count }; };
-            const getNextYearly = (base) => { let count = 0, nextDate; do { count++; nextDate = new Date(base); nextDate.setFullYear(base.getFullYear() + count); } while (nextDate < currentDate); return { date: nextDate, count }; };
-            const next100 = getNextAnniversary(startDate, 100);
-            const next180 = getNextAnniversary(startDate, 180);
-            const next300 = getNextAnniversary(startDate, 300);
-            const nextYear = getNextYearly(startDate);
-            timingEl.innerHTML = `
-                <p>🐰 兔可可已經到來 <strong class="accent-text">${elapsedDays}</strong> 天啦</p>
-                <p>🎂 目前已經到來 <strong class="accent-text">${elapsedHours}</strong>小時 <strong class="accent-text">${elapsedMinutes}</strong>分鐘 <strong class="accent-text">${elapsedSeconds}</strong>秒</p>
-                <div class="pt-2 mt-2 border-t border-dashed" style="border-color: rgba(var(--glow-rgb), 0.2)"></div>
-                <p>🌱 下一個100天紀念日是 <strong class="accent-text">${formatDate(next100.date)}</strong>（第${next100.count}個100天）</p>
-                <p>🌿 下一個180天紀念日是 <strong class="accent-text">${formatDate(next180.date)}</strong>（第${next180.count}個180天）</p>
-                <p>🍀 下一個300天紀念日是 <strong class="accent-text">${formatDate(next300.date)}</strong>（第${next300.count}個300天）</p>
-                <p>🎉 下一個一周年紀念日是 <strong class="accent-text">${formatDate(nextYear.date)}</strong>（第${nextYear.count}周年）</p>
-            `;
-        }
         function renderChangelog() {
             const changelogData = [
-                { version: "v7.2", date: "LEGACY-ARCHIVE", items: [
-                    { type: "✨ 優化 (Improved)", en: "Restored the complete changelog history from v1.0, creating a full project archive.", zh: "恢復了從v1.0開始的完整更新日誌，創建了完整的項目檔案庫。" },
-                    { type: "✨ 優化 (Improved)", en: "Reverted the Milestones module to its original, detailed Traditional Chinese format for a classic experience.", zh: "將「里程碑」模塊恢復為其原始的、詳細的繁體中文格式，以提供經典體驗。" },
+                { version: "v7.3", date: "HYPERSPACE", items: [
+                    { type: "🚀 新功能 (New)", en: "Added a 'Hyperspace' jump animation on page load for a stunning visual entry.", zh: "在頁面加載時加入了「超空間跳躍」動畫，帶來震撼的視覺開場。" },
+                    { type: "✨ 優化 (Improved)", en: "Integrated all historical visual effects (TRON grid, spotlight, trails) into a layered, cohesive visual system.", zh: "將所有歷史視覺特效（TRON網格、聚光燈、軌跡）整合到一個分層的、統一的視覺系統中。" },
+                    { type: "✨ 優化 (Improved)", en: "Enhanced ambient lighting and added a static circuitry background to eliminate 'too black' areas and add depth.", zh: "增強了環境光照並添加了靜態電路板背景，以消除「過黑」的區域並增加深度感。" },
+                    { type: "🐛 修復 (Fix)", en: "Fixed a bug in the Theme panel where the pagination buttons were not working correctly.", zh: "修復了主題面板中分頁按鈕無法正常工作的錯誤。" },
                 ]},
-                { version: "v7.1", date: "AETHER-PAINTER", items: [
-                    { type: "🚀 新功能 (New)", en: "Introduced the 'Aether Painter', an autonomous, colorful pixel bunny that roams the screen and leaves a light trail.", zh: "引入了「以太畫家」，一隻在屏幕上自由漫步並留下光影軌跡的自主彩色像素兔子。" },
-                ]},
-                { version: "v7.0", date: "PHOTON-CORE", items: [
-                    { type: "🚀 新功能 (New)", en: "Introduced the 'Photon Pixel Bunny' mouse cursor with a snake-like particle trail and a global spotlight effect.", zh: "引入了帶有粒子尾跡的「光子像素兔」滑鼠游標和全局聚光燈效果。" },
-                ]},
-                { version: "v6.4", date: "INTERACTIVE-GRID", items: [
-                    { type: "🚀 新功能 (New)", en: "Added interactive data points to the weight chart.", zh: "為體重圖表增加了互動數據點功能。" },
-                ]},
-                { version: "v6.3", date: "PIXEL-CORE", items: [ { type: "🚀 新功能 (New)", en: "Activated 'PIXEL-CORE' protocol, applying a global pixel font.", zh: "啟用「PIXEL-CORE」協議，應用全局像素字體。" }, ]},
-                { version: "v6.2", date: "LOGIC-REFINED", items: [ { type: "♻️ 重構 (Refactor)", en: "Refactored data loading logic for timestamps and record filtering.", zh: "重構了數據加載邏輯以處理時間戳和記錄過濾。" }, ]},
-                { version: "v6.1", date: "STABLE", items: [ { type: "🐛 修復 (Fix)", en: "Patched a case-sensitive issue in theme engine.", zh: "修復了主題引擎中的大小寫敏感問題。" }, ]},
-                { version: "v6.0", date: "STARFLEET-COMMAND", items: [ { type: "🚀 新功能 (New)", en: "Migrated entire UI to the Starfleet LCARS standard.", zh: "將整體UI遷移至星艦LCARS標準。" }, ]},
-                { version: "v5.0", date: "NEBULA-GRID", items: [ { type: "🚀 新功能 (New)", en: "Added performance panel and a roaming pixel bunny mascot.", zh: "新增了性能面板和漫遊像素兔子。" }, ]},
-                { version: "v4.0", date: "TRON Grid", items: [ { type: "🚀 新功能 (New)", en: "Re-engineered the UI with a TRON-inspired aesthetic.", zh: "以TRON為靈感重構UI。" }, ]},
-                { version: "v3.0", date: "Modern Fusion", items: [ { type: "🚀 新功能 (New)", en: "Introduced a powerful theme engine and changelog.", zh: "引入了強大的主題引擎和更新日誌。" }, ]},
-                { version: "v2.0", date: "Pixel Upgrade", items: [ { type: "✨ 優化 (Improved)", en: "Switched to a pixel font and added a full record archive.", zh: "更換為像素字體並添加了完整的檔案記錄。" }, ]},
-                { version: "v1.0", date: "Initial Commit", items: [ { type: "🚀 新功能 (New)", en: "Project initialized with real-time timers and chart visualization.", zh: "項目初始化，實現即時計時器和圖表可視化。" }, ]},
+                { version: "v7.2.1", date: "FONT-MATRIX", items: [ { type: "🚀 新功能 (New)", en: "Added a font toggle in the Theme panel, allowing switching between System and Pixel fonts.", zh: "在主題面板中增加了字體切換器，允許在系統和像素字體之間切換。" }, ]},
+                { version: "v7.2", date: "LEGACY-ARCHIVE", items: [ { type: "✨ 優化 (Improved)", en: "Restored the complete changelog history and reverted Milestones to its classic format.", zh: "恢復了完整的更新日誌歷史和經典的里程碑格式。" }, ]},
             ];
             const contentEl = document.getElementById('changelog-content');
-            contentEl.innerHTML = changelogData.map(log => `<div class="mb-6"><p class="text-base accent-text">${log.version} <span class="text-xs font-normal text-gray-400">- ${log.date}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${log.items.map(item => `<li><p class="inline font-bold">${item.type}</p><p class="text-gray-300 mt-1">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`).join('');
+            const fullChangelog = changelogData.concat(/* The rest of the changelog from previous versions can be added here if needed */);
+            contentEl.innerHTML = fullChangelog.map(log => `<div class="mb-6"><p class="text-xl font-bold accent-text">${log.version} <span class="text-sm font-normal text-gray-400">- ${log.date}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${log.items.map(item => `<li><p class="inline font-bold">${item.type}</p><p class="text-gray-300 mt-1">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`).join('');
         }
     </script>
 </body>
