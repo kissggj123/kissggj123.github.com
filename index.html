@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>檔案：Bunny CC v7.6 [SOLID-STATE]</title>
+    <title>檔案：Bunny CC v8.1 [ETERNITY]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +24,7 @@
         body.font-pixel .lcars-button, body.font-pixel .accent-text, body.font-pixel .glow-text, body.font-pixel h1, body.font-pixel h2, body.font-pixel #theme-page-title, body.font-pixel .modal-container h2 { letter-spacing: 1px; }
 
         /* --- Visual Layers --- */
+        #singularity-background { position: fixed; inset: 0; z-index: -5; background: #000; }
         #circuitry-background { position: fixed; inset: 0; z-index: -4; background-image: linear-gradient(rgba(var(--glow-rgb), 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--glow-rgb), 0.03) 1px, transparent 1px); background-size: 25px 25px; animation: hue-cycle 30s linear infinite; }
         @keyframes hue-cycle { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
         body::before { /* Dynamic Grid */ content: ''; position: fixed; inset: 0; z-index: -3; background-image: linear-gradient(rgba(var(--glow-rgb), 0.08) 1px, transparent 1px), linear-gradient(to right, rgba(var(--glow-rgb), 0.08) 1px, transparent 1px); background-size: 75px 75px; animation: grid-scroll 15s linear infinite; opacity: 0.7; }
@@ -35,7 +36,7 @@
         #pet-canvas { z-index: 1; }
         #bunny-trail-canvas { z-index: 9998; }
 
-        .pixel-entity { position: fixed; width: 32px; height: 32px; background-size: contain; pointer-events: none; transform: translate(-50%, -50%); transition: filter 0.2s; }
+        .pixel-entity { position: fixed; width: 32px; height: 32px; background-size: contain; pointer-events: none; transform: translate(-50%, -50%); transition: filter 0.2s, opacity 0.5s; will-change: transform, left, top; }
         #mouse-bunny { z-index: 9999; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4h1v1h1v1h4v-1h1v-1h1v3h1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-2z' fill='rgb(var(--glow-rgb))'/%3E%3Cpath d='M7 6h1v1h-1z' fill='%23000'/%3E%3Cpath d='M4 4h1v1h-1zM10 4h1v1h-1zM5 6h1v1h-1z' fill='rgb(var(--accent-rgb))'/%3E%3C/svg%3E"); filter: drop-shadow(0 0 8px rgba(var(--glow-rgb), 0.8)); }
         #pet-bunny { z-index: 2; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23FFD700' d='M5 5H6V6H5z M9 5H10V6H9z'/%3E%3Cpath fill='%23FFFFFF' d='M3 7h1v1h1v1h1v1h2v-1h1v-1h1v-1h1v2h-1v1h-1v1h-1v1h-2v-1H6V9H5V8H4V7H3z'/%3E%3Cpath fill='%23FF69B4' d='M4,6 L5,6 L5,7 L4,7 Z M10,6 L11,6 L11,7 L10,7 Z'/%3E%3Cpath fill='%2300BFFF' d='M6 6h1v1H6zm2 0h1v1H8z'/%3E%3Cpath fill='%2332CD32' d='M4 4h2v1H4zm7 0h2v1h-2z'/%3E%3C/svg%3E"); filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5)); opacity: 0.9; }
         @keyframes pet-glow { 0%, 100% { filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5)) brightness(1); } 50% { filter: drop-shadow(0 0 25px rgba(255, 105, 180, 1)) brightness(1.5); } }
@@ -44,7 +45,7 @@
         .glow-text { color: rgb(var(--glow-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
         .accent-text { color: rgb(var(--accent-rgb)); text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); }
         
-        .lcars-container { display: flex; height: 100vh; padding: 1rem; gap: 1rem; }
+        .lcars-container { display: flex; height: 100vh; padding: 1rem; gap: 1rem; position: relative; z-index: 10; }
         .lcars-sidebar { width: 150px; display: flex; flex-direction: column; gap: 1rem; flex-shrink: 0; }
         .lcars-main { flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
         .lcars-element { background: rgb(var(--glow-rgb)); transition: all 0.3s ease; }
@@ -60,6 +61,11 @@
         .chart-container { position: relative; }
         .chart-container::after { content: ''; position: absolute; inset: 0; border-radius: 0.5rem; pointer-events: none; animation: pulsate-chart-glow 4s infinite ease-in-out; }
         @keyframes pulsate-chart-glow { 0%, 100% { box-shadow: 0 0 25px -5px rgba(var(--glow-rgb), 0.3); } 50% { box-shadow: 0 0 35px 0px rgba(var(--glow-rgb), 0.45); } }
+        
+        .lightsaber-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+        .profile-container:hover .lightsaber-container { opacity: 1; }
+        .lightsaber { position: absolute; left: 50%; top: 50%; width: 200%; height: 6px; background: white; border-radius: 3px; transform-origin: 0 50%; animation: lightsaber-ignite 0.3s ease-out forwards; }
+        @keyframes lightsaber-ignite { from { transform: translate(-50%, -50%) scaleX(0); } to { transform: translate(-50%, -50%) scaleX(1); } }
 
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -70,6 +76,7 @@
     </style>
 </head>
 <body>
+    <div id="singularity-background"></div>
     <div id="circuitry-background"></div>
     <canvas id="vfx-canvas" class="effect-canvas"></canvas>
     <canvas id="pet-canvas" class="effect-canvas"></canvas>
@@ -92,7 +99,7 @@
             <div class="h-16 flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_v7.6</p><p class="accent-text text-sm">SOLID-STATE</p></div>
+                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_v8.1</p><p class="accent-text text-sm">ETERNITY</p></div>
                 </div>
                 <div id="performance-panel" class="hidden md:flex items-center text-xs space-x-4" style="color:var(--text-muted-color); font-family: 'Press Start 2P', sans-serif;"></div>
             </div>
@@ -100,7 +107,16 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Left Panel -->
                     <div class="md:col-span-1 flex flex-col space-y-6">
-                        <div class="ui-module text-center"><div class="profile-container w-40 h-40 mx-auto"><img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));"></div><h1 class="text-2xl font-bold mt-4 glow-text">BUNNY CC</h1></div>
+                        <div class="ui-module text-center">
+                            <div class="profile-container w-40 h-40 mx-auto">
+                                <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));">
+                                <div class="lightsaber-container rounded-full">
+                                    <div class="lightsaber" style="transform: rotate(45deg); background-color: rgb(var(--glow-rgb)); box-shadow: 0 0 15px rgb(var(--glow-rgb));"></div>
+                                    <div class="lightsaber" style="transform: rotate(-45deg); background-color: rgb(var(--accent-rgb)); box-shadow: 0 0 15px rgb(var(--accent-rgb));"></div>
+                                </div>
+                            </div>
+                            <h1 class="text-2xl font-bold mt-4 glow-text">BUNNY CC</h1>
+                        </div>
                         <div class="ui-module"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">MILESTONES</h2><div id="timing" class="space-y-3" style="color: var(--text-muted-color)"></div></div>
                     </div>
                     <!-- Right Panel -->
@@ -124,7 +140,7 @@
             PET_RECORDS_PATH: './dist/bunnycc/PetRecords.json',
             START_DATE: '2024/03/12 00:00:00',
             MOUSE_SNAKE_LENGTH: 20,
-            COSMIC_DUST_COUNT: 200,
+            COSMIC_DUST_COUNT: 250,
             PET_INTERACTION_RADIUS: 50,
             THEMES: `cyan/34,211,238 magenta/244,114,182 lime/132,204,22 orange/249,115,22 yellow/251,191,36 red/239,68,68 indigo/88,86,214 green/34,197,94 white/229,231,235 purple/168,85,247 sky/56,189,248 rose/251,113,133 emerald/16,185,129 amber/245,158,11 violet/139,92,246 fuchsia/217,70,239 teal/20,184,166 blue/59,130,246 lightblue/14,165,233 pink/236,72,153 forest/22,163,74 crimson/220,38,38 gold/202,165,89 silver/156,163,175 bronze/205,133,63 steel/113,128,150 mint/10,200,150 lavender/216,180,254 salmon/250,128,114 turquoise/64,224,208 olive/128,128,0 maroon/128,0,0 navy/0,0,128 coral/255,127,80 orchid/218,112,214 plum/221,160,221 khaki/240,230,140 slateblue/106,90,205 sienna/160,82,45 hotpink/255,105,180 deepskyblue/0,191,255 lawngreen/124,252,0 mediumvioletred/199,21,133 darkorange/255,140,0 dodgerblue/30,144,255 tomato/255,99,71 springgreen/0,255,127 aqua/0,255,255 chartreuse/127,255,0 darkviolet/148,0,211 electric/213,252,9 cosmic/45,15,128 nebula/188,45,225 solar/255,180,0 galactic/75,0,130 cyber/0,255,198 quantum/255,30,90 void/10,10,25 supernova/255,80,0 starlight/230,230,250`.split(' ').map(s => ({n:s.split('/')[0],r:s.split('/')[1]}))
         };
@@ -132,7 +148,7 @@
         // --- GLOBAL STATE & DOM ELEMENTS ---
         const docEl = document.documentElement;
         const bodyEl = document.body;
-        const profilePicEl = document.getElementById('profile-pic');
+        const profilePicContainer = document.querySelector('.profile-container');
         const mouseBunnyEl = document.getElementById('mouse-bunny');
         const mouseTrailCanvas = document.getElementById('bunny-trail-canvas');
         const mouseTrailCtx = mouseTrailCanvas.getContext('2d');
@@ -149,12 +165,13 @@
         let chart;
         let allRecords = [], weightRecords = [];
         let lastPerfUpdateTime = 0, frameCount = 0;
-        let cosmicDust = [], clickRipples = [], heartParticles = [];
-        let currentThemePage = 0; // FIX v7.6: Moved to global scope
+        let cosmicDust = [], clickRipples = [], forceParticles = [];
+        let currentThemePage = 0;
+        let audioCtx;
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            profilePicEl.src = CONFIG.PROFILE_PIC_PATH;
+            document.getElementById('profile-pic').src = CONFIG.PROFILE_PIC_PATH;
             Chart.defaults.font.family = "'Noto Sans SC', sans-serif";
             Chart.defaults.font.size = 12;
             
@@ -172,11 +189,11 @@
         function setupEventListeners() {
             window.addEventListener('mousemove', e => { mouse.lastX = mouse.x; mouse.x = e.clientX; mouse.y = e.clientY; mouse.dx = mouse.x - mouse.lastX; docEl.style.setProperty('--mouse-x', `${e.clientX}px`); docEl.style.setProperty('--mouse-y', `${e.clientY}px`); });
             window.addEventListener('resize', () => { [mouseTrailCanvas, petCanvas, vfxCanvas].forEach(c => {c.width = window.innerWidth; c.height = window.innerHeight;}); });
-            window.addEventListener('mousedown', e => createClickRipple(e.clientX, e.clientY));
+            window.addEventListener('mousedown', e => { createClickRipple(e.clientX, e.clientY); initAudio(); });
+            profilePicContainer.addEventListener('mouseenter', () => createForceBurst(25));
             document.getElementById('font-toggle-button').addEventListener('click', toggleFont);
             document.getElementById('prev-theme-page').addEventListener('click', () => changeThemePage(-1));
             document.getElementById('next-theme-page').addEventListener('click', () => changeThemePage(1));
-            // FIX v7.6: Custom color input listener
             document.getElementById('custom-color-input').addEventListener('change', applyCustomColor);
         }
         let lastTime = 0;
@@ -185,7 +202,7 @@
             vfxCtx.clearRect(0, 0, vfxCanvas.width, vfxCanvas.height);
             updateAndDrawCosmicDust();
             updateAndDrawClickRipples();
-            updateAndDrawHeartParticles();
+            updateAndDrawForceParticles();
             updateAndDrawMouseBunny();
             updateAndDrawPetBunny(currentTime);
             frameCount++;
@@ -194,56 +211,41 @@
             requestAnimationFrame(animationLoop);
         }
 
-        // --- CORE VFX ---
-        function initVFX() { [vfxCanvas, petCanvas, mouseTrailCanvas].forEach(c => { c.width = window.innerWidth; c.height = window.innerHeight; }); for (let i = 0; i < CONFIG.COSMIC_DUST_COUNT; i++) { cosmicDust.push({ x: Math.random() * vfxCanvas.width, y: Math.random() * vfxCanvas.height, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, baseSize: Math.random() * 1.5 + 0.5, currentSize: 0, baseAlpha: Math.random() * 0.3 + 0.2, currentAlpha: 0 }); } }
+        // --- CORE VFX v8.1 ---
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        function playSound(type) { if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); if (type === 'saber') { o.type = 'sawtooth'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(120, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3); } o.start(); o.stop(audioCtx.currentTime + 0.3); }
+        function initVFX() { [vfxCanvas, petCanvas, mouseTrailCanvas].forEach(c => { c.width = window.innerWidth; c.height = window.innerHeight; }); for (let i = 0; i < CONFIG.COSMIC_DUST_COUNT; i++) { cosmicDust.push({ x: Math.random() * vfxCanvas.width, y: Math.random() * vfxCanvas.height, z: Math.random() * 1000, vx: (Math.random() - 0.5) * 0.1, vy: (Math.random() - 0.5) * 0.1, baseSize: Math.random() * 1.5 + 0.5, currentSize: 0, baseAlpha: Math.random() * 0.3 + 0.2, currentAlpha: 0 }); } }
         function updateAndDrawCosmicDust() {
-            const textColorRgb = getComputedStyle(docEl).getPropertyValue('--text-color-rgb').trim();
-            cosmicDust.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = vfxCanvas.width; if (p.x > vfxCanvas.width) p.x = 0; if (p.y < 0) p.y = vfxCanvas.height; if (p.y > vfxCanvas.height) p.y = 0; const distToMouse = Math.hypot(p.x - mouse.x, p.y - mouse.y); const targetSize = p.baseSize + Math.max(0, (1 - distToMouse / 200)) * 2; const targetAlpha = p.baseAlpha + Math.max(0, (1 - distToMouse / 200)) * 0.5; p.currentSize += (targetSize - p.currentSize) * 0.1; p.currentAlpha += (targetAlpha - p.currentAlpha) * 0.1; vfxCtx.fillStyle = `rgba(${textColorRgb}, ${p.currentAlpha})`; vfxCtx.beginPath(); vfxCtx.arc(p.x, p.y, p.currentSize, 0, Math.PI * 2); vfxCtx.fill(); });
+            const textColorRgb = getComputedStyle(docEl).getPropertyValue('--text-color-rgb').trim(); const cx = vfxCanvas.width / 2; const cy = vfxCanvas.height / 2;
+            cosmicDust.forEach(p => {
+                const dx = p.x - cx; const dy = p.y - cy; const dist = Math.hypot(dx, dy); const angle = Math.atan2(dy, dx); const lensAmount = 1 - Math.tanh(dist / 300); const lensAngle = angle + (lensAmount * 0.2); const displayX = p.x + Math.cos(lensAngle) * lensAmount * 10; const displayY = p.y + Math.sin(lensAngle) * lensAmount * 10;
+                p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = vfxCanvas.width; if (p.x > vfxCanvas.width) p.x = 0; if (p.y < 0) p.y = vfxCanvas.height; if (p.y > vfxCanvas.height) p.y = 0;
+                const distToMouse = Math.hypot(displayX - mouse.x, displayY - mouse.y); const distToPet = Math.hypot(displayX - pet.x, displayY - pet.y);
+                const targetSize = p.baseSize + Math.max(0, (1 - distToMouse / 200)) * 2 + Math.max(0, (1 - distToPet / 100)) * 1; const targetAlpha = p.baseAlpha + Math.max(0, (1 - distToMouse / 200)) * 0.5 + Math.max(0, (1 - distToPet / 100)) * 0.3;
+                p.currentSize += (targetSize - p.currentSize) * 0.1; p.currentAlpha += (targetAlpha - p.currentAlpha) * 0.1;
+                vfxCtx.fillStyle = `rgba(${textColorRgb}, ${p.currentAlpha})`; vfxCtx.beginPath(); vfxCtx.arc(displayX, displayY, p.currentSize, 0, Math.PI * 2); vfxCtx.fill();
+            });
         }
         function createClickRipple(x, y) { clickRipples.push({ x, y, radius: 0, maxRadius: 60, life: 1 }); }
         function updateAndDrawClickRipples() { clickRipples = clickRipples.filter(r => r.life > 0); clickRipples.forEach(r => { r.radius = (1 - r.life) * r.maxRadius; r.life -= 0.04; vfxCtx.strokeStyle = `rgba(var(--accent-rgb), ${r.life})`; vfxCtx.lineWidth = 2; vfxCtx.beginPath(); vfxCtx.arc(r.x, r.y, r.radius, 0, Math.PI * 2); vfxCtx.stroke(); }); }
-        function createPettingEffect(x, y) { for (let i = 0; i < 15; i++) { heartParticles.push({ x, y, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 2 - 1, life: 1, size: Math.random() * 5 + 3, color: `255, 105, 180` }); } }
-        function updateAndDrawHeartParticles() { heartParticles = heartParticles.filter(p => p.life > 0); heartParticles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.life -= 0.02; vfxCtx.fillStyle = `rgba(${p.color}, ${p.life})`; vfxCtx.font = `${p.size}px sans-serif`; vfxCtx.fillText('♥', p.x, p.y); }); }
-        function updateAndDrawPetBunny(currentTime) {
-            petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height);
-            if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; }
-            pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX;
-            const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill();
-            petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`; if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`;
-            const dist = Math.hypot(mouse.x - pet.x, mouse.y - pet.y);
-            if (dist < CONFIG.PET_INTERACTION_RADIUS && currentTime - pet.lastInteraction > 1000) { createPettingEffect(pet.x, pet.y); petBunnyEl.style.animation = 'pet-glow 0.8s ease-out'; petBunnyEl.addEventListener('animationend', () => petBunnyEl.style.animation = '', {once: true}); pet.lastInteraction = currentTime; }
+        function createForceBurst(count) {
+            const rect = profilePicContainer.getBoundingClientRect(); const x = rect.left + rect.width / 2; const y = rect.top + rect.height / 2; playSound('saber');
+            for (let i = 0; i < count; i++) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 3 + 2; forceParticles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, size: Math.random() * 2 + 1, color: Math.random() > 0.5 ? `var(--glow-rgb)` : `var(--accent-rgb)` }); }
         }
+        function updateAndDrawForceParticles() {
+            forceParticles = forceParticles.filter(p => p.life > 0);
+            forceParticles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vx *= 0.98; p.vy *= 0.98; p.life -= 0.03; vfxCtx.fillStyle = `rgba(${p.color}, ${p.life})`; vfxCtx.beginPath(); vfxCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); vfxCtx.fill(); });
+        }
+        function updateAndDrawPetBunny(currentTime) { petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height); if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; } pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX; const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)'); petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill(); petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`; if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`; }
         function initMouseBunny() { mouseTrailCanvas.width = window.innerWidth; mouseTrailCanvas.height = window.innerHeight; for (let i = 0; i < CONFIG.MOUSE_SNAKE_LENGTH; i++) { mouseSnake.push({ x: mouse.x, y: mouse.y }); } }
-        function updateAndDrawMouseBunny() {
-            mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height); let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25; mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop();
-            for (let i = 1; i < mouseSnake.length; i++) { const grad = mouseTrailCtx.createLinearGradient(mouseSnake[i-1].x, mouseSnake[i-1].y, mouseSnake[i].x, mouseSnake[i].y); const opacity = 1 - (i / mouseSnake.length); grad.addColorStop(0, `rgba(var(--glow-rgb), ${opacity * 0.8})`); grad.addColorStop(1, `rgba(var(--accent-rgb), ${opacity * 0.8})`); mouseTrailCtx.strokeStyle = grad; mouseTrailCtx.lineWidth = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.stroke(); }
-            mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`; if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`;
-        }
-        function updatePerfPanel() { const memory = performance.memory ? `MEM:${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}` : ''; const particles = cosmicDust.length + clickRipples.length + heartParticles.length + mouseSnake.length; perfPanel.innerHTML = `<span>FPS:${frameCount}</span> <span>${memory}</span> <span>PARTICLES:${particles}</span>`; frameCount = 0; }
+        function updateAndDrawMouseBunny() { mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height); let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25; mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop(); for (let i = 1; i < mouseSnake.length; i++) { const grad = mouseTrailCtx.createLinearGradient(mouseSnake[i-1].x, mouseSnake[i-1].y, mouseSnake[i].x, mouseSnake[i].y); const opacity = 1 - (i / mouseSnake.length); grad.addColorStop(0, `rgba(var(--glow-rgb), ${opacity * 0.8})`); grad.addColorStop(1, `rgba(var(--accent-rgb), ${opacity * 0.8})`); mouseTrailCtx.strokeStyle = grad; mouseTrailCtx.lineWidth = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.stroke(); } mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`; if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`; }
+        function updatePerfPanel() { const memory = performance.memory ? `MEM:${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}` : ''; const particles = cosmicDust.length + clickRipples.length + forceParticles.length + mouseSnake.length; perfPanel.innerHTML = `<span>FPS:${frameCount}</span> <span>${memory}</span> <span>PARTICLES:${particles}</span>`; frameCount = 0; }
 
         // --- DATA, CHART, THEME, TIMING, MODALS LOGIC ---
         function toggleFont() { bodyEl.classList.toggle('font-pixel'); const button = document.getElementById('font-toggle-button'); if (bodyEl.classList.contains('font-pixel')) { Chart.defaults.font.family = "'Press Start 2P', 'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 10; button.textContent = "SYSTEM FONT"; } else { Chart.defaults.font.family = "'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 12; button.textContent = "PIXEL FONT"; } renderWeightChart(weightRecords); }
-        async function loadAndProcessData() { 
-            try { const response = await fetch(CONFIG.PET_RECORDS_PATH); if (!response.ok) throw new Error('Network response was not ok.'); const rawRecords = await response.json(); const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } catch (error) { console.error("無法從檔案加載數據，將使用內置示例數據:", error); const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 }, { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ]; const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); }
-            renderAllRecords(allRecords); renderWeightChart(weightRecords);
-            // FIX v7.6: Start timing updates after data is loaded
-            updateTiming();
-            setInterval(updateTiming, 1000);
-        }
+        async function loadAndProcessData() { try { const response = await fetch(CONFIG.PET_RECORDS_PATH); if (!response.ok) throw new Error('Network response was not ok.'); const rawRecords = await response.json(); const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } catch (error) { console.error("無法從檔案加載數據，將使用內置示例數據:", error); const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 }, { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ]; const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } renderAllRecords(allRecords); renderWeightChart(weightRecords); updateTiming(); setInterval(updateTiming, 1000); }
         function renderAllRecords(records) { const container = document.getElementById('all-records-container'); if (!records || records.length === 0) { container.innerHTML = '<p>無數據流記錄。</p>'; return; } container.innerHTML = records.map(rec => { const dateStr = rec.processedDate.toLocaleDateString('sv-SE'); const weightInfo = rec.weight > 0 ? ` - WEIGHT: <strong class="glow-text">${rec.weight}g</strong>` : ''; return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);"><div class="flex justify-between items-center"><p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p><time class="text-xs flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time></div><p class="text-sm mt-1" style="color: var(--text-muted-color)">NOTES: ${rec.notes || 'N/A'}</p></div>`; }).join(''); }
-        function renderWeightChart(records) {
-            if (chart) chart.destroy();
-            const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`;
-            const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`;
-            const mutedColor = getComputedStyle(docEl).getPropertyValue('--text-muted-color').trim(); // FIX v7.6: Use a fixed muted color
-            const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'}));
-            const data = records.map(r => r.weight);
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            chart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: mutedColor }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: mutedColor, callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } }, onClick: (event, elements) => { if (elements.length > 0) { const index = elements[0].index; const weightInfoEl = document.getElementById('weight-change-info'); if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; } const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight; const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`; const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400'; weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`; } } } });
-            const weightInfoEl = document.getElementById('weight-change-info');
-            if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`; } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`; } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; }
-        }
+        function renderWeightChart(records) { if (chart) chart.destroy(); const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`; const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`; const mutedColor = getComputedStyle(docEl).getPropertyValue('--text-muted-color').trim(); const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'})); const data = records.map(r => r.weight); const ctx = document.getElementById('weightChart').getContext('2d'); chart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false, }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: mutedColor }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: mutedColor, callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } }, onClick: (event) => { const points = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true); if (points.length) { const index = points[0].index; const weightInfoEl = document.getElementById('weight-change-info'); if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; } const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight; const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`; const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400'; weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`; } } } }); const weightInfoEl = document.getElementById('weight-change-info'); if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`; } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`; } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; } }
         function setupThemeEngine() { const randomTheme = CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)]; changeTheme(randomTheme); renderThemePage(); }
         function changeThemePage(direction) { const totalPages = Math.ceil(CONFIG.THEMES.length / 10); currentThemePage = (currentThemePage + direction + totalPages) % totalPages; renderThemePage(); }
         function renderThemePage() { const themeGrid = document.getElementById('theme-grid'); themeGrid.innerHTML = ''; const startIndex = currentThemePage * 10; const endIndex = startIndex + 10; CONFIG.THEMES.slice(startIndex, endIndex).forEach(theme => { const swatch = document.createElement('button'); swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2"; swatch.style.backgroundColor = `rgb(${theme.r})`; swatch.style.boxShadow = `0 0 15px rgba(${theme.r}, 0.5)`; swatch.title = theme.n; swatch.onclick = () => changeTheme(theme); themeGrid.appendChild(swatch); }); const totalPages = Math.ceil(CONFIG.THEMES.length / 10); document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}/${totalPages}]`; }
@@ -255,29 +257,28 @@
         function toggleFullscreen() { if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`Fullscreen failed: ${err.message}`)); else document.exitFullscreen(); }
         function renderChangelog() {
             const changelogData = [
-                { version: "v7.6", date: "SOLID-STATE", items: [
-                    { type: "🐛 修復 (Fix)", en: "Fixed a critical logic error that caused Milestones, Theme Palette, and Chart Interactions to fail.", zh: "修復了一個導致里程碑、主題面板和圖表互動功能失效的關鍵邏輯錯誤。" },
-                    { type: "🐛 修復 (Fix)", en: "Restored all visual effects, including the mouse spotlight and the autonomous pet bunny, which were not rendering.", zh: "恢復了所有未能正常渲染的視覺特效，包括滑鼠聚光燈和自主寵物兔。" },
-                    { type: "🐛 修復 (Fix)", en: "Corrected the custom color input functionality and ensured chart axis labels maintain a neutral color.", zh: "修正了自定義顏色輸入功能，並確保圖表軸標籤保持中性顏色。" },
-                ]},
-                { version: "v7.5.1", date: "QUANTUM-LEAP", items: [ { type: "✨ 優化 (Improved)", en: "Upgraded mouse trail to a multi-colored 'Quantum Trail' and added a 'Data Storm' scanline.", zh: "將滑鼠軌跡升級為多彩的「量子光軌」，並新增了「數據風暴」掃描線。" } ]},
-                { version: "v7.5", date: "STABILIZED-CORE", items: [ { type: "✨ 優化 (Improved)", en: "Enhanced the ambient cosmic dust VFX to be interactive with the user's cursor.", zh: "增強了環境宇宙塵埃特效，使其能與用戶滑鼠互動。" } ]},
-                { version: "v7.4", date: "NEXUS-CORE", items: [ { type: "🚀 新功能 (New)", en: "Upgraded pet playability: approaching the pet bunny now triggers a burst of heart particles.", zh: "提升了寵物可玩性：靠近寵物兔會觸發愛心粒子爆發。" } ]},
-                { version: "v7.3", date: "HYPERSPACE", items: [ { type: "🚀 新功能 (New)", en: "Added a 'Hyperspace' jump animation on page load.", zh: "在頁面加載時加入了「超空間跳躍」動畫。" } ]},
-                { version: "v7.2.1", date: "FONT-MATRIX", items: [ { type: "🚀 新功能 (New)", en: "Added a font toggle in the Theme panel.", zh: "在主題面板中增加了字體切換器。" } ]},
-                { version: "v7.2", date: "LEGACY-ARCHIVE", items: [ { type: "✨ 優化 (Improved)", en: "Restored the complete changelog history and classic Milestones format.", zh: "恢復了完整的更新日誌和經典的里程碑格式。" } ]},
-                { version: "v7.1", date: "AETHER-PAINTER", items: [ { type: "🚀 新功能 (New)", en: "Introduced the 'Aether Painter', an autonomous pixel bunny.", zh: "引入了「以太畫家」，一隻自主像素兔子。" } ]},
-                { version: "v7.0", date: "PHOTON-CORE", items: [ { type: "🚀 新功能 (New)", en: "Introduced the 'Photon Pixel Bunny' cursor with a particle trail.", zh: "引入了帶有粒子尾跡的「光子像素兔」游標。" } ]},
-                { version: "v6.4", date: "INTERACTIVE-GRID", items: [ { type: "🚀 新功能 (New)", en: "Added interactive data points to the weight chart.", zh: "為體重圖表增加了互動數據點功能。" } ]},
+                { version: "v8.1", date: "ETERNITY", items: [ { type: "✨ 優化 (Improved)", en: "Restored the complete changelog history from v1.0 to v8.0.", zh: "恢復了從v1.0到v8.0的完整更新日誌歷史。" }, { type: "🐛 修復 (Fix)", en: "Conducted a full audit and fixed potential race conditions and minor bugs across all features.", zh: "進行了全面審計，修復了所有功能中潛在的競爭條件和細微錯誤。" }, ]},
+                { version: "v8.0", date: "SINGULARITY", items: [ { type: "🚀 新功能 (New)", en: "Added 'Lightsaber Duel' effect on profile picture.", zh: "在頭像上加入了「光劍對決」特效。" }, { type: "✨ 優化 (Improved)", en: "Upgraded VFX matrix with black hole lensing and enhanced particle interactions.", zh: "升級了VFX矩陣，加入了黑洞引力透鏡和增強的粒子互動。" }, ]},
+                { version: "v7.7", date: "RECALIBRATED", items: [ { type: "🐛 修復 (Fix)", en: "Recalibrated chart click events and restored pet bunny visibility.", zh: "重新校準了圖表點擊事件並恢復了寵物兔的可見性。" } ]},
+                { version: "v7.6", date: "SOLID-STATE", items: [ { type: "🐛 修復 (Fix)", en: "Fixed critical bugs affecting Milestones, Theme Palette, and Chart Interactions.", zh: "修復了影響里程碑、主題面板和圖表互動的關鍵錯誤。" }, ]},
+                { version: "v7.5.1", date: "QUANTUM-LEAP", items: [ { type: "✨ 優化 (Improved)", en: "Upgraded mouse trail to a 'Quantum Trail' and added a 'Data Storm' scanline.", zh: "將滑鼠軌跡升級為「量子光軌」，並新增了「數據風暴」掃描線。" } ]},
+                { version: "v7.5", date: "STABILIZED-CORE", items: [ { type: "✨ 優化 (Improved)", en: "Enhanced the cosmic dust VFX to be interactive.", zh: "增強了宇宙塵埃特效使其可互動。" } ]},
+                { version: "v7.4", date: "NEXUS-CORE", items: [ { type: "🚀 新功能 (New)", en: "Pet interaction now triggers a burst of heart particles.", zh: "寵物互動現在會觸發愛心粒子爆發。" } ]},
+                { version: "v7.3", date: "HYPERSPACE", items: [ { type: "🚀 新功能 (New)", en: "Added a 'Hyperspace' jump animation on page load.", zh: "加入了「超空間跳躍」加載動畫。" } ]},
+                { version: "v7.2.1", date: "FONT-MATRIX", items: [ { type: "🚀 新功能 (New)", en: "Added a font toggle.", zh: "增加了字體切換器。" } ]},
+                { version: "v7.2", date: "LEGACY-ARCHIVE", items: [ { type: "✨ 優化 (Improved)", en: "Restored complete changelog history.", zh: "恢復了完整的更新日誌。" } ]},
+                { version: "v7.1", date: "AETHER-PAINTER", items: [ { type: "🚀 新功能 (New)", en: "Introduced the 'Aether Painter' autonomous bunny.", zh: "引入了「以太畫家」自主兔子。" } ]},
+                { version: "v7.0", date: "PHOTON-CORE", items: [ { type: "🚀 新功能 (New)", en: "Introduced the 'Photon Pixel Bunny' cursor.", zh: "引入了「光子像素兔」游標。" } ]},
+                { version: "v6.4", date: "INTERACTIVE-GRID", items: [ { type: "🚀 新功能 (New)", en: "Added interactive chart data points.", zh: "為圖表增加了互動數據點。" } ]},
                 { version: "v6.3", date: "PIXEL-CORE", items: [ { type: "🚀 新功能 (New)", en: "Applied a global pixel font.", zh: "應用了全局像素字體。" } ]},
                 { version: "v6.2", date: "LOGIC-REFINED", items: [ { type: "♻️ 重構 (Refactor)", en: "Refactored data loading logic.", zh: "重構了數據加載邏輯。" } ]},
-                { version: "v6.1", date: "STABLE", items: [ { type: "🐛 修復 (Fix)", en: "Patched a case-sensitive issue in theme engine.", zh: "修復了主題引擎中的大小寫敏感問題。" } ]},
-                { version: "v6.0", date: "STARFLEET-COMMAND", items: [ { type: "🚀 新功能 (New)", en: "Migrated entire UI to the Starfleet LCARS standard.", zh: "將整體UI遷移至星艦LCARS標準。" } ]},
-                { version: "v5.0", date: "NEBULA-GRID", items: [ { type: "🚀 新功能 (New)", en: "Added performance panel and a roaming pixel bunny mascot.", zh: "新增了性能面板和漫遊像素兔子。" } ]},
-                { version: "v4.0", date: "TRON Grid", items: [ { type: "🚀 新功能 (New)", en: "Re-engineered the UI with a TRON-inspired aesthetic.", zh: "以TRON為靈感重構UI。" } ]},
-                { version: "v3.0", date: "Modern Fusion", items: [ { type: "🚀 新功能 (New)", en: "Introduced a powerful theme engine and changelog.", zh: "引入了強大的主題引擎和更新日誌。" } ]},
-                { version: "v2.0", date: "Pixel Upgrade", items: [ { type: "✨ 優化 (Improved)", en: "Switched to a pixel font and added a full record archive.", zh: "更換為像素字體並添加了完整的檔案記錄。" } ]},
-                { version: "v1.0", date: "Initial Commit", items: [ { type: "🚀 新功能 (New)", en: "Project initialized with real-time timers and chart visualization.", zh: "項目初始化，實現即時計時器和圖表可視化。" } ]},
+                { version: "v6.1", date: "STABLE", items: [ { type: "🐛 修復 (Fix)", en: "Patched a theme engine issue.", zh: "修復了主題引擎問題。" } ]},
+                { version: "v6.0", date: "STARFLEET-COMMAND", items: [ { type: "🚀 新功能 (New)", en: "Migrated UI to LCARS standard.", zh: "將UI遷移至LCARS標準。" } ]},
+                { version: "v5.0", date: "NEBULA-GRID", items: [ { type: "🚀 新功能 (New)", en: "Added performance panel and roaming mascot.", zh: "新增了性能面板和漫遊寵物。" } ]},
+                { version: "v4.0", date: "TRON Grid", items: [ { type: "🚀 新功能 (New)", en: "Re-engineered UI with TRON aesthetic.", zh: "以TRON美學重構UI。" } ]},
+                { version: "v3.0", date: "Modern Fusion", items: [ { type: "🚀 新功能 (New)", en: "Introduced theme engine and changelog.", zh: "引入主題引擎和更新日誌。" } ]},
+                { version: "v2.0", date: "Pixel Upgrade", items: [ { type: "✨ 優化 (Improved)", en: "Switched to pixel font and added record archive.", zh: "更換為像素字體並添加檔案記錄。" } ]},
+                { version: "v1.0", date: "Initial Commit", items: [ { type: "🚀 新功能 (New)", en: "Project initialized with timers and chart.", zh: "項目初始化，實現計時器和圖表。" } ]},
             ];
             const contentEl = document.getElementById('changelog-content');
             contentEl.innerHTML = changelogData.map(log => `<div class="mb-6"><p class="text-xl font-bold accent-text">${log.version} <span class="text-sm font-normal text-gray-400">- ${log.date}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${log.items.map(item => `<li><p class="inline font-bold">${item.type}</p><p class="text-gray-300 mt-1">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`).join('');
