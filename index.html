@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>檔案：Bunny CC v8.1 [ETERNITY]</title>
+    <title>檔案：Bunny CC v9.0 [GENESIS-PRIME]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,25 +11,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glow-rgb: 88, 86, 214;
-            --accent-rgb: 255, 140, 0;
-            --bg-color: #000000;
-            --text-color: #e6edf3;
-            --text-color-rgb: 230, 237, 243;
-            --text-muted-color: #8b949e;
-            --mouse-x: 50%; --mouse-y: 50%;
+            --glow-rgb: 88, 86, 214; --accent-rgb: 255, 140, 0; --bg-color: #000000; --text-color: #e6edf3; --text-color-rgb: 230, 237, 243; --text-muted-color: #8b949e; --mouse-x: 50%; --mouse-y: 50%;
         }
         body { font-family: 'Noto Sans SC', sans-serif; font-size: 14px; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; opacity: 0; animation: fadeIn 1s ease forwards; cursor: none; position: relative; z-index: 0; }
         body.font-pixel { font-family: 'Press Start 2P', 'Noto Sans SC', sans-serif; font-size: 12px; }
         body.font-pixel .lcars-button, body.font-pixel .accent-text, body.font-pixel .glow-text, body.font-pixel h1, body.font-pixel h2, body.font-pixel #theme-page-title, body.font-pixel .modal-container h2 { letter-spacing: 1px; }
 
-        /* --- Visual Layers --- */
         #singularity-background { position: fixed; inset: 0; z-index: -5; background: #000; }
         #circuitry-background { position: fixed; inset: 0; z-index: -4; background-image: linear-gradient(rgba(var(--glow-rgb), 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--glow-rgb), 0.03) 1px, transparent 1px); background-size: 25px 25px; animation: hue-cycle 30s linear infinite; }
         @keyframes hue-cycle { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
-        body::before { /* Dynamic Grid */ content: ''; position: fixed; inset: 0; z-index: -3; background-image: linear-gradient(rgba(var(--glow-rgb), 0.08) 1px, transparent 1px), linear-gradient(to right, rgba(var(--glow-rgb), 0.08) 1px, transparent 1px); background-size: 75px 75px; animation: grid-scroll 15s linear infinite; opacity: 0.7; }
+        body::before { content: ''; position: fixed; inset: 0; z-index: -3; background-image: linear-gradient(rgba(var(--glow-rgb), 0.08) 1px, transparent 1px), linear-gradient(to right, rgba(var(--glow-rgb), 0.08) 1px, transparent 1px); background-size: 75px 75px; animation: grid-scroll 15s linear infinite; opacity: 0.7; }
         @keyframes grid-scroll { from { background-position: 0 0; } to { background-position: 75px 150px; } }
-        body::after { /* Mouse Spotlight */ content: ''; position: fixed; inset: 0; z-index: -2; background: radial-gradient(800px at var(--mouse-x) var(--mouse-y), rgba(var(--glow-rgb), 0.18), transparent 80%); pointer-events: none; }
+        body::after { content: ''; position: fixed; inset: 0; z-index: -2; background: radial-gradient(800px at var(--mouse-x) var(--mouse-y), rgba(var(--glow-rgb), 0.18), transparent 80%); pointer-events: none; }
         
         .effect-canvas { position: fixed; inset: 0; pointer-events: none; }
         #vfx-canvas { z-index: -1; }
@@ -58,14 +51,14 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes module-boot { to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes border-glow-in { from { box-shadow: 0 0 0px rgba(var(--glow-rgb), 0); } to { box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.3); } }
-        .chart-container { position: relative; }
-        .chart-container::after { content: ''; position: absolute; inset: 0; border-radius: 0.5rem; pointer-events: none; animation: pulsate-chart-glow 4s infinite ease-in-out; }
-        @keyframes pulsate-chart-glow { 0%, 100% { box-shadow: 0 0 25px -5px rgba(var(--glow-rgb), 0.3); } 50% { box-shadow: 0 0 35px 0px rgba(var(--glow-rgb), 0.45); } }
         
+        .profile-container { position: relative; cursor: pointer; }
+        #genesis-canvas { position: absolute; inset: 0; pointer-events: none; }
         .lightsaber-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
         .profile-container:hover .lightsaber-container { opacity: 1; }
-        .lightsaber { position: absolute; left: 50%; top: 50%; width: 200%; height: 6px; background: white; border-radius: 3px; transform-origin: 0 50%; animation: lightsaber-ignite 0.3s ease-out forwards; }
+        .lightsaber { position: absolute; left: 50%; top: 50%; width: 250%; height: 8px; background: white; border-radius: 4px; transform-origin: 0 50%; animation: lightsaber-ignite 0.3s ease-out forwards; }
         @keyframes lightsaber-ignite { from { transform: translate(-50%, -50%) scaleX(0); } to { transform: translate(-50%, -50%) scaleX(1); } }
+        #carrot { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 1L9 2v3l1 1h1l1-1V2l-1-1h-1zm-1 3l1-1V2h-1v2z' fill='%23228B22'/%3E%3Cpath d='M10 5L9 6v6l1 1h1l1-1V6l-1-1h-1z' fill='%23FFA500'/%3E%3Cpath d='M10 6v6h1V6h-1z' fill='%23FF8C00'/%3E%3C/svg%3E"); background-size: contain; transform: translate(-50%, -50%) scale(0); opacity: 0; }
 
         .record-scrollbar::-webkit-scrollbar { width: 8px; }
         .record-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -73,6 +66,9 @@
         
         .modal-overlay { background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
         .modal-container { background: #080808; border: 2px solid rgb(var(--glow-rgb)); box-shadow: 0 0 30px rgba(var(--glow-rgb), 0.5); }
+
+        #performance-panel { transition: transform 0.4s ease-out; transform: translateX(120%); }
+        #performance-panel.active { transform: translateX(0); }
     </style>
 </head>
 <body>
@@ -92,6 +88,7 @@
                 <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('changelog-modal')">LOGS</button>
                 <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('theme-modal')">THEME</button>
                 <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleFullscreen()">FSCRN</button>
+                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="togglePerfPanel()">PERF</button>
             </div>
         </div>
         <!-- LCARS Main Content -->
@@ -99,17 +96,19 @@
             <div class="h-16 flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_v8.1</p><p class="accent-text text-sm">ETERNITY</p></div>
+                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">BCC_SYS_v9.0</p><p class="accent-text text-sm">GENESIS-PRIME</p></div>
                 </div>
-                <div id="performance-panel" class="hidden md:flex items-center text-xs space-x-4" style="color:var(--text-muted-color); font-family: 'Press Start 2P', sans-serif;"></div>
+                <div id="performance-panel" class="hidden md:flex items-center text-xs space-x-4 p-2 rounded-l-md" style="color:var(--text-muted-color); font-family: 'Press Start 2P', sans-serif; background: rgba(0,0,0,0.5);"></div>
             </div>
             <div class="lcars-content-panel record-scrollbar">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Left Panel -->
                     <div class="md:col-span-1 flex flex-col space-y-6">
                         <div class="ui-module text-center">
-                            <div class="profile-container w-40 h-40 mx-auto">
-                                <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));">
+                            <div id="avatar-container" class="profile-container w-40 h-40 mx-auto">
+                                <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb)); transition: opacity 0.5s, transform 0.5s;">
+                                <div id="carrot" class="pixel-entity"></div>
+                                <canvas id="genesis-canvas"></canvas>
                                 <div class="lightsaber-container rounded-full">
                                     <div class="lightsaber" style="transform: rotate(45deg); background-color: rgb(var(--glow-rgb)); box-shadow: 0 0 15px rgb(var(--glow-rgb));"></div>
                                     <div class="lightsaber" style="transform: rotate(-45deg); background-color: rgb(var(--accent-rgb)); box-shadow: 0 0 15px rgb(var(--accent-rgb));"></div>
@@ -148,7 +147,9 @@
         // --- GLOBAL STATE & DOM ELEMENTS ---
         const docEl = document.documentElement;
         const bodyEl = document.body;
-        const profilePicContainer = document.querySelector('.profile-container');
+        const avatarContainer = document.getElementById('avatar-container');
+        const profilePicEl = document.getElementById('profile-pic');
+        const carrotEl = document.getElementById('carrot');
         const mouseBunnyEl = document.getElementById('mouse-bunny');
         const mouseTrailCanvas = document.getElementById('bunny-trail-canvas');
         const mouseTrailCtx = mouseTrailCanvas.getContext('2d');
@@ -168,10 +169,11 @@
         let cosmicDust = [], clickRipples = [], forceParticles = [];
         let currentThemePage = 0;
         let audioCtx;
+        let isAvatarDestroyed = false;
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('profile-pic').src = CONFIG.PROFILE_PIC_PATH;
+            profilePicEl.src = CONFIG.PROFILE_PIC_PATH;
             Chart.defaults.font.family = "'Noto Sans SC', sans-serif";
             Chart.defaults.font.size = 12;
             
@@ -190,7 +192,8 @@
             window.addEventListener('mousemove', e => { mouse.lastX = mouse.x; mouse.x = e.clientX; mouse.y = e.clientY; mouse.dx = mouse.x - mouse.lastX; docEl.style.setProperty('--mouse-x', `${e.clientX}px`); docEl.style.setProperty('--mouse-y', `${e.clientY}px`); });
             window.addEventListener('resize', () => { [mouseTrailCanvas, petCanvas, vfxCanvas].forEach(c => {c.width = window.innerWidth; c.height = window.innerHeight;}); });
             window.addEventListener('mousedown', e => { createClickRipple(e.clientX, e.clientY); initAudio(); });
-            profilePicContainer.addEventListener('mouseenter', () => createForceBurst(25));
+            avatarContainer.addEventListener('mouseenter', () => { if(!isAvatarDestroyed) createForceBurst(30); });
+            avatarContainer.addEventListener('click', handleAvatarClick);
             document.getElementById('font-toggle-button').addEventListener('click', toggleFont);
             document.getElementById('prev-theme-page').addEventListener('click', () => changeThemePage(-1));
             document.getElementById('next-theme-page').addEventListener('click', () => changeThemePage(1));
@@ -211,9 +214,9 @@
             requestAnimationFrame(animationLoop);
         }
 
-        // --- CORE VFX v8.1 ---
+        // --- CORE VFX v9.0 ---
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-        function playSound(type) { if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); if (type === 'saber') { o.type = 'sawtooth'; g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.frequency.setValueAtTime(120, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3); } o.start(); o.stop(audioCtx.currentTime + 0.3); }
+        function playSound(type) { if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); if (type === 'saber') { o.type = 'sawtooth'; g.gain.setValueAtTime(0.08, audioCtx.currentTime); o.frequency.setValueAtTime(120, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3); } if (type === 'destroy') { o.type = 'square'; g.gain.setValueAtTime(0.15, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5); } if (type === 'rebuild') { o.type = 'sine'; g.gain.setValueAtTime(0.15, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5); } o.start(); o.stop(audioCtx.currentTime + 0.5); }
         function initVFX() { [vfxCanvas, petCanvas, mouseTrailCanvas].forEach(c => { c.width = window.innerWidth; c.height = window.innerHeight; }); for (let i = 0; i < CONFIG.COSMIC_DUST_COUNT; i++) { cosmicDust.push({ x: Math.random() * vfxCanvas.width, y: Math.random() * vfxCanvas.height, z: Math.random() * 1000, vx: (Math.random() - 0.5) * 0.1, vy: (Math.random() - 0.5) * 0.1, baseSize: Math.random() * 1.5 + 0.5, currentSize: 0, baseAlpha: Math.random() * 0.3 + 0.2, currentAlpha: 0 }); } }
         function updateAndDrawCosmicDust() {
             const textColorRgb = getComputedStyle(docEl).getPropertyValue('--text-color-rgb').trim(); const cx = vfxCanvas.width / 2; const cy = vfxCanvas.height / 2;
@@ -229,23 +232,43 @@
         function createClickRipple(x, y) { clickRipples.push({ x, y, radius: 0, maxRadius: 60, life: 1 }); }
         function updateAndDrawClickRipples() { clickRipples = clickRipples.filter(r => r.life > 0); clickRipples.forEach(r => { r.radius = (1 - r.life) * r.maxRadius; r.life -= 0.04; vfxCtx.strokeStyle = `rgba(var(--accent-rgb), ${r.life})`; vfxCtx.lineWidth = 2; vfxCtx.beginPath(); vfxCtx.arc(r.x, r.y, r.radius, 0, Math.PI * 2); vfxCtx.stroke(); }); }
         function createForceBurst(count) {
-            const rect = profilePicContainer.getBoundingClientRect(); const x = rect.left + rect.width / 2; const y = rect.top + rect.height / 2; playSound('saber');
-            for (let i = 0; i < count; i++) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 3 + 2; forceParticles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, size: Math.random() * 2 + 1, color: Math.random() > 0.5 ? `var(--glow-rgb)` : `var(--accent-rgb)` }); }
+            const rect = avatarContainer.getBoundingClientRect(); const x = rect.left + rect.width / 2; const y = rect.top + rect.height / 2; playSound('saber');
+            for (let i = 0; i < count; i++) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 5 + 3; forceParticles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, size: Math.random() * 3 + 1, color: Math.random() > 0.5 ? `var(--glow-rgb)` : `var(--accent-rgb)` }); }
         }
         function updateAndDrawForceParticles() {
             forceParticles = forceParticles.filter(p => p.life > 0);
-            forceParticles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vx *= 0.98; p.vy *= 0.98; p.life -= 0.03; vfxCtx.fillStyle = `rgba(${p.color}, ${p.life})`; vfxCtx.beginPath(); vfxCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); vfxCtx.fill(); });
+            forceParticles.forEach(p => { p.x += p.vx; p.y += p.vy; p.vx *= 0.98; p.vy *= 0.98; p.life -= 0.02; const particleColor = p.color.startsWith('var') ? getComputedStyle(docEl).getPropertyValue(p.color.slice(4, -1)).trim() : p.color; vfxCtx.fillStyle = `rgba(${particleColor}, ${p.life})`; vfxCtx.beginPath(); vfxCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); vfxCtx.fill(); });
         }
-        function updateAndDrawPetBunny(currentTime) { petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height); if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; } pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX; const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)'); petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill(); petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`; if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`; }
+        function updateAndDrawPetBunny(currentTime) {
+            petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height);
+            if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; }
+            pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX;
+            const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill();
+            petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`; if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`;
+        }
         function initMouseBunny() { mouseTrailCanvas.width = window.innerWidth; mouseTrailCanvas.height = window.innerHeight; for (let i = 0; i < CONFIG.MOUSE_SNAKE_LENGTH; i++) { mouseSnake.push({ x: mouse.x, y: mouse.y }); } }
-        function updateAndDrawMouseBunny() { mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height); let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25; mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop(); for (let i = 1; i < mouseSnake.length; i++) { const grad = mouseTrailCtx.createLinearGradient(mouseSnake[i-1].x, mouseSnake[i-1].y, mouseSnake[i].x, mouseSnake[i].y); const opacity = 1 - (i / mouseSnake.length); grad.addColorStop(0, `rgba(var(--glow-rgb), ${opacity * 0.8})`); grad.addColorStop(1, `rgba(var(--accent-rgb), ${opacity * 0.8})`); mouseTrailCtx.strokeStyle = grad; mouseTrailCtx.lineWidth = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.stroke(); } mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`; if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`; }
+        function updateAndDrawMouseBunny() {
+            mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height); let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25; mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop();
+            for (let i = 1; i < mouseSnake.length; i++) { const grad = mouseTrailCtx.createLinearGradient(mouseSnake[i-1].x, mouseSnake[i-1].y, mouseSnake[i].x, mouseSnake[i].y); const opacity = 1 - (i / mouseSnake.length); grad.addColorStop(0, `rgba(var(--glow-rgb), ${opacity * 0.8})`); grad.addColorStop(1, `rgba(var(--accent-rgb), ${opacity * 0.8})`); mouseTrailCtx.strokeStyle = grad; mouseTrailCtx.lineWidth = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.stroke(); }
+            mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`; if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`;
+        }
         function updatePerfPanel() { const memory = performance.memory ? `MEM:${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}` : ''; const particles = cosmicDust.length + clickRipples.length + forceParticles.length + mouseSnake.length; perfPanel.innerHTML = `<span>FPS:${frameCount}</span> <span>${memory}</span> <span>PARTICLES:${particles}</span>`; frameCount = 0; }
+        
+        function handleAvatarClick() { if (isAvatarDestroyed) rebuildAvatar(); else destroyAvatar(); }
+        function destroyAvatar() { isAvatarDestroyed = true; playSound('destroy'); createForceBurst(100); profilePicEl.style.opacity = '0'; profilePicEl.style.transform = 'scale(0.5)'; setTimeout(() => { carrotEl.style.transition = 'opacity 0.5s, transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)'; carrotEl.style.opacity = '1'; carrotEl.style.transform = 'translate(-50%, -50%) scale(1) rotate(0deg)'; }, 300); }
+        function rebuildAvatar() { isAvatarDestroyed = false; playSound('rebuild'); carrotEl.style.opacity = '0'; carrotEl.style.transform = 'translate(-50%, -50%) scale(0)'; setTimeout(() => { profilePicEl.style.opacity = '1'; profilePicEl.style.transform = 'scale(1)'; createForceBurst(20); }, 300); }
 
-        // --- DATA, CHART, THEME, TIMING, MODALS LOGIC ---
+        // --- DATA, CHART, THEME, TIMING, MODALS ---
         function toggleFont() { bodyEl.classList.toggle('font-pixel'); const button = document.getElementById('font-toggle-button'); if (bodyEl.classList.contains('font-pixel')) { Chart.defaults.font.family = "'Press Start 2P', 'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 10; button.textContent = "SYSTEM FONT"; } else { Chart.defaults.font.family = "'Noto Sans SC', sans-serif"; Chart.defaults.font.size = 12; button.textContent = "PIXEL FONT"; } renderWeightChart(weightRecords); }
-        async function loadAndProcessData() { try { const response = await fetch(CONFIG.PET_RECORDS_PATH); if (!response.ok) throw new Error('Network response was not ok.'); const rawRecords = await response.json(); const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } catch (error) { console.error("無法從檔案加載數據，將使用內置示例數據:", error); const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 }, { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ]; const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } renderAllRecords(allRecords); renderWeightChart(weightRecords); updateTiming(); setInterval(updateTiming, 1000); }
+        function togglePerfPanel() { perfPanel.classList.toggle('active'); }
+        async function loadAndProcessData() { try { const response = await fetch(CONFIG.PET_RECORDS_PATH); if (!response.ok) throw new Error('Network response was not ok.'); const rawRecords = await response.json(); const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } catch (error) { console.error("無法從檔案加載數據:", error); const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期", "weight": 720 }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ]; const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); } renderAllRecords(allRecords); renderWeightChart(weightRecords); updateTiming(); setInterval(updateTiming, 1000); }
         function renderAllRecords(records) { const container = document.getElementById('all-records-container'); if (!records || records.length === 0) { container.innerHTML = '<p>無數據流記錄。</p>'; return; } container.innerHTML = records.map(rec => { const dateStr = rec.processedDate.toLocaleDateString('sv-SE'); const weightInfo = rec.weight > 0 ? ` - WEIGHT: <strong class="glow-text">${rec.weight}g</strong>` : ''; return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);"><div class="flex justify-between items-center"><p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p><time class="text-xs flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time></div><p class="text-sm mt-1" style="color: var(--text-muted-color)">NOTES: ${rec.notes || 'N/A'}</p></div>`; }).join(''); }
-        function renderWeightChart(records) { if (chart) chart.destroy(); const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`; const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`; const mutedColor = getComputedStyle(docEl).getPropertyValue('--text-muted-color').trim(); const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'})); const data = records.map(r => r.weight); const ctx = document.getElementById('weightChart').getContext('2d'); chart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false, }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: mutedColor }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: mutedColor, callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } }, onClick: (event) => { const points = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true); if (points.length) { const index = points[0].index; const weightInfoEl = document.getElementById('weight-change-info'); if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; } const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight; const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`; const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400'; weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`; } } } }); const weightInfoEl = document.getElementById('weight-change-info'); if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`; } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`; } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; } }
+        function renderWeightChart(records) {
+            if (chart) chart.destroy(); const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`; const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`; const mutedColor = getComputedStyle(docEl).getPropertyValue('--text-muted-color').trim(); const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'})); const data = records.map(r => r.weight); const ctx = document.getElementById('weightChart').getContext('2d');
+            chart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false, }, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: mutedColor }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: mutedColor, callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } }, onClick: (event) => { const points = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true); if (points.length) { const index = points[0].index; const weightInfoEl = document.getElementById('weight-change-info'); if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; } const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight; const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`; const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400'; weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`; } } } });
+            const weightInfoEl = document.getElementById('weight-change-info'); if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`; } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`; } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; }
+        }
         function setupThemeEngine() { const randomTheme = CONFIG.THEMES[Math.floor(Math.random() * CONFIG.THEMES.length)]; changeTheme(randomTheme); renderThemePage(); }
         function changeThemePage(direction) { const totalPages = Math.ceil(CONFIG.THEMES.length / 10); currentThemePage = (currentThemePage + direction + totalPages) % totalPages; renderThemePage(); }
         function renderThemePage() { const themeGrid = document.getElementById('theme-grid'); themeGrid.innerHTML = ''; const startIndex = currentThemePage * 10; const endIndex = startIndex + 10; CONFIG.THEMES.slice(startIndex, endIndex).forEach(theme => { const swatch = document.createElement('button'); swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2"; swatch.style.backgroundColor = `rgb(${theme.r})`; swatch.style.boxShadow = `0 0 15px rgba(${theme.r}, 0.5)`; swatch.title = theme.n; swatch.onclick = () => changeTheme(theme); themeGrid.appendChild(swatch); }); const totalPages = Math.ceil(CONFIG.THEMES.length / 10); document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}/${totalPages}]`; }
@@ -257,11 +280,12 @@
         function toggleFullscreen() { if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`Fullscreen failed: ${err.message}`)); else document.exitFullscreen(); }
         function renderChangelog() {
             const changelogData = [
-                { version: "v8.1", date: "ETERNITY", items: [ { type: "✨ 優化 (Improved)", en: "Restored the complete changelog history from v1.0 to v8.0.", zh: "恢復了從v1.0到v8.0的完整更新日誌歷史。" }, { type: "🐛 修復 (Fix)", en: "Conducted a full audit and fixed potential race conditions and minor bugs across all features.", zh: "進行了全面審計，修復了所有功能中潛在的競爭條件和細微錯誤。" }, ]},
-                { version: "v8.0", date: "SINGULARITY", items: [ { type: "🚀 新功能 (New)", en: "Added 'Lightsaber Duel' effect on profile picture.", zh: "在頭像上加入了「光劍對決」特效。" }, { type: "✨ 優化 (Improved)", en: "Upgraded VFX matrix with black hole lensing and enhanced particle interactions.", zh: "升級了VFX矩陣，加入了黑洞引力透鏡和增強的粒子互動。" }, ]},
+                { version: "v9.0", date: "GENESIS-PRIME", items: [ { type: "🚀 新功能 (New)", en: "Added 'Genesis' avatar effect: click to destroy into a carrot, click again to rebuild.", zh: "新增「創世紀」頭像特效：點擊可銷毀成胡蘿蔔，再次點擊可重塑。" }, { type: "✨ 優化 (Improved)", en: "The Performance Monitor is now a toggleable module.", zh: "性能監視器現已成為可切換模塊。" }, { type: "🐛 修復 (Fix)", en: "Recalibrated chart click sensitivity and fixed the pet bunny's rendering logic.", zh: "重新校準了圖表點擊靈敏度，並修復了寵物兔的渲染邏輯。" }, { type: "✨ 優化 (Improved)", en: "The complete changelog from v1.0 to v9.0 has been restored and verified.", zh: "從v1.0到v9.0的完整更新日誌已恢復並驗證。" } ]},
+                { version: "v8.1", date: "ETERNITY", items: [ { type: "✨ 優化 (Improved)", en: "Conducted a full stability audit.", zh: "進行了全面穩定性審計。" }, ]},
+                { version: "v8.0", date: "SINGULARITY", items: [ { type: "🚀 新功能 (New)", en: "Added 'Lightsaber Duel' effect and black hole lensing VFX.", zh: "加入了「光劍對決」特效和黑洞引力透鏡VFX。" }, ]},
                 { version: "v7.7", date: "RECALIBRATED", items: [ { type: "🐛 修復 (Fix)", en: "Recalibrated chart click events and restored pet bunny visibility.", zh: "重新校準了圖表點擊事件並恢復了寵物兔的可見性。" } ]},
                 { version: "v7.6", date: "SOLID-STATE", items: [ { type: "🐛 修復 (Fix)", en: "Fixed critical bugs affecting Milestones, Theme Palette, and Chart Interactions.", zh: "修復了影響里程碑、主題面板和圖表互動的關鍵錯誤。" }, ]},
-                { version: "v7.5.1", date: "QUANTUM-LEAP", items: [ { type: "✨ 優化 (Improved)", en: "Upgraded mouse trail to a 'Quantum Trail' and added a 'Data Storm' scanline.", zh: "將滑鼠軌跡升級為「量子光軌」，並新增了「數據風暴」掃描線。" } ]},
+                { version: "v7.5.1", date: "QUANTUM-LEAP", items: [ { type: "✨ 優化 (Improved)", en: "Upgraded mouse trail to a 'Quantum Trail' and added a 'Data Storm' scanline.", zh: "將滑鼠軌跡升級為多彩的「量子光軌」，並新增了「數據風暴」掃描線。" } ]},
                 { version: "v7.5", date: "STABILIZED-CORE", items: [ { type: "✨ 優化 (Improved)", en: "Enhanced the cosmic dust VFX to be interactive.", zh: "增強了宇宙塵埃特效使其可互動。" } ]},
                 { version: "v7.4", date: "NEXUS-CORE", items: [ { type: "🚀 新功能 (New)", en: "Pet interaction now triggers a burst of heart particles.", zh: "寵物互動現在會觸發愛心粒子爆發。" } ]},
                 { version: "v7.3", date: "HYPERSPACE", items: [ { type: "🚀 新功能 (New)", en: "Added a 'Hyperspace' jump animation on page load.", zh: "加入了「超空間跳躍」加載動畫。" } ]},
