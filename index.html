@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>檔案：Bunny CC v7.0 [PHOTON-CORE]</title>
+    <title>檔案：Bunny CC v7.2 [LEGACY-ARCHIVE]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +31,6 @@
             position: relative;
             z-index: 0;
         }
-        /* NEW: Global Mouse Light Effect */
         body::after {
             content: '';
             position: fixed;
@@ -41,7 +40,6 @@
             z-index: -1;
             pointer-events: none;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -56,30 +54,39 @@
         }
         @keyframes grid-scroll { from { background-position: 0 0; } to { background-position: 50px 100px; } }
 
-        /* NEW: Pixel Bunny and Trail */
-        #bunny-trail-canvas {
+        /* Canvas & Bunny Layers */
+        .effect-canvas {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 9998;
         }
-        #pixel-bunny {
+        #pet-canvas { z-index: 1; } /* The painting canvas */
+        #bunny-trail-canvas { z-index: 9998; } /* The mouse trail canvas */
+
+        .pixel-entity {
             position: fixed;
             width: 32px; height: 32px;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4h1v1h1v1h4v-1h1v-1h1v3h1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-2z' fill='rgb(var(--glow-rgb))'/%3E%3Cpath d='M7 6h1v1h-1z' fill='%23000'/%3E%3Cpath d='M4 4h1v1h-1zM10 4h1v1h-1zM5 6h1v1h-1z' fill='rgb(var(--accent-rgb))'/%3E%3C/svg%3E");
             background-size: contain;
             pointer-events: none;
-            z-index: 9999;
             transform: translate(-50%, -50%);
             transition: filter 0.2s;
+        }
+        #mouse-bunny {
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4h1v1h1v1h4v-1h1v-1h1v3h1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-2z' fill='rgb(var(--glow-rgb))'/%3E%3Cpath d='M7 6h1v1h-1z' fill='%23000'/%3E%3Cpath d='M4 4h1v1h-1zM10 4h1v1h-1zM5 6h1v1h-1z' fill='rgb(var(--accent-rgb))'/%3E%3C/svg%3E");
             filter: drop-shadow(0 0 8px rgba(var(--glow-rgb), 0.8));
+        }
+        #pet-bunny {
+            z-index: 2;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23FFD700' d='M5 5H6V6H5z M9 5H10V6H9z'/%3E%3Cpath fill='%23FFFFFF' d='M3 7h1v1h1v1h1v1h2v-1h1v-1h1v-1h1v2h-1v1h-1v1h-1v1h-2v-1H6V9H5V8H4V7H3z'/%3E%3Cpath fill='%23FF69B4' d='M4,6 L5,6 L5,7 L4,7 Z M10,6 L11,6 L11,7 L10,7 Z'/%3E%3Cpath fill='%2300BFFF' d='M6 6h1v1H6zm2 0h1v1H8z'/%3E%3Cpath fill='%2332CD32' d='M4 4h2v1H4zm7 0h2v1h-2z'/%3E%3C/svg%3E");
+            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
+            opacity: 0.9;
         }
 
         .glow-text { color: rgb(var(--glow-rgb)); text-shadow: 0 0 8px rgba(var(--glow-rgb), 0.8); }
         .accent-text { color: rgb(var(--accent-rgb)); text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); }
         
-        /* LCARS UI Elements */
         .lcars-container { display: flex; height: 100vh; padding: 1rem; gap: 1rem; }
         .lcars-sidebar { width: 150px; display: flex; flex-direction: column; gap: 1rem; flex-shrink: 0; }
         .lcars-main { flex-grow: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
@@ -89,12 +96,10 @@
         .lcars-button { background: #080808; border: 2px solid rgb(var(--accent-rgb)); color: rgb(var(--accent-rgb)); text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8); transition: all 0.2s ease; letter-spacing: 1px; }
         .lcars-button:hover { background: rgb(var(--accent-rgb)); color: #000; }
         
-        /* General UI & Animations */
         .ui-module { opacity: 0; transform: translateY(20px) scale(0.98); animation: module-boot 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes module-boot { to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes border-glow-in { from { box-shadow: 0 0 0px rgba(var(--glow-rgb), 0); } to { box-shadow: 0 0 20px rgba(var(--glow-rgb), 0.3); } }
-        /* NEW: Chart Glow */
         .chart-container { position: relative; }
         .chart-container::after { content: ''; position: absolute; inset: 0; border-radius: 0.5rem; pointer-events: none; animation: pulsate-chart-glow 4s infinite ease-in-out; }
         @keyframes pulsate-chart-glow { 0%, 100% { box-shadow: 0 0 25px -5px rgba(var(--glow-rgb), 0.3); } 50% { box-shadow: 0 0 35px 0px rgba(var(--glow-rgb), 0.45); } }
@@ -105,14 +110,15 @@
         .has-tooltip:hover .tooltip { visibility: visible; opacity: 1; }
         .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; }
         
-        /* Modal Styles */
         .modal-overlay { background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
         .modal-container { background: #080808; border: 2px solid rgb(var(--glow-rgb)); box-shadow: 0 0 30px rgba(var(--glow-rgb), 0.5); }
     </style>
 </head>
 <body>
-    <canvas id="bunny-trail-canvas"></canvas>
-    <div id="pixel-bunny"></div>
+    <canvas id="pet-canvas" class="effect-canvas"></canvas>
+    <canvas id="bunny-trail-canvas" class="effect-canvas"></canvas>
+    <div id="mouse-bunny" class="pixel-entity"></div>
+    <div id="pet-bunny" class="pixel-entity"></div>
 
     <div class="lcars-container">
         <!-- LCARS Sidebar -->
@@ -130,10 +136,9 @@
             <div class="h-16 flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="text-lg sm:text-xl tracking-wider glow-text">BCC_SYS_v7.0</p><p class="accent-text text-xs">PHOTON-CORE</p></div>
+                    <div class="ml-4"><p class="text-lg sm:text-xl tracking-wider glow-text">BCC_SYS_v7.2</p><p class="accent-text text-xs">LEGACY-ARCHIVE</p></div>
                 </div>
-                <!-- NEW: Performance Panel -->
-                <div id="performance-panel" class="hidden md:flex items-center text-xs space-x-4 text-gray-400" style="color:var(--text-muted-color)"></div>
+                <div id="performance-panel" class="hidden md:flex items-center text-xs space-x-4" style="color:var(--text-muted-color)"></div>
             </div>
             <div class="lcars-content-panel record-scrollbar">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -142,12 +147,12 @@
                         <div class="ui-module text-center" style="animation-delay: 0.2s;">
                             <div class="profile-container w-40 h-40 mx-auto">
                                 <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));">
-                                <div class="profile-overlay rounded-full" style="background-color:rgba(var(--glow-rgb), 0.2)"></div>
                             </div>
                             <h1 class="text-xl font-bold mt-4 glow-text">BUNNY CC</h1>
                         </div>
                         <div class="ui-module" style="animation-delay: 0.4s;">
                             <h2 class="text-sm pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">MILESTONES</h2>
+                            <!-- MILESTONES CONTENT: Will be populated by the restored classic `updateTiming` function -->
                             <div id="timing" class="space-y-2 text-xs whitespace-pre-line leading-relaxed" style="color: var(--text-muted-color)"></div>
                         </div>
                     </div>
@@ -155,7 +160,6 @@
                     <div class="md:col-span-2 flex flex-col space-y-6">
                         <div class="ui-module" style="animation-delay: 0.6s;">
                             <h2 class="text-sm pb-2 mb-4 accent-text" style="border-bottom: 1px solid rgba(var(--accent-rgb), 0.3)">WEIGHT_GRID</h2>
-                            <!-- NEW: Chart Container for Glow Effect -->
                             <div class="h-64 chart-container"><canvas id="weightChart"></canvas></div><div id="weight-change-info" class="mt-4 text-center p-3 rounded-lg h-12 flex items-center justify-center text-xs" style="background-color: rgba(var(--glow-rgb), 0.05); border: 1px solid rgba(var(--glow-rgb), 0.2); transition: all 0.3s ease;"></div>
                         </div>
                         <div class="ui-module flex-grow flex flex-col" style="animation-delay: 0.8s;">
@@ -178,20 +182,24 @@
             PROFILE_PIC_PATH: './dist/Bunny CC_Profile.JPG',
             PET_RECORDS_PATH: './dist/bunnycc/PetRecords.json',
             START_DATE: '2024/03/12 00:00:00',
-            SNAKE_LENGTH: 20,
+            MOUSE_SNAKE_LENGTH: 20,
             THEMES: `cyan/34,211,238 magenta/244,114,182 lime/132,204,22 orange/249,115,22 yellow/251,191,36 red/239,68,68 indigo/88,86,214 green/34,197,94 white/229,231,235 purple/168,85,247 sky/56,189,248 rose/251,113,133 emerald/16,185,129 amber/245,158,11 violet/139,92,246 fuchsia/217,70,239 teal/20,184,166 blue/59,130,246 lightblue/14,165,233 pink/236,72,153 forest/22,163,74 crimson/220,38,38 gold/202,165,89 silver/156,163,175 bronze/205,133,63 steel/113,128,150 mint/10,200,150 lavender/216,180,254 salmon/250,128,114 turquoise/64,224,208 olive/128,128,0 maroon/128,0,0 navy/0,0,128 coral/255,127,80 orchid/218,112,214 plum/221,160,221 khaki/240,230,140 slateblue/106,90,205 sienna/160,82,45 hotpink/255,105,180 deepskyblue/0,191,255 lawngreen/124,252,0 mediumvioletred/199,21,133 darkorange/255,140,0 dodgerblue/30,144,255 tomato/255,99,71 springgreen/0,255,127 aqua/0,255,255 chartreuse/127,255,0 darkviolet/148,0,211 electric/213,252,9 cosmic/45,15,128 nebula/188,45,225 solar/255,180,0 galactic/75,0,130 cyber/0,255,198 quantum/255,30,90 void/10,10,25 supernova/255,80,0 starlight/230,230,250`.split(' ').map(s => ({n:s.split('/')[0],r:s.split('/')[1]}))
         };
 
         // --- GLOBAL STATE & DOM ELEMENTS ---
         const docEl = document.documentElement;
         const profilePicEl = document.getElementById('profile-pic');
-        const bunnyEl = document.getElementById('pixel-bunny');
-        const trailCanvas = document.getElementById('bunny-trail-canvas');
-        const trailCtx = trailCanvas.getContext('2d');
+        const mouseBunnyEl = document.getElementById('mouse-bunny');
+        const mouseTrailCanvas = document.getElementById('bunny-trail-canvas');
+        const mouseTrailCtx = mouseTrailCanvas.getContext('2d');
         const perfPanel = document.getElementById('performance-panel');
+        const petBunnyEl = document.getElementById('pet-bunny');
+        const petCanvas = document.getElementById('pet-canvas');
+        const petCtx = petCanvas.getContext('2d');
         
-        let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, dx: 0, dy: 0, lastX: 0, lastY: 0 };
-        let snake = [];
+        let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, dx: 0, lastX: 0 };
+        let mouseSnake = [];
+        let pet = { x: 0, y: 0, targetX: 0, targetY: 0, lastMoveTime: 0, dx: 0, lastX: 0 };
         let chart;
         let allRecords = [], weightRecords = [];
         let lastPerfUpdateTime = 0, frameCount = 0;
@@ -205,7 +213,8 @@
             setupEventListeners();
             loadAndProcessData();
             setupThemeEngine();
-            initPixelBunny();
+            initMouseBunny();
+            initPetBunny();
             
             requestAnimationFrame(animationLoop);
             
@@ -215,141 +224,58 @@
         
         // --- EVENT LISTENERS & ANIMATION LOOP ---
         function setupEventListeners() {
-            window.addEventListener('mousemove', e => {
-                mouse.lastX = mouse.x;
-                mouse.lastY = mouse.y;
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
-                mouse.dx = mouse.x - mouse.lastX;
-                docEl.style.setProperty('--mouse-x', `${e.clientX}px`);
-                docEl.style.setProperty('--mouse-y', `${e.clientY}px`);
-            });
-            window.addEventListener('resize', () => {
-                trailCanvas.width = window.innerWidth;
-                trailCanvas.height = window.innerHeight;
-            });
+            window.addEventListener('mousemove', e => { mouse.lastX = mouse.x; mouse.x = e.clientX; mouse.y = e.clientY; mouse.dx = mouse.x - mouse.lastX; docEl.style.setProperty('--mouse-x', `${e.clientX}px`); docEl.style.setProperty('--mouse-y', `${e.clientY}px`); });
+            window.addEventListener('resize', () => { mouseTrailCanvas.width = window.innerWidth; mouseTrailCanvas.height = window.innerHeight; petCanvas.width = window.innerWidth; petCanvas.height = window.innerHeight; });
         }
-        
         let lastTime = 0;
         function animationLoop(currentTime) {
             if (!lastTime) lastTime = currentTime;
-            const deltaTime = currentTime - lastTime;
-            
-            updateAndDrawPixelBunny(deltaTime);
-            
+            updateAndDrawMouseBunny();
+            updateAndDrawPetBunny(currentTime);
             frameCount++;
-            if (currentTime > lastPerfUpdateTime + 1000) {
-                updatePerfPanel(frameCount, deltaTime);
-                frameCount = 0;
-                lastPerfUpdateTime = currentTime;
-            }
-            
+            if (currentTime > lastPerfUpdateTime + 1000) { updatePerfPanel(frameCount); frameCount = 0; lastPerfUpdateTime = currentTime; }
             lastTime = currentTime;
             requestAnimationFrame(animationLoop);
         }
 
-        // --- CORE FEATURES V7.0 ---
-        function initPixelBunny() {
-            trailCanvas.width = window.innerWidth;
-            trailCanvas.height = window.innerHeight;
-            for (let i = 0; i < CONFIG.SNAKE_LENGTH; i++) {
-                snake.push({ x: mouse.x, y: mouse.y });
-            }
+        // --- PET & MOUSE BUNNY LOGIC (v7.1) ---
+        function initMouseBunny() { mouseTrailCanvas.width = window.innerWidth; mouseTrailCanvas.height = window.innerHeight; for (let i = 0; i < CONFIG.MOUSE_SNAKE_LENGTH; i++) { mouseSnake.push({ x: mouse.x, y: mouse.y }); } }
+        function updateAndDrawMouseBunny() {
+            mouseTrailCtx.clearRect(0, 0, mouseTrailCanvas.width, mouseTrailCanvas.height);
+            let head = { ...mouseSnake[0] }; head.x += (mouse.x - head.x) * 0.25; head.y += (mouse.y - head.y) * 0.25;
+            mouseSnake.unshift(head); if (mouseSnake.length > CONFIG.MOUSE_SNAKE_LENGTH) mouseSnake.pop();
+            for (let i = 1; i < mouseSnake.length; i++) { const opacity = 1 - (i / mouseSnake.length); const radius = 1 + (mouseSnake.length - i) * 0.15; mouseTrailCtx.beginPath(); mouseTrailCtx.moveTo(mouseSnake[i-1].x, mouseSnake[i-1].y); mouseTrailCtx.lineTo(mouseSnake[i].x, mouseSnake[i].y); mouseTrailCtx.strokeStyle = `rgba(var(--glow-rgb), ${opacity * 0.8})`; mouseTrailCtx.lineWidth = radius; mouseTrailCtx.lineCap = 'round'; mouseTrailCtx.stroke(); }
+            mouseBunnyEl.style.left = `${head.x}px`; mouseBunnyEl.style.top = `${head.y}px`;
+            if (mouse.dx !== 0) mouseBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`;
         }
-
-        function updateAndDrawPixelBunny(dt) {
-            trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
-            
-            let head = { ...snake[0] };
-            head.x += (mouse.x - head.x) * 0.25;
-            head.y += (mouse.y - head.y) * 0.25;
-            snake.unshift(head);
-            if (snake.length > CONFIG.SNAKE_LENGTH) snake.pop();
-
-            // Draw Trail
-            for (let i = 1; i < snake.length; i++) {
-                const segment = snake[i];
-                const prevSegment = snake[i - 1];
-                const opacity = 1 - (i / snake.length);
-                const radius = 1 + (snake.length - i) * 0.15;
-                
-                trailCtx.beginPath();
-                trailCtx.moveTo(prevSegment.x, prevSegment.y);
-                trailCtx.lineTo(segment.x, segment.y);
-                trailCtx.strokeStyle = `rgba(var(--glow-rgb), ${opacity * 0.8})`;
-                trailCtx.lineWidth = radius;
-                trailCtx.lineCap = 'round';
-                trailCtx.stroke();
-            }
-
-            // Update Bunny Head Position & Orientation
-            bunnyEl.style.left = `${head.x}px`;
-            bunnyEl.style.top = `${head.y}px`;
-            if (mouse.dx !== 0) {
-                bunnyEl.style.transform = `translate(-50%, -50%) scaleX(${mouse.dx > 0 ? 1 : -1})`;
-            }
+        function initPetBunny() { petCanvas.width = window.innerWidth; petCanvas.height = window.innerHeight; pet.x = Math.random() * window.innerWidth; pet.y = Math.random() * window.innerHeight; pet.targetX = pet.x; pet.targetY = pet.y; }
+        function updateAndDrawPetBunny(currentTime) {
+            petCtx.fillStyle = 'rgba(0, 0, 0, 0.03)'; petCtx.fillRect(0, 0, petCanvas.width, petCanvas.height);
+            if (currentTime - pet.lastMoveTime > 5000) { pet.targetX = Math.random() * window.innerWidth; pet.targetY = Math.random() * window.innerHeight; pet.lastMoveTime = currentTime; }
+            pet.lastX = pet.x; pet.x += (pet.targetX - pet.x) * 0.01; pet.y += (pet.targetY - pet.y) * 0.01; pet.dx = pet.x - pet.lastX;
+            const glowRgb = getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim(); const accentRgb = getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim();
+            const grad = petCtx.createRadialGradient(pet.x, pet.y, 0, pet.x, pet.y, 30); grad.addColorStop(0, `rgba(${glowRgb}, 0.3)`); grad.addColorStop(0.5, `rgba(${accentRgb}, 0.15)`); grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            petCtx.fillStyle = grad; petCtx.beginPath(); petCtx.arc(pet.x, pet.y, 30, 0, Math.PI * 2); petCtx.fill();
+            petBunnyEl.style.left = `${pet.x}px`; petBunnyEl.style.top = `${pet.y}px`;
+            if (pet.dx !== 0) petBunnyEl.style.transform = `translate(-50%, -50%) scaleX(${pet.dx > 0 ? 1 : -1})`;
         }
-
-        function updatePerfPanel(fps, renderTime) {
-            const memory = performance.memory ? `MEM:${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}MB` : '';
-            perfPanel.innerHTML = `<span>FPS:${fps}</span> <span>RT:${renderTime.toFixed(1)}ms</span> <span>${memory}</span>`;
-        }
-
+        function updatePerfPanel(fps) { const memory = performance.memory ? `MEM:${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}MB` : ''; perfPanel.innerHTML = `<span>FPS:${fps}</span><span>${memory}</span>`; }
+        
         // --- DATA & CHART LOGIC (v6.4 logic retained) ---
         async function loadAndProcessData() {
-            try {
-                const response = await fetch(CONFIG.PET_RECORDS_PATH);
-                if (!response.ok) throw new Error('Network response was not ok.');
-                const rawRecords = await response.json();
-                const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; });
-                allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate);
-                weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate);
-            } catch (error) {
-                console.error("無法從檔案加載數據，將使用內置示例數據:", error);
-                const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 }, { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ];
-                const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; });
-                allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate);
-                weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate);
-            }
-            renderAllRecords(allRecords);
-            renderWeightChart(weightRecords);
+            try { const response = await fetch(CONFIG.PET_RECORDS_PATH); if (!response.ok) throw new Error('Network response was not ok.'); const rawRecords = await response.json(); const processedRecords = rawRecords.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedRecords].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedRecords.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate);
+            } catch (error) { console.error("無法從檔案加載數據，將使用內置示例數據:", error); const fallbackData = [ { "date": 1678838400, "activity": "首次体检", "notes": "一切正常", "weight": 0 }, { "date": 1679443200, "activity": "体重测量", "notes": "食慾很好，開始熟悉環境", "weight": 510 }, { "date": 1680048000, "activity": "体重测量", "notes": "學會使用飲水器", "weight": 580 }, { "date": 1680652800, "activity": "行为观察", "notes": "非常活潑，喜歡跳躍" }, { "date": 1681257600, "activity": "体重测量", "notes": "換毛期，需要多梳理", "weight": 720 }, { "date": 1681862400, "activity": "饮食记录", "notes": "嘗試了新口味的牧草" }, { "date": 1682467200, "activity": "体重测量", "notes": "體重接近成年標準", "weight": 870 } ]; const processedFallback = fallbackData.map(r => { const d = new Date(Math.floor(r.date) * 1000); d.setFullYear(d.getFullYear() + 31); return { ...r, processedDate: d }; }); allRecords = [...processedFallback].sort((a, b) => b.processedDate - a.processedDate); weightRecords = processedFallback.filter(r => r.activity === '体重测量' && r.weight > 0).sort((a, b) => a.processedDate - b.processedDate); }
+            renderAllRecords(allRecords); renderWeightChart(weightRecords);
         }
-        function renderAllRecords(records) {
-            const container = document.getElementById('all-records-container');
-            if (!records || records.length === 0) { container.innerHTML = '<p>無數據流記錄。</p>'; return; }
-            container.innerHTML = records.map(rec => { const dateStr = rec.processedDate.toLocaleDateString('sv-SE'); const weightInfo = rec.weight > 0 ? ` - WEIGHT: <span class="glow-text">${rec.weight}g</span>` : ''; return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);"><div class="flex justify-between items-center"><p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p><time class="text-[10px] flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time></div><p class="text-[10px] mt-1" style="color: var(--text-muted-color)">NOTES: ${rec.notes || 'N/A'}</p></div>`; }).join('');
-        }
+        function renderAllRecords(records) { const container = document.getElementById('all-records-container'); if (!records || records.length === 0) { container.innerHTML = '<p>無數據流記錄。</p>'; return; } container.innerHTML = records.map(rec => { const dateStr = rec.processedDate.toLocaleDateString('sv-SE'); const weightInfo = rec.weight > 0 ? ` - WEIGHT: <span class="glow-text">${rec.weight}g</span>` : ''; return `<div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05); border-left: 2px solid rgba(var(--glow-rgb), 0.4);"><div class="flex justify-between items-center"><p class="font-bold"><span class="accent-text">${rec.activity}</span>${weightInfo}</p><time class="text-[10px] flex-shrink-0 ml-2" style="color:var(--text-muted-color)">${dateStr}</time></div><p class="text-[10px] mt-1" style="color: var(--text-muted-color)">NOTES: ${rec.notes || 'N/A'}</p></div>`; }).join(''); }
         function renderWeightChart(records) {
-            if (chart) chart.destroy();
-            const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`;
-            const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`;
-            const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'}));
-            const data = records.map(r => r.weight);
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line', 
-                data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)' }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)', callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } },
-                    onClick: (event, elements) => {
-                        if (elements.length > 0) {
-                            const index = elements[0].index;
-                            const weightInfoEl = document.getElementById('weight-change-info');
-                            if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; }
-                            const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight;
-                            const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`;
-                            const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400';
-                            weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`;
-                        }
-                    }
-                }
-            });
+            if (chart) chart.destroy(); const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`; const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`; const labels = records.map(r => r.processedDate.toLocaleDateString('zh-CN', {month:'2-digit', day:'2-digit'})); const data = records.map(r => r.weight); const ctx = document.getElementById('weightChart').getContext('2d');
+            chart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'WEIGHT (g)', data: data, borderColor: glowColor, backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'), pointBackgroundColor: accentColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: accentColor, tension: 0.3, fill: true, }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)' }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } }, y: { ticks: { color: 'rgba(var(--text-muted-color), 0.7)', callback: (value) => `${value}g` }, grid: { color: 'rgba(var(--glow-rgb), 0.1)', drawBorder: false } } }, onClick: (event, elements) => { if (elements.length > 0) { const index = elements[0].index; const weightInfoEl = document.getElementById('weight-change-info'); if (index === 0) { weightInfoEl.innerHTML = `INITIAL RECORD. NO PREVIOUS DATA.`; return; } const currentRecord = weightRecords[index]; const previousRecord = weightRecords[index - 1]; const diff = currentRecord.weight - previousRecord.weight; const changeText = diff >= 0 ? `UP ${diff.toFixed(0)}g` : `DOWN ${Math.abs(diff.toFixed(0))}g`; const colorClass = diff >= 0 ? 'accent-text' : 'text-red-400'; weightInfoEl.innerHTML = `DELTA FROM ${previousRecord.processedDate.toLocaleDateString('sv-SE')}: <strong class="${colorClass}">${changeText}</strong>`; } } } });
             const weightInfoEl = document.getElementById('weight-change-info');
-            if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`;
-            } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`;
-            } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; }
+            if (records.length >= 2) { const latest = records[records.length - 1].weight; const previous = records[records.length - 2].weight; const change = latest - previous; const changeText = change > 0 ? `UP ${change.toFixed(0)}g` : (change < 0 ? `DOWN ${Math.abs(change.toFixed(0))}g` : 'FLAT'); const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-400' : 'text-gray-400'); weightInfoEl.innerHTML = `LATEST: <strong class="glow-text">${latest}g</strong>. DELTA: <strong class="${changeColorClass}">${changeText}</strong>.`; } else if (records.length === 1) { weightInfoEl.innerHTML = `INITIAL: <strong class="glow-text">${records[0].weight}g</strong>. AWAITING NEXT.`; } else { weightInfoEl.innerHTML = `AWAITING WEIGHT DATA...`; }
         }
         
-        // --- UI, THEME, TIMING, CHANGELOG ---
+        // --- UI & THEME LOGIC (Unchanged) ---
         function toggleModal(modalId) { document.getElementById(modalId).classList.toggle('hidden'); document.getElementById(modalId).classList.toggle('flex'); if (modalId === 'changelog-modal' && !document.getElementById('changelog-content').innerHTML) { renderChangelog(); } }
         function toggleFullscreen() { if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`Fullscreen failed: ${err.message}`)); else document.exitFullscreen(); }
         let currentThemePage = 0;
@@ -359,20 +285,59 @@
         function renderThemePage() { themeGrid.innerHTML = ''; const startIndex = currentThemePage * 10; const endIndex = startIndex + 10; CONFIG.THEMES.slice(startIndex, endIndex).forEach(theme => { const swatch = document.createElement('button'); swatch.className = "h-12 w-full rounded-md transition-all duration-200 hover:scale-110 hover:shadow-lg focus:ring-2 ring-offset-2"; swatch.style.backgroundColor = `rgb(${theme.r})`; swatch.style.boxShadow = `0 0 15px rgba(${theme.r}, 0.5)`; swatch.title = theme.n; swatch.onclick = () => changeTheme(theme); themeGrid.appendChild(swatch); }); const totalPages = Math.ceil(CONFIG.THEMES.length / 10); document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}/${totalPages}]`; }
         function applyCustomColor(event) { let input = event.target.value.trim(); let rgb; if (input.startsWith('#')) { const hex = input.substring(1).padEnd(6, 'f'); const bigint = parseInt(hex.slice(0,6), 16); rgb = `${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255}`; } else if (input.startsWith('rgb')) { rgb = input.match(/\d+/g).join(','); } if (rgb) changeTheme({ r: rgb }); }
         function changeTheme(theme) { docEl.style.setProperty('--glow-rgb', theme.r); const orangeTheme = CONFIG.THEMES.find(t => t.n === 'orange'); if(orangeTheme) docEl.style.setProperty('--accent-rgb', orangeTheme.r); if (chart) renderWeightChart(weightRecords); }
+        
+        // --- TIMING (Classic) & CHANGELOG (Full) ---
         const timingEl = document.getElementById('timing');
-        function updateTiming() { const startDate = new Date(CONFIG.START_DATE); const currentDate = new Date(); const elapsedMs = currentDate.getTime() - startDate.getTime(); const elapsedDays = (elapsedMs / 86400000).toFixed(3); const totalSeconds = Math.floor(elapsedMs / 1000); const elapsedHours = Math.floor(totalSeconds / 3600); const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60); const elapsedSeconds = totalSeconds % 60; timingEl.innerHTML = `<p>ONLINE FOR <strong class="accent-text">${elapsedDays}</strong> DAYS</p><p>SYS UPTIME: <strong class="accent-text">${elapsedHours}</strong>H <strong class="accent-text">${elapsedMinutes}</strong>M <strong class="accent-text">${elapsedSeconds}</strong>S</p>`; }
+        function updateTiming() {
+            const startDate = new Date(CONFIG.START_DATE);
+            const currentDate = new Date();
+            const elapsedMs = currentDate.getTime() - startDate.getTime();
+            const elapsedDays = (elapsedMs / 86400000).toFixed(3);
+            const totalSeconds = Math.floor(elapsedMs / 1000);
+            const elapsedHours = Math.floor(totalSeconds / 3600);
+            const elapsedMinutes = Math.floor((totalSeconds % 3600) / 60);
+            const elapsedSeconds = totalSeconds % 60;
+            const formatDate = (d) => `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+            const getNextAnniversary = (base, days) => { let count = 0, nextDate; do { count++; nextDate = new Date(base.getTime() + count * days * 86400000); } while (nextDate < currentDate); return { date: nextDate, count }; };
+            const getNextYearly = (base) => { let count = 0, nextDate; do { count++; nextDate = new Date(base); nextDate.setFullYear(base.getFullYear() + count); } while (nextDate < currentDate); return { date: nextDate, count }; };
+            const next100 = getNextAnniversary(startDate, 100);
+            const next180 = getNextAnniversary(startDate, 180);
+            const next300 = getNextAnniversary(startDate, 300);
+            const nextYear = getNextYearly(startDate);
+            timingEl.innerHTML = `
+                <p>🐰 兔可可已經到來 <strong class="accent-text">${elapsedDays}</strong> 天啦</p>
+                <p>🎂 目前已經到來 <strong class="accent-text">${elapsedHours}</strong>小時 <strong class="accent-text">${elapsedMinutes}</strong>分鐘 <strong class="accent-text">${elapsedSeconds}</strong>秒</p>
+                <div class="pt-2 mt-2 border-t border-dashed" style="border-color: rgba(var(--glow-rgb), 0.2)"></div>
+                <p>🌱 下一個100天紀念日是 <strong class="accent-text">${formatDate(next100.date)}</strong>（第${next100.count}個100天）</p>
+                <p>🌿 下一個180天紀念日是 <strong class="accent-text">${formatDate(next180.date)}</strong>（第${next180.count}個180天）</p>
+                <p>🍀 下一個300天紀念日是 <strong class="accent-text">${formatDate(next300.date)}</strong>（第${next300.count}個300天）</p>
+                <p>🎉 下一個一周年紀念日是 <strong class="accent-text">${formatDate(nextYear.date)}</strong>（第${nextYear.count}周年）</p>
+            `;
+        }
         function renderChangelog() {
             const changelogData = [
+                { version: "v7.2", date: "LEGACY-ARCHIVE", items: [
+                    { type: "✨ 優化 (Improved)", en: "Restored the complete changelog history from v1.0, creating a full project archive.", zh: "恢復了從v1.0開始的完整更新日誌，創建了完整的項目檔案庫。" },
+                    { type: "✨ 優化 (Improved)", en: "Reverted the Milestones module to its original, detailed Traditional Chinese format for a classic experience.", zh: "將「里程碑」模塊恢復為其原始的、詳細的繁體中文格式，以提供經典體驗。" },
+                ]},
+                { version: "v7.1", date: "AETHER-PAINTER", items: [
+                    { type: "🚀 新功能 (New)", en: "Introduced the 'Aether Painter', an autonomous, colorful pixel bunny that roams the screen and leaves a light trail.", zh: "引入了「以太畫家」，一隻在屏幕上自由漫步並留下光影軌跡的自主彩色像素兔子。" },
+                ]},
                 { version: "v7.0", date: "PHOTON-CORE", items: [
-                    { type: "🚀 新功能 (New)", en: "Introduced the 'Photon Pixel Bunny', a mouse cursor with a beautiful, snake-like particle trail.", zh: "引入了「光子像素兔」，一個帶有華麗貪吃蛇式粒子尾巴的滑鼠游標。" },
-                    { type: "🚀 新功能 (New)", en: "Implemented a global lighting system where a spotlight follows the mouse, creating a dynamic, immersive atmosphere.", zh: "實現了全局光影系統，一盞聚光燈會跟隨滑鼠移動，創造動態的沉浸式氛圍。" },
-                    { type: "✨ 優化 (Improved)", en: "Enhanced the weight chart with a pulsating background glow effect, making data visualization more engaging.", zh: "為體重圖表增加了脈衝式的背景光暈特效，使數據可視化更具吸引力。" },
-                    { type: "✨ 優化 (Improved)", en: "Upgraded all UI animations for a smoother, more 'gorgeous' feel and added a complete performance panel (FPS, RT, MEM).", zh: "升級了所有UI動畫，使其更流暢、更華麗，並添加了完整的性能監控面板(FPS, RT, MEM)。" },
+                    { type: "🚀 新功能 (New)", en: "Introduced the 'Photon Pixel Bunny' mouse cursor with a snake-like particle trail and a global spotlight effect.", zh: "引入了帶有粒子尾跡的「光子像素兔」滑鼠游標和全局聚光燈效果。" },
                 ]},
                 { version: "v6.4", date: "INTERACTIVE-GRID", items: [
-                    { type: "🚀 新功能 (New)", en: "Added an interactive feature to the weight chart. Clicking a data point now displays the weight change from the previous measurement.", zh: "為體重圖表增加了互動功能。現在點擊數據點會顯示與上一次測量的體重變化。" },
+                    { type: "🚀 新功能 (New)", en: "Added interactive data points to the weight chart.", zh: "為體重圖表增加了互動數據點功能。" },
                 ]},
-                { version: "v6.3", date: "PIXEL-CORE", items: [ { type: "🚀 新功能 (New)", en: "Activated 'PIXEL-CORE' protocol. The entire UI now uses a pixel font.", zh: "啟用「PIXEL-CORE」協議，UI現統一使用像素字體。" }, ]},
+                { version: "v6.3", date: "PIXEL-CORE", items: [ { type: "🚀 新功能 (New)", en: "Activated 'PIXEL-CORE' protocol, applying a global pixel font.", zh: "啟用「PIXEL-CORE」協議，應用全局像素字體。" }, ]},
+                { version: "v6.2", date: "LOGIC-REFINED", items: [ { type: "♻️ 重構 (Refactor)", en: "Refactored data loading logic for timestamps and record filtering.", zh: "重構了數據加載邏輯以處理時間戳和記錄過濾。" }, ]},
+                { version: "v6.1", date: "STABLE", items: [ { type: "🐛 修復 (Fix)", en: "Patched a case-sensitive issue in theme engine.", zh: "修復了主題引擎中的大小寫敏感問題。" }, ]},
+                { version: "v6.0", date: "STARFLEET-COMMAND", items: [ { type: "🚀 新功能 (New)", en: "Migrated entire UI to the Starfleet LCARS standard.", zh: "將整體UI遷移至星艦LCARS標準。" }, ]},
+                { version: "v5.0", date: "NEBULA-GRID", items: [ { type: "🚀 新功能 (New)", en: "Added performance panel and a roaming pixel bunny mascot.", zh: "新增了性能面板和漫遊像素兔子。" }, ]},
+                { version: "v4.0", date: "TRON Grid", items: [ { type: "🚀 新功能 (New)", en: "Re-engineered the UI with a TRON-inspired aesthetic.", zh: "以TRON為靈感重構UI。" }, ]},
+                { version: "v3.0", date: "Modern Fusion", items: [ { type: "🚀 新功能 (New)", en: "Introduced a powerful theme engine and changelog.", zh: "引入了強大的主題引擎和更新日誌。" }, ]},
+                { version: "v2.0", date: "Pixel Upgrade", items: [ { type: "✨ 優化 (Improved)", en: "Switched to a pixel font and added a full record archive.", zh: "更換為像素字體並添加了完整的檔案記錄。" }, ]},
+                { version: "v1.0", date: "Initial Commit", items: [ { type: "🚀 新功能 (New)", en: "Project initialized with real-time timers and chart visualization.", zh: "項目初始化，實現即時計時器和圖表可視化。" }, ]},
             ];
             const contentEl = document.getElementById('changelog-content');
             contentEl.innerHTML = changelogData.map(log => `<div class="mb-6"><p class="text-base accent-text">${log.version} <span class="text-xs font-normal text-gray-400">- ${log.date}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${log.items.map(item => `<li><p class="inline font-bold">${item.type}</p><p class="text-gray-300 mt-1">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`).join('');
