@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>檔案：Bunny CC v6.1 [STABLE]</title>
+    <title>檔案：Bunny CC v6.2 [STABLE]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,27 @@
             opacity: 0;
             animation: fadeIn 1.5s ease 0.5s forwards;
             cursor: none;
+            position: relative; /* For background pseudo-element */
+            z-index: 0;
         }
+        /* NEW: Animated Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(var(--glow-rgb), 0.05) 1px, transparent 1px),
+                linear-gradient(to right, rgba(var(--glow-rgb), 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-scroll 20s linear infinite;
+            z-index: -2;
+            opacity: 0.5;
+        }
+        @keyframes grid-scroll {
+            from { background-position: 0 0; }
+            to { background-position: 50px 100px; }
+        }
+
         #mouse-cursor-glow {
             position: fixed;
             width: 800px; height: 800px;
@@ -120,7 +140,7 @@
             <div class="h-16 flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="font-pixel text-xl sm:text-2xl tracking-widest glow-text">BCC_SYS_v6.1</p><p class="accent-text text-sm">Starfleet Command Archives</p></div>
+                    <div class="ml-4"><p class="font-pixel text-xl sm:text-2xl tracking-widest glow-text">BCC_SYS_v6.2</p><p class="accent-text text-sm">Starfleet Command Archives</p></div>
                 </div>
                 <div id="performance-panel" class="hidden md:flex items-center text-xs font-pixel space-x-4 text-gray-400"></div>
             </div>
@@ -152,7 +172,7 @@
     
     <!-- Modals -->
     <div id="changelog-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('changelog-modal')"><div class="modal-container w-11/12 max-w-4xl max-h-[80vh] flex flex-col" onclick="event.stopPropagation()"><h2 class="font-pixel text-lg p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb), 0.3)">CHANGELOG</h2><div id="changelog-content" class="p-6 overflow-y-auto record-scrollbar"></div></div></div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('theme-modal')"><div class="modal-container w-11/12 max-w-md" onclick="event.stopPropagation()"><div class="p-4 flex justify-between items-center border-b" style="border-color:rgba(var(--glow-rgb), 0.3)"><button id="prev-theme-page" class="font-pixel text-xl glow-text">&lt;</button><h2 id="theme-page-title" class="font-pixel text-lg glow-text">COLOR_CYCLE</h2><button id="next-theme-page" class="font-pixel text-xl glow-text">&gt;</button></div><div id="theme-grid" class="p-6 grid grid-cols-5 gap-4"></div><div class="p-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.3)"><input id="custom-color-input" type="text" placeholder="#224294 or rgb(34,66,148)" class="w-full bg-transparent border text-center p-2 rounded-md font-pixel text-xs" style="border-color:rgba(var(--accent-rgb), 0.5)"></div></div></div>
+    <div id="theme-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center" onclick="toggleModal('theme-modal')"><div class="modal-container w-11/12 max-w-md" onclick="event.stopPropagation()"><div class="p-4 flex justify-between items-center border-b" style="border-color:rgba(var(--glow-rgb), 0.3)"><button id="prev-theme-page" class="font-pixel text-xl glow-text"><</button><h2 id="theme-page-title" class="font-pixel text-lg glow-text">COLOR_CYCLE</h2><button id="next-theme-page" class="font-pixel text-xl glow-text">></button></div><div id="theme-grid" class="p-6 grid grid-cols-5 gap-4"></div><div class="p-4 border-t" style="border-color:rgba(var(--glow-rgb), 0.3)"><input id="custom-color-input" type="text" placeholder="#224294 or rgb(34,66,148)" class="w-full bg-transparent border text-center p-2 rounded-md font-pixel text-xs" style="border-color:rgba(var(--accent-rgb), 0.5)"></div></div></div>
 
     <script>
         // --- CONFIGURATION ---
@@ -173,6 +193,7 @@
         let snake = [];
         const SNAKE_LENGTH = 20;
         let chart; // Chart instance
+        let allRecords = []; // Store all records globally
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -182,6 +203,9 @@
             setupThemeEngine();
             initBunnySnake();
             requestAnimationFrame(animationLoop);
+            // FIX: Start timing updates
+            updateTiming();
+            setInterval(updateTiming, 1000);
         });
 
         // --- MOUSE & ANIMATION LOOP ---
@@ -256,7 +280,9 @@
         function toggleModal(modalId) {
             document.getElementById(modalId).classList.toggle('hidden');
             document.getElementById(modalId).classList.toggle('flex');
-            if (modalId === 'changelog-modal') renderChangelog();
+            if (modalId === 'changelog-modal' && !document.getElementById('changelog-content').innerHTML) {
+                 renderChangelog();
+            }
         }
         function toggleFullscreen() {
             if (!document.fullscreenElement) docEl.requestFullscreen().catch(err => alert(`全螢幕失敗: ${err.message}`));
@@ -272,7 +298,8 @@
             renderThemePage();
         }
         function changeThemePage(direction) {
-            currentThemePage = (currentThemePage + direction + 6) % 6; // 6 pages
+            const totalPages = Math.ceil(CONFIG.THEMES.length / 10);
+            currentThemePage = (currentThemePage + direction + totalPages) % totalPages;
             renderThemePage();
         }
         function renderThemePage() {
@@ -288,7 +315,8 @@
                 swatch.onclick = () => changeTheme(theme);
                 themeGrid.appendChild(swatch);
             });
-            document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}]`;
+            const totalPages = Math.ceil(CONFIG.THEMES.length / 10);
+            document.getElementById('theme-page-title').innerText = `COLORS [${currentThemePage+1}/${totalPages}]`;
         }
         function applyCustomColor(event) {
             let input = event.target.value.trim();
@@ -306,10 +334,10 @@
             docEl.style.setProperty('--glow-rgb', theme.r);
             const orangeTheme = CONFIG.THEMES.find(t => t.n === 'orange');
             if(orangeTheme) docEl.style.setProperty('--accent-rgb', orangeTheme.r);
-            if (chart) renderWeightChart();
+            if (chart) renderWeightChart(allRecords); // Re-render chart with new colors
         }
         
-        // --- DATA & TIMING LOGIC --- (Assuming these are largely correct and omitting for brevity)
+        // --- DATA & TIMING LOGIC ---
         const timingEl = document.getElementById('timing');
         function updateTiming() {
              const startDate = new Date(CONFIG.START_DATE);
@@ -339,11 +367,130 @@
                 </div>`;
         }
         
-        async function loadAndProcessData() { /* ... */ }
-        function renderWeightChart() { /* ... */ }
+        // FIX: Implemented full data loading and processing
+        async function loadAndProcessData() {
+            try {
+                const response = await fetch(CONFIG.PET_RECORDS_PATH);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                allRecords = await response.json();
+            } catch (error) {
+                console.error("無法從檔案加載數據，將使用內置示例數據:", error);
+                // Fallback to sample data if fetch fails
+                allRecords = [
+                    { "date": "2024-03-15", "weight": 450, "note": "首次體檢，一切正常" },
+                    { "date": "2024-03-22", "weight": 510, "note": "食慾很好，開始熟悉環境" },
+                    { "date": "2024-03-29", "weight": 580, "note": "學會使用飲水器" },
+                    { "date": "2024-04-05", "weight": 650, "note": "體重穩定增長" },
+                    { "date": "2024-04-12", "weight": 720, "note": "換毛期，需要多梳理" },
+                    { "date": "2024-04-19", "weight": 780, "note": "非常活潑，喜歡跳躍" },
+                    { "date": "2024-04-26", "weight": 830, "note": "嘗試了新口味的牧草" },
+                    { "date": "2024-05-03", "weight": 870, "note": "體重接近成年標準" }
+                ];
+            }
+            
+            if (allRecords && allRecords.length > 0) {
+                renderWeightChart(allRecords);
+                renderAllRecords(allRecords);
+            } else {
+                 document.getElementById('weight-change-info').innerText = '無可用數據記錄。';
+                 document.getElementById('all-records-container').innerText = '無可用數據流。';
+            }
+        }
         
+        // FIX: Implemented chart rendering
+        function renderWeightChart(records) {
+            if (chart) chart.destroy(); // Destroy previous instance for theme changes
+
+            const glowColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--glow-rgb').trim()})`;
+            const accentColor = `rgb(${getComputedStyle(docEl).getPropertyValue('--accent-rgb').trim()})`;
+            
+            const labels = records.map(r => r.date);
+            const data = records.map(r => r.weight);
+
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '體重 (克)',
+                        data: data,
+                        borderColor: glowColor,
+                        backgroundColor: glowColor.replace(')', ', 0.2)').replace('rgb', 'rgba'),
+                        pointBackgroundColor: accentColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: accentColor,
+                        tension: 0.3,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            titleColor: accentColor,
+                            bodyColor: '#e6edf3',
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${context.parsed.y} 克`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(var(--text-muted-color), 0.7)' },
+                            grid: { color: 'rgba(var(--glow-rgb), 0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'rgba(var(--text-muted-color), 0.7)', callback: (value) => `${value}g` },
+                            grid: { color: 'rgba(var(--glow-rgb), 0.1)' }
+                        }
+                    }
+                }
+            });
+            
+            // Update weight change info
+            const weightInfoEl = document.getElementById('weight-change-info');
+            if (records.length >= 2) {
+                const latest = records[records.length - 1].weight;
+                const previous = records[records.length - 2].weight;
+                const change = latest - previous;
+                const changeText = change > 0 ? `增加 ${change}g` : (change < 0 ? `減少 ${Math.abs(change)}g` : '持平');
+                const changeColorClass = change > 0 ? 'accent-text' : (change < 0 ? 'text-red-500' : 'text-gray-400');
+                weightInfoEl.innerHTML = `最新記錄: <strong class="glow-text">${latest}g</strong>. 與上次相比: <strong class="${changeColorClass}">${changeText}</strong>.`;
+            } else if (records.length === 1) {
+                weightInfoEl.innerHTML = `初始記錄: <strong class="glow-text">${records[0].weight}g</strong>. 等待下一次測量.`;
+            } else {
+                weightInfoEl.innerHTML = `等待數據輸入...`;
+            }
+        }
+        
+        // NEW: Function to render all records in the data stream panel
+        function renderAllRecords(records) {
+            const container = document.getElementById('all-records-container');
+            if (!records || records.length === 0) {
+                container.innerHTML = '<p>無數據流記錄。</p>';
+                return;
+            }
+            // Reverse records to show latest first
+            container.innerHTML = [...records].reverse().map(record => `
+                <div class="p-2 rounded" style="background-color: rgba(var(--glow-rgb), 0.05);">
+                    <p class="font-bold"><span class="accent-text">${record.date}</span> - 體重: <span class="glow-text">${record.weight}g</span></p>
+                    <p class="text-xs mt-1" style="color: var(--text-muted-color)">備註: ${record.note || '無'}</p>
+                </div>
+            `).join('');
+        }
+
         function renderChangelog() {
             const changelogData = [
+                { version: "v6.2", date: "STABLE", items: [
+                    { type: "🐛 修復 (Fix)", en: "Fixed an issue where timing counters and data sections (chart, log) were not loading due to uninitialized function calls.", zh: "修復了因函數未初始化調用而導致計時器和數據區塊（圖表、日誌）無法加載的問題。" },
+                    { type: "🚀 新功能 (New)", en: "Implemented a fallback mechanism with sample data to ensure the UI is populated even if the primary JSON data source fails to load.", zh: "實現了示例數據回退機制，確保在主JSON數據源加載失敗時UI依然能夠填充內容。" },
+                    { type: "✨ 優化 (Improved)", en: "Added a dynamic, theme-aware animated grid to the background for enhanced visual depth.", zh: "為背景添加了與主題聯動的動態網格動畫，以增強視覺深度。" },
+                ]},
                 { version: "v6.1", date: "STABLE", items: [
                     { type: "🐛 修復 (Fix)", en: "Patched a case-sensitive issue in theme engine causing a TypeError when finding the default accent color.", zh: "修復了主題引擎中因大小寫敏感而導致尋找預設輔助色時出現的TypeError。" },
                     { type: "✨ 優化 (Improved)", en: "Expanded the changelog archive to include all historical versions from v1.0.", zh: "擴展了更新日誌庫，包含了從v1.0開始的所有歷史版本。" },
