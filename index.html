@@ -361,70 +361,86 @@
             ];
             const cE=document.getElementById('changelog-content');cE.innerHTML=cD.map(l=>`<div class="mb-6"><p class="text-xl font-bold accent-text">${l.v} <span class="text-sm font-normal text-gray-400">- ${l.dt}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${l.it.map(i=>`<li><p class="inline font-bold">${i.t}</p><p class="text-gray-300 mt-1">${i.zh}</p><p class="text-xs text-gray-500">${i.en}</p></li>`).join('')}</ul></div>`).join('');
         }
-        async function getStaticPerfData() { // #PERF_LS_SIZE_FIXED
-            const perfContent = document.getElementById('perf-modal-content');
-            if (!perfContent) return;
-            perfContent.innerHTML = `<div id="realtime-metrics-container"></div>`; // Real-time gets populated by updatePerfPanel
-            let staticHtml = '';
+        async function getStaticPerfData() {
+    const perfContent = document.getElementById('perf-modal-content');
+    if (!perfContent) return;
 
-            // Memory Subsystem
-            staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Memory Subsystem</div>`;
-            staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
-            staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
-            if (performance.memory) {
-                staticHtml += `<span>JS HEAP USED:</span><span class="text-white text-right">${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}MB</span>`;
-                staticHtml += `<span>JS HEAP TOTAL:</span><span class="text-white text-right">${(performance.memory.totalJSHeapSize / 1048576).toFixed(1)}MB</span>`;
-                staticHtml += `<span>JS HEAP LIMIT:</span><span class="text-white text-right">${(performance.memory.jsHeapSizeLimit / 1048576).toFixed(1)}MB</span>`;
-            } else {
-                staticHtml += '<span class="col-span-2">Memory API N/A</span>';
-            }
-            try {
-                const lsSize = new TextEncoder().encode(JSON.stringify(localStorage)).length;
-                staticHtml += `<span>LS USED (EST):</span><span class="text-white text-right">${(lsSize / 1024).toFixed(2)}KB / ~${(CONFIG.MAX_LOCALSTORAGE_SAVE_BYTES / 1024 / 1024).toFixed(0)}MB</span>`;
-            } catch (e) {
-                staticHtml += `<span>LS EST:</span><span class="text-white text-right">Error</span>`;
-            }
-            staticHtml += `</div>`;
+    let staticHtml = '';
 
-            // Page Vitals & Load
-            const navTiming = performance.getEntriesByType("navigation")[0];
-            const paintTimings = performance.getEntriesByType("paint");
-            if (navTiming || paintTimings.length > 0) {
-                staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Page Vitals & Load</div>`;
-                staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
-                staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
-                const fcp = paintTimings.find(p => p.name === 'first-contentful-paint');
-                if (fcp) staticHtml += `<span>FIRST PAINT:</span><span class="text-white text-right">${fcp.startTime.toFixed(0)}ms</span>`;
-                if (navTiming) staticHtml += `<span>TOTAL LOAD:</span><span class="text-white text-right">${navTiming.duration.toFixed(0)}ms</span>`;
-                staticHtml += `</div>`;
-            }
+    // Memory Subsystem
+    staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Memory Subsystem</div>`;
+    staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
+    staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
+    if (performance.memory) {
+        staticHtml += `<span>JS HEAP USED:</span><span class="text-white text-right">${(performance.memory.usedJSHeapSize / 1048576).toFixed(1)}MB</span>`;
+        staticHtml += `<span>JS HEAP TOTAL:</span><span class="text-white text-right">${(performance.memory.totalJSHeapSize / 1048576).toFixed(1)}MB</span>`;
+        staticHtml += `<span>JS HEAP LIMIT:</span><span class="text-white text-right">${(performance.memory.jsHeapSizeLimit / 1048576).toFixed(1)}MB</span>`;
+    } else {
+        staticHtml += '<span class="col-span-2">Memory API N/A</span>';
+    }
+    try { // Correctly handling localStorage access
+        const lsSize = new TextEncoder().encode(JSON.stringify(localStorage)).length;
+        staticHtml += `<span>LS USED (EST):</span><span class="text-white text-right">${(lsSize / 1024).toFixed(2)}KB / ~${(CONFIG.MAX_LOCALSTORAGE_SAVE_BYTES / 1024 / 1024).toFixed(0)}MB</span>`;
+    } catch (e) {
+        staticHtml += `<span>LS EST:</span><span class="text-white text-right">Error</span>`;
+    }
+    staticHtml += `</div>`;
 
-            // Resource Analysis
-            const resources = performance.getEntriesByType("resource");
-            if (resources.length > 0) {
-                staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Resource Analysis</div>`;
-                staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
-                staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
-                const totalSize = resources.reduce((acc, r) => acc + (r.transferSize || 0), 0);
-                staticHtml += `<span>TOTAL ASSETS:</span><span class="text-white text-right">${resources.length}</span>`;
-                staticHtml += `<span>PAGE WEIGHT:</span><span class="text-white text-right">${(totalSize / 1024).toFixed(1)}KB</span>`;
-                const slowest = [...resources].sort((a, b) => b.duration - a.duration)[0];
-                if (slowest) staticHtml += `<span class="col-span-2">SLOWEST:</span><span class="text-white col-span-2 break-all text-right">${slowest.name.split('/').pop()}(${slowest.duration.toFixed(0)}ms)</span>`;
-                staticHtml += `</div>`;
-            }
+    // Page Vitals & Load
+    const navTiming = performance.getEntriesByType("navigation")[0];
+    const paintTimings = performance.getEntriesByType("paint");
+    if (navTiming || paintTimings.length > 0) {
+        staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Page Vitals & Load</div>`;
+        staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
+        staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
+        const fcp = paintTimings.find(p => p.name === 'first-contentful-paint');
+        if (fcp) staticHtml += `<span>FIRST PAINT:</span><span class="text-white text-right">${fcp.startTime.toFixed(0)}ms</span>`;
+        if (navTiming) staticHtml += `<span>TOTAL LOAD:</span><span class="text-white text-right">${navTiming.duration.toFixed(0)}ms</span>`;
+        staticHtml += `</div>`;
+    }
 
-            // Hardware & System
-            staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Hardware & System</div>`;
-            staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
-            staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
-            if(navigator.hardwareConcurrency) staticHtml += `<span>CPU CORES:</span><span class="text-white text-right">${navigator.hardwareConcurrency}</span>`;
-            if(navigator.deviceMemory) staticHtml += `<span>SYS MEMORY:</span><span class="text-white text-right">~${navigator.deviceMemory}GB</span>`;
-            if(navigator.getBattery){ try{ const b = await navigator.getBattery(); staticHtml += `<span>BATTERY:</span><span class="text-white text-right">${(b.level*100).toFixed(0)}% ${b.charging ? '(Chg)' : ''}</span>`;
-            if(navigator.userAgent){ let os="Unk"; if(navigator.userAgent.includes("Win"))os="Win"; else if(navigator.userAgent.includes("Mac"))os="macOS"; else if(navigator.userAgent.includes("Linux"))os="Linux"; else if(navigator.userAgent.includes("Android"))os="Android"; else if(navigator.userAgent.includes("iPad"))os="iPadOS"; else if(navigator.userAgent.includes("iPhone"))os="iOS"; staticHtml += `<span>OS:</span><span class="text-white text-right">${os}</span>`; }
-            staticHtml += `</div>`;
-            
-            perfContent.innerHTML += staticHtml; // Append all static HTML at once
+    // Resource Analysis
+    const resources = performance.getEntriesByType("resource");
+    if (resources.length > 0) {
+        staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Resources</div>`;
+        staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
+        staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
+        const totalSize = resources.reduce((acc, r) => acc + (r.transferSize || 0), 0);
+        staticHtml += `<span>TOTAL ASSETS:</span><span class="text-white text-right">${resources.length}</span>`;
+        staticHtml += `<span>PAGE WEIGHT:</span><span class="text-white text-right">${(totalSize / 1024).toFixed(1)}KB</span>`;
+        const slowest = [...resources].sort((a, b) => b.duration - a.duration)[0];
+        if (slowest) staticHtml += `<span class="col-span-2">SLOWEST:</span><span class="text-white col-span-2 break-all text-right">${slowest.name.split('/').pop()}(${slowest.duration.toFixed(0)}ms)</span>`;
+        staticHtml += `</div>`;
+    }
+
+    // Hardware & System
+    staticHtml += `<div class="col-span-2 text-lg glow-text mt-4 mb-2">Hardware & System</div>`;
+    staticHtml += `<div class="col-span-2 border-b border-gray-700 mb-2"></div>`;
+    staticHtml += `<div class="col-span-2 grid grid-cols-2 gap-x-4">`;
+    if (navigator.hardwareConcurrency) staticHtml += `<span>CPU CORES:</span><span class="text-white text-right">${navigator.hardwareConcurrency}</span>`;
+    if (navigator.deviceMemory) staticHtml += `<span>SYS MEMORY:</span><span class="text-white text-right">~${navigator.deviceMemory} GB</span>`;
+    if (navigator.getBattery) {
+        try {
+            const b = await navigator.getBattery(); // Correctly awaited
+            staticHtml += `<span>BATTERY:</span><span class="text-white text-right">${(b.level * 100).toFixed(0)}% ${b.charging ? '(Chg)' : ''}</span>`; // Corrected template literal closing
+        } catch (e) {
+            staticHtml += `<span>BATTERY:</span><span class="text-white text-right">Error</span>`; // Error handling for getBattery
         }
+    }
+    if (navigator.userAgent) {
+        let os = "Unknown";
+        if (navigator.userAgent.includes("Win")) os = "Windows";
+        else if (navigator.userAgent.includes("Mac")) os = "macOS";
+        else if (navigator.userAgent.includes("Linux")) os = "Linux";
+        else if (navigator.userAgent.includes("Android")) os = "Android";
+        else if (navigator.userAgent.includes("iPad")) os = "iPadOS";
+        else if (navigator.userAgent.includes("iPhone")) os = "iOS";
+        staticHtml += `<span>OS:</span><span class="text-white text-right">${os}</span>`;
+    }
+    staticHtml += `</div>`;
+    
+    perfContent.innerHTML += staticHtml; // Append all static HTML at once
+}
         function updatePerfPanel(cT){const pC=document.getElementById('perf-modal-content');if(!pC||document.getElementById('performance-modal').classList.contains('hidden'))return;const iV=cT-lastPerfUpdateTime;const fps=Math.round((frameCount/iV)*1e3);const rTC=pC.querySelector('#realtime-metrics-container');if(rTC){rTC.innerHTML=`<div class="col-span-2 text-lg glow-text mb-2">Real-time</div><div class="col-span-2 border-b border-gray-700 mb-2"></div><div class="col-span-2 grid grid-cols-2 gap-x-4"><span class="text-gray-400">FPS:</span><span class="text-white text-right">${fps}</span><span class="text-gray-400">FRAME TIME:</span><span class="text-white text-right">${(1e3/fps||0).toFixed(2)}ms</span><span class="text-gray-400">PARTICLES:</span><span class="text-white text-right">${cosmicDust.length+clickRipples.length+forceParticles.length+mouseSnake.length+celestialParticles.length}</span><span class="text-gray-400">DOM NODES:</span><span class="text-white text-right">${document.getElementsByTagName('*').length}</span></div>`;}lastPerfUpdateTime=cT;frameCount=0;}
     </script>
 </body>
