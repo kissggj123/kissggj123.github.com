@@ -1,6 +1,8 @@
 # BunnyCC Days
 兔可可纪念日
 
+[![使用 EdgeOne Pages 部署](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/kissggj123/kissggj123.github.com)
+
 **核心功能：**
 
 * **充電時間估算：** 根據您選擇的P7+車型、起始與結束電量、充電樁類型，精準預估充電所需時長。
