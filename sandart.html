@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎨 Sand Studio V38 (Omniverse)</title>
+    <title>🎨 Sand Studio V39 (Thrianta)</title>
     
     <!-- 核心库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
@@ -17,18 +17,18 @@
 
     <style>
         :root {
-            /* 默认暗夜主题 */
-            --bg: #121212;
-            --panel: rgba(30, 30, 30, 0.95);
-            --accent: #00e5ff;
+            /* Thrianta Theme (橙/黑风格) */
+            --bg: #101010;
+            --panel: rgba(30, 30, 30, 0.96);
+            --accent: #ff6b35; /* 苏利安特兔的火橙色 */
             --border: #444;
             --text: #eee;
-            --text-dim: #888;
+            --text-dim: #999;
         }
 
         body { 
             margin: 0; overflow: hidden; 
-            background-color: var(--bg); /* 同步背景色 */
+            background-color: var(--bg);
             font-family: 'Noto Sans SC', sans-serif; color: var(--text); 
             user-select: none; -webkit-user-select: none; 
             transition: background-color 0.3s, color 0.3s;
@@ -44,7 +44,7 @@
         }
         
         .header {
-            padding: 10px 15px; background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border);
+            padding: 12px 15px; background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center; cursor: move;
             font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px;
         }
@@ -52,36 +52,48 @@
         .content { padding: 15px; overflow-y: auto; max-height: 80vh; scrollbar-width: thin; }
         
         /* 左侧工具栏 */
-        #tools { top: 20px; left: 20px; width: 46px; align-items: center; padding-bottom: 10px; overflow: hidden; transition: height 0.3s; }
+        #tools { top: 20px; left: 20px; width: 48px; align-items: center; padding-bottom: 10px; overflow: hidden; transition: height 0.3s; }
         #tools.collapsed .tool-btn:not(#btn-collapse) { display: none; }
-        #tools.collapsed { height: 46px; padding-bottom: 0; }
+        #tools.collapsed { height: 48px; padding-bottom: 0; }
 
         .tool-btn {
-            width: 36px; height: 36px; margin-bottom: 6px; border-radius: 6px;
+            width: 38px; height: 38px; margin-bottom: 6px; border-radius: 6px;
             background: transparent; border: 1px solid transparent; color: var(--text-dim);
             cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s;
-            position: relative; font-size: 14px;
+            position: relative; font-size: 15px;
         }
         .tool-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
-        .tool-btn.active { color: #000; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .tool-btn.active { color: #fff; background: var(--accent); box-shadow: 0 0 12px rgba(255, 107, 53, 0.4); }
+        
+        /* Tooltip */
         .tool-btn:hover::after { 
-            content: attr(data-tip); position: absolute; left: 115%; top: 50%; transform: translateY(-50%); 
+            content: attr(data-tip); position: absolute; left: 120%; top: 50%; transform: translateY(-50%); 
             background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; 
-            font-size: 11px; border-radius: 4px; pointer-events: none; opacity: 1; white-space: nowrap; z-index: 200; 
+            font-size: 11px; border-radius: 4px; pointer-events: none; white-space: nowrap; z-index: 200; 
         }
-        .tool-btn::after { opacity: 0; transition: 0.2s; }
 
         /* 右侧设置 */
         #settings { top: 20px; right: 20px; width: 290px; }
         .section { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-        .sec-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
+        .sec-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 0.5px; }
         .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
         label { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
         
         input[type="range"] { flex: 1; height: 4px; background: var(--border); border-radius: 2px; appearance: none; }
-        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; border: 2px solid var(--panel); }
-        select { background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); padding: 4px; border-radius: 4px; flex: 1; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; border: 2px solid #fff; }
+        select { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 4px; border-radius: 4px; flex: 1; outline: none; }
         .val { font-size: 10px; width: 24px; text-align: right; color: var(--text-dim); font-family: monospace; }
+
+        /* 按钮 */
+        .btn { width: 100%; padding: 8px; margin-top: 5px; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn:hover { filter: brightness(1.1); }
+        .btn-sec { background: rgba(255,255,255,0.1); color: var(--text); }
+        
+        /* 模具网格 */
+        .grid-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .grid-btn { height: 32px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition:0.2s; }
+        .grid-btn:hover { color: var(--text); border-color: var(--accent); }
+        .grid-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         /* 图层 */
         #layer-list { list-style: none; padding: 0; margin: 0; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 4px; }
@@ -89,19 +101,12 @@
         .layer-li.active { background: rgba(255,255,255,0.1); border-left: 3px solid var(--accent); }
         .layer-li:hover { background: rgba(255,255,255,0.05); }
 
-        /* 通用 */
-        .btn { width: 100%; padding: 8px; margin-top: 5px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-sec { background: rgba(255,255,255,0.1); color: var(--text); }
-        .grid-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .grid-btn { height: 30px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition:0.2s; }
-        .grid-btn:hover { color: var(--text); border-color: var(--accent); }
-
         /* 弹窗 */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: var(--panel); width: 320px; padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.7); color: var(--text); }
         
         .pickr .pcr-button { width: 100% !important; height: 30px !important; border-radius: 4px; border: 1px solid var(--border); }
-        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--panel); color: var(--accent); padding: 8px 20px; border-radius: 20px; font-size: 12px; border: 1px solid var(--accent); opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--panel); color: var(--accent); padding: 8px 24px; border-radius: 30px; font-size: 12px; border: 1px solid var(--accent); opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         #toast.show { opacity: 1; bottom: 40px; }
     </style>
 </head>
@@ -112,25 +117,25 @@
 
     <!-- 左侧工具栏 -->
     <div class="panel" id="tools">
-        <div class="tool-btn" id="btn-collapse" data-tip="折叠"><i class="fas fa-chevron-left"></i></div>
-        <button class="tool-btn active" data-tool="brush" data-tip="画笔"><i class="fas fa-paint-brush"></i></button>
-        <button class="tool-btn" data-tool="eraser" data-tip="橡皮"><i class="fas fa-eraser"></i></button>
-        <button class="tool-btn" data-tool="line" data-tip="直线"><i class="fas fa-slash"></i></button>
-        <button class="tool-btn" data-tool="text" data-tip="文字"><i class="fas fa-font"></i></button>
-        <button class="tool-btn" data-tool="stencil" data-tip="模具"><i class="fas fa-shapes"></i></button>
-        <button class="tool-btn" data-tool="eyedropper" data-tip="吸管"><i class="fas fa-eye-dropper"></i></button>
-        <button class="tool-btn" data-tool="move" data-tip="移动"><i class="fas fa-arrows-alt"></i></button>
+        <div class="tool-btn" id="btn-collapse" data-tip="折叠/展开"><i class="fas fa-chevron-left"></i></div>
+        <button class="tool-btn active" data-tool="brush" data-tip="画笔 (B)"><i class="fas fa-paint-brush"></i></button>
+        <button class="tool-btn" data-tool="eraser" data-tip="橡皮 (E)"><i class="fas fa-eraser"></i></button>
+        <button class="tool-btn" data-tool="line" data-tip="直线 (L)"><i class="fas fa-slash"></i></button>
+        <button class="tool-btn" data-tool="text" data-tip="文字 (T)"><i class="fas fa-font"></i></button>
+        <button class="tool-btn" data-tool="stencil" data-tip="模具 (M)"><i class="fas fa-shapes"></i></button>
+        <button class="tool-btn" data-tool="eyedropper" data-tip="吸管 (Alt)"><i class="fas fa-eye-dropper"></i></button>
+        <button class="tool-btn" data-tool="move" data-tip="移动 (Space)"><i class="fas fa-arrows-alt"></i></button>
         <div style="width:20px; height:1px; background:var(--border); margin:5px 0"></div>
-        <button class="tool-btn" id="act-undo" data-tip="撤销"><i class="fas fa-undo"></i></button>
-        <button class="tool-btn" id="act-redo" data-tip="重做"><i class="fas fa-redo"></i></button>
-        <button class="tool-btn" id="act-save-temp" data-tip="保存"><i class="fas fa-save"></i></button>
+        <button class="tool-btn" id="act-undo" data-tip="撤销 (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+        <button class="tool-btn" id="act-redo" data-tip="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+        <button class="tool-btn" id="act-save-temp" data-tip="快速保存"><i class="fas fa-save"></i></button>
         <button class="tool-btn" id="act-clear" data-tip="清空" style="color:#ff4757"><i class="fas fa-trash"></i></button>
     </div>
 
     <!-- 右侧设置面板 -->
     <div class="panel" id="settings">
         <div class="header" id="drag-h">
-            <span>SAND STUDIO V38</span>
+            <span>SAND STUDIO <span style="opacity:0.6; font-size:10px">THRIANTA</span></span>
             <div style="display:flex; gap:10px">
                 <i class="fas fa-info-circle" id="btn-log" style="cursor:pointer; opacity:0.7" title="日志"></i>
                 <i class="fas fa-bars" style="opacity:0.5"></i>
@@ -140,7 +145,7 @@
             
             <!-- 主题与模式 -->
             <div class="section">
-                <div class="sec-title">主题 & 模式</div>
+                <div class="sec-title">色彩 & 模式</div>
                 <div class="row">
                     <label>UI主题</label>
                     <select id="theme-select">
@@ -152,6 +157,20 @@
                 </div>
                 <div id="pickr-container"></div>
                 <button class="btn btn-sec" style="margin-top:10px; font-size:11px" id="btn-light-table"><i class="fas fa-lightbulb"></i> 切换沙盘/灯光台</button>
+            </div>
+
+            <!-- 模具 (默认隐藏，点击工具激活) -->
+            <div class="section" id="stencil-sec" style="display:none; border-left: 3px solid var(--accent); padding-left: 8px; background: rgba(255,255,255,0.02);">
+                <div class="sec-title" style="color:var(--accent)">模具控制 (已激活)</div>
+                <div class="grid-btns">
+                    <button class="grid-btn" data-shape="circle"><i class="far fa-circle"></i></button>
+                    <button class="grid-btn" data-shape="square"><i class="far fa-square"></i></button>
+                    <button class="grid-btn" data-shape="star"><i class="far fa-star"></i></button>
+                    <button class="grid-btn" data-shape="heart"><i class="far fa-heart"></i></button>
+                </div>
+                <div class="row" style="margin-top:8px"><label>缩放</label><input type="range" id="s-scale" min="20" max="200" value="100"></div>
+                <div class="row"><label>旋转</label><input type="range" id="s-rot" min="0" max="360" value="0"></div>
+                <button class="btn btn-sec" style="margin-top:5px; color:#ff4757" onclick="Stencil.clear()">关闭模具</button>
             </div>
 
             <!-- 笔刷引擎 -->
@@ -171,7 +190,7 @@
                 </div>
                 <div class="row"><label>尺寸</label><input type="range" id="p-size" min="2" max="150" value="20"><span class="val" id="v-size">20</span></div>
                 <div class="row"><label>流量</label><input type="range" id="p-flow" min="1" max="50" value="10"><span class="val" id="v-flow">10</span></div>
-                <div class="row"><label>落差</label><input type="range" id="p-height" min="0" max="150" value="50"><span class="val" id="v-height">50</span></div>
+                <div class="row"><label>高度</label><input type="range" id="p-height" min="0" max="150" value="50"><span class="val" id="v-height">50</span></div>
                 
                 <!-- 高级物理 -->
                 <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border)">
@@ -182,20 +201,6 @@
                 </div>
 
                 <div class="row" style="margin-top:8px"><label>模式</label><select id="p-mode"><option value="physics">物理落沙</option><option value="instant">静态速绘</option></select></div>
-            </div>
-
-            <!-- 模具 (隐藏) -->
-            <div class="section" id="stencil-sec" style="display:none">
-                <div class="sec-title">模具遮罩</div>
-                <div class="grid-btns">
-                    <button class="grid-btn" onclick="Stencil.set('circle')"><i class="far fa-circle"></i></button>
-                    <button class="grid-btn" onclick="Stencil.set('square')"><i class="far fa-square"></i></button>
-                    <button class="grid-btn" onclick="Stencil.set('star')"><i class="far fa-star"></i></button>
-                    <button class="grid-btn" onclick="Stencil.set('heart')"><i class="far fa-heart"></i></button>
-                </div>
-                <div class="row" style="margin-top:8px"><label>缩放</label><input type="range" id="s-scale" min="20" max="200" value="100"></div>
-                <div class="row"><label>旋转</label><input type="range" id="s-rot" min="0" max="360" value="0"></div>
-                <button class="btn btn-sec" style="margin-top:5px; color:#ff4757" onclick="Stencil.clear()">关闭模具</button>
             </div>
 
             <!-- 图层 -->
@@ -241,13 +246,12 @@
     <!-- 弹窗：日志 -->
     <div id="changelog-modal" class="modal">
         <div class="modal-box">
-            <h3 style="color:var(--accent); margin-top:0;">🚀 V38.0 全维版</h3>
+            <h3 style="color:var(--accent); margin-top:0;">🐰 V39.0 Thrianta</h3>
             <ul style="font-size:12px; color:var(--text-dim); padding-left:20px; line-height:1.6">
-                <li><strong>🎨 主题回归：</strong>暗夜、明亮、赛博、复古主题切换。</li>
-                <li><strong>🖌️ 笔刷全家桶：</strong>细沙/粗砾/霓虹/火焰/冰雪/彩虹/木炭。</li>
-                <li><strong>🖼️ 高级图层：</strong>支持插入图片为背景或独立图层。</li>
-                <li><strong>⚙️ 物理参数：</strong>重力、杂色、散布、高度全面可控。</li>
-                <li><strong>🚫 修复：</strong>橡皮擦、模具坐标、撤销功能已完美。</li>
+                <li><strong>🧬 模具修复：</strong>点击模具工具现在会自动展开设置面板并显示模具，不再需要手动查找。</li>
+                <li><strong>🧪 吸管修复：</strong>修复了吸管取色全黑的问题，现在可以精准吸取任何位置颜色。</li>
+                <li><strong>🖌️ 完整笔刷：</strong>7种笔刷 + 全物理参数控制。</li>
+                <li><strong>🎨 视觉升级：</strong>全新苏利安特橙色主题。</li>
             </ul>
             <button class="btn" onclick="document.getElementById('changelog-modal').style.display='none'">开始创作</button>
         </div>
@@ -266,7 +270,7 @@
         };
 
         const State = {
-            tool: 'brush', color: '#00e5ff', colorInt: 0x00e5ff,
+            tool: 'brush', color: '#ff6b35', colorInt: 0xff6b35,
             brush: { size: 20, flow: 10, height: 50, stab: 5, mode: 'physics', jitter: 10, gravity: 8, scatter: 0 },
             brushType: 'sand',
             stencil: { active: false, type: null, scale: 1, rot: 0 },
@@ -335,7 +339,7 @@
             flush() {
                 const l = State.activeLayer;
                 if (!l) { this.q=[]; this.eq=[]; return; }
-                // Eraser Fix: Set BlendMode on Graphics directly
+                // Eraser Fix
                 if (this.eq.length) {
                     const g = new PIXI.Graphics();
                     g.blendMode = PIXI.BLEND_MODES.ERASE;
@@ -431,7 +435,13 @@
         const Stencil = {
             guide: new PIXI.Graphics(),
             init() { previewLayer.addChild(this.guide); this.guide.visible=false; },
-            set(t) { State.stencil.active=true; State.stencil.type=t; document.getElementById('stencil-sec').style.display='block'; this.draw(); },
+            set(t) { 
+                State.stencil.active=true; State.stencil.type=t; 
+                State.tool='brush'; UI.updateTools();
+                // 核心修复：点击工具后强制显示模具面板
+                document.getElementById('stencil-sec').style.display='block'; 
+                this.draw(); 
+            },
             clear() { State.stencil.active=false; this.guide.visible=false; document.getElementById('stencil-sec').style.display='none'; },
             draw() {
                 const g=this.guide; g.clear(); g.lineStyle(2, 0xffffff, 0.5); g.beginFill(0x000000, 0.3);
@@ -520,7 +530,7 @@
         };
 
         // DB AutoSave
-        const DB={db:null,init(){return new Promise(r=>{const q=indexedDB.open('SandV38',1);q.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('s'))e.target.result.createObjectStore('s')};q.onsuccess=e=>{this.db=e.target.result;r()}})},save(k,d){if(this.db)this.db.transaction('s','readwrite').objectStore('s').put(d,k)},load(k){return new Promise(r=>{if(!this.db)r(null);else{const q=this.db.transaction('s','readonly').objectStore('s').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}})},async auto(){if(State.layers.length){const d={bg:bgSprite.tint,ls:State.layers.map(l=>({n:l.name,v:l.vis,i:app.renderer.extract.canvas(l.tex).toDataURL()}))};await this.save('auto',d);UI.toast("已自动保存")}}};
+        const DB={db:null,init(){return new Promise(r=>{const q=indexedDB.open('SandV39',1);q.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('s'))e.target.result.createObjectStore('s')};q.onsuccess=e=>{this.db=e.target.result;r()}})},save(k,d){if(this.db)this.db.transaction('s','readwrite').objectStore('s').put(d,k)},load(k){return new Promise(r=>{if(!this.db)r(null);else{const q=this.db.transaction('s','readonly').objectStore('s').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}})},async auto(){if(State.layers.length){const d={bg:bgSprite.tint,ls:State.layers.map(l=>({n:l.name,v:l.vis,i:app.renderer.extract.canvas(l.tex).toDataURL()}))};await this.save('auto',d);UI.toast("已自动保存")}}};
         setInterval(()=>DB.auto(),60000);
 
         // 交互
@@ -571,9 +581,10 @@
             if(e.target!==app.view) return;
             if(e.button===1 || State.tool==='move' || e.ctrlKey) { isDrag=true; dragOff={x:e.clientX-viewport.x, y:e.clientY-viewport.y}; document.body.style.cursor='grabbing'; }
             else if(State.tool==='eyedropper') {
-                const p=app.renderer.plugins.extract.pixels(viewport,new PIXI.Rectangle(e.clientX,e.clientY,1,1));
-                const hex="#"+((1<<24)+(p[0]<<16)+(p[1]<<8)+p[2]).toString(16).slice(1);
-                pickr.setColor(hex); State.tool='brush'; UI.updateTools();
+                // 核心修复：使用正确API和屏幕坐标
+                const pixel = app.renderer.extract.pixels(app.stage, new PIXI.Rectangle(e.clientX, e.clientY, 1, 1));
+                const hex = "#" + ((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1);
+                pickr.setColor(hex); State.tool='brush'; UI.updateTools(); UI.toast(`吸取颜色: ${hex}`);
             } else if(State.tool==='line') { Tools.onDown(getLocalPos(e).x, getLocalPos(e).y); }
             else { State.isDrawing=true; processStroke(getLocalPos(e).x, getLocalPos(e).y, true); }
         });
@@ -595,9 +606,22 @@
         };
 
         document.querySelectorAll('.tool-btn').forEach(b=>{
-            b.onclick=()=>{ if(b.dataset.tool==='text')document.getElementById('text-modal').style.display='flex'; else if(b.dataset.tool){State.tool=b.dataset.tool; UI.updateTools(); if(State.tool!=='stencil')Stencil.clear(); }};
+            b.onclick=()=>{ 
+                if(b.dataset.tool==='text')document.getElementById('text-modal').style.display='flex'; 
+                else if(b.dataset.tool){
+                    State.tool=b.dataset.tool; 
+                    UI.updateTools(); 
+                    if(State.tool==='stencil') Stencil.set('circle'); // 自动激活模具UI
+                    else if(State.tool!=='stencil') Stencil.clear(); 
+                }
+            };
         });
         
+        // Stencil Grid Clicks
+        document.querySelectorAll('.grid-btn[data-shape]').forEach(b=>{
+            b.onclick=()=>{ Stencil.set(b.dataset.shape); }
+        });
+
         const bind=(id,k,v)=>document.getElementById(id).oninput=e=>{State.brush[k]=parseFloat(e.target.value);if(v)document.getElementById(v).innerText=e.target.value; if(id.includes('s-'))Stencil.draw();};
         bind('p-size','size','v-size'); bind('p-flow','flow'); bind('p-height','height'); bind('p-stab','stab'); 
         bind('p-jitter','jitter'); bind('p-gravity','gravity'); bind('p-scatter','scatter'); bind('s-scale','scale'); bind('s-rot','rot');
