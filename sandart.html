@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎨 Sand Studio V33 (Fixed & Pro)</title>
+    <title>🎨 Sand Studio V38 (Omniverse)</title>
     
     <!-- 核心库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
     
-    <!-- 样式库 -->
+    <!-- 样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
+            /* 默认暗夜主题 */
             --bg: #121212;
             --panel: rgba(30, 30, 30, 0.95);
             --accent: #00e5ff;
@@ -25,7 +26,13 @@
             --text-dim: #888;
         }
 
-        body { margin: 0; overflow: hidden; background: var(--bg); font-family: 'Noto Sans SC', sans-serif; color: var(--text); user-select: none; -webkit-user-select: none; }
+        body { 
+            margin: 0; overflow: hidden; 
+            background-color: var(--bg); /* 同步背景色 */
+            font-family: 'Noto Sans SC', sans-serif; color: var(--text); 
+            user-select: none; -webkit-user-select: none; 
+            transition: background-color 0.3s, color 0.3s;
+        }
         #stage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; cursor: crosshair; }
         
         /* 面板通用 */
@@ -33,7 +40,7 @@
             position: fixed; background: var(--panel); border: 1px solid var(--border);
             border-radius: 8px; backdrop-filter: blur(12px); z-index: 100;
             box-shadow: 0 10px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column;
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: transform 0.3s ease;
         }
         
         .header {
@@ -57,61 +64,45 @@
         }
         .tool-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
         .tool-btn.active { color: #000; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-        
-        .tool-btn::after { 
+        .tool-btn:hover::after { 
             content: attr(data-tip); position: absolute; left: 115%; top: 50%; transform: translateY(-50%); 
-            background: #000; padding: 4px 8px; font-size: 11px; border-radius: 4px; pointer-events: none; 
-            opacity: 0; transition: 0.2s; white-space: nowrap; z-index: 200; border: 1px solid var(--border);
+            background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; 
+            font-size: 11px; border-radius: 4px; pointer-events: none; opacity: 1; white-space: nowrap; z-index: 200; 
         }
-        .tool-btn:hover::after { opacity: 1; left: 125%; }
-
-        /* 折叠按钮 */
-        #btn-collapse { font-size: 10px; margin-bottom: 10px; color: var(--text-dim); }
-        #btn-collapse:hover { color: var(--accent); }
+        .tool-btn::after { opacity: 0; transition: 0.2s; }
 
         /* 右侧设置 */
         #settings { top: 20px; right: 20px; width: 290px; }
         .section { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-        .section-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
-        
+        .sec-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
         .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
         label { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
         
         input[type="range"] { flex: 1; height: 4px; background: var(--border); border-radius: 2px; appearance: none; }
         input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; border: 2px solid var(--panel); }
-        
-        select { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 4px; border-radius: 4px; font-size: 11px; outline: none; }
+        select { background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text); padding: 4px; border-radius: 4px; flex: 1; outline: none; }
         .val { font-size: 10px; width: 24px; text-align: right; color: var(--text-dim); font-family: monospace; }
 
-        /* 网格按钮 */
-        .grid-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .grid-btn { height: 32px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition: 0.2s; }
-        .grid-btn:hover { color: var(--text); border-color: var(--accent); }
-        .grid-btn.active { background: var(--accent); color: #000; }
-
         /* 图层 */
-        #layer-list { list-style: none; padding: 0; margin: 0; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; }
-        .layer-li { padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 12px; transition: 0.2s; }
+        #layer-list { list-style: none; padding: 0; margin: 0; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 4px; }
+        .layer-li { padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 12px; color: var(--text); }
         .layer-li.active { background: rgba(255,255,255,0.1); border-left: 3px solid var(--accent); }
         .layer-li:hover { background: rgba(255,255,255,0.05); }
 
-        /* 弹窗 */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-box { background: var(--panel); width: 340px; padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
-        
-        .btn { width: 100%; padding: 8px; margin-top: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn:hover { filter: brightness(1.1); }
+        /* 通用 */
+        .btn { width: 100%; padding: 8px; margin-top: 5px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-sec { background: rgba(255,255,255,0.1); color: var(--text); }
+        .grid-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .grid-btn { height: 30px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition:0.2s; }
+        .grid-btn:hover { color: var(--text); border-color: var(--accent); }
+
+        /* 弹窗 */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: var(--panel); width: 320px; padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.7); color: var(--text); }
         
-        /* 更新日志列表 */
-        .log-list { padding-left: 20px; font-size: 12px; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
-        .log-list li { margin-bottom: 5px; }
-
-        /* 通知 */
-        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent); padding: 8px 24px; border-radius: 30px; font-size: 12px; border: 1px solid var(--accent); opacity: 0; transition: 0.3s; pointer-events: none; z-index: 5000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-        #toast.show { opacity: 1; bottom: 40px; }
-
         .pickr .pcr-button { width: 100% !important; height: 30px !important; border-radius: 4px; border: 1px solid var(--border); }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--panel); color: var(--accent); padding: 8px 20px; border-radius: 20px; font-size: 12px; border: 1px solid var(--accent); opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        #toast.show { opacity: 1; bottom: 40px; }
     </style>
 </head>
 <body>
@@ -119,42 +110,27 @@
     <div id="stage"></div>
     <div id="toast">通知</div>
 
-    <!-- 更新日志弹窗 -->
-    <div id="changelog-modal" class="modal">
-        <div class="modal-box">
-            <h3 style="color:var(--accent); margin-top:0; border-bottom:1px solid var(--border); padding-bottom:10px;">🚀 V33.0 更新日志</h3>
-            <ul class="log-list">
-                <li><strong>🚫 橡皮擦修复：</strong>完美修复了橡皮擦发白/无法擦除的问题，现在可以正确擦除到透明。</li>
-                <li><strong>↩️ 撤销重构：</strong>重写了历史记录系统，撤销功能已完全恢复 (20步)。</li>
-                <li><strong>💾 自动保存：</strong>新增 IndexedDB 数据库支持，自动保存高清画作，防止丢失。</li>
-                <li><strong>📐 模具校准：</strong>修复了模具遮罩位置偏移的问题。</li>
-                <li><strong>🖌️ 全能工具：</strong>整合了沙盘模式、图片插入、文字工具。</li>
-            </ul>
-            <button class="btn" onclick="document.getElementById('changelog-modal').style.display='none'">开始创作</button>
-        </div>
-    </div>
-
     <!-- 左侧工具栏 -->
     <div class="panel" id="tools">
-        <div class="tool-btn" id="btn-collapse" title="折叠"><i class="fas fa-chevron-left"></i></div>
-        <button class="tool-btn active" data-tool="brush" data-tip="画笔 (B)"><i class="fas fa-paint-brush"></i></button>
-        <button class="tool-btn" data-tool="eraser" data-tip="橡皮 (E)"><i class="fas fa-eraser"></i></button>
-        <button class="tool-btn" data-tool="line" data-tip="直线 (L)"><i class="fas fa-slash"></i></button>
-        <button class="tool-btn" data-tool="text" data-tip="文字 (T)"><i class="fas fa-font"></i></button>
-        <button class="tool-btn" data-tool="stencil" data-tip="模具 (M)"><i class="fas fa-shapes"></i></button>
-        <button class="tool-btn" data-tool="eyedropper" data-tip="吸管 (Alt)"><i class="fas fa-eye-dropper"></i></button>
-        <button class="tool-btn" data-tool="move" data-tip="移动 (Space)"><i class="fas fa-arrows-alt"></i></button>
+        <div class="tool-btn" id="btn-collapse" data-tip="折叠"><i class="fas fa-chevron-left"></i></div>
+        <button class="tool-btn active" data-tool="brush" data-tip="画笔"><i class="fas fa-paint-brush"></i></button>
+        <button class="tool-btn" data-tool="eraser" data-tip="橡皮"><i class="fas fa-eraser"></i></button>
+        <button class="tool-btn" data-tool="line" data-tip="直线"><i class="fas fa-slash"></i></button>
+        <button class="tool-btn" data-tool="text" data-tip="文字"><i class="fas fa-font"></i></button>
+        <button class="tool-btn" data-tool="stencil" data-tip="模具"><i class="fas fa-shapes"></i></button>
+        <button class="tool-btn" data-tool="eyedropper" data-tip="吸管"><i class="fas fa-eye-dropper"></i></button>
+        <button class="tool-btn" data-tool="move" data-tip="移动"><i class="fas fa-arrows-alt"></i></button>
         <div style="width:20px; height:1px; background:var(--border); margin:5px 0"></div>
-        <button class="tool-btn" id="act-undo" data-tip="撤销 (Ctrl+Z)"><i class="fas fa-undo"></i></button>
-        <button class="tool-btn" id="act-redo" data-tip="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
-        <button class="tool-btn" id="act-save-temp" data-tip="手动保存"><i class="fas fa-save"></i></button>
+        <button class="tool-btn" id="act-undo" data-tip="撤销"><i class="fas fa-undo"></i></button>
+        <button class="tool-btn" id="act-redo" data-tip="重做"><i class="fas fa-redo"></i></button>
+        <button class="tool-btn" id="act-save-temp" data-tip="保存"><i class="fas fa-save"></i></button>
         <button class="tool-btn" id="act-clear" data-tip="清空" style="color:#ff4757"><i class="fas fa-trash"></i></button>
     </div>
 
     <!-- 右侧设置面板 -->
     <div class="panel" id="settings">
         <div class="header" id="drag-h">
-            <span>SAND STUDIO V33</span>
+            <span>SAND STUDIO V38</span>
             <div style="display:flex; gap:10px">
                 <i class="fas fa-info-circle" id="btn-log" style="cursor:pointer; opacity:0.7" title="日志"></i>
                 <i class="fas fa-bars" style="opacity:0.5"></i>
@@ -162,65 +138,99 @@
         </div>
         <div class="content">
             
+            <!-- 主题与模式 -->
             <div class="section">
-                <div class="section-title">色彩 & 模式</div>
-                <div id="pickr-container"></div>
-                <button class="grid-btn" style="width:100%; margin-top:8px;" id="btn-light-table"><i class="fas fa-lightbulb"></i> 切换沙盘/灯光台模式</button>
-            </div>
-
-            <div class="section">
-                <div class="section-title">笔刷参数</div>
+                <div class="sec-title">主题 & 模式</div>
                 <div class="row">
-                    <label>笔刷</label>
-                    <select id="brush-type" style="flex:1; margin-left:10px">
-                        <option value="sand">🏜️ 细沙</option>
-                        <option value="gravel">🪨 粗砾</option>
-                        <option value="neon">✨ 霓虹</option>
-                        <option value="fire">🔥 火焰</option>
-                        <option value="rainbow">🌈 彩虹</option>
+                    <label>UI主题</label>
+                    <select id="theme-select">
+                        <option value="dark">🌑 暗夜 (Dark)</option>
+                        <option value="light">☀️ 明亮 (Light)</option>
+                        <option value="cyber">🤖 赛博 (Cyber)</option>
+                        <option value="retro">📜 复古 (Retro)</option>
                     </select>
                 </div>
-                <div class="row"><label>尺寸</label><input type="range" id="p-size" min="2" max="150" value="25"><span class="val" id="v-size">25</span></div>
-                <div class="row"><label>流量</label><input type="range" id="p-flow" min="1" max="50" value="10"><span class="val" id="v-flow">10</span></div>
-                <div class="row"><label>高度</label><input type="range" id="p-height" min="0" max="150" value="50"><span class="val" id="v-height">50</span></div>
-                <div class="row"><label>抖动</label><input type="range" id="p-stab" min="0" max="20" value="5"><span class="val" id="v-stab">5</span></div>
-                <div class="row"><label>模式</label><select id="p-mode" style="flex:1; margin-left:10px"><option value="physics">物理落沙</option><option value="instant">静态速绘</option></select></div>
+                <div id="pickr-container"></div>
+                <button class="btn btn-sec" style="margin-top:10px; font-size:11px" id="btn-light-table"><i class="fas fa-lightbulb"></i> 切换沙盘/灯光台</button>
             </div>
 
+            <!-- 笔刷引擎 -->
+            <div class="section">
+                <div class="sec-title">笔刷参数</div>
+                <div class="row">
+                    <label>类型</label>
+                    <select id="brush-type">
+                        <option value="sand">🏜️ 细沙 (Sand)</option>
+                        <option value="gravel">🪨 粗砾 (Gravel)</option>
+                        <option value="neon">✨ 霓虹 (Neon)</option>
+                        <option value="fire">🔥 火焰 (Fire)</option>
+                        <option value="ice">❄️ 冰雪 (Ice)</option>
+                        <option value="rainbow">🌈 彩虹 (Rainbow)</option>
+                        <option value="charcoal">✏️ 木炭 (Charcoal)</option>
+                    </select>
+                </div>
+                <div class="row"><label>尺寸</label><input type="range" id="p-size" min="2" max="150" value="20"><span class="val" id="v-size">20</span></div>
+                <div class="row"><label>流量</label><input type="range" id="p-flow" min="1" max="50" value="10"><span class="val" id="v-flow">10</span></div>
+                <div class="row"><label>落差</label><input type="range" id="p-height" min="0" max="150" value="50"><span class="val" id="v-height">50</span></div>
+                
+                <!-- 高级物理 -->
+                <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border)">
+                    <div class="row"><label>抖动</label><input type="range" id="p-stab" min="0" max="20" value="5" title="平滑"><span class="val" id="v-stab">5</span></div>
+                    <div class="row"><label>杂色</label><input type="range" id="p-jitter" min="0" max="100" value="10"><span class="val" id="v-jitter">10</span></div>
+                    <div class="row"><label>重力</label><input type="range" id="p-gravity" min="1" max="20" value="8"><span class="val" id="v-gravity">0.8</span></div>
+                    <div class="row"><label>散布</label><input type="range" id="p-scatter" min="0" max="50" value="0"><span class="val" id="v-scatter">0</span></div>
+                </div>
+
+                <div class="row" style="margin-top:8px"><label>模式</label><select id="p-mode"><option value="physics">物理落沙</option><option value="instant">静态速绘</option></select></div>
+            </div>
+
+            <!-- 模具 (隐藏) -->
             <div class="section" id="stencil-sec" style="display:none">
-                <div class="section-title">模具控制</div>
+                <div class="sec-title">模具遮罩</div>
                 <div class="grid-btns">
                     <button class="grid-btn" onclick="Stencil.set('circle')"><i class="far fa-circle"></i></button>
                     <button class="grid-btn" onclick="Stencil.set('square')"><i class="far fa-square"></i></button>
                     <button class="grid-btn" onclick="Stencil.set('star')"><i class="far fa-star"></i></button>
                     <button class="grid-btn" onclick="Stencil.set('heart')"><i class="far fa-heart"></i></button>
                 </div>
-                <div class="row" style="margin-top:8px"><label>大小</label><input type="range" id="s-scale" min="20" max="200" value="100"></div>
+                <div class="row" style="margin-top:8px"><label>缩放</label><input type="range" id="s-scale" min="20" max="200" value="100"></div>
                 <div class="row"><label>旋转</label><input type="range" id="s-rot" min="0" max="360" value="0"></div>
-                <button class="btn btn-sec" onclick="Stencil.clear()" style="margin-top:5px; color:#ff4757">关闭模具</button>
+                <button class="btn btn-sec" style="margin-top:5px; color:#ff4757" onclick="Stencil.clear()">关闭模具</button>
             </div>
 
+            <!-- 图层 -->
             <div class="section">
-                <div class="section-title" style="display:flex; justify-content:space-between">
-                    图层管理 <i class="fas fa-plus" style="cursor:pointer; color:var(--accent)" id="act-add-layer"></i>
+                <div class="sec-title" style="display:flex; justify-content:space-between">
+                    图层 <i class="fas fa-plus" style="cursor:pointer; color:var(--accent)" id="act-add-layer"></i>
                 </div>
                 <ul id="layer-list"></ul>
                 <div style="display:flex; gap:5px; margin-top:10px">
-                    <button class="grid-btn" style="flex:1" id="act-export"><i class="fas fa-download"></i> 导出</button>
-                    <button class="grid-btn" style="flex:1" id="act-img"><i class="fas fa-image"></i> 图片</button>
+                    <button class="btn btn-sec" style="flex:1; margin:0" id="act-save"><i class="fas fa-download"></i> 导出</button>
+                    <button class="btn btn-sec" style="flex:1; margin:0" id="act-img"><i class="fas fa-image"></i> 图片</button>
                 </div>
                 <input type="file" id="file-input" style="display:none" accept="image/*">
             </div>
         </div>
     </div>
 
-    <!-- 文字输入 -->
+    <!-- 弹窗：图片 -->
+    <div id="img-modal" class="modal">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:var(--accent)">插入图片</h3>
+            <p style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">请选择用途：</p>
+            <button class="btn" id="img-bg-btn">设为背景 (替换底图)</button>
+            <button class="btn btn-sec" id="img-layer-btn" style="margin-top:8px">作为图层插入</button>
+            <button class="btn btn-sec" style="margin-top:15px" onclick="document.getElementById('img-modal').style.display='none'">取消</button>
+        </div>
+    </div>
+
+    <!-- 弹窗：文本 -->
     <div id="text-modal" class="modal">
         <div class="modal-box">
             <h3 style="margin-top:0; color:var(--accent)">添加文字</h3>
-            <input type="text" id="tm-input" placeholder="输入内容..." style="width:92%; padding:8px; background:#111; border:1px solid #444; color:#fff; margin-bottom:10px; border-radius:4px;">
-            <div class="row"><label>字号</label><input type="number" id="tm-size" value="80" style="width:60px"></div>
-            <div class="row"><label>字体</label><select id="tm-font" style="width:100px"><option value="ZCOOL KuaiLe">快乐体</option><option value="Noto Sans SC">黑体</option></select></div>
+            <input type="text" id="tm-input" placeholder="输入文字..." style="width:92%; padding:8px; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:var(--text); margin-bottom:10px; border-radius:4px;">
+            <div class="row"><label>大小</label><input type="number" id="tm-size" value="80" style="width:60px"></div>
+            <div class="row"><label>字体</label><select id="tm-font" style="flex:1"><option value="ZCOOL KuaiLe">快乐体</option><option value="Noto Sans SC">黑体</option></select></div>
             <div style="display:flex; gap:10px; margin-top:15px">
                 <button class="btn btn-sec" onclick="document.getElementById('text-modal').style.display='none'">取消</button>
                 <button class="btn" id="tm-confirm">生成</button>
@@ -228,37 +238,59 @@
         </div>
     </div>
 
+    <!-- 弹窗：日志 -->
+    <div id="changelog-modal" class="modal">
+        <div class="modal-box">
+            <h3 style="color:var(--accent); margin-top:0;">🚀 V38.0 全维版</h3>
+            <ul style="font-size:12px; color:var(--text-dim); padding-left:20px; line-height:1.6">
+                <li><strong>🎨 主题回归：</strong>暗夜、明亮、赛博、复古主题切换。</li>
+                <li><strong>🖌️ 笔刷全家桶：</strong>细沙/粗砾/霓虹/火焰/冰雪/彩虹/木炭。</li>
+                <li><strong>🖼️ 高级图层：</strong>支持插入图片为背景或独立图层。</li>
+                <li><strong>⚙️ 物理参数：</strong>重力、杂色、散布、高度全面可控。</li>
+                <li><strong>🚫 修复：</strong>橡皮擦、模具坐标、撤销功能已完美。</li>
+            </ul>
+            <button class="btn" onclick="document.getElementById('changelog-modal').style.display='none'">开始创作</button>
+        </div>
+    </div>
+
     <script>
         // ==========================================
-        // 1. 核心配置与初始化
+        // 1. 配置与主题数据
         // ==========================================
-        const Config = { width: 3000, height: 2000, maxParticles: 40000, gravity: 0.8 };
-        const State = {
-            tool: 'brush', color: '#00e5ff', colorInt: 0x00e5ff,
-            brush: { size: 25, flow: 10, height: 50, stab: 5, mode: 'physics', jitter: 10 },
-            brushType: 'sand',
-            stencil: { active: false, type: null, scale: 1, rot: 0 },
-            layers: [], activeLayer: null,
-            isDrawing: false, isLightTable: false
+        const Config = { width: 3000, height: 2000, maxParticles: 40000 };
+        const Themes = {
+            dark: { bg:'#121212', panel:'rgba(30,30,30,0.95)', accent:'#00e5ff', text:'#eee', border:'#444', canvas:0x121212 },
+            light: { bg:'#e0e0e0', panel:'rgba(255,255,255,0.95)', accent:'#ff9800', text:'#333', border:'#ccc', canvas:0xe0e0e0 },
+            cyber: { bg:'#0a0a12', panel:'rgba(10,10,30,0.92)', accent:'#ff00ff', text:'#0ff', border:'#00aaaa', canvas:0x0a0a12 },
+            retro: { bg:'#3e2723', panel:'rgba(62,39,35,0.95)', accent:'#ffccbc', text:'#d7ccc8', border:'#5d4037', canvas:0x3e2723 }
         };
 
-        // Pixi 应用
+        const State = {
+            tool: 'brush', color: '#00e5ff', colorInt: 0x00e5ff,
+            brush: { size: 20, flow: 10, height: 50, stab: 5, mode: 'physics', jitter: 10, gravity: 8, scatter: 0 },
+            brushType: 'sand',
+            stencil: { active: false, type: null, scale: 1, rot: 0 },
+            layers: [], activeLayer: null, history: [], historyPtr: -1,
+            isLightTable: false, currentTheme: 'dark', tempImgData: null
+        };
+
+        // ==========================================
+        // 2. Pixi 初始化
+        // ==========================================
         const app = new PIXI.Application({
-            resizeTo: window, backgroundColor: 0x121212,
+            resizeTo: window, backgroundColor: Themes.dark.canvas,
             antialias: false, resolution: window.devicePixelRatio || 1,
             preserveDrawingBuffer: true, autoDensity: true
         });
         document.getElementById('stage').appendChild(app.view);
 
-        // 场景图
         const viewport = new PIXI.Container();
         app.stage.addChild(viewport);
         viewport.position.set(window.innerWidth/2, window.innerHeight/2);
 
         const bgSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
         bgSprite.width = Config.width; bgSprite.height = Config.height;
-        bgSprite.anchor.set(0.5);
-        bgSprite.tint = 0x121212;
+        bgSprite.anchor.set(0.5); bgSprite.tint = Themes.dark.canvas;
         bgSprite.filters = [new PIXI.filters.NoiseFilter(0.1)];
         viewport.addChild(bgSprite);
 
@@ -278,242 +310,109 @@
         const pixelTex = app.renderer.generateTexture(new PIXI.Graphics().beginFill(0xffffff).drawCircle(0,0,2).endFill());
 
         // ==========================================
-        // 2. 数据库系统 (IndexedDB 自动保存)
-        // ==========================================
-        const DB = {
-            db: null,
-            init() {
-                return new Promise((resolve) => {
-                    const req = indexedDB.open('SandStudioDB', 1);
-                    req.onupgradeneeded = e => {
-                        const db = e.target.result;
-                        if (!db.objectStoreNames.contains('saves')) db.createObjectStore('saves');
-                    };
-                    req.onsuccess = e => { this.db = e.target.result; resolve(); this.loadAutoSave(); };
-                });
-            },
-            save(key, data) {
-                if(!this.db) return;
-                const tx = this.db.transaction('saves', 'readwrite');
-                tx.objectStore('saves').put(data, key);
-            },
-            load(key) {
-                return new Promise(resolve => {
-                    if(!this.db) return resolve(null);
-                    const tx = this.db.transaction('saves', 'readonly');
-                    const req = tx.objectStore('saves').get(key);
-                    req.onsuccess = () => resolve(req.result);
-                    req.onerror = () => resolve(null);
-                });
-            },
-            async saveAuto() {
-                // 保存图层快照 (Base64)
-                const layersData = State.layers.map(l => ({
-                    name: l.name,
-                    vis: l.vis,
-                    img: app.renderer.extract.canvas(l.tex).toDataURL('image/png')
-                }));
-                const data = { date: Date.now(), bg: bgSprite.tint, layers: layersData };
-                await this.save('autosave', data);
-                UI.toast("已自动保存 (本地数据库)");
-            },
-            async loadAutoSave() {
-                const data = await this.load('autosave');
-                if(data && confirm("发现未完成的画作，是否恢复？")) {
-                    bgSprite.tint = data.bg;
-                    // 清空
-                    State.layers.forEach(l => { layerContainer.removeChild(l.spr); l.tex.destroy(true); });
-                    State.layers = [];
-                    // 恢复
-                    for (const ld of data.layers) {
-                        const l = LayerManager.add(ld.name);
-                        l.vis = ld.vis; l.spr.visible = l.vis;
-                        const img = new Image();
-                        img.src = ld.img;
-                        await new Promise(r => img.onload = r);
-                        const s = new PIXI.Sprite(PIXI.Texture.from(img));
-                        app.renderer.render(s, {renderTexture: l.tex});
-                    }
-                    UI.renderLayers();
-                    UI.toast("画作已恢复");
-                }
-            }
-        };
-        setInterval(() => DB.saveAuto(), 60000); // 每分钟自动保存
-
-        // ==========================================
-        // 3. 核心功能模块
+        // 3. 核心系统 (Baker, Physics, Theme)
         // ==========================================
         
-        // 历史记录 (修复版)
-        const History = {
-            stack: [], ptr: -1, max: 20,
-            push() {
-                const l = State.activeLayer;
-                if (!l) return;
-                if (this.ptr < this.stack.length - 1) this.stack = this.stack.slice(0, this.ptr + 1);
-                
-                // 使用 Canvas 提取快照
-                const snap = app.renderer.extract.canvas(l.tex).toDataURL();
-                this.stack.push({ id: l.id, data: snap });
-                if (this.stack.length > this.max) this.stack.shift(); else this.ptr++;
-            },
-            undo() {
-                if (this.ptr <= 0) return UI.toast("无更早记录");
-                this.ptr--;
-                this.restore(this.stack[this.ptr]);
-                UI.toast("已撤销");
-            },
-            redo() {
-                if (this.ptr >= this.stack.length - 1) return;
-                this.ptr++;
-                this.restore(this.stack[this.ptr]);
-                UI.toast("已重做");
-            },
-            restore(snap) {
-                const l = State.layers.find(x => x.id === snap.id);
-                if (l) {
-                    const img = new Image();
-                    img.src = snap.data;
-                    img.onload = () => {
-                        const s = new PIXI.Sprite(PIXI.Texture.from(img));
-                        const g = new PIXI.Graphics().beginFill(0,0).drawRect(0,0,Config.width,Config.height);
-                        app.renderer.render(g, {renderTexture: l.tex, clear: true});
-                        app.renderer.render(s, {renderTexture: l.tex});
-                    };
-                }
-            }
-        };
+        // 主题切换
+        function applyTheme(key) {
+            const t = Themes[key];
+            const s = document.documentElement.style;
+            s.setProperty('--bg', t.bg); s.setProperty('--panel', t.panel);
+            s.setProperty('--accent', t.accent); s.setProperty('--text', t.text); s.setProperty('--border', t.border);
+            document.body.style.backgroundColor = t.bg;
+            app.renderer.background.color = t.canvas;
+            if(!State.isLightTable) bgSprite.tint = t.canvas;
+        }
 
-        // 烘焙器 (修复橡皮擦混合模式)
+        // 烘焙
         const Baker = {
             q: [], eq: [],
             add(x, y, c, s, b) {
-                if (State.stencil.active && !Stencil.contains(x, y)) return;
+                if (State.stencil.active && !Stencil.contains(x,y)) return;
                 if (State.tool === 'eraser') this.eq.push({x, y, s});
                 else this.q.push({x, y, c, s, b});
             },
             flush() {
                 const l = State.activeLayer;
                 if (!l) { this.q=[]; this.eq=[]; return; }
-                
-                // 橡皮擦处理 (ERASE Blend Mode Fix)
+                // Eraser Fix: Set BlendMode on Graphics directly
                 if (this.eq.length) {
                     const g = new PIXI.Graphics();
-                    g.blendMode = PIXI.BLEND_MODES.ERASE; // 关键修复：设置在对象上
-                    this.eq.forEach(p => {
-                        g.beginFill(0xffffff); g.drawCircle(p.x, p.y, State.brush.size*0.6); g.endFill();
-                    });
+                    g.blendMode = PIXI.BLEND_MODES.ERASE;
+                    this.eq.forEach(p => { g.beginFill(0xffffff); g.drawCircle(p.x, p.y, State.brush.size*0.6); g.endFill(); });
                     app.renderer.render(g, {renderTexture: l.tex, clear: false});
                     this.eq = [];
                 }
-                
-                // 绘制处理
                 if (this.q.length) {
                     const c = new PIXI.Container();
-                    const limit = Math.min(this.q.length, 2000);
-                    for(let i=0; i<limit; i++){
+                    const lim = Math.min(this.q.length, 2000);
+                    for (let i=0; i<lim; i++) {
                         const d = this.q[i];
                         const s = new PIXI.Sprite(pixelTex);
-                        s.position.set(d.x, d.y); s.tint = d.c; s.scale.set(d.s * 0.7); s.anchor.set(0.5);
-                        s.blendMode = d.b;
+                        s.width = s.height = 4; s.anchor.set(0.5);
+                        s.position.set(d.x, d.y); s.tint = d.c; s.scale.set(d.s * 0.6); s.blendMode = d.b;
                         c.addChild(s);
                     }
-                    this.q.splice(0, limit);
+                    this.q.splice(0, lim);
                     app.renderer.render(c, {renderTexture: l.tex, clear: false});
                     c.destroy({children:true});
                 }
             }
         };
 
-        // 模具 (坐标系修复)
-        const Stencil = {
-            guide: new PIXI.Graphics(),
-            init() { previewLayer.addChild(this.guide); this.guide.visible = false; },
-            set(type) {
-                State.stencil.active = true; State.stencil.type = type;
-                State.tool = 'brush'; UI.updateTools();
-                document.getElementById('stencil-sec').style.display = 'block';
-                this.draw();
-            },
-            clear() {
-                State.stencil.active = false; this.guide.visible = false;
-                document.getElementById('stencil-sec').style.display = 'none';
-            },
-            draw() {
-                const g = this.guide; g.clear(); g.lineStyle(2, 0xffffff, 0.5); g.beginFill(0x000000, 0.3);
-                const s = 200 * (State.stencil.scale/100);
-                g.rotation = State.stencil.rot * Math.PI / 180;
-                if(State.stencil.type==='circle') g.drawCircle(0,0,s);
-                else if(State.stencil.type==='square') g.drawRect(-s,-s,s*2,s*2);
-                else if(State.stencil.type==='star') this.drawStar(g,0,0,5,s,s/2);
-                else if(State.stencil.type==='heart') this.drawHeart(g,0,0,s);
-                g.endFill(); g.visible = true;
-            },
-            drawStar(g,x,y,p,o,i) { g.moveTo(0,-o); for(let j=0; j<2*p; j++) { const r=(j%2===0)?o:i; const a=(Math.PI/p)*j-Math.PI/2; g.lineTo(x+Math.cos(a)*r, y+Math.sin(a)*r); } g.closePath(); },
-            drawHeart(g,x,y,s) { g.moveTo(x,y-s/2); g.bezierCurveTo(x+s/2,y-s,x+s,y,x,y+s); g.bezierCurveTo(x-s,y,x-s/2,y-s,x,y-s/2); },
-            contains(x, y) {
-                // 修复：将图层坐标转为全局，再转为模具本地坐标进行判断
-                const global = layerContainer.toGlobal({x,y});
-                const local = this.guide.toLocal(global);
-                return this.guide.geometry.containsPoint(local);
-            }
-        };
+        // 辅助
+        function hexToHsl(hex){let r=(hex>>16)&255,g=(hex>>8)&255,b=hex&255;r/=255;g/=255;b/=255;let max=Math.max(r,g,b),min=Math.min(r,g,b),h,s,l=(max+min)/2;if(max==min)h=s=0;else{let d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break}h/=6}return{h,s,l}}
+        function hslToHex(h,s,l){let r,g,b;if(s==0)r=g=b=l;else{const q=l<0.5?l*(1+s):l+s-l*s;const p=2*l-q;const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p};r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3)}return((r*255)<<16)+((g*255)<<8)+(b*255)}
 
         // 物理引擎
         const Physics = {
             active: [], pool: [],
             spawn(x, y) {
                 const p = this.pool.pop() || new PIXI.Sprite(pixelTex);
-                p.anchor.set(0.5);
+                p.width = p.height = 4; p.anchor.set(0.5);
                 
-                const type = State.brushType;
                 const h = State.brush.height;
+                const type = State.brushType;
                 const spread = h * (type==='ice'?0.4:0.2);
+                const scatter = State.brush.scatter * 2;
                 
-                p.tx = x; p.ty = y;
-                p.x = x + (Math.random()-0.5)*spread;
-                p.y = y + (Math.random()-0.5)*spread;
+                p.tx = x + (Math.random()-0.5)*scatter; 
+                p.ty = y + (Math.random()-0.5)*scatter;
+                p.x = p.tx + (Math.random()-0.5)*spread;
+                p.y = p.ty + (Math.random()-0.5)*spread;
                 p.z = h + Math.random() * 20;
-                p.vz = 0; p.life = 0;
-
-                // 颜色与效果
-                if (type === 'rainbow') p.tint = hslToHex((Date.now()%1000)/1000, 1, 0.5);
+                p.vz = 0;
+                
+                // 颜色 & 混合
+                if (type === 'rainbow') p.tint = hslToHex((Date.now()%2000)/2000, 1, 0.5);
                 else if (State.brush.jitter > 0) {
                     const hsl = hexToHsl(State.colorInt);
                     const jit = State.brush.jitter/200;
-                    if (type==='fire') { hsl.h = 0.05 + (Math.random()-0.5)*0.1; hsl.s=1; hsl.l=0.5 + Math.random()*0.3; }
+                    if (type==='fire') { hsl.h=0.05+(Math.random()-0.5)*0.1; hsl.s=1; hsl.l=0.5+Math.random()*0.4; }
                     else hsl.l = Math.max(0, Math.min(1, hsl.l + (Math.random()-0.5)*jit));
                     p.tint = hslToHex(hsl.h, hsl.s, hsl.l);
                 } else p.tint = State.colorInt;
 
                 if (type==='neon'||type==='fire'||type==='ice') p.blendMode = PIXI.BLEND_MODES.ADD;
+                else if (type==='charcoal') p.blendMode = PIXI.BLEND_MODES.MULTIPLY;
                 else p.blendMode = PIXI.BLEND_MODES.NORMAL;
 
-                let grav = Config.gravity;
-                if (type==='fire') grav *= 0.3;
-                
-                const t = Math.sqrt(2*p.z/grav);
-                p.vx = (p.tx - p.x)/t;
-                p.vy = (p.ty - p.y)/t;
-                p.grav = grav;
+                // 物理修正
+                let g = State.brush.gravity * 0.1; 
+                if (type==='fire') g *= 0.2; if (type==='ice') g *= 0.5; if (type==='gravel') g *= 1.5;
 
-                p.alpha = 0.6;
-                p.scale.set(1 + p.z*0.02);
+                const t = Math.sqrt(2*p.z/g);
+                p.vx = (p.tx - p.x)/t; p.vy = (p.ty - p.y)/t; p.grav = g; p.alpha = 0.6;
                 
                 particleContainer.addChild(p);
                 this.active.push(p);
             },
             update() {
-                for(let i=this.active.length-1; i>=0; i--) {
+                for (let i=this.active.length-1; i>=0; i--) {
                     const p = this.active[i];
                     p.vz += p.grav; p.z -= p.vz;
                     p.x += p.vx; p.y += p.vy;
-                    
                     p.scale.set(Math.max(0.5, 1 + p.z*0.01));
-                    if (State.brushType === 'fire') p.alpha = Math.random()*0.8;
-                    else p.alpha = Math.min(1, 1.2 - p.z*0.005);
-
                     if (p.z <= 0) {
                         Baker.add(p.tx, p.ty, p.tint, p.scale.x, p.blendMode);
                         this.kill(i);
@@ -522,89 +421,52 @@
             },
             kill(i) {
                 const p = this.active[i];
-                this.active.splice(i,1);
+                this.active.splice(i, 1);
                 particleContainer.removeChild(p);
                 this.pool.push(p);
             }
         };
 
-        // ==========================================
-        // 4. 工具与输入逻辑
-        // ==========================================
-        function getLocalPos(e) { return layerContainer.toLocal({x: e.clientX, y: e.clientY}); }
+        // 模具
+        const Stencil = {
+            guide: new PIXI.Graphics(),
+            init() { previewLayer.addChild(this.guide); this.guide.visible=false; },
+            set(t) { State.stencil.active=true; State.stencil.type=t; document.getElementById('stencil-sec').style.display='block'; this.draw(); },
+            clear() { State.stencil.active=false; this.guide.visible=false; document.getElementById('stencil-sec').style.display='none'; },
+            draw() {
+                const g=this.guide; g.clear(); g.lineStyle(2, 0xffffff, 0.5); g.beginFill(0x000000, 0.3);
+                const s=200*(State.stencil.scale/100); g.rotation=State.stencil.rot*Math.PI/180;
+                if(State.stencil.type==='circle')g.drawCircle(0,0,s);
+                else if(State.stencil.type==='square')g.drawRect(-s,-s,s*2,s*2);
+                else if(State.stencil.type==='star')this.drawStar(g,0,0,5,s,s/2);
+                else if(State.stencil.type==='heart')this.drawHeart(g,0,0,s);
+                g.endFill(); g.visible=true;
+            },
+            drawStar(g,x,y,p,o,i){g.moveTo(0,-o);for(let j=0;j<2*p;j++){const r=(j%2===0)?o:i;const a=(Math.PI/p)*j-Math.PI/2;g.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}g.closePath()},
+            drawHeart(g,x,y,s){g.moveTo(x,y-s/2);g.bezierCurveTo(x+s/2,y-s,x+s,y,x,y+s);g.bezierCurveTo(x-s,y,x-s/2,y-s,x,y-s/2)},
+            contains(x,y){ return this.guide.geometry.containsPoint(this.guide.toLocal(layerContainer.toGlobal({x,y}))); }
+        };
 
-        let pts = [], lastPos = null;
-        function processStroke(x, y, start) {
-            if (start) { 
-                pts = []; lastPos = {x, y}; 
-                History.push(); // 落笔前记录历史
-            }
-            pts.push({x, y});
-            if (pts.length > State.brush.stab) pts.shift();
-            
-            let ax=0, ay=0;
-            pts.forEach(p => {ax+=p.x; ay+=p.y});
-            ax/=pts.length; ay/=pts.length;
-            
-            if (start) { lastPos = {x:ax, y:ay}; return; }
-            
-            const dist = Math.hypot(ax-lastPos.x, ay-lastPos.y);
-            const step = Math.max(1, State.brush.size/3);
-            const steps = Math.ceil(dist / step);
-            
-            for(let i=0; i<steps; i++) {
-                const t = i/steps;
-                const ix = lastPos.x + (ax-lastPos.x)*t;
-                const iy = lastPos.y + (ay-lastPos.y)*t;
-                
-                if (State.tool === 'eraser') {
-                    Baker.add(ix, iy, 0, 1); continue;
-                }
-                
-                const count = State.brush.flow;
-                const r = State.brush.size/2;
-                
-                for(let j=0; j<count; j++) {
-                    const ang = Math.random()*Math.PI*2;
-                    const rad = Math.sqrt(Math.random())*r;
-                    const px = ix + Math.cos(ang)*rad;
-                    const py = iy + Math.sin(ang)*rad;
-                    
-                    if(State.brush.mode==='physics') Physics.spawn(px, py);
-                    else {
-                        let tint = State.colorInt;
-                        let blend = PIXI.BLEND_MODES.NORMAL;
-                        if (State.brushType === 'fire' || State.brushType === 'neon') blend = PIXI.BLEND_MODES.ADD;
-                        if (State.brushType === 'rainbow') tint = hslToHex(Math.random(), 1, 0.5);
-                        Baker.add(px, py, tint, 1, blend);
-                    }
-                }
-            }
-            lastPos = {x:ax, y:ay};
-        }
-
+        // 工具
         const Tools = {
             lineStart: null, linePreview: new PIXI.Graphics(),
             init() { previewLayer.addChild(this.linePreview); },
-            onDown(x, y) { if (State.tool === 'line') this.lineStart = {x, y}; },
-            onMove(x, y) {
-                if (State.tool === 'line' && this.lineStart) {
+            onDown(x,y) { if(State.tool==='line') this.lineStart={x,y}; },
+            onMove(x,y) {
+                if(State.tool==='line'&&this.lineStart) {
                     const p1 = previewLayer.toLocal(layerContainer.toGlobal(this.lineStart));
                     const p2 = previewLayer.toLocal(layerContainer.toGlobal({x,y}));
-                    this.linePreview.clear().lineStyle(2, State.colorInt).moveTo(p1.x, p1.y).lineTo(p2.x, p2.y);
+                    this.linePreview.clear().lineStyle(2, State.colorInt).moveTo(p1.x,p1.y).lineTo(p2.x,p2.y);
                 }
             },
-            onUp(x, y) {
-                if (State.tool === 'line' && this.lineStart) {
-                    History.push();
-                    this.linePreview.clear();
-                    const d = Math.hypot(x-this.lineStart.x, y-this.lineStart.y);
-                    const s = Math.ceil(d/2);
-                    for(let i=0; i<s; i++) {
-                        const t = i/s;
-                        processStroke(this.lineStart.x + (x-this.lineStart.x)*t, this.lineStart.y + (y-this.lineStart.y)*t, i===0);
+            onUp(x,y) {
+                if(State.tool==='line'&&this.lineStart) {
+                    History.push(); this.linePreview.clear();
+                    const d=Math.hypot(x-this.lineStart.x, y-this.lineStart.y); const s=Math.ceil(d/2);
+                    for(let i=0;i<s;i++) {
+                        const t=i/s; processStroke(this.lineStart.x+(x-this.lineStart.x)*t, this.lineStart.y+(y-this.lineStart.y)*t, i===0);
                     }
-                    this.lineStart = null;
+                    this.lineStart=null;
                 }
             },
             createText(txt, size, font) {
@@ -619,139 +481,186 @@
             add(name) {
                 const tex = PIXI.RenderTexture.create({width:Config.width, height:Config.height});
                 const spr = new PIXI.Sprite(tex);
-                const l = { id:Date.now(), name, tex, spr, vis:true };
+                const l = {id:Date.now(), name, tex, spr, vis:true};
                 State.layers.push(l);
                 layerContainer.addChild(spr);
                 this.setActive(l);
                 return l;
             },
-            setActive(l) { State.activeLayer = l; UI.renderLayers(); },
-            clearActive() {
+            setActive(l) { State.activeLayer=l; renderUI(); },
+            clearActive(ph=true) {
                 if(State.activeLayer) {
-                    History.push();
+                    if(ph) History.push();
                     app.renderer.render(new PIXI.Graphics().beginFill(0,0).drawRect(0,0,Config.width,Config.height), {renderTexture:State.activeLayer.tex, clear:true});
                 }
             }
         };
 
-        // ==========================================
-        // 5. UI 管理
-        // ==========================================
+        const History = {
+            s:[], ptr:-1,
+            push() {
+                const l = State.activeLayer; if(!l) return;
+                if(this.ptr < this.s.length-1) this.s = this.s.slice(0, this.ptr+1);
+                this.s.push({id:l.id, d:app.renderer.extract.canvas(l.tex).toDataURL()});
+                if(this.s.length>15) this.s.shift(); else this.ptr++;
+            },
+            undo() { if(this.ptr<0) return; this.ptr--; this.restore(this.s[this.ptr]); },
+            redo() { if(this.ptr>=this.s.length-1) return; this.ptr++; this.restore(this.s[this.ptr]); },
+            restore(snap) {
+                if(!snap) return;
+                const l = State.layers.find(x=>x.id===snap.id);
+                if(l) {
+                    const i=new Image(); i.src=snap.d;
+                    i.onload=()=>{
+                        app.renderer.render(new PIXI.Graphics().beginFill(0,0).drawRect(0,0,Config.width,Config.height), {renderTexture:l.tex, clear:true});
+                        app.renderer.render(new PIXI.Sprite(PIXI.Texture.from(i)), {renderTexture:l.tex});
+                    }
+                }
+            }
+        };
+
+        // DB AutoSave
+        const DB={db:null,init(){return new Promise(r=>{const q=indexedDB.open('SandV38',1);q.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('s'))e.target.result.createObjectStore('s')};q.onsuccess=e=>{this.db=e.target.result;r()}})},save(k,d){if(this.db)this.db.transaction('s','readwrite').objectStore('s').put(d,k)},load(k){return new Promise(r=>{if(!this.db)r(null);else{const q=this.db.transaction('s','readonly').objectStore('s').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}})},async auto(){if(State.layers.length){const d={bg:bgSprite.tint,ls:State.layers.map(l=>({n:l.name,v:l.vis,i:app.renderer.extract.canvas(l.tex).toDataURL()}))};await this.save('auto',d);UI.toast("已自动保存")}}};
+        setInterval(()=>DB.auto(),60000);
+
+        // 交互
+        function getLocalPos(e) { return layerContainer.toLocal({x:e.clientX, y:e.clientY}); }
+        let pts=[], lastPos=null;
+        function processStroke(x,y,start) {
+            if(start) { pts=[]; lastPos={x,y}; History.push(); }
+            pts.push({x,y}); if(pts.length>State.brush.stab) pts.shift();
+            let ax=0, ay=0; pts.forEach(p=>{ax+=p.x;ay+=p.y}); ax/=pts.length; ay/=pts.length;
+            if(start) { lastPos={x:ax,y:ay}; return; }
+            const d=Math.hypot(ax-lastPos.x, ay-lastPos.y), step=Math.max(1, State.brush.size/3), steps=Math.ceil(d/step);
+            for(let i=0; i<steps; i++) {
+                const t=i/steps, ix=lastPos.x+(ax-lastPos.x)*t, iy=lastPos.y+(ay-lastPos.y)*t;
+                if(State.tool==='eraser') { Baker.add(ix, iy, 0, 1); continue; }
+                const count=State.brush.flow, r=State.brush.size/2;
+                for(let j=0; j<count; j++) {
+                    const ang=Math.random()*Math.PI*2, rad=Math.sqrt(Math.random())*r;
+                    const px=ix+Math.cos(ang)*rad, py=iy+Math.sin(ang)*rad;
+                    if(State.brush.mode==='physics') Physics.spawn(px,py);
+                    else {
+                        let tint=State.colorInt, blend=PIXI.BLEND_MODES.NORMAL;
+                        if(State.brushType==='fire'||State.brushType==='neon')blend=PIXI.BLEND_MODES.ADD;
+                        if(State.brushType==='charcoal')blend=PIXI.BLEND_MODES.MULTIPLY;
+                        Baker.add(px, py, tint, 1, blend);
+                    }
+                }
+            }
+            lastPos={x:ax,y:ay};
+        }
+
         const pickr = Pickr.create({ el: '#pickr-container', theme: 'nano', default: State.color, components: { preview: true, opacity: true, hue: true, interaction: { input: true, save: true } } });
-        pickr.on('save', (c, i) => { State.color = c.toHEXA().toString(); State.colorInt = parseInt(State.color.replace('#','0x')); i.hide(); });
+        pickr.on('save', (c,i) => { State.color = c.toHEXA().toString(); State.colorInt = parseInt(State.color.replace('#','0x')); i.hide(); });
 
+        function renderUI() {
+            const ul=document.getElementById('layer-list'); ul.innerHTML='';
+            [...State.layers].reverse().forEach(l => {
+                const li=document.createElement('li'); li.className=`layer-li ${l===State.activeLayer?'active':''}`;
+                li.innerHTML=`<span>${l.name}</span><i class="fas fa-eye" style="opacity:${l.vis?1:0.5}"></i>`;
+                li.onclick=()=>LayerManager.setActive(l);
+                li.querySelector('i').onclick=(e)=>{e.stopPropagation(); l.vis=!l.vis; l.spr.visible=l.vis; renderUI();};
+                ul.appendChild(li);
+            });
+        }
+
+        // Events
+        let isDrag=false, dragOff={x:0,y:0};
+        window.addEventListener('pointerdown', e => {
+            if(e.target!==app.view) return;
+            if(e.button===1 || State.tool==='move' || e.ctrlKey) { isDrag=true; dragOff={x:e.clientX-viewport.x, y:e.clientY-viewport.y}; document.body.style.cursor='grabbing'; }
+            else if(State.tool==='eyedropper') {
+                const p=app.renderer.plugins.extract.pixels(viewport,new PIXI.Rectangle(e.clientX,e.clientY,1,1));
+                const hex="#"+((1<<24)+(p[0]<<16)+(p[1]<<8)+p[2]).toString(16).slice(1);
+                pickr.setColor(hex); State.tool='brush'; UI.updateTools();
+            } else if(State.tool==='line') { Tools.onDown(getLocalPos(e).x, getLocalPos(e).y); }
+            else { State.isDrawing=true; processStroke(getLocalPos(e).x, getLocalPos(e).y, true); }
+        });
+        window.addEventListener('pointermove', e => {
+            if(isDrag) { viewport.x=e.clientX-dragOff.x; viewport.y=e.clientY-dragOff.y; }
+            else if(State.tool==='line') Tools.onMove(getLocalPos(e).x, getLocalPos(e).y);
+            else if(State.isDrawing) processStroke(getLocalPos(e).x, getLocalPos(e).y, false);
+        });
+        window.addEventListener('pointerup', e => {
+            isDrag=false; State.isDrawing=false; document.body.style.cursor='default';
+            if(State.tool==='line') Tools.onUp(getLocalPos(e).x, getLocalPos(e).y);
+        });
+        window.addEventListener('wheel', e => { if(e.target===app.view){e.preventDefault(); const s=viewport.scale.x*(e.deltaY>0?0.9:1.1); viewport.scale.set(Math.max(0.1, Math.min(5,s)));} }, {passive:false});
+        
+        // UI Bindings
         const UI = {
-            init() {
-                DB.init(); Stencil.init(); Tools.init(); LayerManager.add('图层 1');
-                document.getElementById('changelog-modal').style.display = 'flex';
-
-                // 事件绑定
-                document.querySelectorAll('.tool-btn').forEach(b => {
-                    b.onclick = () => {
-                        if(b.dataset.tool==='text') document.getElementById('text-modal').style.display='flex';
-                        else if (b.dataset.tool) { State.tool = b.dataset.tool; this.updateTools(); if(State.tool!=='stencil') Stencil.clear(); }
-                    };
-                });
-
-                const bind = (id, k, vid) => { document.getElementById(id).oninput = e => { State.brush[k]=parseFloat(e.target.value); if(vid)document.getElementById(vid).innerText=e.target.value; if(id.includes('s-')) Stencil.draw(); }};
-                bind('p-size','size','v-size'); bind('p-flow','flow','v-flow'); bind('p-height','height','v-height'); bind('p-stab','stab','v-stab');
-                bind('s-scale','scale'); bind('s-rot','rot');
-                document.getElementById('p-mode').onchange = e => State.brush.mode = e.target.value;
-                document.getElementById('brush-type').onchange = e => State.brushType = e.target.value;
-
-                document.getElementById('act-add-layer').onclick = () => LayerManager.add(`图层 ${State.layers.length+1}`);
-                document.getElementById('act-undo').onclick = () => History.undo();
-                document.getElementById('act-redo').onclick = () => History.redo();
-                document.getElementById('act-clear').onclick = () => LayerManager.clearActive();
-                document.getElementById('act-save-temp').onclick = () => DB.saveAuto();
-                document.getElementById('act-export').onclick = () => app.renderer.extract.canvas(viewport).toBlob(b=>{const a=document.createElement('a');a.download='sandart.png';a.href=URL.createObjectURL(b);a.click()});
-                document.getElementById('btn-light-table').onclick = () => {
-                    State.isLightTable = !State.isLightTable;
-                    bgSprite.tint = State.isLightTable ? 0xeeeeee : 0x121212;
-                    State.colorInt = State.isLightTable ? 0x111111 : 0x00e5ff;
-                    pickr.setColor(State.isLightTable ? '#111111' : '#00e5ff');
-                };
-                document.getElementById('tm-confirm').onclick = () => { const v = document.getElementById('tm-input').value; if(v) Tools.createText(v, document.getElementById('tm-size').value, document.getElementById('tm-font').value); this.closeModals(); };
-                document.getElementById('act-img').onclick = () => document.getElementById('file-input').click();
-                document.getElementById('file-input').onchange = e => {
-                    const f = e.target.files[0]; if(!f) return;
-                    const reader = new FileReader();
-                    reader.onload = evt => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const base = new PIXI.BaseTexture(img);
-                            const spr = new PIXI.Sprite(new PIXI.Texture(base));
-                            const scale = Math.min(Config.width/spr.width, Config.height/spr.height) * 0.8;
-                            spr.scale.set(scale); spr.anchor.set(0.5); spr.position.set(Config.width/2, Config.height/2);
-                            LayerManager.add("图片");
-                            app.renderer.render(spr, {renderTexture:State.activeLayer.tex});
-                        };
-                        img.src = evt.target.result;
-                    };
-                    reader.readAsDataURL(f);
-                };
-                document.getElementById('btn-log').onclick = () => document.getElementById('changelog-modal').style.display = 'flex';
-                document.getElementById('btn-collapse').onclick = () => {
-                    const t = document.getElementById('tools');
-                    t.classList.toggle('collapsed');
-                    document.querySelector('#btn-collapse i').className = t.classList.contains('collapsed') ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
-                };
-
-                // 拖动面板
-                const h=document.getElementById('drag-h'), p=document.getElementById('settings');
-                let d=false, o={x:0,y:0};
-                h.onmousedown=e=>{d=true; o={x:e.clientX-p.offsetLeft,y:e.clientY-p.offsetTop}};
-                window.onmousemove=e=>{if(d){p.style.left=(e.clientX-o.x)+'px'; p.style.top=(e.clientY-o.y)+'px'}};
-                window.onmouseup=()=>d=false;
-            },
-            updateTools() { document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool===State.tool)); },
-            renderLayers() {
-                const ul = document.getElementById('layer-list'); ul.innerHTML='';
-                [...State.layers].reverse().forEach(l => {
-                    const li = document.createElement('li'); li.className=`layer-li ${l===State.activeLayer?'active':''}`;
-                    li.innerHTML=`<span>${l.name}</span><i class="fas fa-eye" style="opacity:${l.vis?1:0.5}"></i>`;
-                    li.onclick=()=>LayerManager.setActive(l);
-                    li.querySelector('i').onclick=(e)=>{e.stopPropagation();l.vis=!l.vis;l.spr.visible=l.vis;UI.renderLayers()};
-                    ul.appendChild(li);
-                });
-            },
-            closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); },
+            updateTools(){ document.querySelectorAll('.tool-btn').forEach(b=>b.classList.toggle('active', b.dataset.tool===State.tool)); },
             toast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000); }
         };
 
-        // HSL 辅助
-        function hexToHsl(hex) { let r=(hex>>16)&255,g=(hex>>8)&255,b=hex&255; r/=255;g/=255;b/=255; let max=Math.max(r,g,b),min=Math.min(r,g,b),h,s,l=(max+min)/2; if(max==min)h=s=0; else { let d=max-min; s=l>0.5?d/(2-max-min):d/(max+min); switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;} h/=6; } return {h,s,l}; }
-        function hslToHex(h,s,l) { let r,g,b; if(s==0)r=g=b=l; else { const q=l<0.5?l*(1+s):l+s-l*s; const p=2*l-q; const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}; r=hue2rgb(p,q,h+1/3); g=hue2rgb(p,q,h); b=hue2rgb(p,q,h-1/3); } return ((r*255)<<16)+((g*255)<<8)+(b*255); }
+        document.querySelectorAll('.tool-btn').forEach(b=>{
+            b.onclick=()=>{ if(b.dataset.tool==='text')document.getElementById('text-modal').style.display='flex'; else if(b.dataset.tool){State.tool=b.dataset.tool; UI.updateTools(); if(State.tool!=='stencil')Stencil.clear(); }};
+        });
+        
+        const bind=(id,k,v)=>document.getElementById(id).oninput=e=>{State.brush[k]=parseFloat(e.target.value);if(v)document.getElementById(v).innerText=e.target.value; if(id.includes('s-'))Stencil.draw();};
+        bind('p-size','size','v-size'); bind('p-flow','flow'); bind('p-height','height'); bind('p-stab','stab'); 
+        bind('p-jitter','jitter'); bind('p-gravity','gravity'); bind('p-scatter','scatter'); bind('s-scale','scale'); bind('s-rot','rot');
+        
+        document.getElementById('p-mode').onchange=e=>State.brush.mode=e.target.value;
+        document.getElementById('brush-type').onchange=e=>State.brushType=e.target.value;
+        document.getElementById('theme-select').onchange=e=>applyTheme(e.target.value);
+        document.getElementById('btn-collapse').onclick=()=>{document.getElementById('tools').classList.toggle('collapsed');};
+        document.getElementById('act-add-layer').onclick=()=>LayerManager.add(`图层 ${State.layers.length+1}`);
+        document.getElementById('act-undo').onclick=()=>History.undo();
+        document.getElementById('act-redo').onclick=()=>History.redo();
+        document.getElementById('act-clear').onclick=()=>LayerManager.clearActive();
+        document.getElementById('act-save-temp').onclick=()=>DB.auto();
+        document.getElementById('act-save').onclick=()=>app.renderer.extract.canvas(viewport).toBlob(b=>{const a=document.createElement('a');a.download='sand.png';a.href=URL.createObjectURL(b);a.click()});
+        document.getElementById('tm-confirm').onclick=()=>{const v=document.getElementById('tm-input').value;if(v)Tools.createText(v,document.getElementById('tm-size').value,document.getElementById('tm-font').value);document.getElementById('text-modal').style.display='none'};
+        
+        document.getElementById('btn-light-table').onclick=()=>{
+            State.isLightTable=!State.isLightTable;
+            bgSprite.tint=State.isLightTable?0xffffff:Themes[State.currentTheme].canvas;
+            State.colorInt=State.isLightTable?0x111111:0x00e5ff;
+            pickr.setColor(State.isLightTable?'#111111':'#00e5ff');
+        };
 
-        // 输入事件
-        let isDrag = false, dragOff = {x:0, y:0};
-        window.addEventListener('pointerdown', e => {
-            if (e.target !== app.view) return;
-            if (e.button===1 || State.tool==='move' || e.ctrlKey) { isDrag=true; dragOff={x:e.clientX-viewport.x, y:e.clientY-viewport.y}; document.body.style.cursor='grabbing'; }
-            else if (State.tool==='eyedropper') { 
-                const p = app.renderer.extract.pixels(viewport, new PIXI.Rectangle(e.clientX, e.clientY, 1, 1));
-                const hex = "#" + ((1<<24)+(p[0]<<16)+(p[1]<<8)+p[2]).toString(16).slice(1);
-                pickr.setColor(hex); State.tool='brush'; UI.updateTools();
-            } else if (State.tool==='line') { const p = getLocalPos(e); Tools.onDown(p.x, p.y); }
-            else { State.isDrawing = true; const p = getLocalPos(e); processStroke(p.x, p.y, true); }
-        });
-        window.addEventListener('pointermove', e => {
-            const p = getLocalPos(e);
-            if (isDrag) { viewport.x = e.clientX - dragOff.x; viewport.y = e.clientY - dragOff.y; }
-            else if (State.tool === 'line') Tools.onMove(p.x, p.y);
-            else if (State.isDrawing) processStroke(p.x, p.y, false);
-        });
-        window.addEventListener('pointerup', e => {
-            isDrag = false; document.body.style.cursor='default';
-            const p = getLocalPos(e);
-            if (State.tool === 'line') Tools.onUp(p.x, p.y);
-            State.isDrawing = false;
-        });
-        window.addEventListener('wheel', e => { if(e.target===app.view) { e.preventDefault(); const s = viewport.scale.x*(e.deltaY>0?0.9:1.1); viewport.scale.set(Math.max(0.1, Math.min(5, s))); } }, {passive:false});
-        window.addEventListener('keydown', e => { if(e.ctrlKey&&e.key==='z') History.undo(); if(e.ctrlKey&&e.key==='y') History.redo(); });
+        document.getElementById('act-img').onclick=()=>document.getElementById('file-input').click();
+        document.getElementById('file-input').onchange=e=>{
+            if(e.target.files[0]){
+                const r=new FileReader();
+                r.onload=v=>{ State.tempImgData=v.target.result; document.getElementById('img-modal').style.display='flex'; };
+                r.readAsDataURL(e.target.files[0]);
+            }
+        };
+        document.getElementById('img-bg-btn').onclick=()=>{
+            const img=new Image(); img.src=State.tempImgData;
+            img.onload=()=>{ 
+                const tex=PIXI.Texture.from(img); bgSprite.texture=tex; bgSprite.tint=0xffffff; 
+                const ratio = Math.max(Config.width/tex.width, Config.height/tex.height);
+                bgSprite.scale.set(ratio);
+            };
+            document.getElementById('img-modal').style.display='none';
+        };
+        document.getElementById('img-layer-btn').onclick=()=>{
+            const l=LayerManager.add("图片层");
+            const img=new Image(); img.src=State.tempImgData;
+            img.onload=()=>{
+                const s=new PIXI.Sprite(PIXI.Texture.from(img));
+                const scale=Math.min(Config.width/s.width, Config.height/s.height)*0.8;
+                s.scale.set(scale); s.anchor.set(0.5); s.position.set(Config.width/2, Config.height/2);
+                app.renderer.render(s, {renderTexture:l.tex});
+            };
+            document.getElementById('img-modal').style.display='none';
+        };
+        document.getElementById('btn-log').onclick=()=>document.getElementById('changelog-modal').style.display='flex';
 
-        UI.init();
-        app.ticker.add(() => { Physics.update(); Baker.flush(); });
+        const h=document.getElementById('drag-h'), p=document.getElementById('settings');
+        let d=false,o={x:0,y:0};
+        h.onmousedown=e=>{d=true;o={x:e.clientX-p.offsetLeft,y:e.clientY-p.offsetTop}};
+        window.onmousemove=e=>{if(d){p.style.left=(e.clientX-o.x)+'px';p.style.top=(e.clientY-o.y)+'px'}};
+        window.onmouseup=()=>d=false;
+
+        // Boot
+        Stencil.init(); Tools.init(); LayerManager.add('图层 1'); DB.init().then(async()=>{const d=await DB.load('auto');if(d&&confirm('恢复存档?')){bgSprite.tint=d.bg;State.layers=[];for(const ld of d.ls){const l=LayerManager.add(ld.n);l.vis=ld.v;l.spr.visible=ld.v;const i=new Image();i.src=ld.i;await new Promise(r=>i.onload=r);app.renderer.render(new PIXI.Sprite(PIXI.Texture.from(i)),{renderTexture:l.tex})}}});
+        app.ticker.add(()=>{Physics.update(); Baker.flush();});
+        document.getElementById('changelog-modal').style.display = 'flex';
 
     </script>
 </body>
