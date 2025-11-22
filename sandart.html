@@ -3,38 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎨 沙画工作室 V31 (万象版)</title>
+    <title>🎨 Sand Studio V33 (Fixed & Pro)</title>
     
     <!-- 核心库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
     
-    <!-- 样式 -->
+    <!-- 样式库 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* 默认主题：暗夜 */
             --bg: #121212;
-            --panel: rgba(28, 28, 28, 0.95);
+            --panel: rgba(30, 30, 30, 0.95);
             --accent: #00e5ff;
-            --border: #333;
+            --border: #444;
             --text: #eee;
             --text-dim: #888;
         }
 
-        body { margin: 0; overflow: hidden; background: var(--bg); font-family: 'Noto Sans SC', sans-serif; color: var(--text); user-select: none; transition: background 0.3s; }
+        body { margin: 0; overflow: hidden; background: var(--bg); font-family: 'Noto Sans SC', sans-serif; color: var(--text); user-select: none; -webkit-user-select: none; }
         #stage { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; cursor: crosshair; }
         
-        /* UI 面板 */
+        /* 面板通用 */
         .panel {
             position: fixed; background: var(--panel); border: 1px solid var(--border);
             border-radius: 8px; backdrop-filter: blur(12px); z-index: 100;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column;
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         
         .header {
@@ -46,7 +45,10 @@
         .content { padding: 15px; overflow-y: auto; max-height: 80vh; scrollbar-width: thin; }
         
         /* 左侧工具栏 */
-        #tools { top: 20px; left: 20px; width: 46px; align-items: center; padding-bottom: 10px; }
+        #tools { top: 20px; left: 20px; width: 46px; align-items: center; padding-bottom: 10px; overflow: hidden; transition: height 0.3s; }
+        #tools.collapsed .tool-btn:not(#btn-collapse) { display: none; }
+        #tools.collapsed { height: 46px; padding-bottom: 0; }
+
         .tool-btn {
             width: 36px; height: 36px; margin-bottom: 6px; border-radius: 6px;
             background: transparent; border: 1px solid transparent; color: var(--text-dim);
@@ -54,231 +56,212 @@
             position: relative; font-size: 14px;
         }
         .tool-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
-        .tool-btn.active { color: #000; background: var(--accent); box-shadow: 0 0 10px var(--accent); font-weight: bold; }
+        .tool-btn.active { color: #000; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
         
-        /* Tooltip */
         .tool-btn::after { 
             content: attr(data-tip); position: absolute; left: 115%; top: 50%; transform: translateY(-50%); 
-            background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; 
-            font-size: 11px; border-radius: 4px; pointer-events: none; opacity: 0; transition: 0.2s; 
-            white-space: nowrap; z-index: 200; 
+            background: #000; padding: 4px 8px; font-size: 11px; border-radius: 4px; pointer-events: none; 
+            opacity: 0; transition: 0.2s; white-space: nowrap; z-index: 200; border: 1px solid var(--border);
         }
         .tool-btn:hover::after { opacity: 1; left: 125%; }
+
+        /* 折叠按钮 */
+        #btn-collapse { font-size: 10px; margin-bottom: 10px; color: var(--text-dim); }
+        #btn-collapse:hover { color: var(--accent); }
 
         /* 右侧设置 */
         #settings { top: 20px; right: 20px; width: 290px; }
         .section { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-        .section:last-child { border-bottom: none; }
-        .section-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; font-weight: 700; letter-spacing: 0.5px; }
+        .section-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
         
         .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
         label { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
         
-        /* 自定义控件 */
         input[type="range"] { flex: 1; height: 4px; background: var(--border); border-radius: 2px; appearance: none; }
         input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; border: 2px solid var(--panel); }
         
-        select, input[type="text"], input[type="number"] {
-            background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: var(--text);
-            padding: 4px 6px; border-radius: 4px; font-size: 12px; outline: none;
-        }
-        .val { font-size: 10px; width: 28px; text-align: right; color: var(--text-dim); font-family: monospace; }
+        select { background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 4px; border-radius: 4px; font-size: 11px; outline: none; }
+        .val { font-size: 10px; width: 24px; text-align: right; color: var(--text-dim); font-family: monospace; }
 
         /* 网格按钮 */
-        .grid-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top:5px; }
-        .grid-btn { height: 32px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition: 0.2s; font-size: 12px; }
+        .grid-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .grid-btn { height: 32px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition: 0.2s; }
         .grid-btn:hover { color: var(--text); border-color: var(--accent); }
-        .grid-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .grid-btn.active { background: var(--accent); color: #000; }
 
-        /* 图层列表 */
-        #layer-list { list-style: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; }
+        /* 图层 */
+        #layer-list { list-style: none; padding: 0; margin: 0; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; }
         .layer-li { padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .layer-li:hover { background: rgba(255,255,255,0.05); }
         .layer-li.active { background: rgba(255,255,255,0.1); border-left: 3px solid var(--accent); }
-        
-        /* 模态框 */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-box { background: var(--panel); width: 320px; padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .layer-li:hover { background: rgba(255,255,255,0.05); }
+
+        /* 弹窗 */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: var(--panel); width: 340px; padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
         
         .btn { width: 100%; padding: 8px; margin-top: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn:hover { filter: brightness(1.1); }
         .btn-sec { background: rgba(255,255,255,0.1); color: var(--text); }
-        .btn-danger { background: #ff4757; color: white; }
+        
+        /* 更新日志列表 */
+        .log-list { padding-left: 20px; font-size: 12px; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
+        .log-list li { margin-bottom: 5px; }
 
-        /* Pickr */
-        .pickr .pcr-button { width: 100% !important; height: 32px !important; border-radius: 4px; border: 1px solid var(--border); }
+        /* 通知 */
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent); padding: 8px 24px; border-radius: 30px; font-size: 12px; border: 1px solid var(--accent); opacity: 0; transition: 0.3s; pointer-events: none; z-index: 5000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        #toast.show { opacity: 1; bottom: 40px; }
+
+        .pickr .pcr-button { width: 100% !important; height: 30px !important; border-radius: 4px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
     <div id="stage"></div>
-    
-    <!-- 文本模态框 -->
-    <div id="text-modal" class="modal">
+    <div id="toast">通知</div>
+
+    <!-- 更新日志弹窗 -->
+    <div id="changelog-modal" class="modal">
         <div class="modal-box">
-            <h3 style="margin-top:0; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:10px;">添加文字</h3>
-            <input type="text" id="tm-input" placeholder="在此输入文字..." style="width:94%; padding:8px; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:var(--text); margin-bottom:15px; border-radius:4px;">
-            <div class="row"><label>字号</label><input type="number" id="tm-size" value="80" style="width:60px"></div>
-            <div class="row"><label>字体</label><select id="tm-font" style="width:120px"><option value="ZCOOL KuaiLe">快乐体</option><option value="Noto Sans SC">思源黑体</option><option value="serif">宋体</option><option value="cursive">手写体</option></select></div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn btn-sec" onclick="UI.closeModals()">取消</button>
-                <button class="btn" id="tm-confirm">生成文字</button>
-            </div>
+            <h3 style="color:var(--accent); margin-top:0; border-bottom:1px solid var(--border); padding-bottom:10px;">🚀 V33.0 更新日志</h3>
+            <ul class="log-list">
+                <li><strong>🚫 橡皮擦修复：</strong>完美修复了橡皮擦发白/无法擦除的问题，现在可以正确擦除到透明。</li>
+                <li><strong>↩️ 撤销重构：</strong>重写了历史记录系统，撤销功能已完全恢复 (20步)。</li>
+                <li><strong>💾 自动保存：</strong>新增 IndexedDB 数据库支持，自动保存高清画作，防止丢失。</li>
+                <li><strong>📐 模具校准：</strong>修复了模具遮罩位置偏移的问题。</li>
+                <li><strong>🖌️ 全能工具：</strong>整合了沙盘模式、图片插入、文字工具。</li>
+            </ul>
+            <button class="btn" onclick="document.getElementById('changelog-modal').style.display='none'">开始创作</button>
         </div>
     </div>
 
     <!-- 左侧工具栏 -->
     <div class="panel" id="tools">
+        <div class="tool-btn" id="btn-collapse" title="折叠"><i class="fas fa-chevron-left"></i></div>
         <button class="tool-btn active" data-tool="brush" data-tip="画笔 (B)"><i class="fas fa-paint-brush"></i></button>
         <button class="tool-btn" data-tool="eraser" data-tip="橡皮 (E)"><i class="fas fa-eraser"></i></button>
         <button class="tool-btn" data-tool="line" data-tip="直线 (L)"><i class="fas fa-slash"></i></button>
         <button class="tool-btn" data-tool="text" data-tip="文字 (T)"><i class="fas fa-font"></i></button>
         <button class="tool-btn" data-tool="stencil" data-tip="模具 (M)"><i class="fas fa-shapes"></i></button>
         <button class="tool-btn" data-tool="eyedropper" data-tip="吸管 (Alt)"><i class="fas fa-eye-dropper"></i></button>
-        <button class="tool-btn" data-tool="move" data-tip="移动画布 (Space)"><i class="fas fa-arrows-alt"></i></button>
+        <button class="tool-btn" data-tool="move" data-tip="移动 (Space)"><i class="fas fa-arrows-alt"></i></button>
         <div style="width:20px; height:1px; background:var(--border); margin:5px 0"></div>
         <button class="tool-btn" id="act-undo" data-tip="撤销 (Ctrl+Z)"><i class="fas fa-undo"></i></button>
-        <button class="tool-btn" id="act-clear" data-tip="清空当前层"><i class="fas fa-trash"></i></button>
+        <button class="tool-btn" id="act-redo" data-tip="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+        <button class="tool-btn" id="act-save-temp" data-tip="手动保存"><i class="fas fa-save"></i></button>
+        <button class="tool-btn" id="act-clear" data-tip="清空" style="color:#ff4757"><i class="fas fa-trash"></i></button>
     </div>
 
     <!-- 右侧设置面板 -->
     <div class="panel" id="settings">
         <div class="header" id="drag-h">
-            <span><i class="fas fa-palette"></i> 沙画工作室 V31</span>
-            <i class="fas fa-bars" style="opacity:0.5"></i>
+            <span>SAND STUDIO V33</span>
+            <div style="display:flex; gap:10px">
+                <i class="fas fa-info-circle" id="btn-log" style="cursor:pointer; opacity:0.7" title="日志"></i>
+                <i class="fas fa-bars" style="opacity:0.5"></i>
+            </div>
         </div>
         <div class="content">
             
-            <!-- 颜色与主题 -->
             <div class="section">
-                <div class="section-title">色彩 & 主题</div>
+                <div class="section-title">色彩 & 模式</div>
                 <div id="pickr-container"></div>
-                <div class="row" style="margin-top:10px">
-                    <label>界面主题</label>
-                    <select id="theme-select" style="flex:1; margin-left:10px;">
-                        <option value="dark">🌑 暗夜 (默认)</option>
-                        <option value="light">☀️ 明亮 (白昼)</option>
-                        <option value="cyber">🤖 赛博 (霓虹)</option>
-                        <option value="retro">📜 复古 (纸张)</option>
-                    </select>
-                </div>
-                <button class="grid-btn" style="width:100%; margin-top:5px;" id="btn-light-table"><i class="fas fa-lightbulb"></i> 切换沙盘背光模式</button>
+                <button class="grid-btn" style="width:100%; margin-top:8px;" id="btn-light-table"><i class="fas fa-lightbulb"></i> 切换沙盘/灯光台模式</button>
             </div>
 
-            <!-- 笔刷引擎 -->
             <div class="section">
-                <div class="section-title">笔刷引擎</div>
+                <div class="section-title">笔刷参数</div>
                 <div class="row">
-                    <label>笔刷类型</label>
-                    <select id="brush-type" style="flex:1; margin-left:10px;">
-                        <option value="sand">🏜️ 细沙 (标准)</option>
-                        <option value="gravel">🪨 粗砾 (粗糙)</option>
-                        <option value="neon">✨ 霓虹 (发光)</option>
-                        <option value="fire">🔥 火焰 (动态)</option>
-                        <option value="ice">❄️ 冰雪 (飘落)</option>
-                        <option value="rainbow">🌈 彩虹 (变色)</option>
-                        <option value="charcoal">✏️ 木炭 (纹理)</option>
+                    <label>笔刷</label>
+                    <select id="brush-type" style="flex:1; margin-left:10px">
+                        <option value="sand">🏜️ 细沙</option>
+                        <option value="gravel">🪨 粗砾</option>
+                        <option value="neon">✨ 霓虹</option>
+                        <option value="fire">🔥 火焰</option>
+                        <option value="rainbow">🌈 彩虹</option>
                     </select>
                 </div>
                 <div class="row"><label>尺寸</label><input type="range" id="p-size" min="2" max="150" value="25"><span class="val" id="v-size">25</span></div>
                 <div class="row"><label>流量</label><input type="range" id="p-flow" min="1" max="50" value="10"><span class="val" id="v-flow">10</span></div>
-                <div class="row"><label>高度</label><input type="range" id="p-height" min="0" max="200" value="50" title="控制下落扩散"><span class="val" id="v-height">50</span></div>
-                <div class="row"><label>抖动</label><input type="range" id="p-stab" min="0" max="20" value="5" title="线条平滑修正"><span class="val" id="v-stab">5</span></div>
-                
-                <!-- 高级参数 -->
-                <div style="margin-top:5px; border-top:1px dashed var(--border); padding-top:5px;">
-                    <div class="row"><label>杂色</label><input type="range" id="p-jitter" min="0" max="100" value="10"><span class="val" id="v-jitter">10</span></div>
-                    <div class="row"><label>重力</label><input type="range" id="p-gravity" min="1" max="20" value="8"><span class="val" id="v-gravity">0.8</span></div>
-                </div>
-
-                <div class="row" style="margin-top:5px;">
-                    <label>物理模式</label>
-                    <select id="p-mode" style="flex:1; margin-left:10px;">
-                        <option value="physics">🌊 落沙动画</option>
-                        <option value="instant">⚡ 静态速绘</option>
-                    </select>
-                </div>
+                <div class="row"><label>高度</label><input type="range" id="p-height" min="0" max="150" value="50"><span class="val" id="v-height">50</span></div>
+                <div class="row"><label>抖动</label><input type="range" id="p-stab" min="0" max="20" value="5"><span class="val" id="v-stab">5</span></div>
+                <div class="row"><label>模式</label><select id="p-mode" style="flex:1; margin-left:10px"><option value="physics">物理落沙</option><option value="instant">静态速绘</option></select></div>
             </div>
 
-            <!-- 模具系统 -->
             <div class="section" id="stencil-sec" style="display:none">
-                <div class="section-title">模具遮罩</div>
+                <div class="section-title">模具控制</div>
                 <div class="grid-btns">
                     <button class="grid-btn" onclick="Stencil.set('circle')"><i class="far fa-circle"></i></button>
                     <button class="grid-btn" onclick="Stencil.set('square')"><i class="far fa-square"></i></button>
                     <button class="grid-btn" onclick="Stencil.set('star')"><i class="far fa-star"></i></button>
                     <button class="grid-btn" onclick="Stencil.set('heart')"><i class="far fa-heart"></i></button>
                 </div>
-                <div class="row" style="margin-top:8px"><label>缩放</label><input type="range" id="s-scale" min="20" max="200" value="100"></div>
+                <div class="row" style="margin-top:8px"><label>大小</label><input type="range" id="s-scale" min="20" max="200" value="100"></div>
                 <div class="row"><label>旋转</label><input type="range" id="s-rot" min="0" max="360" value="0"></div>
-                <button class="btn btn-danger" style="margin-top:5px; padding:5px;" onclick="Stencil.clear()">关闭模具</button>
+                <button class="btn btn-sec" onclick="Stencil.clear()" style="margin-top:5px; color:#ff4757">关闭模具</button>
             </div>
 
-            <!-- 图层管理 -->
             <div class="section">
-                <div class="section-title" style="display:flex; justify-content:space-between;">
-                    图层管理 <i class="fas fa-plus" style="cursor:pointer; color:var(--accent)" id="act-add-layer" title="新建图层"></i>
+                <div class="section-title" style="display:flex; justify-content:space-between">
+                    图层管理 <i class="fas fa-plus" style="cursor:pointer; color:var(--accent)" id="act-add-layer"></i>
                 </div>
                 <ul id="layer-list"></ul>
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <button class="grid-btn" style="flex:1" id="act-save"><i class="fas fa-download"></i> 保存图片</button>
-                    <button class="grid-btn" style="flex:1" id="act-img"><i class="fas fa-image"></i> 插入图片</button>
+                <div style="display:flex; gap:5px; margin-top:10px">
+                    <button class="grid-btn" style="flex:1" id="act-export"><i class="fas fa-download"></i> 导出</button>
+                    <button class="grid-btn" style="flex:1" id="act-img"><i class="fas fa-image"></i> 图片</button>
                 </div>
                 <input type="file" id="file-input" style="display:none" accept="image/*">
             </div>
         </div>
     </div>
 
+    <!-- 文字输入 -->
+    <div id="text-modal" class="modal">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:var(--accent)">添加文字</h3>
+            <input type="text" id="tm-input" placeholder="输入内容..." style="width:92%; padding:8px; background:#111; border:1px solid #444; color:#fff; margin-bottom:10px; border-radius:4px;">
+            <div class="row"><label>字号</label><input type="number" id="tm-size" value="80" style="width:60px"></div>
+            <div class="row"><label>字体</label><select id="tm-font" style="width:100px"><option value="ZCOOL KuaiLe">快乐体</option><option value="Noto Sans SC">黑体</option></select></div>
+            <div style="display:flex; gap:10px; margin-top:15px">
+                <button class="btn btn-sec" onclick="document.getElementById('text-modal').style.display='none'">取消</button>
+                <button class="btn" id="tm-confirm">生成</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==========================================
-        // 1. 核心配置与主题
+        // 1. 核心配置与初始化
         // ==========================================
-        const Config = { 
-            width: 3000, height: 2000, 
-            maxParticles: 40000, // 提升粒子上限
-        };
-
-        const Themes = {
-            dark: { bg: '#121212', panel: 'rgba(28,28,28,0.95)', accent: '#00e5ff', text: '#eee', border: '#333', canvas: 0x121212 },
-            light: { bg: '#e0e0e0', panel: 'rgba(255,255,255,0.95)', accent: '#ff9800', text: '#333', border: '#ccc', canvas: 0xe0e0e0 },
-            cyber: { bg: '#050510', panel: 'rgba(10,10,30,0.9)', accent: '#ff00ff', text: '#00ffff', border: '#00aaaa', canvas: 0x050510 },
-            retro: { bg: '#3e2723', panel: 'rgba(62,39,35,0.95)', accent: '#d7ccc8', text: '#ffccbc', border: '#5d4037', canvas: 0x3e2723 }
-        };
-
+        const Config = { width: 3000, height: 2000, maxParticles: 40000, gravity: 0.8 };
         const State = {
-            tool: 'brush',
-            color: '#00e5ff', colorInt: 0x00e5ff,
+            tool: 'brush', color: '#00e5ff', colorInt: 0x00e5ff,
+            brush: { size: 25, flow: 10, height: 50, stab: 5, mode: 'physics', jitter: 10 },
             brushType: 'sand',
-            brush: { size: 25, flow: 10, height: 50, stab: 5, mode: 'physics', jitter: 10, gravity: 0.8 },
             stencil: { active: false, type: null, scale: 1, rot: 0 },
             layers: [], activeLayer: null,
-            isDrawing: false, isLightTable: false,
-            currentTheme: 'dark'
+            isDrawing: false, isLightTable: false
         };
 
-        // ==========================================
-        // 2. Pixi 引擎初始化
-        // ==========================================
+        // Pixi 应用
         const app = new PIXI.Application({
-            resizeTo: window, backgroundColor: Themes.dark.canvas,
+            resizeTo: window, backgroundColor: 0x121212,
             antialias: false, resolution: window.devicePixelRatio || 1,
             preserveDrawingBuffer: true, autoDensity: true
         });
         document.getElementById('stage').appendChild(app.view);
 
+        // 场景图
         const viewport = new PIXI.Container();
         app.stage.addChild(viewport);
         viewport.position.set(window.innerWidth/2, window.innerHeight/2);
 
-        // 画布背景
         const bgSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
         bgSprite.width = Config.width; bgSprite.height = Config.height;
         bgSprite.anchor.set(0.5);
-        bgSprite.tint = Themes.dark.canvas;
-        bgSprite.filters = [new PIXI.filters.NoiseFilter(0.1)]; // 磨砂质感
+        bgSprite.tint = 0x121212;
+        bgSprite.filters = [new PIXI.filters.NoiseFilter(0.1)];
         viewport.addChild(bgSprite);
 
-        // 容器层级：图层 -> 预览 -> 粒子
         const layerContainer = new PIXI.Container();
         layerContainer.position.set(-Config.width/2, -Config.height/2);
         viewport.addChild(layerContainer);
@@ -292,158 +275,140 @@
         particleContainer.position.set(-Config.width/2, -Config.height/2);
         viewport.addChild(particleContainer);
 
-        // 粒子纹理
         const pixelTex = app.renderer.generateTexture(new PIXI.Graphics().beginFill(0xffffff).drawCircle(0,0,2).endFill());
 
         // ==========================================
-        // 3. 笔刷与物理逻辑 (核心)
+        // 2. 数据库系统 (IndexedDB 自动保存)
+        // ==========================================
+        const DB = {
+            db: null,
+            init() {
+                return new Promise((resolve) => {
+                    const req = indexedDB.open('SandStudioDB', 1);
+                    req.onupgradeneeded = e => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('saves')) db.createObjectStore('saves');
+                    };
+                    req.onsuccess = e => { this.db = e.target.result; resolve(); this.loadAutoSave(); };
+                });
+            },
+            save(key, data) {
+                if(!this.db) return;
+                const tx = this.db.transaction('saves', 'readwrite');
+                tx.objectStore('saves').put(data, key);
+            },
+            load(key) {
+                return new Promise(resolve => {
+                    if(!this.db) return resolve(null);
+                    const tx = this.db.transaction('saves', 'readonly');
+                    const req = tx.objectStore('saves').get(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => resolve(null);
+                });
+            },
+            async saveAuto() {
+                // 保存图层快照 (Base64)
+                const layersData = State.layers.map(l => ({
+                    name: l.name,
+                    vis: l.vis,
+                    img: app.renderer.extract.canvas(l.tex).toDataURL('image/png')
+                }));
+                const data = { date: Date.now(), bg: bgSprite.tint, layers: layersData };
+                await this.save('autosave', data);
+                UI.toast("已自动保存 (本地数据库)");
+            },
+            async loadAutoSave() {
+                const data = await this.load('autosave');
+                if(data && confirm("发现未完成的画作，是否恢复？")) {
+                    bgSprite.tint = data.bg;
+                    // 清空
+                    State.layers.forEach(l => { layerContainer.removeChild(l.spr); l.tex.destroy(true); });
+                    State.layers = [];
+                    // 恢复
+                    for (const ld of data.layers) {
+                        const l = LayerManager.add(ld.name);
+                        l.vis = ld.vis; l.spr.visible = l.vis;
+                        const img = new Image();
+                        img.src = ld.img;
+                        await new Promise(r => img.onload = r);
+                        const s = new PIXI.Sprite(PIXI.Texture.from(img));
+                        app.renderer.render(s, {renderTexture: l.tex});
+                    }
+                    UI.renderLayers();
+                    UI.toast("画作已恢复");
+                }
+            }
+        };
+        setInterval(() => DB.saveAuto(), 60000); // 每分钟自动保存
+
+        // ==========================================
+        // 3. 核心功能模块
         // ==========================================
         
-        // HSL 工具
-        function hexToHsl(hex) {
-            let r = (hex >> 16) & 255, g = (hex >> 8) & 255, b = hex & 255;
-            r /= 255; g /= 255; b /= 255;
-            let max = Math.max(r, g, b), min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-            if (max == min) h = s = 0;
-            else {
-                let d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) { case r: h = (g - b) / d + (g < b ? 6 : 0); break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; }
-                h /= 6;
-            }
-            return { h, s, l };
-        }
-        function hslToHex(h, s, l) {
-            let r, g, b;
-            if (s == 0) r = g = b = l;
-            else {
-                const hue2rgb = (p, q, t) => {
-                    if (t < 0) t += 1; if (t > 1) t -= 1;
-                    if (t < 1/6) return p + (q - p) * 6 * t;
-                    if (t < 1/2) return q;
-                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                    return p;
-                };
-                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                const p = 2 * l - q;
-                r = hue2rgb(p, q, h + 1/3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1/3);
-            }
-            return ((r * 255) << 16) + ((g * 255) << 8) + (b * 255);
-        }
-
-        // 物理引擎
-        const Physics = {
-            active: [], pool: [],
-            spawn(x, y) {
-                const p = this.pool.pop() || new PIXI.Sprite(pixelTex);
-                p.anchor.set(0.5);
+        // 历史记录 (修复版)
+        const History = {
+            stack: [], ptr: -1, max: 20,
+            push() {
+                const l = State.activeLayer;
+                if (!l) return;
+                if (this.ptr < this.stack.length - 1) this.stack = this.stack.slice(0, this.ptr + 1);
                 
-                // 笔刷特有属性
-                const type = State.brushType;
-                const height = State.brush.height;
-                const spread = height * (type==='ice'?0.4:0.2); // 冰雪扩散大
-                
-                p.tx = x; p.ty = y;
-                p.x = x + (Math.random()-0.5)*spread;
-                p.y = y + (Math.random()-0.5)*spread;
-                p.z = height + Math.random() * 20;
-                p.vz = 0;
-                p.life = 0; // 用于彩虹/火焰
-
-                // 颜色处理 (杂色/彩虹)
-                if (type === 'rainbow') {
-                    p.tint = hslToHex((Date.now()%1000)/1000, 1, 0.5);
-                } else if (State.brush.jitter > 0) {
-                    const hsl = hexToHsl(State.colorInt);
-                    const jit = State.brush.jitter/200;
-                    // 火焰变红/黄
-                    if (type==='fire') { hsl.h = 0.05 + (Math.random()-0.5)*0.1; hsl.s=1; hsl.l=0.5 + Math.random()*0.3; }
-                    else { hsl.l = Math.max(0, Math.min(1, hsl.l + (Math.random()-0.5)*jit)); }
-                    p.tint = hslToHex(hsl.h, hsl.s, hsl.l);
-                } else {
-                    p.tint = State.colorInt;
-                }
-
-                // 混合模式
-                if (type==='neon' || type==='fire' || type==='ice') p.blendMode = PIXI.BLEND_MODES.ADD;
-                else if (type==='charcoal') p.blendMode = PIXI.BLEND_MODES.MULTIPLY;
-                else p.blendMode = PIXI.BLEND_MODES.NORMAL;
-
-                // 物理差异
-                let grav = State.brush.gravity;
-                if (type==='fire') grav *= 0.3; // 火焰飘落慢
-                if (type==='ice') grav *= 0.5; // 冰雪飘
-                if (type==='gravel') grav *= 1.5; // 石子重
-
-                const t = Math.sqrt(2*p.z/grav);
-                p.vx = (p.tx - p.x)/t;
-                p.vy = (p.ty - p.y)/t;
-                p.grav = grav;
-
-                p.alpha = 0.6;
-                p.scale.set(1 + p.z*0.02);
-                if (type==='gravel') p.scale.set(p.scale.x * 1.5);
-
-                particleContainer.addChild(p);
-                this.active.push(p);
+                // 使用 Canvas 提取快照
+                const snap = app.renderer.extract.canvas(l.tex).toDataURL();
+                this.stack.push({ id: l.id, data: snap });
+                if (this.stack.length > this.max) this.stack.shift(); else this.ptr++;
             },
-            update() {
-                for(let i=this.active.length-1; i>=0; i--) {
-                    const p = this.active[i];
-                    p.vz += p.grav; p.z -= p.vz;
-                    p.x += p.vx; p.y += p.vy;
-                    p.life++;
-
-                    // 视觉更新
-                    p.scale.set(Math.max(0.5, 1 + p.z*0.01));
-                    if (State.brushType === 'fire') {
-                        p.alpha = Math.random()*0.8; // 闪烁
-                    } else {
-                        p.alpha = Math.min(1, 1.2 - p.z*0.005);
-                    }
-
-                    if (p.z <= 0) {
-                        Baker.add(p.tx, p.ty, p.tint, p.scale.x, p.blendMode);
-                        this.kill(i);
-                    }
-                }
+            undo() {
+                if (this.ptr <= 0) return UI.toast("无更早记录");
+                this.ptr--;
+                this.restore(this.stack[this.ptr]);
+                UI.toast("已撤销");
             },
-            kill(i) {
-                const p = this.active[i];
-                this.active.splice(i,1);
-                particleContainer.removeChild(p);
-                this.pool.push(p);
+            redo() {
+                if (this.ptr >= this.stack.length - 1) return;
+                this.ptr++;
+                this.restore(this.stack[this.ptr]);
+                UI.toast("已重做");
+            },
+            restore(snap) {
+                const l = State.layers.find(x => x.id === snap.id);
+                if (l) {
+                    const img = new Image();
+                    img.src = snap.data;
+                    img.onload = () => {
+                        const s = new PIXI.Sprite(PIXI.Texture.from(img));
+                        const g = new PIXI.Graphics().beginFill(0,0).drawRect(0,0,Config.width,Config.height);
+                        app.renderer.render(g, {renderTexture: l.tex, clear: true});
+                        app.renderer.render(s, {renderTexture: l.tex});
+                    };
+                }
             }
         };
 
-        // 烘焙器
+        // 烘焙器 (修复橡皮擦混合模式)
         const Baker = {
             q: [], eq: [],
-            add(x, y, c, s, blend) {
+            add(x, y, c, s, b) {
                 if (State.stencil.active && !Stencil.contains(x, y)) return;
-                
-                if (State.tool === 'eraser') {
-                    this.eq.push({x, y, s});
-                } else {
-                    this.q.push({x, y, c, s, b: blend});
-                }
+                if (State.tool === 'eraser') this.eq.push({x, y, s});
+                else this.q.push({x, y, c, s, b});
             },
             flush() {
                 const l = State.activeLayer;
                 if (!l) { this.q=[]; this.eq=[]; return; }
                 
-                // 擦除
+                // 橡皮擦处理 (ERASE Blend Mode Fix)
                 if (this.eq.length) {
                     const g = new PIXI.Graphics();
+                    g.blendMode = PIXI.BLEND_MODES.ERASE; // 关键修复：设置在对象上
                     this.eq.forEach(p => {
                         g.beginFill(0xffffff); g.drawCircle(p.x, p.y, State.brush.size*0.6); g.endFill();
                     });
-                    app.renderer.render(g, {renderTexture: l.tex, clear: false, blendMode: PIXI.BLEND_MODES.ERASE});
+                    app.renderer.render(g, {renderTexture: l.tex, clear: false});
                     this.eq = [];
                 }
                 
-                // 绘制 (分批次，同混合模式最好一批，这里简化为直接Container)
+                // 绘制处理
                 if (this.q.length) {
                     const c = new PIXI.Container();
                     const limit = Math.min(this.q.length, 2000);
@@ -461,9 +426,7 @@
             }
         };
 
-        // ==========================================
-        // 4. 模具与工具
-        // ==========================================
+        // 模具 (坐标系修复)
         const Stencil = {
             guide: new PIXI.Graphics(),
             init() { previewLayer.addChild(this.guide); this.guide.visible = false; },
@@ -481,62 +444,101 @@
                 const g = this.guide; g.clear(); g.lineStyle(2, 0xffffff, 0.5); g.beginFill(0x000000, 0.3);
                 const s = 200 * (State.stencil.scale/100);
                 g.rotation = State.stencil.rot * Math.PI / 180;
-                if(State.stencil.type === 'circle') g.drawCircle(0,0,s);
-                else if(State.stencil.type === 'square') g.drawRect(-s,-s,s*2,s*2);
-                else if(State.stencil.type === 'star') this.drawStar(g,0,0,5,s,s/2);
-                else if(State.stencil.type === 'heart') this.drawHeart(g,0,0,s);
+                if(State.stencil.type==='circle') g.drawCircle(0,0,s);
+                else if(State.stencil.type==='square') g.drawRect(-s,-s,s*2,s*2);
+                else if(State.stencil.type==='star') this.drawStar(g,0,0,5,s,s/2);
+                else if(State.stencil.type==='heart') this.drawHeart(g,0,0,s);
                 g.endFill(); g.visible = true;
             },
-            drawStar(g,x,y,p,o,i) { g.moveTo(0,-o); for(let j=0; j<2*p; j++) { const r = (j%2===0)?o:i; const a = (Math.PI/p)*j - Math.PI/2; g.lineTo(x+Math.cos(a)*r, y+Math.sin(a)*r); } g.closePath(); },
-            drawHeart(g,x,y,s) { g.moveTo(x, y-s/2); g.bezierCurveTo(x+s/2, y-s, x+s, y, x, y+s); g.bezierCurveTo(x-s, y, x-s/2, y-s, x, y-s/2); },
+            drawStar(g,x,y,p,o,i) { g.moveTo(0,-o); for(let j=0; j<2*p; j++) { const r=(j%2===0)?o:i; const a=(Math.PI/p)*j-Math.PI/2; g.lineTo(x+Math.cos(a)*r, y+Math.sin(a)*r); } g.closePath(); },
+            drawHeart(g,x,y,s) { g.moveTo(x,y-s/2); g.bezierCurveTo(x+s/2,y-s,x+s,y,x,y+s); g.bezierCurveTo(x-s,y,x-s/2,y-s,x,y-s/2); },
             contains(x, y) {
+                // 修复：将图层坐标转为全局，再转为模具本地坐标进行判断
                 const global = layerContainer.toGlobal({x,y});
                 const local = this.guide.toLocal(global);
-                return this.guide.containsPoint(global) || this.guide.geometry.containsPoint(local);
+                return this.guide.geometry.containsPoint(local);
             }
         };
 
-        const Tools = {
-            lineStart: null, linePreview: new PIXI.Graphics(),
-            init() { previewLayer.addChild(this.linePreview); },
-            onDown(x, y) { if (State.tool === 'line') this.lineStart = {x, y}; },
-            onMove(x, y) {
-                if (State.tool === 'line' && this.lineStart) {
-                    const p1 = previewLayer.toLocal(layerContainer.toGlobal(this.lineStart));
-                    const p2 = previewLayer.toLocal(layerContainer.toGlobal({x,y}));
-                    this.linePreview.clear().lineStyle(2, State.colorInt).moveTo(p1.x, p1.y).lineTo(p2.x, p2.y);
-                }
+        // 物理引擎
+        const Physics = {
+            active: [], pool: [],
+            spawn(x, y) {
+                const p = this.pool.pop() || new PIXI.Sprite(pixelTex);
+                p.anchor.set(0.5);
+                
+                const type = State.brushType;
+                const h = State.brush.height;
+                const spread = h * (type==='ice'?0.4:0.2);
+                
+                p.tx = x; p.ty = y;
+                p.x = x + (Math.random()-0.5)*spread;
+                p.y = y + (Math.random()-0.5)*spread;
+                p.z = h + Math.random() * 20;
+                p.vz = 0; p.life = 0;
+
+                // 颜色与效果
+                if (type === 'rainbow') p.tint = hslToHex((Date.now()%1000)/1000, 1, 0.5);
+                else if (State.brush.jitter > 0) {
+                    const hsl = hexToHsl(State.colorInt);
+                    const jit = State.brush.jitter/200;
+                    if (type==='fire') { hsl.h = 0.05 + (Math.random()-0.5)*0.1; hsl.s=1; hsl.l=0.5 + Math.random()*0.3; }
+                    else hsl.l = Math.max(0, Math.min(1, hsl.l + (Math.random()-0.5)*jit));
+                    p.tint = hslToHex(hsl.h, hsl.s, hsl.l);
+                } else p.tint = State.colorInt;
+
+                if (type==='neon'||type==='fire'||type==='ice') p.blendMode = PIXI.BLEND_MODES.ADD;
+                else p.blendMode = PIXI.BLEND_MODES.NORMAL;
+
+                let grav = Config.gravity;
+                if (type==='fire') grav *= 0.3;
+                
+                const t = Math.sqrt(2*p.z/grav);
+                p.vx = (p.tx - p.x)/t;
+                p.vy = (p.ty - p.y)/t;
+                p.grav = grav;
+
+                p.alpha = 0.6;
+                p.scale.set(1 + p.z*0.02);
+                
+                particleContainer.addChild(p);
+                this.active.push(p);
             },
-            onUp(x, y) {
-                if (State.tool === 'line' && this.lineStart) {
-                    this.linePreview.clear();
-                    const d = Math.hypot(x-this.lineStart.x, y-this.lineStart.y);
-                    const s = Math.ceil(d/2);
-                    for(let i=0; i<s; i++) {
-                        const t = i/s;
-                        processStroke(this.lineStart.x + (x-this.lineStart.x)*t, this.lineStart.y + (y-this.lineStart.y)*t, i===0);
+            update() {
+                for(let i=this.active.length-1; i>=0; i--) {
+                    const p = this.active[i];
+                    p.vz += p.grav; p.z -= p.vz;
+                    p.x += p.vx; p.y += p.vy;
+                    
+                    p.scale.set(Math.max(0.5, 1 + p.z*0.01));
+                    if (State.brushType === 'fire') p.alpha = Math.random()*0.8;
+                    else p.alpha = Math.min(1, 1.2 - p.z*0.005);
+
+                    if (p.z <= 0) {
+                        Baker.add(p.tx, p.ty, p.tint, p.scale.x, p.blendMode);
+                        this.kill(i);
                     }
-                    this.lineStart = null;
                 }
             },
-            createText(txt, size, font) {
-                const t = new PIXI.Text(txt, { fontFamily: font, fontSize: parseInt(size), fill: State.colorInt });
-                t.anchor.set(0.5); t.position.set(Config.width/2, Config.height/2);
-                if(State.activeLayer) app.renderer.render(t, {renderTexture:State.activeLayer.tex, clear:false});
+            kill(i) {
+                const p = this.active[i];
+                this.active.splice(i,1);
+                particleContainer.removeChild(p);
+                this.pool.push(p);
             }
         };
 
         // ==========================================
-        // 5. 输入处理 & 笔刷逻辑
+        // 4. 工具与输入逻辑
         // ==========================================
-        function getLocalPos(e) {
-            // 核心修正：屏幕坐标 -> 图层本地坐标
-            return layerContainer.toLocal({x: e.clientX, y: e.clientY});
-        }
+        function getLocalPos(e) { return layerContainer.toLocal({x: e.clientX, y: e.clientY}); }
 
         let pts = [], lastPos = null;
         function processStroke(x, y, start) {
-            if (start) { pts = []; lastPos = {x, y}; }
+            if (start) { 
+                pts = []; lastPos = {x, y}; 
+                History.push(); // 落笔前记录历史
+            }
             pts.push({x, y});
             if (pts.length > State.brush.stab) pts.shift();
             
@@ -581,51 +583,38 @@
             lastPos = {x:ax, y:ay};
         }
 
-        // 事件监听
-        let isDrag = false, dragOff = {x:0, y:0};
-        
-        window.addEventListener('pointerdown', e => {
-            if (e.target !== app.view) return;
-            if (e.button===1 || State.tool==='move' || e.ctrlKey) {
-                isDrag=true; dragOff={x:e.clientX-viewport.x, y:e.clientY-viewport.y};
-                document.body.style.cursor='grabbing';
-            } else if (State.tool==='eyedropper') {
-                const p = app.renderer.extract.pixels(viewport, new PIXI.Rectangle(e.clientX, e.clientY, 1, 1));
-                const hex = "#" + ((1<<24)+(p[0]<<16)+(p[1]<<8)+p[2]).toString(16).slice(1);
-                pickr.setColor(hex); State.tool='brush'; UI.updateTools();
-            } else if (State.tool==='line') {
-                const p = getLocalPos(e); Tools.onDown(p.x, p.y);
-            } else {
-                State.isDrawing = true;
-                const p = getLocalPos(e);
-                processStroke(p.x, p.y, true);
+        const Tools = {
+            lineStart: null, linePreview: new PIXI.Graphics(),
+            init() { previewLayer.addChild(this.linePreview); },
+            onDown(x, y) { if (State.tool === 'line') this.lineStart = {x, y}; },
+            onMove(x, y) {
+                if (State.tool === 'line' && this.lineStart) {
+                    const p1 = previewLayer.toLocal(layerContainer.toGlobal(this.lineStart));
+                    const p2 = previewLayer.toLocal(layerContainer.toGlobal({x,y}));
+                    this.linePreview.clear().lineStyle(2, State.colorInt).moveTo(p1.x, p1.y).lineTo(p2.x, p2.y);
+                }
+            },
+            onUp(x, y) {
+                if (State.tool === 'line' && this.lineStart) {
+                    History.push();
+                    this.linePreview.clear();
+                    const d = Math.hypot(x-this.lineStart.x, y-this.lineStart.y);
+                    const s = Math.ceil(d/2);
+                    for(let i=0; i<s; i++) {
+                        const t = i/s;
+                        processStroke(this.lineStart.x + (x-this.lineStart.x)*t, this.lineStart.y + (y-this.lineStart.y)*t, i===0);
+                    }
+                    this.lineStart = null;
+                }
+            },
+            createText(txt, size, font) {
+                History.push();
+                const t = new PIXI.Text(txt, { fontFamily: font, fontSize: parseInt(size), fill: State.colorInt });
+                t.anchor.set(0.5); t.position.set(Config.width/2, Config.height/2);
+                if(State.activeLayer) app.renderer.render(t, {renderTexture:State.activeLayer.tex, clear:false});
             }
-        });
+        };
 
-        window.addEventListener('pointermove', e => {
-            if (isDrag) {
-                viewport.x = e.clientX - dragOff.x; viewport.y = e.clientY - dragOff.y;
-            } else if (State.tool === 'line') {
-                const p = getLocalPos(e); Tools.onMove(p.x, p.y);
-            } else if (State.isDrawing) {
-                const p = getLocalPos(e); processStroke(p.x, p.y, false);
-            }
-        });
-
-        window.addEventListener('pointerup', e => {
-            isDrag = false; document.body.style.cursor='default';
-            const p = getLocalPos(e);
-            if (State.tool === 'line') Tools.onUp(p.x, p.y);
-            State.isDrawing = false;
-        });
-
-        window.addEventListener('wheel', e => {
-            if(e.target===app.view) { e.preventDefault(); const s = viewport.scale.x*(e.deltaY>0?0.9:1.1); viewport.scale.set(Math.max(0.1, Math.min(5, s))); }
-        }, {passive:false});
-
-        // ==========================================
-        // 6. UI & 状态管理
-        // ==========================================
         const LayerManager = {
             add(name) {
                 const tex = PIXI.RenderTexture.create({width:Config.width, height:Config.height});
@@ -634,68 +623,55 @@
                 State.layers.push(l);
                 layerContainer.addChild(spr);
                 this.setActive(l);
+                return l;
             },
             setActive(l) { State.activeLayer = l; UI.renderLayers(); },
             clearActive() {
-                if(State.activeLayer) app.renderer.render(new PIXI.Graphics().beginFill(0,0).drawRect(0,0,Config.width,Config.height), {renderTexture:State.activeLayer.tex, clear:true});
+                if(State.activeLayer) {
+                    History.push();
+                    app.renderer.render(new PIXI.Graphics().beginFill(0,0).drawRect(0,0,Config.width,Config.height), {renderTexture:State.activeLayer.tex, clear:true});
+                }
             }
         };
 
-        const pickr = Pickr.create({
-            el: '#pickr-container', theme: 'nano', default: State.color,
-            components: { preview: true, opacity: true, hue: true, interaction: { input: true, save: true } }
-        });
+        // ==========================================
+        // 5. UI 管理
+        // ==========================================
+        const pickr = Pickr.create({ el: '#pickr-container', theme: 'nano', default: State.color, components: { preview: true, opacity: true, hue: true, interaction: { input: true, save: true } } });
         pickr.on('save', (c, i) => { State.color = c.toHEXA().toString(); State.colorInt = parseInt(State.color.replace('#','0x')); i.hide(); });
 
         const UI = {
             init() {
-                Stencil.init(); Tools.init(); LayerManager.add('背景层');
-                
-                // Tools
+                DB.init(); Stencil.init(); Tools.init(); LayerManager.add('图层 1');
+                document.getElementById('changelog-modal').style.display = 'flex';
+
+                // 事件绑定
                 document.querySelectorAll('.tool-btn').forEach(b => {
                     b.onclick = () => {
                         if(b.dataset.tool==='text') document.getElementById('text-modal').style.display='flex';
-                        else { State.tool = b.dataset.tool; this.updateTools(); if(State.tool!=='stencil') Stencil.clear(); }
+                        else if (b.dataset.tool) { State.tool = b.dataset.tool; this.updateTools(); if(State.tool!=='stencil') Stencil.clear(); }
                     };
                 });
 
-                // Bindings
                 const bind = (id, k, vid) => { document.getElementById(id).oninput = e => { State.brush[k]=parseFloat(e.target.value); if(vid)document.getElementById(vid).innerText=e.target.value; if(id.includes('s-')) Stencil.draw(); }};
-                bind('p-size','size','v-size'); bind('p-flow','flow','v-flow'); bind('p-height','height','v-height'); bind('p-stab','stab','v-stab'); bind('p-jitter','jitter','v-jitter'); bind('p-gravity','gravity','v-gravity');
+                bind('p-size','size','v-size'); bind('p-flow','flow','v-flow'); bind('p-height','height','v-height'); bind('p-stab','stab','v-stab');
                 bind('s-scale','scale'); bind('s-rot','rot');
-                
                 document.getElementById('p-mode').onchange = e => State.brush.mode = e.target.value;
                 document.getElementById('brush-type').onchange = e => State.brushType = e.target.value;
 
-                // Actions
                 document.getElementById('act-add-layer').onclick = () => LayerManager.add(`图层 ${State.layers.length+1}`);
+                document.getElementById('act-undo').onclick = () => History.undo();
+                document.getElementById('act-redo').onclick = () => History.redo();
                 document.getElementById('act-clear').onclick = () => LayerManager.clearActive();
-                document.getElementById('act-save').onclick = () => app.renderer.extract.canvas(viewport).toBlob(b=>{const a=document.createElement('a');a.download='sandart.png';a.href=URL.createObjectURL(b);a.click()});
+                document.getElementById('act-save-temp').onclick = () => DB.saveAuto();
+                document.getElementById('act-export').onclick = () => app.renderer.extract.canvas(viewport).toBlob(b=>{const a=document.createElement('a');a.download='sandart.png';a.href=URL.createObjectURL(b);a.click()});
                 document.getElementById('btn-light-table').onclick = () => {
                     State.isLightTable = !State.isLightTable;
-                    bgSprite.tint = State.isLightTable ? 0xeeeeee : Themes[State.currentTheme].canvas;
+                    bgSprite.tint = State.isLightTable ? 0xeeeeee : 0x121212;
                     State.colorInt = State.isLightTable ? 0x111111 : 0x00e5ff;
                     pickr.setColor(State.isLightTable ? '#111111' : '#00e5ff');
                 };
-                
-                // Themes
-                document.getElementById('theme-select').onchange = (e) => {
-                    State.currentTheme = e.target.value;
-                    const t = Themes[State.currentTheme];
-                    const r = document.documentElement.style;
-                    r.setProperty('--bg', t.bg); r.setProperty('--panel', t.panel);
-                    r.setProperty('--accent', t.accent); r.setProperty('--text', t.text); r.setProperty('--border', t.border);
-                    if(!State.isLightTable) bgSprite.tint = t.canvas;
-                };
-
-                // Text
-                document.getElementById('tm-confirm').onclick = () => {
-                    const v = document.getElementById('tm-input').value;
-                    if(v) Tools.createText(v, document.getElementById('tm-size').value, document.getElementById('tm-font').value);
-                    this.closeModals();
-                };
-                
-                // Image Import
+                document.getElementById('tm-confirm').onclick = () => { const v = document.getElementById('tm-input').value; if(v) Tools.createText(v, document.getElementById('tm-size').value, document.getElementById('tm-font').value); this.closeModals(); };
                 document.getElementById('act-img').onclick = () => document.getElementById('file-input').click();
                 document.getElementById('file-input').onchange = e => {
                     const f = e.target.files[0]; if(!f) return;
@@ -714,15 +690,20 @@
                     };
                     reader.readAsDataURL(f);
                 };
+                document.getElementById('btn-log').onclick = () => document.getElementById('changelog-modal').style.display = 'flex';
+                document.getElementById('btn-collapse').onclick = () => {
+                    const t = document.getElementById('tools');
+                    t.classList.toggle('collapsed');
+                    document.querySelector('#btn-collapse i').className = t.classList.contains('collapsed') ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
+                };
 
-                // Drag Panel
+                // 拖动面板
                 const h=document.getElementById('drag-h'), p=document.getElementById('settings');
                 let d=false, o={x:0,y:0};
                 h.onmousedown=e=>{d=true; o={x:e.clientX-p.offsetLeft,y:e.clientY-p.offsetTop}};
                 window.onmousemove=e=>{if(d){p.style.left=(e.clientX-o.x)+'px'; p.style.top=(e.clientY-o.y)+'px'}};
                 window.onmouseup=()=>d=false;
             },
-            
             updateTools() { document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool===State.tool)); },
             renderLayers() {
                 const ul = document.getElementById('layer-list'); ul.innerHTML='';
@@ -734,10 +715,41 @@
                     ul.appendChild(li);
                 });
             },
-            closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+            closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); },
+            toast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000); }
         };
 
-        // 启动
+        // HSL 辅助
+        function hexToHsl(hex) { let r=(hex>>16)&255,g=(hex>>8)&255,b=hex&255; r/=255;g/=255;b/=255; let max=Math.max(r,g,b),min=Math.min(r,g,b),h,s,l=(max+min)/2; if(max==min)h=s=0; else { let d=max-min; s=l>0.5?d/(2-max-min):d/(max+min); switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;} h/=6; } return {h,s,l}; }
+        function hslToHex(h,s,l) { let r,g,b; if(s==0)r=g=b=l; else { const q=l<0.5?l*(1+s):l+s-l*s; const p=2*l-q; const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}; r=hue2rgb(p,q,h+1/3); g=hue2rgb(p,q,h); b=hue2rgb(p,q,h-1/3); } return ((r*255)<<16)+((g*255)<<8)+(b*255); }
+
+        // 输入事件
+        let isDrag = false, dragOff = {x:0, y:0};
+        window.addEventListener('pointerdown', e => {
+            if (e.target !== app.view) return;
+            if (e.button===1 || State.tool==='move' || e.ctrlKey) { isDrag=true; dragOff={x:e.clientX-viewport.x, y:e.clientY-viewport.y}; document.body.style.cursor='grabbing'; }
+            else if (State.tool==='eyedropper') { 
+                const p = app.renderer.extract.pixels(viewport, new PIXI.Rectangle(e.clientX, e.clientY, 1, 1));
+                const hex = "#" + ((1<<24)+(p[0]<<16)+(p[1]<<8)+p[2]).toString(16).slice(1);
+                pickr.setColor(hex); State.tool='brush'; UI.updateTools();
+            } else if (State.tool==='line') { const p = getLocalPos(e); Tools.onDown(p.x, p.y); }
+            else { State.isDrawing = true; const p = getLocalPos(e); processStroke(p.x, p.y, true); }
+        });
+        window.addEventListener('pointermove', e => {
+            const p = getLocalPos(e);
+            if (isDrag) { viewport.x = e.clientX - dragOff.x; viewport.y = e.clientY - dragOff.y; }
+            else if (State.tool === 'line') Tools.onMove(p.x, p.y);
+            else if (State.isDrawing) processStroke(p.x, p.y, false);
+        });
+        window.addEventListener('pointerup', e => {
+            isDrag = false; document.body.style.cursor='default';
+            const p = getLocalPos(e);
+            if (State.tool === 'line') Tools.onUp(p.x, p.y);
+            State.isDrawing = false;
+        });
+        window.addEventListener('wheel', e => { if(e.target===app.view) { e.preventDefault(); const s = viewport.scale.x*(e.deltaY>0?0.9:1.1); viewport.scale.set(Math.max(0.1, Math.min(5, s))); } }, {passive:false});
+        window.addEventListener('keydown', e => { if(e.ctrlKey&&e.key==='z') History.undo(); if(e.ctrlKey&&e.key==='y') History.redo(); });
+
         UI.init();
         app.ticker.add(() => { Physics.update(); Baker.flush(); });
 
