@@ -1,62 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XPENG OVERRIDE v25</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XPENG OTG SWITCH v28</title>
     <style>
-        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
-        .btn { width: 100%; padding: 20px; margin: 10px 0; background: #200; border: 2px solid #f00; color: #fff; font-weight: bold; cursor: pointer; }
-        .btn:active { background: #f00; }
-        .log { height: 200px; border: 1px solid #333; overflow-y: scroll; text-align: left; padding: 10px; font-size: 11px; color: #888; }
+        body { background: #000; color: #0ff; font-family: monospace; padding: 15px; padding-bottom: 200px; }
+        .card { border: 1px solid #333; background: #111; margin-bottom: 15px; padding: 15px; border-radius: 8px; }
+        button { 
+            width: 100%; padding: 20px; margin-bottom: 10px; 
+            background: #002222; border: 1px solid #0ff; color: #0ff; 
+            font-weight: bold; font-size: 14px; text-align: left;
+        }
+        button:active { background: #0ff; color: #000; }
+        #log { height: 150px; overflow-y: scroll; background: #000; border: 1px solid #222; padding: 10px; color: #888; font-size: 10px; }
+        .hl { color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h2>🛠 握手协议强制覆盖</h2>
-    <div class="log" id="log">Waiting...</div>
+
+<div class="card">
+    <h3 style="margin-top:0; color:#fff;">🔄 USB 模式切换器</h3>
+    <p style="color:#888; font-size:12px;">当前推测模式：usbhost<br>目标模式：Device / ADB</p>
     
-    <button class="btn" onclick="Override.bypassAuth()">🔓 1. 强改系统属性：免授权模式</button>
-    <button class="btn" style="border-color:#0f0; background:#020;" onclick="Override.resetAdb()">🔄 2. 强制重启 adbd 服务</button>
+    <button onclick="OTG.fire('device')">
+        方案 A: 切换为 "device"
+    </button>
     
-    <div style="font-size:10px; color:#555; margin-top:10px;">
-        操作：先点按钮1，再点按钮2。然后直接在电脑输入 adb connect，跳过 pair 步骤。
-    </div>
+    <button onclick="OTG.fire('adb')">
+        方案 B: 切换为 "adb"
+    </button>
+    
+    <button onclick="OTG.fire('peripheral')">
+        方案 C: 切换为 "peripheral"
+    </button>
+    
+    <button style="border-color:#f0f; color:#f0f;" onclick="OTG.fireAll()">
+        🔥 全自动轮询 (每秒切一种)
+    </button>
+</div>
+
+<div id="log">Ready...</div>
 
 <script>
-const Log = (m) => {
-    const d = document.createElement('div');
-    d.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
-    document.getElementById('log').insertBefore(d, document.getElementById('log').firstChild);
+const Logger = {
+    log(msg) {
+        const d = document.createElement('div');
+        d.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        document.getElementById('log').prepend(d);
+    }
 };
 
-const Override = {
-    bypassAuth: function() {
-        Log("Attempting to disable ADB Authentication...");
-        // 核心 Payload：设置 ADB 不需要 RSA 密钥确认
-        const cmd = "ro.product.model|setprop ro.adb.secure 0|setprop persist.adb.tcp.port 5555";
-        this._inject(cmd);
-    },
+const OTG = {
+    // 注入核心
+    inject: function(val) {
+        // 针对 xp_usb_mode 和 sys.usb.config 同时操作
+        const cmds = [
+            `setprop xp_usb_mode ${val}`,
+            `setprop sys.usb.config ${val}`,
+            `setprop persist.sys.usb.config ${val}`,
+            // 尝试触发 USB 状态更新
+            `setprop ctl.restart adbd`
+        ];
 
-    resetAdb: function() {
-        Log("Restarting adbd service...");
-        const cmd = "ro.product.model|setprop ctl.restart adbd";
-        this._inject(cmd);
-    },
-
-    _inject: function(cmd) {
-        // 遍历所有可能的 JS 接口执行
+        let sent = 0;
+        // 遍历接口
         for(let p in window) {
             try {
-                if(typeof window[p] === 'object' && window[p] !== null) {
-                    for(let k in window[p]) {
-                        if(typeof window[p][k] === 'function') {
-                            window[p][k](cmd);
-                            window[p][k](cmd, "1");
+                let o = window[p];
+                if(typeof o === 'object' && o !== null) {
+                    for(let k in o) {
+                        if(typeof o[k] === 'function') {
+                            cmds.forEach(c => {
+                                // 管道符混淆
+                                try { o[k](`ro.product.model|${c}`); } catch(e){}
+                                // 换行符混淆
+                                try { o[k](`ro.product.model\n${c}`); } catch(e){}
+                                sent++;
+                            });
                         }
                     }
                 }
             } catch(e){}
         }
+        return sent;
+    },
+
+    fire: function(mode) {
+        Logger.log(`Setting USB Mode to: [${mode}]`);
+        this.inject(mode);
+        Logger.log("指令已发送。请拔插 USB 线！");
+    },
+
+    fireAll: async function() {
+        const modes = ["device", "adb", "peripheral", "otg", "mtp,adb", "0"];
+        for(let m of modes) {
+            this.fire(m);
+            await new Promise(r => setTimeout(r, 1500)); // 间隔1.5秒
+        }
+        alert("所有模式已尝试。\n请保持 USB 连接电脑，查看电脑是否有反应。");
     }
 };
 </script>
