@@ -3,271 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROJECT: APOCALYPSE v18.0</title>
+    <title>TITAN-CORE v24.0</title>
     <style>
-        :root {
-            --bg: #050505; --panel: #111; --border: #333;
-            --hack: #00ff00; --danger: #ff3333; --info: #00e5ff; --warn: #ffcc00;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background: var(--bg); color: #eee; font-family: 'Consolas', monospace; 
-            margin: 0; padding: 0; overflow-y: auto; padding-bottom: 300px; 
-        }
-
-        /* 顶部日志区 (置顶 45%) */
-        #log-panel {
-            height: 45vh; background: #000; border-bottom: 2px solid var(--hack);
-            position: sticky; top: 0; z-index: 1000; display: flex; flex-direction: column;
-            box-shadow: 0 5px 20px rgba(0,255,0,0.2);
-        }
-        #log-header { padding: 8px 15px; font-size: 10px; color: #555; background: #0a0a0a; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
-        #terminal { flex: 1; padding: 10px; overflow-y: scroll; font-size: 11px; line-height: 1.4; scroll-behavior: smooth; }
+        :root { --bg: #000; --red: #ff0044; --green: #00ff66; --blue: #00d9ff; --text: #eee; }
+        body { background: var(--bg); color: var(--text); font-family: monospace; margin: 0; padding: 0; overflow-y: auto; padding-bottom: 250px; }
+        header { background: #111; border-bottom: 2px solid var(--red); padding: 15px; position: sticky; top: 0; z-index: 100; text-align: center; }
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .card { background: #0a0a0a; border: 1px solid #333; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
+        .head { background: #151515; padding: 10px; font-weight: bold; border-bottom: 1px solid #333; font-size: 13px; color: var(--blue); }
+        .body { padding: 10px; display: grid; gap: 10px; }
         
-        .entry { margin-bottom: 3px; border-bottom: 1px solid #0a0a0a; padding-bottom: 2px; }
-        .ts { color: #333; margin-right: 5px; }
-        .l-ok { color: var(--hack); }
-        .l-err { color: var(--danger); font-weight: bold; }
-        .l-warn { color: var(--warn); }
-        .l-info { color: var(--info); }
-
-        /* 操作区 */
-        .container { padding: 15px; }
-        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
-        .card-head { padding: 12px; background: #1a1a1a; font-size: 12px; font-weight: bold; border-bottom: 1px solid #333; color: #fff; }
-        .card-body { padding: 10px; display: grid; gap: 10px; }
-
-        button {
-            width: 100%; min-height: 55px; padding: 10px 15px; background: #222; border: 1px solid #444; 
-            color: #ddd; font-size: 13px; font-weight: bold; text-align: left; border-radius: 4px; cursor: pointer;
-            display: flex; align-items: center; white-space: normal;
+        button { 
+            width: 100%; min-height: 60px; background: #1a1a1a; border: 1px solid #444; color: #fff; 
+            font-size: 14px; font-weight: bold; text-align: left; border-radius: 6px; cursor: pointer;
+            padding: 10px 15px; white-space: normal; line-height: 1.3;
         }
         button:active { background: #333; transform: scale(0.98); }
-        .btn-pwn { border-left: 5px solid var(--danger); }
-        .btn-jump { border-left: 5px solid var(--info); }
-        .btn-auto { background: var(--danger); color: #000; text-align: center; justify-content: center; }
-
-        /* 进度条 */
-        #progress { height: 2px; background: var(--hack); width: 0%; transition: width 0.3s; }
+        .btn-pwn { border-left: 5px solid var(--red); }
+        .btn-ok { border-left: 5px solid var(--green); }
+        
+        #log { background: #000; border: 1px solid #222; height: 180px; overflow-y: scroll; padding: 10px; font-size: 11px; color: #666; margin-bottom: 15px; }
+        .msg { margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
-<div id="log-panel">
-    <div id="log-header">
-        <span>APOCALYPSE TERMINAL v18.0</span>
-        <span onclick="Logger.clear()" style="cursor:pointer; color:#fff">[CLEAR]</span>
-    </div>
-    <div id="progress"></div>
-    <div id="terminal">
-        <div class="entry"><span class="l-info">System initialized. Awaiting siege orders.</span></div>
-    </div>
-</div>
+<header>
+    <div style="font-weight:900; color:var(--red); letter-spacing:2px;">TITAN-CORE: AUTH PENETRATION</div>
+</header>
 
 <div class="container">
-
-    <!-- 全自动引擎 -->
-    <div class="card" style="border-color: var(--danger);">
-        <div class="card-head" style="color:var(--danger)">⚡️ CORE: AUTO-PWN ENGINE</div>
-        <div class="card-body">
-            <button class="btn-auto" onclick="Engine.start()">🚀 启动全量自动化渗透流程</button>
-            <div style="font-size:10px; color:#555;">[自动化] 指纹 -> 对象爆破 -> 矩阵注入 -> 协议Fuzz</div>
-        </div>
+    <div id="log">
+        <div class="msg">> Awaiting Authentication Overrides...</div>
     </div>
 
-    <!-- 逻辑跳板：Search & Settings -->
+    <!-- 方案 A: 密码作为 Intent Extra 注入 -->
     <div class="card">
-        <div class="card-head" style="color:var(--info)">🔍 LOGIC: SEARCH & SEARCH</div>
-        <div class="card-body">
-            <button class="btn-jump" onclick="Mods.jumpSearch()">
-                🌐 拉起全局搜索 (Android Search)<br>
-                <span style="font-size:10px; font-weight:normal;">[成功率高] 弹出后搜索"版本号"或"开发者"</span>
-            </button>
-            <button class="btn-jump" onclick="Mods.jumpDefaultApps()">
-                🛠 拉起默认应用设置 (A12 Bypas)<br>
-                <span style="font-size:10px; font-weight:normal;">安卓12核心入口，通常不被封锁</span>
-            </button>
-            <button class="btn-jump" onclick="Mods.jumpAccessibility()">
-                ♿️ 拉起辅助功能设置
+        <div class="head">1. 鉴权参数爆破 (Extra Injection)</div>
+        <div class="body">
+            <p style="font-size:10px; color:#666; margin:0;">将密码 26846822 作为各种可能的参数名发送至 UserSettingsActivity。</p>
+            <button class="btn-pwn" onclick="Attack.extraBypass()">
+                🚀 注入密码参数 (Int/String/Long)<br>
+                <span style="font-size:9px; font-weight:normal;">尝试: pwd, code, auth, token, password...</span>
             </button>
         </div>
     </div>
 
-    <!-- 注入模块 -->
+    <!-- 方案 B: 针对拨号盘拉起的窗体进行覆盖 -->
     <div class="card">
-        <div class="card-head" style="color:var(--hack)">💉 VECTOR: OBJECT FUZZING</div>
-        <div class="card-body">
-            <button class="btn-pwn" onclick="Mods.deepScanObjects()">
-                🧬 递归扫描 window 所有子对象<br>
-                <span style="font-size:10px; font-weight:normal;">寻找隐藏的 RPC/Bridge 接口</span>
-            </button>
-            <button class="btn-pwn" onclick="Mods.injectADBMatrix()">
-                🔓 执行 ADB 注入矩阵 (147 变体)
+        <div class="head">2. 针对 *#9387*141#* 后的覆盖攻击</div>
+        <div class="body">
+            <p style="font-size:10px; color:#666; margin:0;"><b>操作指南：</b>先在拨号盘输入代码弹出认证窗体，不要关闭，切回浏览器点此按钮。</p>
+            <button class="btn-ok" onclick="Attack.mixedFlag()">
+                🔥 强力混合 Flag 覆盖 (295282278)<br>
+                <span style="font-size:9px; font-weight:normal;">尝试以密码标记直接替换当前认证窗体</span>
             </button>
         </div>
     </div>
 
-    <!-- 协议与崩溃 -->
+    <!-- 方案 C: 寻找“免认证”Action -->
     <div class="card">
-        <div class="card-head" style="color:var(--warn)">☠️ VECTOR: KERNEL & SCHEMES</div>
+        <div class="card-head">3. 系统隐式 Action Fuzzing</div>
         <div class="card-body">
-            <button onclick="Mods.fuzzSchemes()">💣 URL Scheme 全量爆破</button>
-            <button onclick="Mods.dialerFuzz()">📞 拨号盘工程代码测试</button>
-            <button style="border-left-color:#fff; color:var(--danger)" onclick="Mods.infiniteCrash()">☠️ 启动无限内存黑洞 (Crash)</button>
+            <button class="btn-pwn" onclick="Attack.actionFuzz()">
+                🎯 爆破 10 个系统免认证 Action
+            </button>
         </div>
     </div>
 
+    <button style="background:#333; text-align:center;" onclick="Logger.clear()">[ 清空终端 ]</button>
 </div>
 
 <script>
-// === 日志系统 ===
 const Logger = {
-    el: document.getElementById('terminal'),
-    log(lv, msg) {
+    el: document.getElementById('log'),
+    log(m, color) {
         const d = document.createElement('div');
-        d.className = 'entry';
-        const ts = new Date().toLocaleTimeString();
-        let c = 'l-info';
-        if(lv==='ERR'||lv==='CRASH') c='l-err';
-        if(lv==='OK') c='l-ok';
-        if(lv==='WARN') c='l-warn';
-        d.innerHTML = `<span class="ts">${ts}</span><span class="${c}">[${lv}] ${msg}</span>`;
+        d.className = 'msg';
+        if(color) d.style.color = color;
+        d.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
         this.el.appendChild(d);
         this.el.scrollTop = this.el.scrollHeight;
     },
     clear() { this.el.innerHTML = ''; }
 };
 
-// === 功能模块 ===
-const Mods = {
-    // 1. 递归对象扫描 (针对混淆名)
-    deepScanObjects: function() {
-        Logger.log('INFO', 'Starting Recursive Object Scan...');
-        const blacklist = ['window','document','location','top','chrome','console','navigator','localStorage','sessionStorage','frames','self','parent','history','performance','external','speechSynthesis','styleMedia','crypto','screen','customElements','visualViewport','clientInformation','webkitStorageInfo','trustedTypes','caches','cookieStore','sharedStorage','crossOriginIsolated','documentPictureInPicture','navigation','scheduler'];
-        let foundCount = 0;
+const Attack = {
+    pkg: "com.xiaopeng.devtools",
+    target: "com.xiaopeng.devtools.view.usersettings.UserSettingsActivity",
 
-        for(let key in window) {
-            if(blacklist.includes(key) || !isNaN(parseInt(key))) continue;
-            try {
-                let obj = window[key];
-                if(typeof obj === 'object' && obj !== null) {
-                    Logger.log('OK', `Detected Object: window.${key}`);
-                    // 扫描对象内部方法
-                    for(let method in obj) {
-                        if(typeof obj[method] === 'function') {
-                            if(method.match(/exec|cmd|shell|prop|adb|start|launch/i)) {
-                                Logger.log('ERR', `[VULN] Found Potential Entry: ${key}.${method}`);
-                            }
-                        }
-                    }
-                    foundCount++;
-                }
-            } catch(e){}
-        }
-        Logger.log('INFO', `Scan complete. Found ${foundCount} custom objects.`);
-    },
-
-    // 2. 注入矩阵
-    injectADBMatrix: async function() {
-        Logger.log('WARN', 'Starting 147-Variant ADB Injection...');
-        const pres = ["ro.product.model", "sys.usb.config", "1", "true", "null", "undefined", ""];
-        const seps = ["|", "\n", "\r", "&", "||", ";", "%0a"];
-        const cmds = ["setprop service.adb.tcp.port 5050", "setprop ctl.restart adbd"];
-
-        // 获取所有 window 对象作为载体
-        for(let p in window) {
-            try {
-                let o = window[p];
-                if(typeof o !== 'object' || o === null) continue;
-                for(let m in o) {
-                    if(typeof o[m] === 'function') {
-                        // 暴力投递
-                        for(let cmd of cmds) {
-                            for(let pre of pres) {
-                                for(let sep of seps) {
-                                    let pl = `${pre}${sep}${cmd}`;
-                                    try { o[m](pl); o[m](pl, "1"); } catch(e){}
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch(e){}
-        }
-        Logger.log('OK', 'Matrix payloads delivered.');
-    },
-
-    // 3. 逻辑跳转 (核心突破口)
-    jumpSearch: function() {
-        Logger.log('INFO', 'Targeting Global Search...');
-        // 这是 Android 原生的全局搜索 Action
-        this._go("intent:#Intent;action=android.intent.action.SEARCH;S.query=settings;end");
-        // Android 12 搜索栏
-        this._go("intent:#Intent;action=com.google.android.googlesearch.action.SETTINGS_SEARCH;end");
-    },
-
-    jumpDefaultApps: function() {
-        Logger.log('INFO', 'Targeting Default Apps Page...');
-        this._go("intent:#Intent;action=android.settings.MANAGE_DEFAULT_APPS_SETTINGS;end");
-    },
-
-    jumpAccessibility: function() {
-        this._go("intent:#Intent;action=android.settings.ACCESSIBILITY_SETTINGS;end");
-    },
-
-    // 4. Scheme 爆破
-    fuzzSchemes: function() {
-        const s = ["xiaopeng://debug","xp_conf://factory","engineer://start","android-app://com.android.settings"];
-        s.forEach((u, i) => setTimeout(() => {
-            Logger.log('WARN', `Trying: ${u}`);
-            this._ifr(u);
-        }, i * 600));
-    },
-
-    dialerFuzz: function() {
-        window.location.href = "tel:*%23*%239925%23*%23*";
-    },
-
-    // 5. 内存黑洞
-    infiniteCrash: function() {
-        Logger.log('CRASH', 'NUCLEAR MODE ENGAGED. NUKE 16GB RAM...');
-        setInterval(() => {
-            try {
-                let b = new ArrayBuffer(50 * 1024 * 1024); // 50MB
-                new Uint8Array(b).fill(1);
-                window.HOLD = window.HOLD || [];
-                window.HOLD.push(b);
-            } catch(e) {}
-            let d = document.createElement('div');
-            d.innerText = "CRASH".repeat(1000);
-            document.body.appendChild(d);
-        }, 100);
-    },
-
-    _go: function(u) { try { window.location.href = u; } catch(e){ this._ifr(u); } },
-    _ifr: function(u) { let f=document.createElement('iframe'); f.src=u; f.style.display='none'; document.body.appendChild(f); setTimeout(()=>f.remove(),2000); }
-};
-
-// === 自动化编排 ===
-const Engine = {
-    async start() {
-        Logger.clear();
-        Logger.log('CRASH', '=== INITIATING FULL AUTO SIEGE ===');
-        const p = document.getElementById('progress');
+    // 方案 1: 暴力 Extra 注入
+    extraBypass: function() {
+        const val = 26846822;
+        // 常见的参数命名
+        const keys = ["password", "pwd", "code", "auth", "token", "flag", "extra_flag", "auth_code"];
         
-        p.style.width = '20%';
-        Mods.deepScanObjects();
-        
-        await new Promise(r=>setTimeout(r, 1000));
-        p.style.width = '50%';
-        await Mods.injectADBMatrix();
-        
-        await new Promise(r=>setTimeout(r, 1000));
-        p.style.width = '80%';
-        Mods.fuzzSchemes();
-        
-        p.style.width = '100%';
-        Logger.log('OK', 'Sequence Complete. Monitor ADB/UI.');
+        Logger.log("Starting Extra Param Matrix...", "#00d9ff");
+
+        keys.forEach((key, i) => {
+            setTimeout(() => {
+                // 同时尝试三种数据类型：Integer, String, Long
+                // i. = Integer, s. = String, l. = Long
+                const uri = `intent:#Intent;component=${this.pkg}/${this.target};flags=268435456;i.${key}=${val};s.${key}=${val};l.${key}=${val};end`;
+                Logger.log(`Injecting key: ${key}`);
+                this._fire(uri);
+            }, i * 500);
+        });
+    },
+
+    // 方案 2: 混合 Flag
+    mixedFlag: function() {
+        const flag = 295282278; // 0x10000000 | 26846822
+        const uri = `intent:#Intent;component=${this.pkg}/${this.target};flags=${flag};end`;
+        Logger.log("Executing Mixed Flag Override...", "#00ff66");
+        this._fire(uri);
+    },
+
+    // 方案 3: Action 爆破
+    actionFuzz: function() {
+        const actions = [
+            "com.xiaopeng.devtools.ACTION_USER_SETTINGS",
+            "com.xiaopeng.action.DEV_TOOLS",
+            "android.intent.action.MAIN",
+            "xiaopeng.intent.action.FACTORY_MODE",
+            "android.settings.DEVELOPMENT_SETTINGS"
+        ];
+        actions.forEach((act, i) => {
+            setTimeout(() => {
+                const uri = `intent:#Intent;action=${act};component=${this.pkg}/${this.target};flags=268435456;end`;
+                Logger.log(`Try Action: ${act}`);
+                this._fire(uri);
+            }, i * 600);
+        });
+    },
+
+    _fire: function(uri) {
+        // 尝试两种跳转方式，对抗 Android 12 的拦截
+        try { window.location.href = uri; } catch(e) {}
+        const ifr = document.createElement('iframe');
+        ifr.src = uri; ifr.style.display = 'none';
+        document.body.appendChild(ifr);
+        setTimeout(() => ifr.remove(), 2000);
     }
 };
 </script>
