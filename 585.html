@@ -1,94 +1,86 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XPeng Intent Sniper</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XPENG HOT-SWAP INJECTOR</title>
     <style>
-        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
-        .box { border: 2px solid #0f0; padding: 20px; margin-top: 20px; border-radius: 8px; }
-        h1 { margin: 0 0 10px 0; color: #fff; }
-        p { color: #888; font-size: 12px; }
-        
-        /* 狙击按钮 */
-        #fire-btn {
-            display: block; width: 100%; padding: 30px;
-            background: #003300; border: 2px solid #0f0; color: #0f0;
-            font-size: 24px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-            margin-bottom: 20px;
-            text-transform: uppercase;
+        body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 20px; }
+        .box { border: 2px solid #0f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .btn { 
+            display: block; width: 100%; padding: 25px; margin: 10px 0;
+            background: #004400; border: 2px solid #0f0; color: #0f0;
+            font-size: 18px; font-weight: bold; cursor: pointer;
         }
-        #fire-btn:active { background: #0f0; color: #000; transform: scale(0.98); }
-
-        .log { text-align: left; height: 200px; overflow-y: scroll; border: 1px solid #333; padding: 10px; font-size: 10px; color: #aaa; background: #111; }
-        .success { color: #fff; font-weight: bold; }
+        .btn:active { background: #0f0; color: #000; }
+        .step { color: #fff; font-size: 14px; text-align: left; margin: 10px 0; }
+        .highlight { color: #ff0; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1>🎯 INTENT SNIPER</h1>
-    <p>Target: com.xiaopeng.devtools</p>
+    <h2>🚀 深度热启动注入</h2>
     
-    <!-- 必须手动点击，绕过 Android 12 用户手势限制 -->
-    <button id="fire-btn" onclick="fire()">🔥🔥 点击拉起窗口 🔥🔥</button>
-    
-    <div class="log" id="console">Ready. Waiting for trigger...</div>
+    <div class="step">1. 首先：在拨号盘输入 <span class="highlight">*#9925*111#*</span> (直到弹出那个没用的窗体)</div>
+    <div class="step">2. 然后：不要重启，迅速切回浏览器</div>
+    <div class="step">3. 最后：点击下方对应的注入按钮</div>
 </div>
 
+<!-- 方案 A: 纯密码 Flag 注入 -->
+<button class="btn" onclick="inject('A')">💉 注入核心密码 (Flag: 26846822)</button>
+
+<!-- 方案 B: 混合系统 Flag (最推荐) -->
+<!-- 0x10000000 (New Task) | 26846822 = 295282278 -->
+<button class="btn" onclick="inject('B')">🔥 强力覆盖注入 (Flag: 295282278)</button>
+
+<!-- 方案 C: 参数名注入 (针对 Android 12 重定向) -->
+<button class="btn" onclick="inject('C')">📦 参数重定向注入 (Extra Mode)</button>
+
+<div id="log" style="font-size: 10px; color: #666; margin-top: 20px; text-align: left;"></div>
+
 <script>
-    const logger = document.getElementById('console');
+    const pkg = "com.xiaopeng.devtools";
+    const target = ".view.usersettings.UserSettingsActivity";
+    const main = ".MainActivity";
+
     function log(msg) {
-        logger.innerHTML = `> ${msg}<br>` + logger.innerHTML;
+        document.getElementById('log').innerHTML += "> " + msg + "<br>";
     }
 
-    function fire() {
-        log("Starting Injection Sequence...");
-        
-        // 1. 目标：内部设置界面
-        // 注意：必须带上 FLAG_ACTIVITY_NEW_TASK (268435456)
-        const targetActivity = "com.xiaopeng.devtools/.view.usersettings.UserSettingsActivity";
-        const innerIntent = `intent:#Intent;component=${targetActivity};flags=26846822;end`;
-        
-        // 2. 编码：作为参数传递时需要 URL 编码
-        const encodedInner = encodeURIComponent(innerIntent);
-        
-        // 3. 跳板：通常是 MainActivity 或 LauncherActivity
-        const trampoline = "com.xiaopeng.devtools/.MainActivity";
+    function inject(mode) {
+        let uri = "";
+        log("Initiating injection mode " + mode);
 
-        // 4. 暴力尝试参数名 (不知道研发具体用的哪个参数名，全部试一遍)
-        const params = ["nested", "intent", "target", "url", "uri", "path", "next"];
-        
-        let delay = 0;
+        if (mode === 'A') {
+            // 纯粹的密码 Flag
+            uri = `intent:#Intent;component=${pkg}/${target};flags=26846822;end`;
+        } 
+        else if (mode === 'B') {
+            // 混合系统 Flag (Android 12 启动 Activity 必需)
+            uri = `intent:#Intent;component=${pkg}/${target};flags=295282278;end`;
+        }
+        else if (mode === 'C') {
+            // 尝试利用 MainActivity 作为跳板进行重定向
+            const inner = encodeURIComponent(`intent:#Intent;component=${pkg}/${target};flags=26846822;end`);
+            uri = `intent:#Intent;component=${pkg}${main};S.target=${inner};S.intent=${inner};S.nested=${inner};end`;
+        }
 
-        params.forEach(key => {
-            // 构造反射 Intent
-            // 格式: intent:#Intent;component=跳板;S.参数名=目标Intent;end
-            const finalUri = `intent:#Intent;component=${trampoline};S.${key}=${encodedInner};end`;
+        log("Target URI: " + uri);
+        
+        // 尝试多种拉起手段
+        try {
+            window.location.href = uri;
             
-            setTimeout(() => {
-                log(`Trying param [${key}]...`);
-                // 方式 A: Window Location (最强)
-                try { window.location.href = finalUri; } catch(e) {}
-                
-                // 方式 B: Iframe (备用)
-                const ifr = document.createElement('iframe');
-                ifr.src = finalUri;
-                ifr.style.display = 'none';
-                document.body.appendChild(ifr);
-                setTimeout(() => document.body.removeChild(ifr), 1000);
-            }, delay);
-            
-            delay += 800; // 每 0.8 秒尝试一种，防止系统反应不过来
-        });
-
-        // 5. 最后的补刀：直接拉起 (万一 exported=true 呢)
-        setTimeout(() => {
-            log("Trying Direct Launch (Mixed Flag)...");
-            window.location.href = `intent:#Intent;component=${targetActivity};flags=26846822;end`;
-        }, delay + 500);
+            const ifr = document.createElement('iframe');
+            ifr.src = uri;
+            ifr.style.display = 'none';
+            document.body.appendChild(ifr);
+        } catch(e) {
+            log("Error: " + e.message);
+        }
     }
 </script>
+
 </body>
 </html>
