@@ -3,95 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XPENG SETTINGS OVERLORD</title>
+    <title>XPENG OMNI-HACK v13</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; padding-bottom: 200px; }
-        h1 { color: #00e5ff; border-bottom: 2px solid #00e5ff; padding-bottom: 10px; }
-        
-        .btn-grid { display: grid; gap: 15px; }
-        
-        button {
-            width: 100%; padding: 20px; 
-            background: #222; border: 1px solid #444; color: #eee;
-            font-size: 16px; font-weight: bold; text-align: left;
-            border-radius: 8px; position: relative;
+        body { background: #000; color: #fff; font-family: monospace; padding: 15px; overflow-y: auto; padding-bottom: 200px; }
+        .card { border: 1px solid #333; background: #111; margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
+        .card-head { background: #222; padding: 10px; font-weight: bold; border-bottom: 1px solid #333; color: #0f0; }
+        .card-body { padding: 10px; display: grid; gap: 10px; }
+        button { 
+            width: 100%; padding: 18px; background: #2a2a2a; border: 1px solid #444; color: #fff; 
+            font-size: 14px; font-weight: bold; text-align: left; border-radius: 6px; cursor: pointer;
         }
-        button:active { background: #444; transform: scale(0.98); }
-        
-        .b-main { border-left: 5px solid #00ff00; }
-        .b-sub { border-left: 5px solid #ffcc00; }
-        .b-dev { border-left: 5px solid #ff0055; }
-        
-        .desc { font-size: 10px; color: #888; margin-top: 5px; font-weight: normal; }
+        button:active { background: #444; }
+        .desc { font-size: 10px; color: #666; margin-top: 4px; }
+        .danger { border-left: 5px solid #f00; }
+        .jump { border-left: 5px solid #0af; }
     </style>
 </head>
 <body>
 
-<h1>⚙️ SETTINGS LAUNCHER</h1>
-<p style="color:#aaa; font-size:12px;">点击下方按钮。如果弹出"选择应用"，请尝试寻找类似"设置"或"安卓系统"的图标。</p>
+<h2 style="color:#0af; text-align:center;">OMNI-HACK TERMINAL</h2>
 
-<div class="btn-grid">
+<!-- 1. 核心跳板：利用系统原生 Share 菜单 -->
+<div class="card">
+    <div class="card-head">核心跳板 A：系统级分享注入</div>
+    <div class="card-body">
+        <button class="jump" onclick="Hacks.triggerShare()">
+            📤 唤起原生分享菜单
+        </button>
+        <div class="desc">原理：利用 Web Share API 强制拉起 Android 原生分享对话框。如果弹出，点击“蓝牙”或“信息”，通常能跳转到系统界面。</div>
+    </div>
+</div>
 
-    <!-- 1. 核心目标：开发者选项 -->
-    <button class="b-dev" onclick="launch('android.settings.DEVELOPMENT_SETTINGS')">
-        🔨 开发者选项 (直接入口)
-        <div class="desc">Target: Development Settings</div>
-    </button>
+<!-- 2. 核心跳板：利用系统原生打印服务 -->
+<div class="card">
+    <div class="card-head">核心跳板 B：打印预览跳转</div>
+    <div class="card-body">
+        <button class="jump" onclick="window.print()">
+            🖨 唤起原生打印预览
+        </button>
+        <div class="desc">原理：Android 12 的打印预览界面有“更多设置”，可以跳进原生设置。</div>
+    </div>
+</div>
 
-    <!-- 2. 通用设置首页 -->
-    <button class="b-main" onclick="launch('android.settings.SETTINGS')">
-        ⚙️ 原生设置首页
-        <div class="desc">Target: Settings Main</div>
-    </button>
+<!-- 3. 核心跳板：包管理器漏洞 (利用 Choose Application) -->
+<div class="card">
+    <div class="card-head">核心跳板 C：软件包安装程序测试</div>
+    <div class="card-body">
+        <button class="danger" onclick="Hacks.triggerInstall()">
+            📦 尝试拉起 PackageInstaller
+        </button>
+        <div class="desc">如果出现“选择应用”，请看是否有“软件包安装程序”或“安卓系统”。</div>
+    </div>
+</div>
 
-    <!-- 3. 极大概率漏网的子菜单 -->
-    <button class="b-sub" onclick="launch('android.settings.APPLICATION_SETTINGS')">
-        📦 应用管理
-        <div class="desc">很多车机忘记屏蔽这个，进去后点“全部应用”->找到设置->打开</div>
-    </button>
+<!-- 4. 暴力 Activity Fuzzing -->
+<div class="card">
+    <div class="card-head">核心跳板 D：无权限 Activity 撞击</div>
+    <div class="card-body">
+        <button class="danger" onclick="Hacks.fuzzNative()">
+            🎯 撞击 10 个原生无锁入口
+        </button>
+        <div class="desc">尝试拉起被忽视的系统子页面（辅助功能、存储管理等）。</div>
+    </div>
+</div>
 
-    <button class="b-sub" onclick="launch('android.settings.WIFI_SETTINGS')">
-        📶 WiFi 设置
-        <div class="desc">原生 WiFi 界面，通常包含高级选项</div>
-    </button>
-    
-    <button class="b-sub" onclick="launch('android.settings.BLUETOOTH_SETTINGS')">
-        🔵 蓝牙设置
-        <div class="desc">原生蓝牙界面</div>
-    </button>
-
-    <button class="b-sub" onclick="launch('android.settings.DEVICE_INFO_SETTINGS')">
-        ℹ️ 关于本机 (连点版本号)
-        <div class="desc">进去狂点 Build Number 开启开发者模式</div>
-    </button>
-
-    <button class="b-sub" onclick="launch('android.settings.SECURITY_SETTINGS')">
-        🔒 安全设置 (未知来源)
-        <div class="desc">允许安装未知应用开关</div>
-    </button>
-
-    <!-- 4. 显式调用 (针对 Android 12) -->
-    <button class="b-dev" style="background:#220000" onclick="launchExplicit()">
-        🚀 显式拉起 com.android.settings
-        <div class="desc">直接 Component 调用，不通过 Action 匹配</div>
-    </button>
-
+<!-- 5. 键盘/搜索绕过 -->
+<div class="card">
+    <div class="card-head">核心跳板 E：外部搜索联动</div>
+    <div class="card-body">
+        <button class="jump" onclick="Hacks.webSearch()">
+            🌐 唤起全局搜索 (Web Search)
+        </button>
+    </div>
 </div>
 
 <script>
-    function launch(action) {
-        // 构造 Action Intent
-        // flag 0x10000000 = NEW_TASK
-        // flag 0x04000000 = CLEAR_TOP (防止多重打开)
-        const uri = `intent:#Intent;action=${action};flags=0x14000000;end`;
-        window.location.href = uri;
-    }
+const Hacks = {
+    // 1. Web Share API - 这是 Android 12 的原生功能
+    triggerShare: async function() {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Hack',
+                    text: 'Explore System',
+                    url: 'http://127.0.0.1'
+                });
+            } catch (err) { console.log(err); }
+        } else {
+            // 如果不支持 Web Share，尝试通过 Intent 触发
+            window.location.href = "intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=hack;end";
+        }
+    },
 
-    function launchExplicit() {
-        // 尝试直接点名 Settings 的主 Activity
-        const uri = `intent:#Intent;component=com.android.settings/.Settings;flags=0x14000000;end`;
-        window.location.href = uri;
+    // 2. Package Installer - 尝试利用安装器界面
+    triggerInstall: function() {
+        // 尝试以查看文件的名义唤起
+        window.location.href = "intent:#Intent;action=android.intent.action.VIEW;data=content://com.android.externalstorage.documents/root/primary;type=application/vnd.android.package-archive;end";
+    },
+
+    // 3. Web Search - 调起系统搜索框
+    webSearch: function() {
+        window.location.href = "intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=settings;end";
+    },
+
+    // 4. 穷举原生 Activity
+    fuzzNative: function() {
+        const list = [
+            "android.settings.ACCESSIBILITY_SETTINGS", // 辅助功能 (极少被封)
+            "android.settings.INTERNAL_STORAGE_SETTINGS", // 存储
+            "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS", // 电池优化
+            "android.settings.MANAGE_UNKNOWN_APP_SOURCES", // 安装未知应用
+            "android.settings.SYNC_SETTINGS", // 账户同步
+            "com.android.settings/.SubSettings" // 设置子页
+        ];
+        list.forEach((act, i) => {
+            setTimeout(() => {
+                window.location.href = `intent:#Intent;action=${act};flags=0x10000000;end`;
+            }, i * 1000);
+        });
     }
+};
 </script>
 </body>
 </html>
