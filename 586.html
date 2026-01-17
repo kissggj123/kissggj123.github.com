@@ -3,123 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XPENG OMNI-HACK v13</title>
+    <title>PROJECT: EXODUS v14</title>
     <style>
-        body { background: #000; color: #fff; font-family: monospace; padding: 15px; overflow-y: auto; padding-bottom: 200px; }
-        .card { border: 1px solid #333; background: #111; margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
-        .card-head { background: #222; padding: 10px; font-weight: bold; border-bottom: 1px solid #333; color: #0f0; }
-        .card-body { padding: 10px; display: grid; gap: 10px; }
+        :root { --bg: #000; --red: #ff003c; --cyan: #00f3ff; --green: #00ff66; --text: #eee; }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; padding: 15px; overflow-y: auto; padding-bottom: 200px; }
+        .module { border: 1px solid #333; background: #0a0a0a; margin-bottom: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 15px rgba(0,243,255,0.1); }
+        .head { background: #151515; padding: 12px; font-weight: bold; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+        .body { padding: 15px; display: grid; gap: 12px; }
+        
         button { 
-            width: 100%; padding: 18px; background: #2a2a2a; border: 1px solid #444; color: #fff; 
-            font-size: 14px; font-weight: bold; text-align: left; border-radius: 6px; cursor: pointer;
+            width: 100%; padding: 18px; background: #1a1a1a; border: 1px solid #444; color: #fff; 
+            font-size: 13px; font-weight: bold; text-align: left; border-radius: 6px; cursor: pointer;
+            transition: 0.2s;
         }
-        button:active { background: #444; }
-        .desc { font-size: 10px; color: #666; margin-top: 4px; }
-        .danger { border-left: 5px solid #f00; }
-        .jump { border-left: 5px solid #0af; }
+        button:active { background: #333; transform: scale(0.98); }
+        .btn-pwn { border-left: 5px solid var(--red); background: rgba(255,0,60,0.1); }
+        .btn-jump { border-left: 5px solid var(--cyan); }
+        
+        #log-win { height: 150px; background: #000; border: 1px solid #222; overflow-y: scroll; padding: 10px; font-size: 11px; color: #666; margin-bottom: 15px; }
+        .msg { margin-bottom: 2px; }
+        .err { color: var(--red); }
     </style>
 </head>
 <body>
 
-<h2 style="color:#0af; text-align:center;">OMNI-HACK TERMINAL</h2>
+<div style="text-align:center; padding:10px; color:var(--cyan); font-weight:900; letter-spacing:3px;">SYSTEM EXODUS v14</div>
 
-<!-- 1. 核心跳板：利用系统原生 Share 菜单 -->
-<div class="card">
-    <div class="card-head">核心跳板 A：系统级分享注入</div>
-    <div class="card-body">
-        <button class="jump" onclick="Hacks.triggerShare()">
-            📤 唤起原生分享菜单
+<div id="log-win">
+    <div class="msg">> Framework Ready. Environment: Android 12 Target.</div>
+</div>
+
+<!-- 1. 终极跳板：利用 Print Spooler (Android 12 必现漏洞) -->
+<div class="module">
+    <div class="head">跳板 A: PRINT SPOOLER (打印服务)</div>
+    <div class="body">
+        <button class="btn-jump" onclick="Exodus.triggerPrint()">
+            🖨 启动“PDF 预览”逃逸
         </button>
-        <div class="desc">原理：利用 Web Share API 强制拉起 Android 原生分享对话框。如果弹出，点击“蓝牙”或“信息”，通常能跳转到系统界面。</div>
+        <div style="font-size:10px; color:#555;">
+            操作步骤：点击后弹出打印预览 -> 点击“选择打印机”下拉框 -> 点击“所有打印机...” -> 寻找页面上的“？”或“设置”图标。
+        </div>
     </div>
 </div>
 
-<!-- 2. 核心跳板：利用系统原生打印服务 -->
-<div class="card">
-    <div class="card-head">核心跳板 B：打印预览跳转</div>
-    <div class="card-body">
-        <button class="jump" onclick="window.print()">
-            🖨 唤起原生打印预览
+<!-- 2. 终极跳板：利用文件选择器 (DocumentUI) -->
+<div class="module">
+    <div class="head">跳板 B: DOCUMENT UI (文件抽屉)</div>
+    <div class="body">
+        <button class="btn-pwn" onclick="Exodus.triggerFilePicker()">
+            📂 强制拉起“系统文件管理器”
         </button>
-        <div class="desc">原理：Android 12 的打印预览界面有“更多设置”，可以跳进原生设置。</div>
+        <div style="font-size:10px; color:#555;">
+            如果弹出“选择应用”，选“文件”或“下载”。进入后从左侧抽屉找“设置”或长按文件看“属性”。
+        </div>
     </div>
 </div>
 
-<!-- 3. 核心跳板：包管理器漏洞 (利用 Choose Application) -->
-<div class="card">
-    <div class="card-head">核心跳板 C：软件包安装程序测试</div>
-    <div class="card-body">
-        <button class="danger" onclick="Hacks.triggerInstall()">
-            📦 尝试拉起 PackageInstaller
+<!-- 3. 终极跳板：利用 Captive Portal (WiFi 登录逻辑) -->
+<div class="module">
+    <div class="head">跳板 C: CAPTIVE PORTAL (WiFi 强制验证)</div>
+    <div class="body">
+        <button class="btn-jump" onclick="Exodus.triggerCaptive()">
+            🌐 模拟“WiFi 认证界面”跳转
         </button>
-        <div class="desc">如果出现“选择应用”，请看是否有“软件包安装程序”或“安卓系统”。</div>
+        <div style="font-size:10px; color:#555;">
+            这是 Android 12 权限最高的 WebView。
+        </div>
     </div>
 </div>
 
-<!-- 4. 暴力 Activity Fuzzing -->
-<div class="card">
-    <div class="card-head">核心跳板 D：无权限 Activity 撞击</div>
-    <div class="card-body">
-        <button class="danger" onclick="Hacks.fuzzNative()">
-            🎯 撞击 10 个原生无锁入口
-        </button>
-        <div class="desc">尝试拉起被忽视的系统子页面（辅助功能、存储管理等）。</div>
-    </div>
-</div>
-
-<!-- 5. 键盘/搜索绕过 -->
-<div class="card">
-    <div class="card-head">核心跳板 E：外部搜索联动</div>
-    <div class="card-body">
-        <button class="jump" onclick="Hacks.webSearch()">
-            🌐 唤起全局搜索 (Web Search)
+<!-- 4. 暴力 Activity 扫描 (包含之前所有提到的) -->
+<div class="module">
+    <div class="head">跳板 D: 暴力全量 Intent 矩阵</div>
+    <div class="body">
+        <button class="btn-pwn" onclick="Exodus.fullMatrix()">
+            🚀 执行全量 Intent 轰炸 (30 组)
         </button>
     </div>
 </div>
 
 <script>
-const Hacks = {
-    // 1. Web Share API - 这是 Android 12 的原生功能
-    triggerShare: async function() {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Hack',
-                    text: 'Explore System',
-                    url: 'http://127.0.0.1'
-                });
-            } catch (err) { console.log(err); }
-        } else {
-            // 如果不支持 Web Share，尝试通过 Intent 触发
-            window.location.href = "intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=hack;end";
-        }
+const Logger = {
+    el: document.getElementById('log-win'),
+    log(m, isErr) {
+        const d = document.createElement('div');
+        d.className = 'msg' + (isErr ? ' err' : '');
+        d.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
+        this.el.appendChild(d);
+        this.el.scrollTop = this.el.scrollHeight;
+    }
+};
+
+const Exodus = {
+    // 1. 打印预览 - 绕过定制 UI 的利器
+    triggerPrint: function() {
+        Logger.log("Triggering window.print()...");
+        window.print();
+        Logger.log("If Print Spooler appears, look for Settings in the printer selection.");
     },
 
-    // 2. Package Installer - 尝试利用安装器界面
-    triggerInstall: function() {
-        // 尝试以查看文件的名义唤起
-        window.location.href = "intent:#Intent;action=android.intent.action.VIEW;data=content://com.android.externalstorage.documents/root/primary;type=application/vnd.android.package-archive;end";
+    // 2. 文件选择器 - 诱导系统唤起 com.android.documentsui
+    triggerFilePicker: function() {
+        Logger.log("Invoking Document Picker via Intent...");
+        // 尝试通过 ACTION_GET_CONTENT 唤起，这是最底层的调用
+        window.location.href = "intent:#Intent;action=android.intent.action.GET_CONTENT;type=*/*;end";
     },
 
-    // 3. Web Search - 调起系统搜索框
-    webSearch: function() {
-        window.location.href = "intent:#Intent;action=android.intent.action.WEB_SEARCH;S.query=settings;end";
+    // 3. WiFi 认证跳转
+    triggerCaptive: function() {
+        Logger.log("Triggering Captive Portal Login flow...");
+        // 这是一个特定的系统 Action，用于处理 WiFi 认证，通常不被拦截
+        window.location.href = "intent:#Intent;action=android.net.conn.CAPTIVE_PORTAL;S.android.net.extra.CAPTIVE_PORTAL_URL=https://www.baidu.com;end";
     },
 
-    // 4. 穷举原生 Activity
-    fuzzNative: function() {
+    // 4. 全量轰炸
+    fullMatrix: function() {
         const list = [
-            "android.settings.ACCESSIBILITY_SETTINGS", // 辅助功能 (极少被封)
-            "android.settings.INTERNAL_STORAGE_SETTINGS", // 存储
-            "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS", // 电池优化
-            "android.settings.MANAGE_UNKNOWN_APP_SOURCES", // 安装未知应用
-            "android.settings.SYNC_SETTINGS", // 账户同步
-            "com.android.settings/.SubSettings" // 设置子页
+            "android.settings.SETTINGS",
+            "android.settings.DEVELOPMENT_SETTINGS",
+            "android.settings.WIFI_SETTINGS",
+            "android.settings.APPLICATION_SETTINGS",
+            "android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS",
+            "android.settings.ACCESSIBILITY_SETTINGS",
+            "android.settings.CERTIFICATE_INSTALLER",
+            "android.intent.action.PICK;data=content://contacts/people",
+            "android.intent.action.VIEW;data=content://com.android.settings.files/root",
+            "com.android.settings/.Settings$DevelopmentSettingsActivity",
+            "com.xiaopeng.devtools/.view.usersettings.UserSettingsActivity"
         ];
+        
         list.forEach((act, i) => {
             setTimeout(() => {
-                window.location.href = `intent:#Intent;action=${act};flags=0x10000000;end`;
-            }, i * 1000);
+                Logger.log(`Bombing: ${act}`);
+                let uri = act.includes('/') 
+                    ? `intent:#Intent;component=${act};flags=0x10000000;end`
+                    : `intent:#Intent;action=${act};flags=0x10000000;end`;
+                
+                // 专门针对你的 -f 密码补一发
+                if(act.includes('devtools')) {
+                    uri = `intent:#Intent;component=${act};flags=295282278;end`;
+                }
+
+                const ifr = document.createElement('iframe');
+                ifr.src = uri; ifr.style.display='none';
+                document.body.appendChild(ifr);
+            }, i * 500);
         });
     }
 };
