@@ -56,7 +56,6 @@ $(am${IFS}start${IFS}-n${IFS}com.xiaopeng.devtools/.view.usersettings.UserSettin
 ---
 
 #### 第 4 组：带密码 Flag 的版本 (如果不带密码打不开)
-*你之前提到过 `-f 26846822` 是密码，如果上面的指令只是闪一下没反应，试这组。*
 
 **9. 管道 + 密码版:**
 ```text
@@ -71,8 +70,6 @@ ro.product.model|am${IFS}start${IFS}-n${IFS}com.xiaopeng.devtools/.view.usersett
 ---
 
 #### 第 5 组：隐形换行符 (必杀技)
-*原理：如果物理键盘敲不出来，或者输入框过滤了所有符号，**复制粘贴**换行符是最后的希望。*
-*(请在网页/备忘录里把下面两行复制，然后去车机粘贴)*
 
 **11. 换行符版:**
 ```text
