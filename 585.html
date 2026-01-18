@@ -3,102 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XPENG OTG SWITCH v28</title>
+    <title>XPENG BROWSER-PURE v33</title>
     <style>
-        body { background: #000; color: #0ff; font-family: monospace; padding: 15px; padding-bottom: 200px; }
-        .card { border: 1px solid #333; background: #111; margin-bottom: 15px; padding: 15px; border-radius: 8px; }
-        button { 
-            width: 100%; padding: 20px; margin-bottom: 10px; 
-            background: #002222; border: 1px solid #0ff; color: #0ff; 
-            font-weight: bold; font-size: 14px; text-align: left;
+        /* === 极简黑客风 === */
+        :root {
+            --bg: #000; --panel: #111; --border: #333;
+            --green: #0f0; --cyan: #0ff;
+            --font: 'Consolas', monospace;
         }
-        button:active { background: #0ff; color: #000; }
-        #log { height: 150px; overflow-y: scroll; background: #000; border: 1px solid #222; padding: 10px; color: #888; font-size: 10px; }
-        .hl { color: #fff; font-weight: bold; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg); color: #ccc; font-family: var(--font); margin: 0; padding: 15px;
+            overflow-y: auto; padding-bottom: 200px;
+        }
+
+        /* 顶部固定日志区 */
+        #terminal {
+            position: sticky; top: 0; z-index: 100;
+            height: 300px; background: #000; border: 1px solid var(--green);
+            overflow-y: scroll; padding: 10px; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.1);
+        }
+        .line { border-bottom: 1px solid #111; padding: 3px 0; word-break: break-all; font-size: 11px; }
+        .ts { color: #555; margin-right: 5px; }
+        .tag-ok { color: var(--green); }
+        .tag-info { color: var(--cyan); }
+        .tag-warn { color: #ff0; }
+
+        /* 操作按钮区 */
+        .card { border: 1px solid var(--border); background: var(--panel); border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        .card-head { padding: 12px; background: #1a1a1a; font-weight: bold; font-size: 13px; color: #fff; border-bottom: 1px solid #222; }
+        .card-body { padding: 15px; display: grid; gap: 15px; }
+
+        button {
+            width: 100%; padding: 18px; background: #222; border: 1px solid #444; color: #ddd;
+            font-family: inherit; font-size: 13px; text-align: left; cursor: pointer;
+            border-radius: 4px;
+        }
+        button:active { background: #333; transform: scale(0.98); }
+        
+        .b-inj { border-left: 5px solid var(--green); }
+        .b-bypass { border-left: 5px solid var(--cyan); }
+        
+        .desc { font-size: 10px; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h3 style="margin-top:0; color:#fff;">🔄 USB 模式切换器</h3>
-    <p style="color:#888; font-size:12px;">当前推测模式：usbhost<br>目标模式：Device / ADB</p>
-    
-    <button onclick="OTG.fire('device')">
-        方案 A: 切换为 "device"
-    </button>
-    
-    <button onclick="OTG.fire('adb')">
-        方案 B: 切换为 "adb"
-    </button>
-    
-    <button onclick="OTG.fire('peripheral')">
-        方案 C: 切换为 "peripheral"
-    </button>
-    
-    <button style="border-color:#f0f; color:#f0f;" onclick="OTG.fireAll()">
-        🔥 全自动轮询 (每秒切一种)
-    </button>
+<!-- 日志终端 -->
+<div id="terminal">
+    <div class="line"><span class="tag-info">SYSTEM READY. PURE MODE.</span></div>
 </div>
 
-<div id="log">Ready...</div>
+<!-- 1. JS 接口注入 (最核心) -->
+<div class="card">
+    <div class="card-head" style="color:var(--green)">1. JS BRIDGE INJECTION (深度扫描)</div>
+    <div class="card-body">
+        <button class="b-inj" onclick="Core.scanAndInject()">
+            ⚡️ 启动全自动注入 (Auto-Inject)<br>
+            <div class="desc">针对: Runtime.getInstall, window.xiaopeng, window.car 等所有对象<br>Payload: 关闭权限校验, 开启ADB, 允许三方安装</div>
+        </button>
+    </div>
+</div>
+
+<!-- 2. Intent 拉起 -->
+<div class="card">
+    <div class="card-head" style="color:var(--cyan)">2. INTENT LAUNCHER (手动触发)</div>
+    <div class="card-body">
+        <button class="b-bypass" onclick="Core.launchSettings()">
+            🚀 拉起 UserSettings (Flag: 295282278)
+        </button>
+        <button class="b-bypass" onclick="Core.launchReflect()">
+            🪞 Intent 反射 (MainActivity 跳板)
+        </button>
+        <button class="b-bypass" onclick="Core.launchFactory()">
+            🔧 拉起工程模式 (FactoryTest)
+        </button>
+    </div>
+</div>
+
+<button onclick="document.getElementById('terminal').innerHTML=''" style="text-align:center;">[ 清空日志 ]</button>
 
 <script>
+// === 日志工具 ===
 const Logger = {
-    log(msg) {
+    el: document.getElementById('terminal'),
+    log(type, msg) {
         const d = document.createElement('div');
-        d.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-        document.getElementById('log').prepend(d);
+        d.className = 'line';
+        let c = type === 'OK' ? 'tag-ok' : (type === 'WARN' ? 'tag-warn' : 'tag-info');
+        d.innerHTML = `<span class="ts">[${new Date().toLocaleTimeString()}]</span><span class="${c}">[${type}]</span> ${msg}`;
+        this.el.insertBefore(d, this.el.firstChild);
     }
 };
 
-const OTG = {
-    // 注入核心
-    inject: function(val) {
-        // 针对 xp_usb_mode 和 sys.usb.config 同时操作
-        const cmds = [
-            `setprop xp_usb_mode ${val}`,
-            `setprop sys.usb.config ${val}`,
-            `setprop persist.sys.usb.config ${val}`,
-            // 尝试触发 USB 状态更新
-            `setprop ctl.restart adbd`
-        ];
+// === 核心逻辑 ===
+const Core = {
+    // 针对你提供的截图，最关键的 persist 属性
+    payloads: [
+        // 1. 关权限总闸 (最重要)
+        "setprop persist.car.permission.enable false",
+        // 2. 开启安装权限
+        "setprop persist.xui.installer.enable 1",
+        "setprop persist.sys.3rdapp.installpermission true",
+        // 3. 开启 ADB 并持久化
+        "setprop persist.sys.usb.config adb",
+        "setprop persist.adb.notify 1",
+        // 4. 辅助指令
+        "setprop ctl.restart adbd"
+    ],
 
-        let sent = 0;
-        // 遍历接口
+    // --- 1. JS 深度扫描与注入 ---
+    scanAndInject: async function() {
+        Logger.log('INFO', '正在执行深度递归扫描...');
+        
+        let targets = [];
+        const ban = ['window','document','location','top','chrome','console','navigator','localStorage','sessionStorage','frames','history','performance','external','styleMedia','crypto','screen','customElements','visualViewport','clientInformation','webkitStorageInfo','trustedTypes','caches','cookieStore','sharedStorage','crossOriginIsolated','documentPictureInPicture'];
+        
+        // 1. 扫描 window 第一层
         for(let p in window) {
+            if(ban.includes(p) || !isNaN(parseInt(p))) continue;
             try {
-                let o = window[p];
-                if(typeof o === 'object' && o !== null) {
-                    for(let k in o) {
-                        if(typeof o[k] === 'function') {
-                            cmds.forEach(c => {
-                                // 管道符混淆
-                                try { o[k](`ro.product.model|${c}`); } catch(e){}
-                                // 换行符混淆
-                                try { o[k](`ro.product.model\n${c}`); } catch(e){}
-                                sent++;
-                            });
+                let obj = window[p];
+                if(typeof obj === 'object' && obj !== null) targets.push({n:p, o:obj});
+            } catch(e){}
+        }
+
+        // 2. 特异性检查 (响应你的截图需求)
+        if(window.Runtime) targets.push({n:'Runtime', o:window.Runtime});
+        if(window.getInstall) targets.push({n:'getInstall', o:window.getInstall});
+
+        // 3. 开始递归注入
+        let count = 0;
+        Logger.log('INFO', `扫描到 ${targets.length} 个根对象，开始探测内部方法...`);
+
+        for(let t of targets) {
+            try {
+                // 遍历对象的属性
+                for(let key in t.o) {
+                    let member = t.o[key];
+
+                    // 情况 A: 直接就是函数 (例如 window.xiaopeng.exec)
+                    if(typeof member === 'function' && !['toString','valueOf','hasOwnProperty'].includes(key)) {
+                        this._fire(t.n + '.' + key, member);
+                        count++;
+                    }
+                    
+                    // 情况 B: 是个子对象 (例如 Runtime.getInstall.execute)
+                    else if(typeof member === 'object' && member !== null) {
+                        for(let subKey in member) {
+                            if(typeof member[subKey] === 'function') {
+                                this._fire(t.n + '.' + key + '.' + subKey, member[subKey]);
+                                count++;
+                            }
                         }
                     }
                 }
             } catch(e){}
         }
-        return sent;
+        
+        Logger.log('OK', `执行完毕。已向 ${count} 个接口发送了 Payload。`);
+        Logger.log('WARN', '如果注入成功，请务必【手动重启车机】使配置生效！');
     },
 
-    fire: function(mode) {
-        Logger.log(`Setting USB Mode to: [${mode}]`);
-        this.inject(mode);
-        Logger.log("指令已发送。请拔插 USB 线！");
+    // 注入发射器
+    _fire: function(name, func) {
+        // Logger.log('INFO', `Try: ${name}`); // 调试时可开启
+        this.payloads.forEach(cmd => {
+            // 1. 原生调用
+            try { func(cmd); } catch(e){} 
+            // 2. 管道符绕过 (针对维保逻辑)
+            try { func(`ro.product.model|${cmd}`); } catch(e){} 
+            // 3. 换行符绕过
+            try { func(`ro.product.model\n${cmd}`); } catch(e){} 
+            // 4. 双参数 (key, value)
+            if(cmd.startsWith("setprop")) {
+                let parts = cmd.split(' ');
+                if(parts.length >= 3) {
+                    try { func(parts[1], parts[2]); } catch(e){}
+                }
+            }
+        });
     },
 
-    fireAll: async function() {
-        const modes = ["device", "adb", "peripheral", "otg", "mtp,adb", "0"];
-        for(let m of modes) {
-            this.fire(m);
-            await new Promise(r => setTimeout(r, 1500)); // 间隔1.5秒
+    // --- 2. Intent 策略 ---
+    launchSettings: function() {
+        this._go("intent:#Intent;component=com.xiaopeng.devtools/.view.usersettings.UserSettingsActivity;flags=295282278;end");
+    },
+    launchFactory: function() {
+        this._go("intent:#Intent;component=com.xiaopeng.factorytest/.view.FactoryTestActivity;flags=0x10000000;end");
+    },
+    launchReflect: function() {
+        const target = encodeURIComponent("intent:#Intent;component=com.xiaopeng.devtools/.view.usersettings.UserSettingsActivity;end");
+        const uri = `intent:#Intent;component=com.xiaopeng.devtools/.MainActivity;S.nested=${target};end`;
+        this._go(uri);
+    },
+
+    _go: function(uri) {
+        Logger.log('INFO', 'Launching Intent...');
+        try { window.location.href = uri; } catch(e) {
+            Logger.log('WARN', 'Location blocked. Using iframe.');
+            let f = document.createElement('iframe');
+            f.src = uri; f.style.display='none';
+            document.body.appendChild(f);
+            setTimeout(()=>f.remove(), 1000);
         }
-        alert("所有模式已尝试。\n请保持 USB 连接电脑，查看电脑是否有反应。");
     }
 };
 </script>
