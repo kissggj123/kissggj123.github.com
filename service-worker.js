@@ -1,6 +1,6 @@
 // Service Worker - Bunny CC
-const CACHE_NAME = 'bunny-cc-v1.2.1';
-const RUNTIME_CACHE = 'bunny-cc-runtime-v1.2.1';
+const CACHE_NAME = 'bunny-cc-v1.2.5-force-refresh';
+const RUNTIME_CACHE = 'bunny-cc-runtime-v1.2.5';
 const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/icon/192.png', '/favicon.ico'];
 
 self.addEventListener('install', (event) => {
