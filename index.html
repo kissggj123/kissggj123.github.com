@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v1.1.0 -->
-    <title>檔案：Bunny CC vX [AEON_UNLIMITED_FINAL_v1.1.0]</title>
+    <!-- VERSION: v1.2.0 -->
+    <title>檔案：Bunny CC vX [AEON_UNLIMITED_FINAL_v1.2.0]</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -93,33 +93,62 @@
             display:none; align-items:center; justify-content:space-around;
             height:calc(var(--tab-bar-height) + var(--safe-bottom)); padding-bottom:var(--safe-bottom);
             background:rgba(12,10,29,0.92);
-            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
             border-top:1px solid rgba(var(--glow-rgb),0.3);
-            box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+            box-shadow:0 -4px 20px rgba(0,0,0,0.4);
         }
         .tab-item {
             display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
             flex:1; height:100%; padding-top:8px;
             color:var(--text-muted-color); font-size:0.6rem; cursor:pointer;
-            transition:color .2s ease,transform .2s ease;
+            transition:color .2s ease,transform .15s ease;
+            -webkit-tap-highlight-color:transparent; user-select:none;
         }
         .tab-item svg { width:1.4rem; height:1.4rem; }
         .tab-item.active { color:rgb(var(--accent-rgb)); transform:translateY(-2px); }
         .tab-item.active svg { filter:drop-shadow(0 0 6px rgba(var(--accent-rgb),0.5)); }
+        .tab-item:active { transform:scale(0.92); }
         .mobile-content { padding-top:var(--safe-top); }
-        [data-view] { display:none; }
-        [data-view].active { display:block; }
+        /* Modal → inline conversion for mobile */
+        .modal-overlay.mobile-inline {
+            position:relative !important; inset:auto !important;
+            background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+            z-index:1 !important; display:block !important; opacity:1 !important;
+            padding:0; margin-bottom:1rem;
+        }
+        .modal-overlay.mobile-inline .modal-container {
+            max-width:100% !important; max-height:none !important; width:100% !important;
+            margin:0; position:relative !important; transform:none !important;
+            border:2px solid rgb(var(--glow-rgb)) !important; border-radius:0.5rem;
+            box-shadow:0 0 20px rgba(var(--glow-rgb),0.3) !important; background:rgba(8,8,8,0.9) !important;
+        }
+        /* Mobile-only elements */
+        .mobile-only { display:none; }
         @media (display-mode: standalone) {
             #bottom-tab-bar { display:flex; }
             .lcars-sidebar { display:none; }
             .lcars-container { height:calc(100vh - var(--tab-bar-height) - var(--safe-bottom)); }
         }
         @media (max-width: 768px) {
-            .lcars-container { padding:0.5rem; gap:0.5rem; height:calc(100vh - var(--tab-bar-height) - var(--safe-bottom)); }
+            body { overflow-y:auto; overflow-x:hidden; }
+            .lcars-container { padding:0.5rem; gap:0.5rem; height:auto; min-height:calc(100vh - var(--tab-bar-height) - var(--safe-bottom) - var(--safe-top)); }
             .lcars-sidebar { display:none; }
             #bottom-tab-bar { display:flex; }
             .lcars-content-panel { padding:0.75rem; gap:0.75rem; }
             .ui-module { margin-bottom:0.5rem; }
+            /* Hide content panel when a non-home tab is active */
+            body[data-mobile-tab="city"] .lcars-content-panel,
+            body[data-mobile-tab="anniversary"] .lcars-content-panel,
+            body[data-mobile-tab="logs"] .lcars-content-panel,
+            body[data-mobile-tab="settings"] .lcars-content-panel { display:none !important; }
+            /* Show content panel on home tab */
+            body[data-mobile-tab="home"] .lcars-content-panel { display:flex !important; }
+            /* Hide all non-inline modals on mobile */
+            .modal-overlay:not(.mobile-inline):not(#god-mode-calculator-modal):not(#god-mode-activation-modal) { display:none !important; }
+            .mobile-only { display:block; }
+            .chart-container { height:200px !important; }
+            #avatar-container { width:120px !important; height:120px !important; }
+            #city-main-screen { min-height:80px; }
         }
     </style>
 </head>
@@ -258,7 +287,7 @@
     
     <script>
         // --- CONFIG & GLOBAL VARIABLES ---
-        const CONFIG={PROFILE_PIC_PATH:'./dist/Bunny CC_Profile.JPG',PET_RECORDS_PATH:'./dist/bunnycc/PetRecords.json',CITY_SAVE_KEY:'bunny_cc_sim_save_v1.1.0',START_DATE:'2024/03/12 00:00:00',MOUSE_SNAKE_LENGTH:20,COSMIC_DUST_COUNT:800,AVATAR_EFFECT_PRESETS:5,MAX_LOCALSTORAGE_SAVE_BYTES:4.5*1024*1024,GOD_MODE_TITLE_CLICKS:7,GOD_MODE_CALC_SALT_S1:12345,GOD_MODE_JS_ADDON:5678,GOD_MODE_TIME_SALT_S2:97531,GOD_MODE_CHECKSUM_SALT:24680,THEMES:`pink/236,72,153 gold/251,191,36 cyan/34,211,238 magenta/244,114,182 lime/132,204,22 red/239,68,68 indigo/88,86,214 green/34,197,94 white/229,231,235 purple/168,85,247 sky/56,189,248 rose/251,113,133 emerald/16,185,129 amber/245,158,11 violet/139,92,246 fuchsia/217,70,239 teal/20,184,166 blue/59,130,246 lightblue/14,165,233 forest/22,163,74 crimson/220,38,38 silver/156,163,175 bronze/205,133,63 steel/113,128,150 mint/10,200,150 lavender/216,180,254 salmon/250,128,114 turquoise/64,224,208 olive/128,128,0 maroon/128,0,0 navy/0,0,128 coral/255,127,80 orchid/218,112,214 plum/221,160,221 khaki/240,230,140 slateblue/106,90,205 sienna/160,82,45 hotpink/255,105,180 deepskyblue/0,191,255 lawngreen/124,252,0 mediumvioletred/199,21,133 darkorange/255,140,0 dodgerblue/30,144,255 tomato/255,99,71 springgreen/0,255,127 aqua/0,255,255 chartreuse/127,255,0 darkviolet/148,0,211 electric/213,252,9 cosmic/45,15,128 nebula/188,45,225 solar/255,180,0 galactic/75,0,130 cyber/0,255,198 quantum/255,30,90 void/10,10,25 supernova/255,80,0 starlight/230,230,250`.split(' ').map(s=>({n:s.split('/')[0],r:s.split('/')[1]}))};
+        const CONFIG={PROFILE_PIC_PATH:'./dist/Bunny CC_Profile.JPG',PET_RECORDS_PATH:'./dist/bunnycc/PetRecords.json',CITY_SAVE_KEY:'bunny_cc_sim_save_v1.2.0',START_DATE:'2024/03/12 00:00:00',MOUSE_SNAKE_LENGTH:20,COSMIC_DUST_COUNT:800,AVATAR_EFFECT_PRESETS:5,MAX_LOCALSTORAGE_SAVE_BYTES:4.5*1024*1024,GOD_MODE_TITLE_CLICKS:7,GOD_MODE_CALC_SALT_S1:12345,GOD_MODE_JS_ADDON:5678,GOD_MODE_TIME_SALT_S2:97531,GOD_MODE_CHECKSUM_SALT:24680,THEMES:`pink/236,72,153 gold/251,191,36 cyan/34,211,238 magenta/244,114,182 lime/132,204,22 red/239,68,68 indigo/88,86,214 green/34,197,94 white/229,231,235 purple/168,85,247 sky/56,189,248 rose/251,113,133 emerald/16,185,129 amber/245,158,11 violet/139,92,246 fuchsia/217,70,239 teal/20,184,166 blue/59,130,246 lightblue/14,165,233 forest/22,163,74 crimson/220,38,38 silver/156,163,175 bronze/205,133,63 steel/113,128,150 mint/10,200,150 lavender/216,180,254 salmon/250,128,114 turquoise/64,224,208 olive/128,128,0 maroon/128,0,0 navy/0,0,128 coral/255,127,80 orchid/218,112,214 plum/221,160,221 khaki/240,230,140 slateblue/106,90,205 sienna/160,82,45 hotpink/255,105,180 deepskyblue/0,191,255 lawngreen/124,252,0 mediumvioletred/199,21,133 darkorange/255,140,0 dodgerblue/30,144,255 tomato/255,99,71 springgreen/0,255,127 aqua/0,255,255 chartreuse/127,255,0 darkviolet/148,0,211 electric/213,252,9 cosmic/45,15,128 nebula/188,45,225 solar/255,180,0 galactic/75,0,130 cyber/0,255,198 quantum/255,30,90 void/10,10,25 supernova/255,80,0 starlight/230,230,250`.split(' ').map(s=>({n:s.split('/')[0],r:s.split('/')[1]}))};
         const docEl=document.documentElement,bodyEl=document.body;
         const avatarContainer=document.getElementById('avatar-container');const mouseBunnyEl=document.getElementById('mouse-bunny');
         const vfxCanvas=document.getElementById('vfx-canvas'),vfxCtx=vfxCanvas.getContext('2d');
@@ -345,7 +374,19 @@
         function updateAndDrawCelestialParticles(ctx){if(celestialParticles.length===0)return;const rect=avatarContainer.getBoundingClientRect(),cX=rect.left+rect.width/2,cY=rect.top+rect.height/2;celestialParticles=celestialParticles.filter(p=>p.l>0);celestialParticles.forEach(p=>{p.l=Math.max(0,p.l-0.001);p.angle=(p.angle||0)+(p.sp||0);p.rot=(p.rot||0)+(p.rotSpd||0);switch(p.st){case'taiji_form':p.r*=.98;p.x=cX+Math.cos(p.angle)*p.r;p.y=cY+Math.sin(p.angle)*p.r;break;case'taiji_eye':p.angle+=p.rotSpd;p.x=cX+Math.cos(p.angle+p.angleOffset)*p.radius;p.y=cY+Math.sin(p.angle+p.angleOffset)*p.radius;break;case'taiji_bagua':p.l=Math.min(1,p.l+0.05);p.radius=Math.max(80,p.radius-0.1);p.x=cX+Math.cos(p.angle)*p.radius;p.y=cY+Math.sin(p.angle)*p.radius;break;case'granzort_form':p.l=Math.min(1,p.l+0.03);p.angle+=p.sp;p.r+=0.1;p.x=cX+Math.cos(p.angle)*p.r;p.y=cY+Math.sin(p.angle)*p.r;break;case'granzort_rune':p.l=Math.min(1,p.l+0.04);if(Math.random()<0.1)p.sparkle=1;p.x=cX+Math.cos(p.angle)*p.radius;p.y=cY+Math.sin(p.angle)*p.radius;break;case'granzort_center':break;case'granzort_swirl':p.angle+=p.rotSpd;p.x=cX+Math.cos(p.angle)*p.radius;p.y=cY+Math.sin(p.angle)*p.radius;break;case'crystal_burst':p.x+=p.vx;p.y+=p.vy;p.vx*=.98;p.vy*=.98;p.l-=0.01;break;case'crystal_ribbon':p.angle+=p.speed*0.01;let head={x:p.x+Math.cos(p.angle)*p.len,y:p.y+Math.sin(p.angle)*p.len};p.points.unshift(head);if(p.points.length>50)p.points.pop();p.l-=0.005;break;case'crystal_core':p.l=Math.min(1,p.l+0.02);p.s=40*p.l;break;case'singularity_disk':p.radius-=0.2;p.angle+=p.speed;p.x=cX+Math.cos(p.angle)*p.radius;p.y=cY+Math.sin(p.angle)*p.radius;if(p.radius<1)p.l=0;break;case'singularity_core':p.scale*=.99;p.s*=p.scale;break;case'overload_rain':p.y+=p.vy;p.vy+=0.1;if(p.y>cY*2)p.l=0;break;case'overload_glitch':p.ox=10*(Math.random()-.5);p.oy=10*(Math.random()-.5);p.l-=0.005;break;case'converging':p.x+=(cX-p.x)*.08;p.y+=(cY-p.y)*.08;p.s=Math.max(0,(p.s||1)-0.1);p.l-=0.02;break;}ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,p.l));if(p.txt){ctx.font=`${Math.max(1,p.s||12)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=p.c||`rgb(var(--text-color-rgb))`;ctx.save();ctx.translate(p.ox||0,p.oy||0);ctx.fillText(p.txt,p.x,p.y);ctx.restore();}else if(p.st==='crystal_ribbon'){if(p.points.length>1){ctx.beginPath();ctx.moveTo(p.points[0].x,p.points[0].y);for(let i=1;i<p.points.length;i++){ctx.lineWidth=i/p.points.length*10;let grad=ctx.createLinearGradient(p.points[i-1].x,p.points[i-1].y,p.points[i].x,p.points[i].y);grad.addColorStop(0,p.c1);grad.addColorStop(1,p.c2);ctx.strokeStyle=grad;ctx.lineTo(p.points[i].x,p.points[i].y);ctx.stroke();}}}else{ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.5,p.s||1),0,Math.PI*2);ctx.fill();if(p.sparkle>0){ctx.fillStyle=`rgba(255,255,255,${p.sparkle})`;ctx.beginPath();ctx.arc(p.x,p.y,p.s*2,0,2*Math.PI);ctx.fill();p.sparkle-=0.1;}}ctx.restore();});ctx.globalAlpha=1;}
         
         // --- City Simulation Core ---
-        function initCitySim(){try{const sS=localStorage.getItem(CONFIG.CITY_SAVE_KEY);if(sS&&!godModeActive){city=validateLoadedCity(JSON.parse(sS));logCityEvent("从浏览器加载存档成功！","system");}else{generateNewCityState();if(!godModeActive)logCityEvent(`欢迎来到 ${city.name}，市长！`,'system');}}catch(e){console.error("加载或初始化城市失败:",e);generateNewCityState();logCityEvent("存档损坏或发生错误，已重置为新城市。","error");}initCitySimAfterLoad();}
+        function migrateSaveKey(){
+            const oldKeys=['bunny_cc_sim_save_v1.1.0','bunny_cc_sim_save_v1.0.0','bunny_cc_sim_save'];
+            const newKey=CONFIG.CITY_SAVE_KEY;
+            for(const oldKey of oldKeys){
+                const oldData=localStorage.getItem(oldKey);
+                if(oldData&&!localStorage.getItem(newKey)){
+                    localStorage.setItem(newKey,oldData);
+                    localStorage.removeItem(oldKey);
+                    console.log('存档已从 '+oldKey+' 迁移至 '+newKey);
+                }
+            }
+        }
+        function initCitySim(){migrateSaveKey();try{const sS=localStorage.getItem(CONFIG.CITY_SAVE_KEY);if(sS&&!godModeActive){city=validateLoadedCity(JSON.parse(sS));logCityEvent("从浏览器加载存档成功！","system");}else{generateNewCityState();if(!godModeActive)logCityEvent(`欢迎来到 ${city.name}，市长！`,'system');}}catch(e){console.error("加载或初始化城市失败:",e);generateNewCityState();logCityEvent("存档损坏或发生错误，已重置为新城市。","error");}initCitySimAfterLoad();}
         function generateNewCityState(){city={id:`city_${Date.now()}_${Math.floor(Math.random()*900)+100}`,name:"兔克市"+(Math.floor(Math.random()*900)+100),day:1,year:1,funds:20000,population:0,citizensByWealth:{LOW_INC:0,MED_INC:0,HIGH_INC:0},taxRate:{res:9,com:10,ind:8,office:11},budget:{services:100,education:100,health:100,safety:100,transport:100,garbage:100,maintenance:100},buildings:[],districts:[{name:"市中心",type:"GENERIC"}],activePolicies:{},unlockedTech:[],eventLog:[],populationHistory:[{d:0,p:0}],timedBoosts:[],inventory:{SPECIAL_SNACKS:3},cityLevel:1,cityXP:0,cityXPNext:100,loans:[],researchPoints:0,availableParcels:[],propertyEvents:[],totalRentCollected:0,monopolyStreak:0,stats:{avgSatisfaction:60,environmentQuality:80,landValue:50,educationLevel:0,healthLevel:70,crimeRate:5,fireRisk:5,trafficIndex:10,unemploymentRate:0,powerSatisfaction:1,waterSatisfaction:1,goodsSatisfaction:1,leisureSatisfaction:1},demand:{res:50,com:30,ind:40},rawMaterialsStock:{STONE:150,WOOD:150,OIL:50,ORE:80,FARM:200,COAL:100}, ownedParcels: [] }; }
         function validateLoadedCity(loadedCity) {const defaultCity = generateNewCityState(); function deepMerge(target, source) {for (const key in source) {if (source[key] instanceof Object && !Array.isArray(source[key])) {if (!target[key] || typeof target[key] !== 'object') {target[key] = {};}deepMerge(target[key], source[key]);} else if (target[key] === undefined) {target[key] = source[key];}}return target;}return deepMerge(loadedCity, defaultCity);}
 
@@ -583,7 +624,7 @@
             city.funds-=dailyExpenses;
             if(dailyExpenses>0)logCityEvent(`每日支出: ${dailyExpenses.toFixed(0)}💰`,'finance');
 
-            // Stage 21: City XP/level
+            // Stage 20: City XP/level
             city.cityXP+=Math.floor(dailyIncome/10+city.population/10);
             if(city.cityXP>=city.cityXPNext){
                 city.cityLevel++;city.cityXP-=city.cityXPNext;city.cityXPNext=Math.floor(city.cityXPNext*1.5);
@@ -591,10 +632,10 @@
                 if(typeof generateAvailableParcels==='function')generateAvailableParcels();
             }
 
-            // Stage 22: Random events (Monopoly mode) - Phase 3.5
+            // Stage 21: Random events (Monopoly mode) - Phase 3.5
             if(typeof triggerRandomEvent==='function')triggerRandomEvent();
 
-            // Stage 24: Infinite gameplay - no game over on negative funds - Phase 3.7
+            // Stage 22: Infinite gameplay - no game over on negative funds - Phase 3.7
             if(city.funds<0){
                 city.stats.avgSatisfaction=Math.max(20,city.stats.avgSatisfaction-5);
                 logCityEvent('⚠️ 市政赤字！满意度下降。请调整税收或预算。','disaster');
@@ -670,7 +711,7 @@
         function getStaticPerfData(){const pC=document.getElementById('perf-modal-content');if(!pC)return;pC.innerHTML=`<div id="realtime-metrics-container"></div>`;let sS=[];let memHtml=`<div class="text-lg glow-text mt-4 mb-2">Memory Subsystem</div>`;if(performance.memory){memHtml+=`<div class="grid grid-cols-2 gap-x-4"><span>JS HEAP USED:</span><span class="text-white text-right">${(performance.memory.usedJSHeapSize/1048576).toFixed(1)}MB</span><span>JS HEAP TOTAL:</span><span class="text-white text-right">${(performance.memory.totalJSHeapSize/1048576).toFixed(1)}MB</span><span>JS HEAP LIMIT:</span><span class="text-white text-right">${(performance.memory.jsHeapSizeLimit/1048576).toFixed(1)}MB</span></div>`;}try{const lsSize=new TextEncoder().encode(JSON.stringify(localStorage)).length;memHtml+=`<div class="grid grid-cols-2 gap-x-4"><span>LS USED (EST):</span><span class="text-white text-right">${(lsSize/1024).toFixed(2)}KB</span></div>`;}catch(e){}sS.push(memHtml);const nT=performance.getEntriesByType("navigation")[0],pT=performance.getEntriesByType("paint");if(nT||pT.length>0){let pgH=`<div class="text-lg glow-text mt-4 mb-2">Page Vitals & Load</div>`;const fcp=pT.find(p=>p.name==='first-contentful-paint');if(fcp)pgH+=`<div class="grid grid-cols-2 gap-x-4"><span>FIRST PAINT:</span><span class="text-white text-right">${fcp.startTime.toFixed(0)}ms</span>`;if(nT)pgH+=`<span>TOTAL LOAD:</span><span class="text-white text-right">${nT.duration.toFixed(0)}ms</span></div>`;sS.push(pgH);}const res=performance.getEntriesByType("resource");if(res.length>0){let resH=`<div class="text-lg glow-text mt-4 mb-2">Resource Analysis</div><div class="grid grid-cols-2 gap-x-4"><span>TOTAL ASSETS:</span><span class="text-white text-right">${res.length}</span><span>PAGE WEIGHT:</span><span class="text-white text-right">${(res.reduce((a,r)=>a+(r.transferSize||0),0)/1024).toFixed(1)}KB</span></div>`;const slowest=res.sort((a,b)=>b.duration-a.duration)[0];if(slowest)resH+=`<div class="col-span-2 mt-1">SLOWEST:</div><div class="text-white col-span-2 break-all text-right">${slowest.name.split('/').pop()}(${slowest.duration.toFixed(0)}ms)</div>`;sS.push(resH);}const sCC=document.createElement('div');sCC.innerHTML=sS.map(s=>`<div class="border-b border-gray-800 pb-2 mb-2">${s}</div>`).join('');pC.appendChild(sCC);}
         function updatePerfPanel(cT){const pC=document.getElementById('perf-modal-content')?.querySelector('#realtime-metrics-container');if(!pC||document.getElementById('performance-modal').classList.contains('hidden'))return;const iV=cT-lastPerfUpdateTime;const fps=Math.round((frameCount/iV)*1e3);pC.innerHTML=`<div class="text-lg glow-text mb-2">Real-time</div><div class="grid grid-cols-2 gap-x-4"><span>FPS:</span><span class="text-white text-right">${fps}</span><span>FRAME TIME:</span><span class="text-white text-right">${(1e3/fps||0).toFixed(2)}ms</span><span>PARTICLES:</span><span class="text-white text-right">${cosmicDust.length+clickRipples.length+forceParticles.length+celestialParticles.length}</span><span>DOM NODES:</span><span class="text-white text-right">${document.getElementsByTagName('*').length}</span></div>`;lastPerfUpdateTime=cT;frameCount=0;}
         function updateAdvisorBunny(){if(!city||!city.stats)return;advisorBunny.energy=Math.max(0,advisorBunny.energy-0.1);const targetHappiness=city.stats.avgSatisfaction||60;advisorBunny.happiness+=(targetHappiness-advisorBunny.happiness)*0.05;advisorBunny.happiness=Math.max(0,Math.min(100,advisorBunny.happiness));if(simEls.bs){const status=advisorBunny.energy<20?'疲惫':advisorBunny.happiness<30?'不满':'良好';simEls.bs.textContent=status;simEls.bs.style.color=advisorBunny.energy<20?'rgb(var(--color-red))':advisorBunny.happiness<30?'rgb(var(--color-yellow))':'inherit';}}
-        function renderChangelog(){const cD=[{v:"v1.1.0",dt:"AEON_UNLIMITED",it:[{t:"🚀 玩法融合",zh:"引入“地产大亨”模式，城市地块可以被购买和出售，其价值受城市发展动态影响。",en:"Introduced 'Property Tycoon' mode. City parcels can now be bought and sold, with their value dynamically affected by city development."},{t:"🚀 内容扩展",zh:"新增“房地产”科技分支、相关政策（如房地产税）及地标建筑“房地产总部”。",en:"Added a new 'Real Estate' tech branch, related policies (e.g., Property Tax), and a new landmark: 'Property HQ'."},{t:"🐛 核心修复",zh:"彻底修复了科技无法研发的BUG，并调整了初始资源量以优化早期游戏体验。",en:"Fixed a critical bug preventing tech research and rebalanced initial resources to improve early-game experience."}, {t:"✨ GM增强",zh:"GM作弊器功能完全恢复并超级增强，现在可以修改所有原材料、城市核心指标和顾问状态。",en:"The GM Cheat Panel is fully restored and supercharged, now allowing modification of all raw materials, core city stats, and advisor status."}]},{v:"v1.0.6",dt:"ECONOMIC_PULSE",it:[{t:"🐛 核心修复",zh:"引入“国家贸易市场”机制，彻底解决生产“死亡螺旋”问题。",en:"Introduced a 'National Market' mechanism to fix the production 'death spiral'."},{t:"🐛 细节修复",zh:"修复了上帝模式激活器中因科研点数未定义而导致显示`NaN`的问题。",en:"Fixed an issue in the God Mode activator where 'NaN' was displayed for research points."}]},{v:"v1.0.5",dt:"CLARITY_CORE",it:[{t:"🐛 修复",zh:"重构了性能监视器(PERF)的渲染逻辑，确保所有数据都能正确、完整地显示。",en:"Refactored the Performance Monitor (PERF) rendering logic to ensure all data is displayed correctly."},{t:"✨ 视觉升华",zh:"头像特效系统究极进化，加入了两种全新的极稀有特效。",en:"Evolved the avatar VFX, adding two new ultra-rare effects."}]},{v:"v1.0.4",dt:"ETERNAL_MARK",it:[{t:"✨ 细节",zh:"在“里程碑”模块中重新加入了180天和300天的纪念日倒计时。",en:"Re-added the 180-day and 300-day anniversary countdowns to the Milestones module."}]},{v:"v1.0.2",dt:"PHOENIX_RISE",it:[{t:"🚀 新增",zh:"在城市管理面板中加入了“删除存档”功能。",en:"Added a 'Delete Save' feature."}]}];const cE=document.getElementById('changelog-content');cE.innerHTML=cD.map(logEntry=>{const items=logEntry.it||logEntry.items;if(!items)return'';return`<div class="mb-6"><p class="text-xl font-bold accent-text">${logEntry.v||logEntry.version} <span class="text-sm font-normal text-gray-400">- ${logEntry.dt||logEntry.date}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${items.map(item=>`<li><p class="inline font-bold">${item.t||item.type}</p><p class="text-gray-300 mt-1">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`;}).join('');}
+        function renderChangelog(){const cD=[{v:"v1.2.0",dt:"MONOPOLY_UNLIMITED",it:[{t:"🚀 大富翁玩法",zh:"引入地产大亨模式：购买地块、开发升级（1-5级）、收取租金、随机事件（彩票/繁荣/衰退/灾害/黄金租客）。",en:"Introduced Property Tycoon mode: buy parcels, develop (Lv1-5), collect rent, random events."},{t:"🐛 13项核心修复",zh:"修复政策系统崩溃、科研点不生成、环境/交通/地价不更新、区域专精失效、顾问系统空函数等13个Bug。",en:"Fixed 13 critical bugs including policy system crash, research points, environment/traffic/land value calculation, district specialization, advisor system."},{t:"✨ 上帝模式v2",zh:"三段式激活码（S1状态+S2时间+校验位），每日变化，支持旧版兼容。附Python离线工具。",en:"God Mode v2: 3-stage activation code (S1 state + S2 time + checksum), daily rotation, legacy compatible. Python tool included."},{t:"📱 PWA重设计",zh:"5个中文Tab（首页/城市/纪念日/日志/设置），内联视图切换，安全区适配。",en:"PWA redesign: 5 Chinese tabs, inline view switching, safe area support."},{t:"🔧 advanceDay重构",zh:"每日模拟管线从单行函数重构为24阶段清晰管线，所有系统联动。",en:"Refactored advanceDay into 24-stage pipeline with full system interconnection."}]},{v:"v1.1.0",dt:"AEON_UNLIMITED",it:[{t:"🚀 玩法融合",zh:"引入“地产大亨”模式，城市地块可以被购买和出售，其价值受城市发展动态影响。",en:"Introduced 'Property Tycoon' mode. City parcels can now be bought and sold, with their value dynamically affected by city development."},{t:"🚀 内容扩展",zh:"新增“房地产”科技分支、相关政策（如房地产税）及地标建筑“房地产总部”。",en:"Added a new 'Real Estate' tech branch, related policies (e.g., Property Tax), and a new landmark: 'Property HQ'."},{t:"🐛 核心修复",zh:"彻底修复了科技无法研发的BUG，并调整了初始资源量以优化早期游戏体验。",en:"Fixed a critical bug preventing tech research and rebalanced initial resources to improve early-game experience."}, {t:"✨ GM增强",zh:"GM作弊器功能完全恢复并超级增强，现在可以修改所有原材料、城市核心指标和顾问状态。",en:"The GM Cheat Panel is fully restored and supercharged, now allowing modification of all raw materials, core city stats, and advisor status."}]},{v:"v1.0.6",dt:"ECONOMIC_PULSE",it:[{t:"🐛 核心修复",zh:"引入“国家贸易市场”机制，彻底解决生产“死亡螺旋”问题。",en:"Introduced a 'National Market' mechanism to fix the production 'death spiral'."},{t:"🐛 细节修复",zh:"修复了上帝模式激活器中因科研点数未定义而导致显示`NaN`的问题。",en:"Fixed an issue in the God Mode activator where 'NaN' was displayed for research points."}]},{v:"v1.0.5",dt:"CLARITY_CORE",it:[{t:"🐛 修复",zh:"重构了性能监视器(PERF)的渲染逻辑，确保所有数据都能正确、完整地显示。",en:"Refactored the Performance Monitor (PERF) rendering logic to ensure all data is displayed correctly."},{t:"✨ 视觉升华",zh:"头像特效系统究极进化，加入了两种全新的极稀有特效。",en:"Evolved the avatar VFX, adding two new ultra-rare effects."}]},{v:"v1.0.4",dt:"ETERNAL_MARK",it:[{t:"✨ 细节",zh:"在“里程碑”模块中重新加入了180天和300天的纪念日倒计时。",en:"Re-added the 180-day and 300-day anniversary countdowns to the Milestones module."}]},{v:"v1.0.2",dt:"PHOENIX_RISE",it:[{t:"🚀 新增",zh:"在城市管理面板中加入了“删除存档”功能。",en:"Added a 'Delete Save' feature."}]}];const cE=document.getElementById('changelog-content');cE.innerHTML=cD.map(logEntry=>{const items=logEntry.it||logEntry.items;if(!items)return'';return`<div class="mb-6"><p class="text-xl font-bold accent-text">${logEntry.v||logEntry.version} <span class="text-sm font-normal text-gray-400">- ${logEntry.dt||logEntry.date}</span></p><ul class="mt-3 space-y-2 list-disc list-inside">${items.map(item=>`<li><p class="inline font-bold">${item.t||item.type}</p><p class="text-gray-300 mt-1">${item.zh}</p><p class="text-xs text-gray-500">${item.en}</p></li>`).join('')}</ul></div>`;}).join('');}
     </script>
     <!-- Bottom Tab Bar (PWA/Mobile only) -->
     <nav id="bottom-tab-bar">
@@ -696,32 +737,73 @@
         </div>
     </nav>
     <script>
+    var MOBILE_TAB_MODALS={
+        'city':['city-management-modal'],
+        'anniversary':['anniversary-modal'],
+        'logs':['changelog-modal'],
+        'settings':['theme-modal']
+    };
+    function isMobileLayout(){
+        return window.matchMedia('(max-width: 768px)').matches||window.matchMedia('(display-mode: standalone)').matches;
+    }
     function tabBarNavigate(tab){
-        document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.tab-item').forEach(function(t){t.classList.remove('active');});
         var el=document.querySelector('.tab-item[data-tab="'+tab+'"]');
         if(el)el.classList.add('active');
-        ['city-management-modal','changelog-modal','theme-modal','performance-modal','anniversary-modal'].forEach(function(id){var m=document.getElementById(id);if(m)m.style.display='none';});
-        if(tab==='home'){
-            /* show main city screen */
-        }else if(tab==='city')toggleModal('city-management-modal',true);
-        else if(tab==='anniversary')toggleModal('anniversary-modal',true);
-        else if(tab==='logs')toggleModal('changelog-modal',true);
-        else if(tab==='settings')toggleModal('theme-modal',true);
+        if(!isMobileLayout()){
+            /* Desktop: use modals */
+            ['city-management-modal','changelog-modal','theme-modal','performance-modal','anniversary-modal'].forEach(function(id){toggleModal(id,false);});
+            if(tab==='city')toggleModal('city-management-modal',true);
+            else if(tab==='anniversary')toggleModal('anniversary-modal',true);
+            else if(tab==='logs')toggleModal('changelog-modal',true);
+            else if(tab==='settings')toggleModal('theme-modal',true);
+            return;
+        }
+        /* Mobile: inline view switching */
+        document.body.setAttribute('data-mobile-tab',tab);
+        /* Clear all mobile-inline */
+        Object.keys(MOBILE_TAB_MODALS).forEach(function(tabKey){
+            MOBILE_TAB_MODALS[tabKey].forEach(function(modalId){
+                var modal=document.getElementById(modalId);
+                if(modal){modal.classList.remove('mobile-inline');modal.style.display='none';}
+            });
+        });
+        /* Activate current tab's modal as inline */
+        if(MOBILE_TAB_MODALS[tab]){
+            MOBILE_TAB_MODALS[tab].forEach(function(modalId){
+                var modal=document.getElementById(modalId);
+                if(modal){
+                    modal.classList.add('mobile-inline');
+                    modal.classList.remove('hidden','opacity-0');
+                    modal.style.display='block';
+                }
+            });
+        }
+        /* Scroll to top + resize charts */
+        window.scrollTo(0,0);
+        setTimeout(function(){
+            if(typeof populationChartJS!=='undefined'&&populationChartJS)populationChartJS.resize();
+            if(typeof weightChartJS!=='undefined'&&weightChartJS)weightChartJS.resize();
+        },150);
     }
     function initMobileLayout(){
-        var isMobile=window.matchMedia('(max-width: 768px)').matches||window.matchMedia('(display-mode: standalone)').matches;
-        if(isMobile){
+        if(isMobileLayout()){
+            document.body.setAttribute('data-mobile-tab','home');
             document.body.classList.add('mobile-content');
-            /* Ensure content panels have data-view attributes */
-            var panels=document.querySelectorAll('.lcars-content-panel > div');
-            panels.forEach(function(p){
-                if(!p.getAttribute('data-view')&&p.id){
-                    p.setAttribute('data-view',p.id);
-                }
+            var activeTab=document.querySelector('.tab-item.active');
+            if(!activeTab)tabBarNavigate('home');
+        }else{
+            document.body.removeAttribute('data-mobile-tab');
+            document.body.classList.remove('mobile-content');
+            ['city-management-modal','changelog-modal','theme-modal','performance-modal','anniversary-modal'].forEach(function(id){
+                var m=document.getElementById(id);
+                if(m){m.classList.remove('mobile-inline');m.style.display='';}
             });
         }
     }
     document.addEventListener('DOMContentLoaded',initMobileLayout);
+    var resizeTimer;
+    window.addEventListener('resize',function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(initMobileLayout,200);});
     if('serviceWorker' in navigator){
         window.addEventListener('load',function(){
             navigator.serviceWorker.register('/service-worker.js').catch(function(){});
