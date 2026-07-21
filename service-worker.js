@@ -1,6 +1,6 @@
 // Service Worker - Bunny CC
-const CACHE_NAME = 'bunny-cc-v1.2.5-force-refresh';
-const RUNTIME_CACHE = 'bunny-cc-runtime-v1.2.5';
+const CACHE_NAME = 'bunny-cc-v4.3.0-final';
+const RUNTIME_CACHE = 'bunny-cc-runtime-v4.3.0';
 const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/icon/192.png', '/favicon.ico'];
 
 self.addEventListener('install', (event) => {
@@ -27,10 +27,8 @@ self.addEventListener('fetch', (event) => {
     let url;
     try { url = new URL(req.url); } catch(e) { return; }
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
-    // Cross-origin requests: passthrough, do not intercept
     if (url.origin !== self.location.origin) return;
 
-    // Navigation: network-first
     if (req.mode === 'navigate') {
         event.respondWith(
             fetch(req).then(resp => {
@@ -42,7 +40,6 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Same-origin static assets: cache-first
     event.respondWith(
         caches.match(req).then(cached => {
             if (cached) {
