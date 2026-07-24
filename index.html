@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v7.1.0 -->
+    <!-- VERSION: v7.2.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.1.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.1.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.1.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.1.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.2.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.2.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.2.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.2.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.2.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.2.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -110,9 +110,10 @@
 
         /* ==================== Base ==================== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        /* Fluid root font-size: scales from 13px (320px viewport) to 17px (1920px+) */
-        /* --font-scale: user-controlled multiplier (0.8 ~ 1.6), persisted in localStorage */
-        html { font-size: calc(clamp(13px, 0.35vw + 11.5px, 17px) * var(--font-scale, 1)); }
+        /* Fluid root font-size: scales from 14px (320px viewport) to 21px (1920px+) */
+        /* --font-scale: user-controlled multiplier (0.8 ~ 2.0), persisted in localStorage */
+        /* --dpi-scale: auto-detected DPI multiplier (1.0 ~ 1.2) for HiDPI/Retina displays */
+        html { font-size: calc(clamp(14px, 0.5vw + 12px, 21px) * var(--font-scale, 1) * var(--dpi-scale, 1)); }
         body {
             font-family: 'Nunito', -apple-system, sans-serif;
             font-size: clamp(.85rem, .85rem + .1vw, 1rem); font-weight: 600;
@@ -260,12 +261,12 @@
         .region-divider {
             display: flex; align-items: center; justify-content: center;
             writing-mode: vertical-rl; text-orientation: mixed;
-            padding: .25rem .3rem; border-radius: 6px; font-size: .6rem; font-weight: 800;
+            padding: .25rem .3rem; border-radius: 6px; font-size: clamp(.65rem, 0.6vw + 0.5rem, 0.85rem); font-weight: 800;
             color: #fff; min-width: 18px; white-space: nowrap; flex-shrink: 0;
         }
         .mono-tile-cell {
-            width: clamp(48px, 3.5vw + 28px, 64px); min-height: clamp(60px, 4vw + 40px, 82px); background: var(--card); border: 1px solid var(--border);
-            border-radius: 6px; padding: 3px; display: flex; flex-direction: column; align-items: center;
+            width: clamp(52px, 4vw + 36px, 72px); min-height: clamp(66px, 4.5vw + 48px, 90px); background: var(--card); border: 1px solid var(--border);
+            border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center;
             justify-content: flex-start; text-align: center; position: relative; transition: all var(--transition);
             flex-shrink: 0; cursor: help;
         }
@@ -275,12 +276,12 @@
         .mono-tile-cell.owned { border-color: var(--good); }
         .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
         .mono-tile-cell.highlighted { border-color: var(--warn); box-shadow: 0 0 12px rgba(255,152,0,.5); animation: tilePulse 0.8s ease 3; }
-        .mono-tile-cell .tile-ic { font-size: 1rem; line-height: 1; margin-top: 2px; }
-        .mono-tile-cell .tile-nm { font-size: .5rem; color: var(--text2); margin-top: 1px; line-height: 1.1; overflow: hidden; max-height: 1.8em; }
-        .mono-tile-cell .tile-cost { font-size: .48rem; color: var(--accent); font-weight: 700; }
-        .mono-tile-cell .tile-level { font-size: .42rem; color: var(--good); }
-        .mono-tile-cell .tile-owner { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; }
-        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: .55rem; }
+        .mono-tile-cell .tile-ic { font-size: clamp(1rem, 1.2vw + 0.7rem, 1.5rem); line-height: 1; margin-top: 2px; }
+        .mono-tile-cell .tile-nm { font-size: clamp(.58rem, 0.55vw + 0.45rem, 0.78rem); color: var(--text2); margin-top: 2px; line-height: 1.1; overflow: hidden; max-height: 2em; }
+        .mono-tile-cell .tile-cost { font-size: clamp(.52rem, 0.5vw + 0.4rem, 0.72rem); color: var(--accent); font-weight: 700; }
+        .mono-tile-cell .tile-level { font-size: clamp(.46rem, 0.45vw + 0.35rem, 0.62rem); color: var(--good); }
+        .mono-tile-cell .tile-owner { position: absolute; top: 3px; right: 3px; width: 7px; height: 7px; border-radius: 50%; }
+        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: clamp(.6rem, 0.55vw + 0.45rem, 0.78rem); }
         .tile-tooltip {
             display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
             background: var(--card); border: 1px solid var(--accent); border-radius: 6px; padding: .4rem .6rem;
@@ -473,7 +474,7 @@
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .anniversary-days { font-size: 2.2rem; }
             .card { padding: .75rem; }
-            .mono-tile-cell { width: 44px; min-height: 56px; }
+            .mono-tile-cell { width: 50px; min-height: 64px; }
             .modal { padding: 1rem; max-width: 95%; }
             .modal-title { font-size: 1rem; }
         }
@@ -515,6 +516,10 @@
             document.documentElement.setAttribute('data-theme', t);
             var pf = localStorage.getItem('pixelFont') === '1';
             if (pf) document.documentElement.classList.add('font-pixel');
+            // DPI-aware scaling: boost font on HiDPI/Retina displays
+            var dpr = window.devicePixelRatio || 1;
+            var dpiScale = dpr >= 2 ? 1.15 : dpr >= 1.5 ? 1.08 : 1;
+            document.documentElement.style.setProperty('--dpi-scale', dpiScale);
         })();
     </script>
 </head>
@@ -535,7 +540,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.1.0</div>
+                <div class="subtitle">v7.2.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -698,7 +703,7 @@
                             <span>🔤 字体缩放</span>
                             <span id="font-scale-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">100%</span>
                         </div>
-                        <input type="range" id="font-scale-slider" min="80" max="160" value="100" step="5" style="width:100%;accent-color:var(--accent);" oninput="setFontScale(this.value)">
+                        <input type="range" id="font-scale-slider" min="80" max="200" value="100" step="5" style="width:100%;accent-color:var(--accent);" oninput="setFontScale(this.value)">
                         <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--text2);">
                             <span>小</span><span>标准</span><span>大</span>
                         </div>
@@ -728,7 +733,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.1.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.2.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -781,8 +786,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.1.0',
-        SAVE_KEY: 'bunny_cc_v7.1.0',
+        VERSION: 'v7.2.0',
+        SAVE_KEY: 'bunny_cc_v7.2.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -1012,7 +1017,7 @@
     /* ==================== Save Migration ==================== */
     function migrateSaveKey() {
         // Migrate card inventory from previous version keys
-        const prevKeys = ['bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
+        const prevKeys = ['bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
         for (const k of prevKeys) {
             try {
                 const oldData = localStorage.getItem(k);
@@ -1054,19 +1059,25 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.1.0 已启动', 'info');
+        logEvent('兔可可王国 v7.2.0 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
-        if (mono.started && !mono.gameOver) {
-            if (mono.pendingAction === 'aiTurn' && mono.currentPlayer !== 0) {
-                setTimeout(() => aiTurn(), 800);
-            } else if (mono.pendingAction === 'movePlayer' && mono.currentPlayer !== 0) {
-                // Dice already rolled, just need to move
-                const diceTotal = mono.dice[0] + mono.dice[1];
-                setTimeout(() => movePlayer(mono.currentPlayer, diceTotal), 800);
-            } else if (mono.pendingAction === 'triggerTile') {
-                // Position already updated, just need to trigger tile
-                setTimeout(() => triggerTile(mono.currentPlayer), 800);
+        // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
+        if (mono.started && mono.currentPlayer !== 0 && !mono.players[mono.currentPlayer]?.bankrupt) {
+            const aliveCount = mono.players.filter(p => !p.bankrupt).length;
+            if (aliveCount > 1) {
+                _startWatchdog(); // Start watchdog for resumed AI turn
+                if (mono.pendingAction === 'movePlayer') {
+                    // Dice already rolled, need to move player
+                    const diceTotal = mono.dice[0] + mono.dice[1];
+                    setTimeout(() => { try { movePlayer(mono.currentPlayer, diceTotal); } catch(e) { console.error('[Resume movePlayer Error]', e); _clearWatchdog(); nextTurn(); } }, 800);
+                } else if (mono.pendingAction === 'triggerTile') {
+                    // Position already updated, need to trigger tile effect
+                    setTimeout(() => { try { triggerTile(mono.currentPlayer); } catch(e) { console.error('[Resume triggerTile Error]', e); _clearWatchdog(); nextTurn(); } }, 800);
+                } else {
+                    // Default: start AI turn from beginning (covers null/undefined pendingAction from old saves)
+                    setTimeout(() => { try { aiTurn(); } catch(e) { console.error('[Resume aiTurn Error]', e); _clearWatchdog(); nextTurn(); } }, 800);
+                }
             }
         }
         // Reset stuck rolling state
@@ -1757,7 +1768,7 @@
         mono.pendingAction = 'triggerTile';
         saveMonopoly();
         renderMonopoly();
-        setTimeout(() => triggerTile(playerIdx), 400);
+        setTimeout(() => { try { triggerTile(playerIdx); } catch(e) { console.error('[triggerTile Error]', e); if (mono.currentPlayer !== 0) { _clearWatchdog(); nextTurn(); } } }, 400);
     }
 
     function triggerTile(playerIdx) {
@@ -2694,7 +2705,12 @@
         const tileIdx = unowned[Math.floor(Math.random() * unowned.length)];
         const tile = mono.tiles[tileIdx];
         startEnhancedAuction(tileIdx, playerIdx);
-        return true; // Modal shown
+        // Check if auction actually started (startEnhancedAuction may bail if no participants can afford deposit)
+        if (!auctionState) {
+            monoLog(`${p.ic} 拍卖取消 — 无人能负担保证金`, 'info');
+            return false;
+        }
+        return true; // Auction started — modal shown or AI rounds running
     }
 
     // Voluntary auction access from action bar (doesn't consume turn)
@@ -3854,7 +3870,33 @@
     }
 
     /* ==================== Monopoly: Next Turn & AI ==================== */
+    // Watchdog: detects stuck AI turns and forces recovery
+    let _aiWatchdog = null;
+    function _startWatchdog() {
+        _clearWatchdog();
+        _aiWatchdog = setTimeout(() => {
+            console.warn('[Watchdog] AI turn stuck detected — forcing nextTurn()');
+            _aiWatchdog = null;
+            if (mono.started && mono.currentPlayer !== 0) {
+                const p = mono.players[mono.currentPlayer];
+                if (p && !p.bankrupt) {
+                    mono.pendingAction = null;
+                    mono.rolling = false;
+                    // Close any stuck modals
+                    closeModal();
+                    saveMonopoly();
+                    renderMonopoly();
+                    nextTurn();
+                }
+            }
+        }, 10000); // 10s max for AI turn
+    }
+    function _clearWatchdog() {
+        if (_aiWatchdog) { clearTimeout(_aiWatchdog); _aiWatchdog = null; }
+    }
+
     function nextTurn() {
+        _clearWatchdog(); // Previous turn completed successfully
         const total = mono.players.length;
         let next = mono.currentPlayer;
         for (let i = 0; i < total; i++) {
@@ -3885,7 +3927,8 @@
         if (mono.currentPlayer !== 0 && mono.started) {
             mono.pendingAction = 'aiTurn';
             saveMonopoly();
-            setTimeout(() => aiTurn(), 900);
+            _startWatchdog();
+            setTimeout(() => { try { aiTurn(); } catch(e) { console.error('[AI Turn Error]', e); _clearWatchdog(); nextTurn(); } }, 900);
         }
     }
 
@@ -3978,7 +4021,7 @@
 
         mono.pendingAction = 'movePlayer';
         saveMonopoly();
-        setTimeout(() => movePlayer(idx, total + extra), 600);
+        setTimeout(() => { try { movePlayer(idx, total + extra); } catch(e) { console.error('[AI movePlayer Error]', e); _clearWatchdog(); nextTurn(); } }, 600);
     }
 
     /* ==================== Monopoly: Era Advancement ==================== */
@@ -4311,9 +4354,9 @@
         if (ft) ft.classList.toggle('on', pixelFontEnabled);
     }
 
-    /* ---- Custom font scale: persisted multiplier 0.8 ~ 1.6 ---- */
+    /* ---- Custom font scale: persisted multiplier 0.8 ~ 2.0 ---- */
     function setFontScale(pct) {
-        const scale = Math.max(0.8, Math.min(1.6, pct / 100));
+        const scale = Math.max(0.8, Math.min(2.0, pct / 100));
         document.documentElement.style.setProperty('--font-scale', scale);
         localStorage.setItem('fontScale', String(pct));
         const valEl = document.getElementById('font-scale-val');
@@ -5422,7 +5465,16 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.1.0</strong> — P2 卡牌系统扩展 & 拍卖增强 & 赌场系统 & 交易市场</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.2.0</strong> — DPI 自适应字体 & AI 卡死修复</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📱 DPI 自适应缩放：根据 devicePixelRatio 自动放大字体，HiDPI/Retina 屏字体更清晰</li>
+                <li>🔤 字体基准范围扩大（14-21px），字体缩放滑块上限提升至 200%</li>
+                <li>🔧 AI 思考卡死修复：handleAuction 返回值修正，避免无人竞拍时卡死</li>
+                <li>⏱️ AI 回合看门狗（Watchdog）：10 秒超时自动恢复，防止全局卡死</li>
+                <li>🛡️ AI 回合全链路 try-catch 保护：异常时自动跳到下一回合</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.1.0</strong> — P2 卡牌系统扩展 & 拍卖增强 & 赌场系统 & 交易市场</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🃏 卡牌背包 50 张上限，超过 15 张可滚动弹窗查看全部</li>
                 <li>🏪 卡牌商店：动态定价（通胀+随机），买卖手牌技能卡</li>
