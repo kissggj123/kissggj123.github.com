@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v6.4.0 -->
+    <!-- VERSION: v7.0.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.4.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.4.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.4.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.4.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.4.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.4.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.0.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.0.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.0.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.0.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.0.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.0.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -535,7 +535,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v6.4.0</div>
+                <div class="subtitle">v7.0.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -723,7 +723,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.4.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.0.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -776,8 +776,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v6.4.0',
-        SAVE_KEY: 'bunny_cc_v6.4.0',
+        VERSION: 'v7.0.0',
+        SAVE_KEY: 'bunny_cc_v7.0.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -1023,7 +1023,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v6.4.0 已启动', 'info');
+        logEvent('兔可可王国 v7.0.0 已启动', 'info');
     }
 
     function validateMono() {
@@ -1042,6 +1042,8 @@
             if (p.doubleDice === undefined) p.doubleDice = false;
             if (p.jailFree === undefined) p.jailFree = false;
             if (p.jailTurns === undefined) p.jailTurns = 0;
+            if (p.banned === undefined) p.banned = 0;
+            if (p.hospital === undefined) p.hospital = 0;
             if (p.taxFree === undefined) p.taxFree = 0;
             if (p.cards === undefined) p.cards = [];
             if (p.loans === undefined) p.loans = [];
@@ -1135,7 +1137,8 @@
             players: MONO_PLAYERS_INIT.map((p,i) => ({
                 ...p, money: 10000, pos: startPositions[i], cards: [],
                 shield: false, lucky: false, speed: 0, doubleDice: false,
-                jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
+                jailFree: false, jailTurns: 0, banned: 0, hospital: 0,
+                taxFree: 0, bankrupt: false,
                 loans: [], credit: 100, vehicle: null,
                 stocks: 0, stockAvgCost: 0,
                 stats: {
@@ -1530,9 +1533,9 @@
         if (!p) return;
         if (p.stocks > 0) {
             const value = Math.floor(p.stocks * mono.stockMarket);
-            el.innerHTML = `持有 ${p.stocks} 股 | 市值 💰${value} | <span style="color:var(--accent);text-decoration:underline;">点击交易</span>`;
+            el.innerHTML = `持有 ${p.stocks} 股 | 市值 💰${value} | <span style="color:var(--accent);text-decoration:underline;cursor:pointer;" onclick="openStockExchange()">点击交易</span>`;
         } else {
-            el.innerHTML = `<span style="color:var(--text2);">无持仓 | </span><span style="color:var(--accent);text-decoration:underline;">点击交易</span>`;
+            el.innerHTML = `<span style="color:var(--text2);">无持仓 | </span><span style="color:var(--accent);text-decoration:underline;cursor:pointer;" onclick="openStockExchange()">点击交易</span>`;
         }
     }
 
@@ -1545,6 +1548,22 @@
         if (p.jailTurns > 0) {
             p.jailTurns--;
             monoLog(`🔒 ${p.nm} 在监狱中，暂停一回合（剩${p.jailTurns}回合）`, 'error');
+            saveMonopoly();
+            nextTurn();
+            return;
+        }
+        // Banned check (seal curse)
+        if (p.banned > 0) {
+            p.banned--;
+            monoLog(`🚫 ${p.nm} 被封印，暂停一回合（剩${p.banned}回合）`, 'error');
+            saveMonopoly();
+            nextTurn();
+            return;
+        }
+        // Hospital check
+        if (p.hospital > 0) {
+            p.hospital--;
+            monoLog(`🏥 ${p.nm} 在医院治疗，暂停一回合（剩${p.hospital}回合）`, 'error');
             saveMonopoly();
             nextTurn();
             return;
@@ -1841,9 +1860,9 @@
     function showBankModal() {
         const p = mono.players[0];
         const propValue = getPlayerPropertyValue(p);
-        const maxLoan = Math.floor(propValue * 0.5);
-        const creditLoanMax = Math.floor(p.credit * 100); // Credit-based loan, no collateral needed
         const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        const maxLoan = Math.max(0, Math.floor(propValue * 0.5) - totalDebt); // Deduct existing debt
+        const creditLoanMax = Math.floor(p.credit * 100); // Credit-based loan, no collateral needed
         const nextPayment = p.loans.length > 0 ? p.loans[0] : null;
         const nextPayAmount = nextPayment ? Math.floor(nextPayment.amount * nextPayment.rate / 5) + Math.floor(nextPayment.amount / 5) : 0;
 
@@ -1915,6 +1934,15 @@
     function takeLoan(amount) {
         const p = mono.players[0];
         if (amount <= 0) { monoLog('无地产可做抵押', 'error'); return; }
+        // Check existing debt to prevent infinite loans
+        const propValue = getPlayerPropertyValue(p);
+        const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        const realMaxLoan = Math.max(0, Math.floor(propValue * 0.5) - totalDebt);
+        if (amount > realMaxLoan) {
+            monoLog(`贷款额度超出！当前可贷：💰${realMaxLoan}`, 'error');
+            showBankModal();
+            return;
+        }
         const rate = 0.08 + (100 - p.credit) * 0.001;
         p.money += amount;
         p.loans.push({amount, remaining: 5, rate, type: 'mortgage'});
@@ -1944,8 +1972,9 @@
         if (!loan || p.money < loan.amount) { monoLog('资金不足', 'error'); return; }
         p.money -= loan.amount;
         p.loans.splice(idx, 1);
-        p.credit = Math.min(100, p.credit + 5);
-        monoLog(`💰 还清一笔贷款 💰${loan.amount}，信用 +5`, 'success');
+        // Credit recovery: allow exceeding 100 based on loan amount
+        p.credit = Math.min(100 + Math.floor(loan.amount / 1000), p.credit + 5 + Math.floor(loan.amount / 2000));
+        monoLog(`💰 还清一笔贷款 💰${loan.amount}，信用恢复至 ${p.credit}`, 'success');
         showBankModal();
         saveMonopoly();
     }
@@ -1957,12 +1986,12 @@
         const loansCleared = p.loans.length;
         p.money -= totalDebt;
         p.loans = [];
-        p.credit = Math.min(100, p.credit + 10);
-        monoLog(`💰 兔可可还清 ${loansCleared} 笔贷款 (💰${totalDebt})，信用 +10`, 'success');
-        closeBankModal();
+        // Credit recovery: allow exceeding 100 based on total repaid
+        p.credit = Math.min(100 + Math.floor(totalDebt / 1000), p.credit + 10 + Math.floor(totalDebt / 2000));
+        monoLog(`💰 兔可可还清 ${loansCleared} 笔贷款 (💰${totalDebt})，信用恢复至 ${p.credit}`, 'success');
+        showBankModal(); // Refresh modal instead of closing
         saveMonopoly();
         renderMonopoly();
-        if (!checkGameOver()) nextTurn();
     }
 
     function closeBankModal() {
@@ -1981,17 +2010,17 @@
     function aiBankDecision(p) {
         const personality = AI_PERSONALITIES[p.personality];
         const propValue = getPlayerPropertyValue(p);
-        const maxLoan = Math.floor(propValue * 0.5);
         const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        const maxLoan = Math.max(0, Math.floor(propValue * 0.5) - totalDebt); // Deduct existing debt
         if (totalDebt > 0 && p.money > totalDebt * 1.5) {
             p.money -= totalDebt;
             p.loans = [];
-            p.credit = Math.min(100, p.credit + 10);
+            p.credit = Math.min(100 + Math.floor(totalDebt / 1000), p.credit + 10);
             monoLog(`${p.ic} 还清贷款`, 'info');
         } else if (p.money < 2000 && maxLoan > 0 && Math.random() < personality.loanChance) {
             const rate = 0.08 + (100 - p.credit) * 0.001;
             p.money += maxLoan;
-            p.loans.push({amount: maxLoan, remaining: 5, rate});
+            p.loans.push({amount: maxLoan, remaining: 5, rate, type: 'mortgage'});
             p.credit = Math.max(10, p.credit - 10);
             monoLog(`${p.ic} 申请贷款 ${maxLoan}💰`, 'info');
         }
@@ -2151,6 +2180,7 @@
         const portfolioValue = p.stocks > 0 ? Math.floor(p.stocks * price) : 0;
         const profitLoss = p.stocks > 0 ? portfolioValue - Math.floor(p.stocks * p.stockAvgCost) : 0;
         const maxBuy = Math.floor(p.money / price);
+        const isMyTurn = mono.currentPlayer === 0;
         const modal = document.getElementById('modal-content');
         modal.innerHTML = `
             <div class="modal-title">📊 股票交易</div>
@@ -2158,6 +2188,7 @@
                 <div style="font-size:2rem;">📈</div>
                 <div style="font-weight:800;font-size:1.2rem;color:var(--accent);">兔兔指数 ${price}</div>
                 <div style="font-size:.7rem;color:var(--text2);margin-top:.2rem;">${mono.stockMarket >= 100 ? '↑ 上涨趋势' : '↓ 下跌趋势'}</div>
+                ${!isMyTurn ? '<div style="font-size:.7rem;color:var(--warn);margin-top:.2rem;">⚠️ 非你的回合，仅可查看</div>' : ''}
             </div>
             <div style="margin:.5rem 0;padding:.5rem;background:var(--card2);border-radius:8px;">
                 <div style="display:flex;justify-content:space-between;font-size:.8rem;">
@@ -2176,16 +2207,16 @@
             </div>
             <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;">
                 <div style="display:flex;gap:.3rem;align-items:center;">
-                    <input type="number" id="stock-amount" min="1" max="${maxBuy}" value="1" style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-size:.85rem;" placeholder="数量">
-                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('stock-amount').value=${Math.max(1,maxBuy)}">最大</button>
+                    <input type="number" id="stock-amount" min="1" max="${maxBuy}" value="1" style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-size:.85rem;" placeholder="数量" ${!isMyTurn ? 'disabled' : ''}>
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('stock-amount').value=${Math.max(1,maxBuy)}" ${!isMyTurn ? 'disabled' : ''}>最大</button>
                 </div>
                 <div style="display:flex;gap:.5rem;">
-                    <button class="btn btn-primary" style="flex:1;" onclick="buyStock()" ${maxBuy<1?'disabled':''}>📈 买入 (💰${price}/股)</button>
-                    <button class="btn btn-danger" style="flex:1;" onclick="sellStock()" ${p.stocks<=0?'disabled':''}>📉 卖出全部</button>
+                    <button class="btn btn-primary" style="flex:1;" onclick="buyStock()" ${maxBuy<1||!isMyTurn?'disabled':''}>📈 买入 (💰${price}/股)</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="sellStock()" ${p.stocks<=0||!isMyTurn?'disabled':''}>📉 卖出全部</button>
                 </div>
                 <div style="display:flex;gap:.5rem;">
-                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockPartial()" ${p.stocks<=0?'disabled':''}>📤 部分卖出</button>
-                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockToPlayer()" ${p.stocks<=0?'disabled':''}>🤝 二手交易 (90%)</button>
+                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockPartial()" ${p.stocks<=0||!isMyTurn?'disabled':''}>📤 部分卖出</button>
+                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockToPlayer()" ${p.stocks<=0||!isMyTurn?'disabled':''}>🤝 二手交易 (90%)</button>
                 </div>
                 <div style="font-size:.65rem;color:var(--text2);padding:.2rem 0;line-height:1.4;">
                     💡 二手交易：以市价90%卖给其他玩家，不影指数，快速变现
@@ -2295,7 +2326,7 @@
 
     /* ---- Voluntary stock exchange entry (doesn't consume turn) ---- */
     function openStockExchange() {
-        if (mono.currentPlayer !== 0) { monoLog('等待其他玩家行动...', 'info'); return; }
+        // Allow viewing anytime, but only allow trading on player's turn
         mono.voluntaryVisit = true;
         showStockModal();
     }
@@ -2629,6 +2660,22 @@
             nextTurn();
             return;
         }
+        // Banned check (seal curse)
+        if (p.banned > 0) {
+            p.banned--;
+            monoLog(`🚫 ${p.nm} 被封印，暂停一回合`, 'error');
+            saveMonopoly();
+            nextTurn();
+            return;
+        }
+        // Hospital check
+        if (p.hospital > 0) {
+            p.hospital--;
+            monoLog(`🏥 ${p.nm} 在医院治疗，暂停一回合`, 'error');
+            saveMonopoly();
+            nextTurn();
+            return;
+        }
 
         const personality = AI_PERSONALITIES[p.personality];
 
@@ -2691,7 +2738,8 @@
             mono.players.push({
                 ...newPlayerData, money: 10000, pos: newPos, cards: [],
                 shield: false, lucky: false, speed: 0, doubleDice: false,
-                jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
+                jailFree: false, jailTurns: 0, banned: 0, hospital: 0,
+                taxFree: 0, bankrupt: false,
                 loans: [], credit: 100, vehicle: null,
                 stocks: 0, stockAvgCost: 0,
                 stats: {
@@ -3351,6 +3399,7 @@
             setTimeout(() => {
                 const data = JSON.parse(JSON.stringify(mono));
                 data._savedAt = Date.now();
+                data._cardInventory = JSON.parse(JSON.stringify(cardInventory));
                 localStorage.setItem(getSaveSlotKey(slot), JSON.stringify(data));
                 logEvent(`✓ 游戏已保存到存档 ${slot+1}`, 'success');
                 showToast(`✓ 已保存到存档 ${slot+1}`, 'success');
@@ -3381,6 +3430,10 @@
                 }
                 delete data._savedAt;
                 mono = data;
+                if (data._cardInventory) {
+                    cardInventory = data._cardInventory;
+                    saveInventory();
+                }
                 validateMono();
                 saveMonopoly();
                 renderMonopoly();
@@ -4036,6 +4089,18 @@
     function initPWA() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+            // Listen for SW updates and force reload to clear stale cache
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'SW_UPDATED') {
+                    console.log('Service Worker updated to', event.data.version, '- reloading...');
+                    // Force reload to load new cached assets
+                    setTimeout(() => location.reload(), 500);
+                }
+            });
+            // Handle controller change (new SW took over)
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('Service Worker controller changed');
+            });
         }
     }
 
@@ -4044,7 +4109,17 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.4.0</strong> — 载具系统 & 诅咒卡 & Toast通知 & 性能优化</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.0.0</strong> — P0 阻塞性 Bug 修复 & SW 缓存强制更新</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🔄 Service Worker 缓存强制更新：SW 更新后自动重载页面，修复 switchView 未定义错误</li>
+                <li>💾 存档修复：手动存档槽现在正确保存/恢复卡牌背包 (cardInventory)</li>
+                <li>🚫 状态修复：监狱/封印/医院状态自动跳过回合（人类+AI 玩家均生效）</li>
+                <li>📈 股市修复：点击"交易"文字可正确打开交易所，非自己回合仅可查看</li>
+                <li>🏦 银行修复：抵押贷款扣除已有负债防止无限贷款，信用分可突破100</li>
+                <li>💰 还款修复：还清贷款后弹窗刷新而非关闭，信用分按贷款金额动态恢复</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.4.0</strong> — 载具系统 & 诅咒卡 & Toast通知 & 性能优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🚗 载具系统：7种载具（滑板车到巨龙），移动加成/租金减免/免租概率</li>
                 <li>🃏 诅咒技能卡：禁锢咒、封印咒、退步咒、住院咒等6种诅咒卡</li>
