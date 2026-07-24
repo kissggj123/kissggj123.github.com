@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v6.2.0 -->
+    <!-- VERSION: v6.3.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.2.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.2.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.2.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.2.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.2.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.2.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.3.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.3.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.3.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.3.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.3.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.3.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -110,13 +110,15 @@
 
         /* ==================== Base ==================== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Fluid root font-size: scales from 13px (320px viewport) to 17px (1920px+) */
+        html { font-size: clamp(13px, 0.35vw + 11.5px, 17px); }
         body {
             font-family: 'Nunito', -apple-system, sans-serif;
-            font-size: 15px; font-weight: 600;
+            font-size: clamp(.85rem, .85rem + .1vw, 1rem); font-weight: 600;
             background: var(--bg); color: var(--text);
             line-height: 1.6; overflow: hidden;
         }
-        body.font-pixel { font-family: 'Press Start 2P', monospace; font-size: 13px; }
+        body.font-pixel { font-family: 'Press Start 2P', monospace; font-size: clamp(.7rem, .7rem + .1vw, .85rem); }
         @keyframes fadeIn { to { opacity: 1; } }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -260,7 +262,7 @@
             color: #fff; min-width: 18px; white-space: nowrap; flex-shrink: 0;
         }
         .mono-tile-cell {
-            width: 60px; min-height: 76px; background: var(--card); border: 1px solid var(--border);
+            width: clamp(48px, 3.5vw + 28px, 64px); min-height: clamp(60px, 4vw + 40px, 82px); background: var(--card); border: 1px solid var(--border);
             border-radius: 6px; padding: 3px; display: flex; flex-direction: column; align-items: center;
             justify-content: flex-start; text-align: center; position: relative; transition: all var(--transition);
             flex-shrink: 0; cursor: help;
@@ -270,12 +272,13 @@
         @keyframes tilePulse { 50% { box-shadow: 0 0 14px rgba(var(--accent-rgb),.5); } }
         .mono-tile-cell.owned { border-color: var(--good); }
         .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
-        .mono-tile-cell .tile-ic { font-size: 1rem; line-height: 1; margin-top: 2px; }
-        .mono-tile-cell .tile-nm { font-size: .45rem; color: var(--text2); margin-top: 1px; line-height: 1.1; overflow: hidden; max-height: 1.8em; }
-        .mono-tile-cell .tile-cost { font-size: .45rem; color: var(--accent); font-weight: 700; }
-        .mono-tile-cell .tile-level { font-size: .4rem; color: var(--good); }
+        .mono-tile-cell.highlighted { border-color: var(--warn); box-shadow: 0 0 12px rgba(255,152,0,.5); animation: tilePulse 0.8s ease 3; }
+        .mono-tile-cell .tile-ic { font-size: clamp(.8rem, .5vw + .6rem, 1.1rem); line-height: 1; margin-top: 2px; }
+        .mono-tile-cell .tile-nm { font-size: clamp(.4rem, .15vw + .3rem, .5rem); color: var(--text2); margin-top: 1px; line-height: 1.1; overflow: hidden; max-height: 1.8em; }
+        .mono-tile-cell .tile-cost { font-size: clamp(.38rem, .15vw + .3rem, .48rem); color: var(--accent); font-weight: 700; }
+        .mono-tile-cell .tile-level { font-size: clamp(.35rem, .1vw + .3rem, .42rem); color: var(--good); }
         .mono-tile-cell .tile-owner { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; }
-        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: .55rem; }
+        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: clamp(.45rem, .1vw + .4rem, .58rem); }
         .tile-tooltip {
             display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
             background: var(--card); border: 1px solid var(--accent); border-radius: 6px; padding: .4rem .6rem;
@@ -285,28 +288,30 @@
         .mono-tile-cell:hover .tile-tooltip { display: block; }
 
         .mono-dice-area { text-align: center; padding: .5rem 0; }
-        .mono-dice { font-size: 1.5rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
-        .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+        .mono-dice { font-size: clamp(1.2rem, .5vw + 1rem, 1.6rem); display: flex; gap: .4rem; align-items: center; justify-content: center; }
+        .mono-dice-num { font-size: clamp(1.5rem, 1vw + 1rem, 2.2rem); font-weight: 800; color: var(--accent); }
         .mono-players { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
-        .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: 60px; transition: all var(--transition); position: relative; }
+        .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: clamp(52px, 3vw + 44px, 64px); transition: all var(--transition); position: relative; cursor: pointer; }
+        .mono-player:hover { border-color: var(--accent); transform: translateY(-2px); }
         .mono-player.active { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow); }
-        .mono-player .mp-ic { font-size: 1.1rem; }
-        .mono-player .mp-name { font-size: .55rem; color: var(--text2); }
-        .mono-player .mp-money { font-weight: 800; font-size: .75rem; color: var(--accent); }
-        .mono-player .mp-status { font-size: .5rem; display: flex; gap: 1px; }
-        .mono-player .mp-personality { font-size: .45rem; color: var(--text2); }
+        .mono-player .mp-ic { font-size: clamp(1rem, .3vw + .8rem, 1.2rem); }
+        .mono-player .mp-name { font-size: clamp(.5rem, .1vw + .4rem, .58rem); color: var(--text2); }
+        .mono-player .mp-money { font-weight: 800; font-size: clamp(.65rem, .15vw + .5rem, .8rem); color: var(--accent); }
+        .mono-player .mp-status { font-size: clamp(.42rem, .08vw + .35rem, .52rem); display: flex; gap: 1px; }
+        .mono-player .mp-personality { font-size: clamp(.4rem, .08vw + .33rem, .48rem); color: var(--text2); }
         .mono-cards { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; }
-        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: clamp(.5rem, .1vw + .4rem, .65rem); position: relative; display: flex; flex-direction: column; align-items: center; }
         .mono-card-item:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .mono-card-item .mc-desc { font-size: .4rem; color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .mono-log { font-size: .65rem; color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
+        .mono-card-item .mc-desc { font-size: clamp(.35rem, .05vw + .3rem, .42rem); color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mono-log { font-size: clamp(.55rem, .1vw + .45rem, .68rem); color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
         .mono-log .log-line { padding: .1rem 0; }
         .mono-log .log-line.success { color: var(--good); }
         .mono-log .log-line.error { color: var(--bad); }
         .mono-log .log-line.god { color: #a78bfa; }
+        .mono-log .log-line.event { color: var(--warn); }
         .mono-buy { margin-top: .5rem; text-align: center; display: flex; gap: .5rem; justify-content: center; align-items: center; }
         .mono-section { margin-bottom: .75rem; }
-        .mono-section-title { font-size: .8rem; font-weight: 800; color: var(--accent); margin-bottom: .4rem; }
+        .mono-section-title { font-size: clamp(.7rem, .15vw + .6rem, .85rem); font-weight: 800; color: var(--accent); margin-bottom: .4rem; }
         .mono-inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; }
 
         /* ==================== Anniversary ==================== */
@@ -436,6 +441,21 @@
         .tab-item.active .tab-icon { transform: translateY(-2px); transition: transform var(--transition); }
 
         /* ==================== Responsive ==================== */
+        /* Extra small screens (phones) */
+        @media (max-width: 480px) {
+            body { overflow-y: auto; overflow-x: hidden; }
+            .app { flex-direction: column; height: auto; min-height: 100vh; }
+            .sidebar { display: none; }
+            .content { flex: 1; padding: .75rem; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 1rem); }
+            .tab-bar { display: flex; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .anniversary-days { font-size: 2.2rem; }
+            .card { padding: .75rem; }
+            .mono-tile-cell { width: 44px; min-height: 56px; }
+            .modal { padding: 1rem; max-width: 95%; }
+            .modal-title { font-size: 1rem; }
+        }
+        /* Small screens (tablets / large phones) */
         @media (max-width: 768px) {
             body { overflow-y: auto; overflow-x: hidden; }
             .app { flex-direction: column; height: auto; min-height: 100vh; }
@@ -445,10 +465,21 @@
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .anniversary-days { font-size: 2.5rem; }
             .card { padding: 1rem; }
-            .mono-tile-cell { width: 48px; min-height: 60px; }
-            .mono-tile-cell .tile-ic { font-size: .8rem; }
-            .mono-tile-cell .tile-nm { font-size: .38rem; }
-            .mono-dice-num { font-size: 1.5rem; }
+        }
+        /* Medium screens (small desktops / large tablets in landscape) */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .sidebar { width: 180px; }
+            .content { padding: 1rem; }
+        }
+        /* Large screens (desktops) */
+        @media (min-width: 1440px) {
+            .sidebar { width: 240px; }
+            .content { padding: 2rem; }
+            .grid-auto { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+        }
+        /* Extra large screens */
+        @media (min-width: 1920px) {
+            .content { max-width: 1600px; margin: 0 auto; }
         }
         @media (display-mode: standalone) {
             .tab-bar { display: flex; }
@@ -482,7 +513,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v6.2.0</div>
+                <div class="subtitle">v6.3.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -569,7 +600,21 @@
                         <div style="font-size:.7rem;color:var(--text2);margin-bottom:.4rem;">从首页抽到的卡牌可携带到游戏中使用</div>
                         <div class="mono-inventory-grid" id="mono-inventory"></div>
                         <div class="mono-section-title" style="margin-top:.75rem;">📊 股市指数</div>
-                        <div style="text-align:center;font-size:1.5rem;font-weight:800;color:var(--accent);" id="mono-stock">100</div>
+                        <div style="text-align:center;">
+                            <span style="font-size:1.5rem;font-weight:800;color:var(--accent);cursor:pointer;" id="mono-stock" onclick="showStockModal()" title="点击交易股票">100</span>
+                            <div style="font-size:.6rem;color:var(--text2);margin-top:.2rem;" id="mono-stock-portfolio"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stats Panel -->
+                <div class="card-grid grid-2" style="margin-top:1rem;">
+                    <div class="card">
+                        <div class="mono-section-title">🏠 地产统计</div>
+                        <div id="mono-property-stats"></div>
+                    </div>
+                    <div class="card">
+                        <div class="mono-section-title">💰 租金统计</div>
+                        <div id="mono-rent-stats"></div>
                     </div>
                 </div>
             </section>
@@ -641,7 +686,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.2.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.3.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -683,8 +728,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v6.2.0',
-        SAVE_KEY: 'bunny_cc_v6.2.0',
+        VERSION: 'v6.3.0',
+        SAVE_KEY: 'bunny_cc_v6.3.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -883,7 +928,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v6.2.0 已启动', 'info');
+        logEvent('兔可可王国 v6.3.0 已启动', 'info');
     }
 
     function validateMono() {
@@ -908,6 +953,23 @@
             if (p.credit === undefined) p.credit = 100;
             if (p.isHuman === undefined) p.isHuman = false;
             if (p.personality === undefined) p.personality = 'balanced';
+            if (p.stocks === undefined) p.stocks = 0;
+            if (p.stockAvgCost === undefined) p.stockAvgCost = 0;
+            if (!p.stats) p.stats = {
+                propertiesBought: 0, purchaseSpent: 0,
+                upgradesDone: 0, upgradeSpent: 0,
+                rentIncomeTotal: 0, rentPaidTotal: 0,
+                rentLog: [], stockProfit: 0, stockTrades: 0,
+            };
+            if (p.stats.propertiesBought === undefined) p.stats.propertiesBought = 0;
+            if (p.stats.purchaseSpent === undefined) p.stats.purchaseSpent = 0;
+            if (p.stats.upgradesDone === undefined) p.stats.upgradesDone = 0;
+            if (p.stats.upgradeSpent === undefined) p.stats.upgradeSpent = 0;
+            if (p.stats.rentIncomeTotal === undefined) p.stats.rentIncomeTotal = 0;
+            if (p.stats.rentPaidTotal === undefined) p.stats.rentPaidTotal = 0;
+            if (!Array.isArray(p.stats.rentLog)) p.stats.rentLog = [];
+            if (p.stats.stockProfit === undefined) p.stats.stockProfit = 0;
+            if (p.stats.stockTrades === undefined) p.stats.stockTrades = 0;
         });
         if (mono.stockMarket === undefined) mono.stockMarket = 100;
         if (mono.unlockedEras === undefined) mono.unlockedEras = 0;
@@ -974,6 +1036,14 @@
                 shield: false, lucky: false, speed: 0, doubleDice: false,
                 jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
                 loans: [], credit: 100,
+                stocks: 0, stockAvgCost: 0,
+                stats: {
+                    propertiesBought: 0, purchaseSpent: 0,
+                    upgradesDone: 0, upgradeSpent: 0,
+                    rentIncomeTotal: 0, rentPaidTotal: 0,
+                    rentLog: [], // {from, to, amount, tileNm, turn}
+                    stockProfit: 0, stockTrades: 0,
+                },
             })),
             currentPlayer: 0,
             dice: [1, 1],
@@ -1039,6 +1109,8 @@
         renderMonoCards();
         renderMonoInventory();
         renderMonoLog();
+        renderMonoStats();
+        renderStockPortfolio();
     }
 
     function renderMonoPlayers() {
@@ -1054,7 +1126,7 @@
             if (p.speed) statusIcons.push(`🚀${p.speed}`);
             if (p.jailTurns > 0) statusIcons.push('🔒');
             if (p.taxFree > 0) statusIcons.push('🧾');
-            return `<div class="mono-player ${active?'active':''}" ${p.bankrupt?'style="opacity:.4;"':''}>
+            return `<div class="mono-player ${active?'active':''}" ${p.bankrupt?'style="opacity:.4;"':''} onclick="locatePlayer(${i})" title="点击定位到地图位置">
                 <div class="mp-ic">${p.ic}</div>
                 <div class="mp-name">${p.nm}</div>
                 <div class="mp-money">💰${p.money}</div>
@@ -1062,6 +1134,33 @@
                 <div class="mp-personality">${personalityNm}</div>
             </div>`;
         }).join('');
+    }
+
+    function locatePlayer(idx) {
+        const p = mono.players[idx];
+        if (!p || p.bankrupt) return;
+        const strip = document.getElementById('mono-map-strip');
+        const scroll = document.getElementById('mono-map-scroll');
+        if (!strip || !scroll) return;
+        const tiles = strip.querySelectorAll('.mono-tile-cell');
+        // Find the tile at position p.pos (tiles include region dividers, so index != pos)
+        // Use data attribute or match by searching
+        let targetTile = null;
+        let tileCount = 0;
+        for (const child of strip.children) {
+            if (child.classList.contains('mono-tile-cell')) {
+                if (tileCount === p.pos) { targetTile = child; break; }
+                tileCount++;
+            }
+        }
+        if (targetTile) {
+            const scrollLeft = targetTile.offsetLeft - scroll.offsetWidth / 2 + targetTile.offsetWidth / 2;
+            scroll.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+            // Highlight the tile
+            targetTile.classList.add('highlighted');
+            setTimeout(() => targetTile.classList.remove('highlighted'), 2500);
+            monoLog(`📍 定位到 ${p.ic} ${p.nm} 所在位置`, 'info');
+        }
     }
 
     function renderMonoMap() {
@@ -1181,6 +1280,76 @@
         el.scrollTop = el.scrollHeight;
     }
 
+    function renderMonoStats() {
+        const propEl = document.getElementById('mono-property-stats');
+        const rentEl = document.getElementById('mono-rent-stats');
+        if (!propEl && !rentEl) return;
+        const p = mono.players[0];
+        if (!p || !p.stats) return;
+        const s = p.stats;
+
+        // Count owned properties
+        let ownedCount = 0, totalLevels = 0, propValue = 0;
+        mono.tiles.forEach((t, i) => {
+            const prop = mono.properties[i];
+            if (t.type === 'property' && prop && prop.owner === 0) {
+                ownedCount++;
+                totalLevels += prop.level;
+                propValue += t.price * (prop.level + 1);
+            }
+        });
+
+        if (propEl) {
+            propEl.innerHTML = `
+                <div class="stat-row"><span class="stat-label">🏠 持有地产</span><span class="stat-value">${ownedCount} 块</span></div>
+                <div class="stat-row"><span class="stat-label">🏗️ 总升级数</span><span class="stat-value">Lv ${totalLevels}</span></div>
+                <div class="stat-row"><span class="stat-label">🛒 购买次数</span><span class="stat-value">${s.propertiesBought}</span></div>
+                <div class="stat-row"><span class="stat-label">💸 购买花费</span><span class="stat-value">💰${s.purchaseSpent}</span></div>
+                <div class="stat-row"><span class="stat-label">⬆️ 升级次数</span><span class="stat-value">${s.upgradesDone}</span></div>
+                <div class="stat-row"><span class="stat-label">💸 升级花费</span><span class="stat-value">💰${s.upgradeSpent}</span></div>
+                <div class="stat-row"><span class="stat-label">💎 地产总值</span><span class="stat-value" style="color:var(--good);">💰${propValue}</span></div>
+            `;
+        }
+
+        if (rentEl) {
+            // Rent log: show who paid rent to me
+            const recentRenters = s.rentLog.slice(-6).reverse();
+            // Aggregate rent by payer
+            const rentByPayer = {};
+            s.rentLog.forEach(r => {
+                if (!rentByPayer[r.from]) rentByPayer[r.from] = { ic: r.fromIc, total: 0, count: 0 };
+                rentByPayer[r.from].total += r.amount;
+                rentByPayer[r.from].count++;
+            });
+            const payerList = Object.entries(rentByPayer).map(([nm, d]) =>
+                `<div style="display:flex;justify-content:space-between;align-items:center;padding:.2rem 0;">
+                    <span style="font-size:.75rem;">${d.ic} ${nm} <span style="color:var(--text2);font-size:.6rem;">(${d.count}次)</span></span>
+                    <span style="font-size:.75rem;font-weight:700;color:var(--good);">+💰${d.total}</span>
+                </div>`
+            ).join('');
+
+            rentEl.innerHTML = `
+                <div class="stat-row"><span class="stat-label">💰 租金总收入</span><span class="stat-value" style="color:var(--good);">💰${s.rentIncomeTotal}</span></div>
+                <div class="stat-row"><span class="stat-label">💸 租金总支出</span><span class="stat-value" style="color:var(--bad);">💰${s.rentPaidTotal}</span></div>
+                <div class="stat-row"><span class="stat-label">📊 净租金收益</span><span class="stat-value" style="color:${s.rentIncomeTotal - s.rentPaidTotal >= 0 ? 'var(--good)' : 'var(--bad)'};">💰${s.rentIncomeTotal - s.rentPaidTotal}</span></div>
+                ${payerList ? '<div class="mono-section-title" style="margin-top:.5rem;font-size:.7rem;">👥 谁路过了你的房子</div>' + payerList : '<div style="font-size:.7rem;color:var(--text2);padding:.3rem 0;">还没有人付过租金</div>'}
+            `;
+        }
+    }
+
+    function renderStockPortfolio() {
+        const el = document.getElementById('mono-stock-portfolio');
+        if (!el) return;
+        const p = mono.players[0];
+        if (!p) return;
+        if (p.stocks > 0) {
+            const value = Math.floor(p.stocks * mono.stockMarket);
+            el.innerHTML = `持有 ${p.stocks} 股 | 市值 💰${value} | <span style="color:var(--accent);text-decoration:underline;">点击交易</span>`;
+        } else {
+            el.innerHTML = `<span style="color:var(--text2);">无持仓 | </span><span style="color:var(--accent);text-decoration:underline;">点击交易</span>`;
+        }
+    }
+
     /* ==================== Monopoly: Turn Logic ==================== */
     function rollDice() {
         if (mono.rolling || mono.currentPlayer !== 0) return;
@@ -1290,17 +1459,21 @@
                 }
                 break;
             case 'stock': {
-                const change = (Math.random() - 0.4) * 0.3;
-                const changeAmount = Math.floor(Math.abs(p.money * change));
-                if (change > 0) {
-                    p.money += changeAmount;
-                    mono.stockMarket = Math.min(200, mono.stockMarket + 10);
-                    monoLog(`${p.ic} 📈 牛市！股票收益 +${changeAmount}💰`, 'success');
+                // Stock market fluctuation on landing
+                const fluct = (Math.random() - 0.45) * 20;
+                mono.stockMarket = Math.max(50, Math.min(200, mono.stockMarket + fluct));
+                // Dividend for stock holders when index is high
+                if (p.stocks > 0 && mono.stockMarket > 120) {
+                    const dividend = Math.floor(p.stocks * mono.stockMarket * 0.05);
+                    p.money += dividend;
+                    p.stats.stockProfit += dividend;
+                    monoLog(`${p.ic} 📈 分红收益 +${dividend}💰 (持有${p.stocks}股)`, 'success');
+                }
+                if (playerIdx === 0) {
+                    showStockModal();
+                    return; // Wait for player to trade
                 } else {
-                    p.money -= changeAmount;
-                    mono.stockMarket = Math.max(50, mono.stockMarket - 10);
-                    monoLog(`${p.ic} 📉 熊市！股票亏损 -${changeAmount}💰`, 'error');
-                    checkBankruptcy(p);
+                    aiStockDecision(p);
                 }
                 break;
             }
@@ -1330,6 +1503,8 @@
                         if (p.money >= tile.price && Math.random() < personality.buyChance) {
                             prop.owner = playerIdx;
                             p.money -= tile.price;
+                            p.stats.propertiesBought++;
+                            p.stats.purchaseSpent += tile.price;
                             monoLog(`${p.ic} 购买了 ${tile.nm}`, 'success');
                         }
                     }
@@ -1341,8 +1516,19 @@
                         const rent = tile.rent * (prop.level + 1);
                         if (p.shield) { p.shield = false; monoLog(`🛡️ 护盾抵消租金！`, 'success'); break; }
                         p.money -= rent;
-                        mono.players[prop.owner].money += rent;
-                        monoLog(`${p.ic} 向 ${mono.players[prop.owner].ic} 付租金 ${rent}💰`, 'error');
+                        const owner = mono.players[prop.owner];
+                        owner.money += rent;
+                        // Track rent stats
+                        p.stats.rentPaidTotal += rent;
+                        owner.stats.rentIncomeTotal += rent;
+                        owner.stats.rentLog.push({
+                            from: p.nm, fromIc: p.ic,
+                            to: owner.nm,
+                            amount: rent, tileNm: tile.nm,
+                            turn: mono.turn,
+                        });
+                        if (owner.stats.rentLog.length > 50) owner.stats.rentLog.shift();
+                        monoLog(`${p.ic} 向 ${owner.ic} 付租金 ${rent}💰 (${tile.nm})`, 'error');
                         checkBankruptcy(p);
                     }
                 }
@@ -1431,7 +1617,9 @@
         if (p.money < tile.price) { monoLog('资金不足！', 'error'); closeModal(); skipBuy(); return; }
         mono.properties[pos].owner = 0;
         p.money -= tile.price;
-        monoLog(`🐰 购买了 ${tile.nm}！`, 'success');
+        p.stats.propertiesBought++;
+        p.stats.purchaseSpent += tile.price;
+        monoLog(`🐰 购买了 ${tile.nm}！(-💰${tile.price})`, 'success');
         closeModal();
         saveMonopoly();
         renderMonopoly();
@@ -1450,19 +1638,38 @@
         const propValue = getPlayerPropertyValue(p);
         const maxLoan = Math.floor(propValue * 0.5);
         const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        const nextPayment = p.loans.length > 0 ? p.loans[0] : null;
+        const nextPayAmount = nextPayment ? Math.floor(nextPayment.amount * nextPayment.rate / 5) + Math.floor(nextPayment.amount / 5) : 0;
+
+        // Build loan list
+        let loanListHtml = '';
+        if (p.loans.length > 0) {
+            loanListHtml = '<div style="margin-top:.5rem;padding:.5rem;background:var(--card2);border-radius:8px;">';
+            p.loans.forEach((l, i) => {
+                const pay = Math.floor(l.amount * l.rate / 5) + Math.floor(l.amount / 5);
+                loanListHtml += `<div style="display:flex;justify-content:space-between;font-size:.75rem;padding:.2rem 0;${i < p.loans.length-1 ? 'border-bottom:1px solid var(--border);' : ''}">
+                    <span>💰${l.amount} @ ${(l.rate*100).toFixed(1)}% (${l.remaining}回合)</span>
+                    <button class="btn btn-sm btn-secondary" onclick="repaySingleLoan(${i})" ${p.money < l.amount ? 'disabled' : ''}>还💰${l.amount}</button>
+                </div>`;
+            });
+            loanListHtml += '</div>';
+        }
+
         const modal = document.getElementById('modal-content');
         modal.innerHTML = `
             <div class="modal-title">🏦 兔兔银行</div>
             <div style="text-align:center;padding:.5rem 0;">
                 <div style="font-size:.9rem;">你的资金：💰${p.money}</div>
-                <div style="font-size:.8rem;color:var(--text2);">信用评分：${p.credit}</div>
+                <div style="font-size:.8rem;color:var(--text2);">信用评分：${p.credit} ${p.credit >= 80 ? '⭐' : p.credit >= 50 ? '👍' : '⚠️'}</div>
                 <div style="font-size:.8rem;color:var(--text2);">地产总值：💰${propValue}</div>
                 <div style="font-size:.8rem;color:var(--text2);">当前负债：💰${totalDebt}</div>
                 <div style="font-size:.8rem;color:var(--accent);margin-top:.25rem;">可贷额度：💰${maxLoan}</div>
+                ${nextPayment ? `<div style="font-size:.7rem;color:var(--warn);margin-top:.15rem;">下回合还款：💰${nextPayAmount}</div>` : ''}
             </div>
-            <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:1rem;">
+            ${loanListHtml}
+            <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;">
                 <button class="btn btn-primary" onclick="takeLoan(${maxLoan})" ${maxLoan<=0?'disabled':''}>💸 申请贷款 (💰${maxLoan}, 5回合还清)</button>
-                <button class="btn btn-secondary" onclick="repayLoan()" ${totalDebt<=0?'disabled':''}>💰 偿还贷款 (需💰${totalDebt})</button>
+                <button class="btn btn-secondary" onclick="repayLoan()" ${totalDebt<=0||p.money<totalDebt?'disabled':''}>💰 还清所有贷款 (需💰${totalDebt})</button>
                 <button class="btn btn-secondary" onclick="closeBankModal()">离开银行</button>
             </div>`;
         document.getElementById('modal-overlay').classList.add('show');
@@ -1474,21 +1681,33 @@
         const rate = 0.08 + (100 - p.credit) * 0.001;
         p.money += amount;
         p.loans.push({amount, remaining: 5, rate});
+        p.credit = Math.max(10, p.credit - 5);
         monoLog(`🏦 兔可可贷款 ${amount}💰，利率 ${(rate*100).toFixed(1)}%`, 'info');
-        closeBankModal();
+        showBankModal(); // Refresh modal instead of closing
         saveMonopoly();
-        renderMonopoly();
-        if (!checkGameOver()) nextTurn();
+    }
+
+    function repaySingleLoan(idx) {
+        const p = mono.players[0];
+        const loan = p.loans[idx];
+        if (!loan || p.money < loan.amount) { monoLog('资金不足', 'error'); return; }
+        p.money -= loan.amount;
+        p.loans.splice(idx, 1);
+        p.credit = Math.min(100, p.credit + 5);
+        monoLog(`💰 还清一笔贷款 💰${loan.amount}，信用 +5`, 'success');
+        showBankModal();
+        saveMonopoly();
     }
 
     function repayLoan() {
         const p = mono.players[0];
         const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
         if (p.money < totalDebt) { monoLog('资金不足以偿还全部贷款', 'error'); return; }
+        const loansCleared = p.loans.length;
         p.money -= totalDebt;
         p.loans = [];
         p.credit = Math.min(100, p.credit + 10);
-        monoLog(`💰 兔可可还清所有贷款，信用提升`, 'success');
+        monoLog(`💰 兔可可还清 ${loansCleared} 笔贷款 (💰${totalDebt})，信用 +10`, 'success');
         closeBankModal();
         saveMonopoly();
         renderMonopoly();
@@ -1516,6 +1735,136 @@
             p.loans.push({amount: maxLoan, remaining: 5, rate});
             p.credit = Math.max(10, p.credit - 10);
             monoLog(`${p.ic} 申请贷款 ${maxLoan}💰`, 'info');
+        }
+    }
+
+    /* ==================== Monopoly: Stock Market ==================== */
+    function showStockModal() {
+        const p = mono.players[0];
+        const price = Math.floor(mono.stockMarket);
+        const portfolioValue = p.stocks > 0 ? Math.floor(p.stocks * price) : 0;
+        const profitLoss = p.stocks > 0 ? portfolioValue - Math.floor(p.stocks * p.stockAvgCost) : 0;
+        const maxBuy = Math.floor(p.money / price);
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">📊 股票交易</div>
+            <div style="text-align:center;padding:.5rem 0;">
+                <div style="font-size:2rem;">📈</div>
+                <div style="font-weight:800;font-size:1.2rem;color:var(--accent);">兔兔指数 ${price}</div>
+                <div style="font-size:.7rem;color:var(--text2);margin-top:.2rem;">${mono.stockMarket >= 100 ? '↑ 上涨趋势' : '↓ 下跌趋势'}</div>
+            </div>
+            <div style="margin:.5rem 0;padding:.5rem;background:var(--card2);border-radius:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
+                    <span>💰 现金</span><span style="font-weight:700;">💰${p.money}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
+                    <span>📊 持仓</span><span style="font-weight:700;">${p.stocks} 股</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
+                    <span>💵 持仓市值</span><span style="font-weight:700;">💰${portfolioValue}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
+                    <span>${profitLoss >= 0 ? '📈' : '📉'} 浮盈/浮亏</span>
+                    <span style="font-weight:700;color:${profitLoss >= 0 ? 'var(--good)' : 'var(--bad)'};">${profitLoss >= 0 ? '+' : ''}💰${profitLoss}</span>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;">
+                <div style="display:flex;gap:.3rem;align-items:center;">
+                    <input type="number" id="stock-amount" min="1" max="${maxBuy}" value="1" style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-size:.85rem;" placeholder="数量">
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('stock-amount').value=${Math.max(1,maxBuy)}">最大</button>
+                </div>
+                <div style="display:flex;gap:.5rem;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="buyStock()" ${maxBuy<1?'disabled':''}>📈 买入 (💰${price}/股)</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="sellStock()" ${p.stocks<=0?'disabled':''}>📉 卖出全部</button>
+                </div>
+                <button class="btn btn-secondary" onclick="closeStockModal()">离开交易所</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function buyStock() {
+        const p = mono.players[0];
+        const price = Math.floor(mono.stockMarket);
+        const amount = parseInt(document.getElementById('stock-amount')?.value) || 1;
+        const cost = price * amount;
+        if (p.money < cost) { monoLog('资金不足！', 'error'); return; }
+        // Update average cost
+        if (p.stocks > 0) {
+            p.stockAvgCost = ((p.stockAvgCost * p.stocks) + cost) / (p.stocks + amount);
+        } else {
+            p.stockAvgCost = price;
+        }
+        p.stocks += amount;
+        p.money -= cost;
+        p.stats.stockTrades++;
+        mono.stockMarket = Math.min(200, mono.stockMarket + amount * 0.2);
+        monoLog(`📈 买入 ${amount} 股 @ 💰${price}，花费 💰${cost}`, 'success');
+        closeStockModal();
+    }
+
+    function sellStock() {
+        const p = mono.players[0];
+        if (p.stocks <= 0) return;
+        const price = Math.floor(mono.stockMarket);
+        const amount = p.stocks;
+        const revenue = price * amount;
+        const cost = Math.floor(p.stockAvgCost * amount);
+        const profit = revenue - cost;
+        p.money += revenue;
+        p.stats.stockProfit += profit;
+        p.stats.stockTrades++;
+        p.stocks = 0;
+        p.stockAvgCost = 0;
+        mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.3);
+        monoLog(`📉 卖出 ${amount} 股 @ 💰${price}，收入 💰${revenue}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(profit)}`, profit >= 0 ? 'success' : 'error');
+        closeStockModal();
+    }
+
+    function closeStockModal() {
+        closeModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    function aiStockDecision(p) {
+        const price = Math.floor(mono.stockMarket);
+        const personality = AI_PERSONALITIES[p.personality];
+        // AI buys when index is low and has cash
+        if (mono.stockMarket < 90 && p.money > price * 5 && Math.random() < personality.buyChance * 0.5) {
+            const amount = Math.floor(Math.min(p.money * 0.2, p.money) / price);
+            if (amount > 0) {
+                const cost = price * amount;
+                if (p.stocks > 0) {
+                    p.stockAvgCost = ((p.stockAvgCost * p.stocks) + cost) / (p.stocks + amount);
+                } else {
+                    p.stockAvgCost = price;
+                }
+                p.stocks += amount;
+                p.money -= cost;
+                p.stats.stockTrades++;
+                mono.stockMarket = Math.min(200, mono.stockMarket + amount * 0.2);
+                monoLog(`${p.ic} 📈 买入 ${amount} 股`, 'info');
+            }
+        }
+        // AI sells when index is high and holds stocks
+        else if (mono.stockMarket > 130 && p.stocks > 0 && Math.random() < 0.6) {
+            const amount = p.stocks;
+            const revenue = price * amount;
+            const profit = revenue - Math.floor(p.stockAvgCost * amount);
+            p.money += revenue;
+            p.stats.stockProfit += profit;
+            p.stats.stockTrades++;
+            p.stocks = 0;
+            p.stockAvgCost = 0;
+            mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.3);
+            monoLog(`${p.ic} 📉 卖出 ${amount} 股`, 'info');
+        }
+        // Dividend for AI
+        if (p.stocks > 0 && mono.stockMarket > 120) {
+            const dividend = Math.floor(p.stocks * mono.stockMarket * 0.05);
+            p.money += dividend;
+            p.stats.stockProfit += dividend;
         }
     }
 
@@ -1590,6 +1939,8 @@
         if (p.money >= finalBid) {
             mono.properties[tileIdx].owner = 0;
             p.money -= finalBid;
+            p.stats.propertiesBought++;
+            p.stats.purchaseSpent += finalBid;
             monoLog(`🐰 拍得 ${mono.tiles[tileIdx].nm}，花费 ${finalBid}💰`, 'success');
         } else {
             monoLog('资金不足，放弃竞拍', 'error');
@@ -1639,6 +1990,8 @@
             if (p.money >= cost && Math.random() < personality.upgradeChance) {
                 p.money -= cost;
                 mono.properties[tileIdx].level++;
+                p.stats.upgradesDone++;
+                p.stats.upgradeSpent += cost;
                 monoLog(`${p.ic} 升级 ${tile.nm} 到 Lv.${mono.properties[tileIdx].level}`, 'success');
             }
             return false;
@@ -1650,7 +2003,9 @@
         if (p.money < cost) { monoLog('资金不足！', 'error'); return; }
         p.money -= cost;
         mono.properties[tileIdx].level++;
-        monoLog(`🐰 升级 ${mono.tiles[tileIdx].nm} 到 Lv.${mono.properties[tileIdx].level}`, 'success');
+        p.stats.upgradesDone++;
+        p.stats.upgradeSpent += cost;
+        monoLog(`🐰 升级 ${mono.tiles[tileIdx].nm} 到 Lv.${mono.properties[tileIdx].level} (-💰${cost})`, 'success');
         closeModal();
         saveMonopoly();
         renderMonopoly();
@@ -1784,17 +2139,35 @@
                 shield: false, lucky: false, speed: 0, doubleDice: false,
                 jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
                 loans: [], credit: 100,
+                stocks: 0, stockAvgCost: 0,
+                stats: {
+                    propertiesBought: 0, purchaseSpent: 0,
+                    upgradesDone: 0, upgradeSpent: 0,
+                    rentIncomeTotal: 0, rentPaidTotal: 0,
+                    rentLog: [], stockProfit: 0, stockTrades: 0,
+                },
             });
             monoLog(`🎉 新玩家 ${newPlayerData.ic} ${newPlayerData.nm} 加入了游戏！`, 'success');
         }
 
-        // Property values change (increase 10%)
-        mono.tiles.forEach(t => {
-            if (t.type === 'property' && t.region <= mono.unlockedEras) {
-                t.price = Math.floor(t.price * 1.1);
-                t.rent = Math.floor(t.rent * 1.1);
+        // Only inflate UNOWNED properties in the newly unlocked region (not existing owned ones)
+        // This preserves existing rent income for owned properties
+        const newRegionStart = mono.tiles.findIndex(t => t.region === mono.unlockedEras);
+        if (newRegionStart >= 0) {
+            for (let i = newRegionStart; i < mono.tiles.length && mono.tiles[i].region === mono.unlockedEras; i++) {
+                const t = mono.tiles[i];
+                const prop = mono.properties[i];
+                if (t.type === 'property' && (!prop || prop.owner === -1)) {
+                    // Only unowned properties get a slight inflation for challenge
+                    t.price = Math.floor(t.price * 1.05);
+                    t.rent = Math.floor(t.rent * 1.05);
+                }
             }
-        });
+        }
+
+        // Stock market gets a boost when new era opens
+        mono.stockMarket = Math.min(200, mono.stockMarket + 15);
+        monoLog(`📊 股市受新时代刺激，指数升至 ${mono.stockMarket.toFixed(0)}`, 'info');
 
         // God mode bonus
         if (godModeActive) {
@@ -2993,7 +3366,18 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.2.0</strong> — 卡牌效果修复 & 事件提示优化</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.3.0</strong> — 响应式缩放 & 统计系统 & 股市贷款 & 时代进阶</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📱 自适应缩放：clamp() 流式字体，多分辨率下字体不再过小</li>
+                <li>🎯 点击玩家头像可定位到所在格子并高亮</li>
+                <li>🏠 房产统计卡片：购买次数、升级次数、总花费明细</li>
+                <li>💰 租金统计卡片：总收入记录、路过玩家详情日志</li>
+                <li>📈 股市玩法：兔兔指数买卖、浮盈浮亏实时计算、AI交易</li>
+                <li>🏦 贷款增强：部分还款、信用评分、多笔贷款管理</li>
+                <li>🕰️ 时代进阶：仅新区域未拥有房产小幅通胀，不影响已有租金</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.2.0</strong> — 卡牌效果修复 & 事件提示优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🃏 修复卡牌名称显示 undefined（card.nm → card.n）</li>
                 <li>🃏 使用卡牌时弹出效果提示弹窗</li>
