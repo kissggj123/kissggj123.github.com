@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v7.4.0 -->
+    <!-- VERSION: v7.5.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.4.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.4.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.4.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.4.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.4.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.4.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.5.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.5.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.5.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.5.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.5.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.5.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -540,7 +540,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.4.0</div>
+                <div class="subtitle">v7.5.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -733,7 +733,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.4.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.5.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -786,8 +786,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.4.0',
-        SAVE_KEY: 'bunny_cc_v7.4.0',
+        VERSION: 'v7.5.0',
+        SAVE_KEY: 'bunny_cc_v7.5.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -913,37 +913,52 @@
 
     // 15+ random events
     const MONO_EVENTS = [
-        {nm:'金币雨', ic:'🌧️', desc:'所有玩家获得 1000💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=1000})}},
-        {nm:'地震', ic:'🌋', desc:'当前玩家失去 1000💰', eff:(mono,p)=>{p.money-=1000}},
-        {nm:'牛市', ic:'📈', desc:'当前玩家资金 +10%', eff:(mono,p)=>{p.money+=Math.floor(p.money*0.1)}},
-        {nm:'熊市', ic:'📉', desc:'当前玩家资金 -10%', eff:(mono,p)=>{p.money-=Math.floor(p.money*0.1)}},
-        {nm:'节日庆典', ic:'🎉', desc:'所有玩家获得 500💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=500})}},
-        {nm:'小偷出没', ic:'🦹', desc:'当前玩家失去 800💰', eff:(mono,p)=>{p.money-=800}},
-        {nm:'宝藏发现', ic:'🗺️', desc:'当前玩家获得 3000💰', eff:(mono,p)=>{p.money+=3000}},
-        {nm:'税务稽查', ic:'🧾', desc:'所有玩家缴纳 600💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=600})}},
-        {nm:'彩票中奖', ic:'🎰', desc:'当前玩家获得 5000💰', eff:(mono,p)=>{p.money+=5000}},
-        {nm:'自然灾害', ic:'🌪️', desc:'当前玩家随机地产降级', eff:(mono,p)=>{
-            const pi=mono.players.indexOf(p);
-            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level>0);
-            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;}
-        }},
-        {nm:'招商引资', ic:'💼', desc:'当前玩家获得 1500💰', eff:(mono,p)=>{p.money+=1500}},
-        {nm:'人口迁移', ic:'🚶', desc:'当前玩家获得 800💰', eff:(mono,p)=>{p.money+=800}},
-        {nm:'物价波动', ic:'📊', desc:'当前玩家资金随机波动±15%', eff:(mono,p)=>{p.money=Math.max(0,Math.floor(p.money*(1+(Math.random()-0.5)*0.3)))}},
-        {nm:'科技突破', ic:'🔬', desc:'当前玩家随机地产升级', eff:(mono,p)=>{
+        // Common (weight 3) — minor gold effects
+        {nm:'金币雨', ic:'🌧️', desc:'所有玩家获得 1000💰', rarity:'common', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=1000})}},
+        {nm:'地震', ic:'🌋', desc:'当前玩家失去 1000💰', rarity:'common', eff:(mono,p)=>{p.money-=1000}},
+        {nm:'节日庆典', ic:'🎉', desc:'所有玩家获得 500💰', rarity:'common', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=500})}},
+        {nm:'小偷出没', ic:'🦹', desc:'当前玩家失去 800💰', rarity:'common', eff:(mono,p)=>{p.money-=800}},
+        {nm:'招商引资', ic:'💼', desc:'当前玩家获得 1500💰', rarity:'common', eff:(mono,p)=>{p.money+=1500}},
+        {nm:'人口迁移', ic:'🚶', desc:'当前玩家获得 800💰', rarity:'common', eff:(mono,p)=>{p.money+=800}},
+        {nm:'流星雨', ic:'☄️', desc:'所有玩家失去 300💰', rarity:'common', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=300})}},
+        {nm:'投资回报', ic:'💼', desc:'当前玩家每处房产收入 200💰', rarity:'common', eff:(mono,p)=>{const pi=mono.players.indexOf(p);let cnt=0;mono.tiles.forEach((t,i)=>{if(t.type==='property'&&mono.properties[t.id]?.owner===pi){p.money+=200;cnt++;}});if(cnt===0)p.money+=200;}},
+        {nm:'快递到达', ic:'📦', desc:'当前玩家获得载具加成或金币', rarity:'common', eff:(mono,p)=>{if(Math.random()<0.3){p.speed=2;}else{p.money+=1200;}}},
+        // Uncommon (weight 2) — moderate effects
+        {nm:'牛市', ic:'📈', desc:'当前玩家资金 +10%', rarity:'uncommon', eff:(mono,p)=>{p.money+=Math.floor(p.money*0.1)}},
+        {nm:'熊市', ic:'📉', desc:'当前玩家资金 -10%', rarity:'uncommon', eff:(mono,p)=>{p.money-=Math.floor(p.money*0.1)}},
+        {nm:'税务稽查', ic:'🧾', desc:'所有玩家缴纳 600💰', rarity:'uncommon', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=600})}},
+        {nm:'物价波动', ic:'📊', desc:'当前玩家资金随机波动±15%', rarity:'uncommon', eff:(mono,p)=>{p.money=Math.max(0,Math.floor(p.money*(1+(Math.random()-0.5)*0.3)))}},
+        {nm:'科技突破', ic:'🔬', desc:'当前玩家随机地产升级', rarity:'uncommon', eff:(mono,p)=>{
             const pi=mono.players.indexOf(p);
             const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<5);
             if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level++;}
         }},
-        {nm:'神秘商人', ic:'🧙', desc:'当前玩家获得一张随机卡牌', eff:(mono,p)=>{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}},
-        {nm:'流星雨', ic:'☄️', desc:'所有玩家失去 300💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=300})}},
-        {nm:'宝藏猎人', ic:'🗝️', desc:'当前玩家获得一张稀有卡牌', eff:(mono,p)=>{const rare=CARD_POOL.filter(c=>c.rarity==='rare'||c.rarity==='legendary');p.cards.push({...rare[Math.floor(Math.random()*rare.length)]})}},
-        {nm:'幸运转盘', ic:'🎡', desc:'当前玩家随机获得金钱或卡牌', eff:(mono,p)=>{if(Math.random()<0.5){const amt=500+Math.floor(Math.random()*3000);p.money+=amt;}else{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}}},
-        {nm:'黑市拍卖', ic:'🏪', desc:'当前玩家随机获得一张诅咒卡', eff:(mono,p)=>{const curses=CARD_POOL.filter(c=>c.isCurse);if(curses.length)p.cards.push({...curses[Math.floor(Math.random()*curses.length)]})}},
-        {nm:'投资回报', ic:'💼', desc:'当前玩家每处房产收入 200💰', eff:(mono,p)=>{const pi=mono.players.indexOf(p);let cnt=0;mono.tiles.forEach((t,i)=>{if(t.type==='property'&&mono.properties[t.id]?.owner===pi){p.money+=200;cnt++;}});if(cnt===0)p.money+=200;}},
-        {nm:'快递到达', ic:'📦', desc:'当前玩家获得载具加成或金币', eff:(mono,p)=>{if(Math.random()<0.3){p.speed=2;}else{p.money+=1200;}}},
-        {nm:'节日礼花', ic:'🎆', desc:'所有玩家获得随机卡牌', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})})}},
+        {nm:'神秘商人', ic:'🧙', desc:'当前玩家获得一张随机卡牌', rarity:'uncommon', eff:(mono,p)=>{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}},
+        {nm:'节日礼花', ic:'🎆', desc:'所有玩家获得随机卡牌', rarity:'uncommon', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})})}},
+        // Rare (weight 1) — big rewards or effects
+        {nm:'宝藏发现', ic:'🗺️', desc:'当前玩家获得 3000💰', rarity:'rare', eff:(mono,p)=>{p.money+=3000}},
+        {nm:'自然灾害', ic:'🌪️', desc:'当前玩家随机地产降级', rarity:'rare', eff:(mono,p)=>{
+            const pi=mono.players.indexOf(p);
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level>0);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;}
+        }},
+        {nm:'幸运转盘', ic:'🎡', desc:'当前玩家随机获得金钱或卡牌', rarity:'rare', eff:(mono,p)=>{if(Math.random()<0.5){const amt=500+Math.floor(Math.random()*3000);p.money+=amt;}else{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}}},
+        {nm:'黑市拍卖', ic:'🏪', desc:'当前玩家随机获得一张诅咒卡', rarity:'rare', eff:(mono,p)=>{const curses=CARD_POOL.filter(c=>c.isCurse);if(curses.length)p.cards.push({...curses[Math.floor(Math.random()*curses.length)]})}},
+        // Legendary (weight 0.3) — game-changing
+        {nm:'彩票中奖', ic:'🎰', desc:'当前玩家获得 5000💰', rarity:'legendary', eff:(mono,p)=>{p.money+=5000}},
+        {nm:'宝藏猎人', ic:'🗝️', desc:'当前玩家获得一张稀有卡牌', rarity:'legendary', eff:(mono,p)=>{const rare=CARD_POOL.filter(c=>c.rarity==='rare'||c.rarity==='legendary');p.cards.push({...rare[Math.floor(Math.random()*rare.length)]})}},
     ];
+    const EVENT_RARITY_WEIGHTS = { common: 3, uncommon: 2, rare: 1, legendary: 0.3 };
+
+    /* Weighted random event selection */
+    function pickRandomEvent() {
+        const weighted = [];
+        for (const ev of MONO_EVENTS) {
+            const w = EVENT_RARITY_WEIGHTS[ev.rarity] || 1;
+            for (let i = 0; i < w * 10; i++) weighted.push(ev);
+        }
+        return weighted[Math.floor(Math.random() * weighted.length)];
+    }
 
     const MONO_PLAYERS_INIT = [
         {ic:'🐰', nm:'兔可可', color:'var(--accent)', isHuman:true},
@@ -1033,7 +1048,7 @@
     /* ==================== Save Migration ==================== */
     function migrateSaveKey() {
         // Migrate card inventory from previous version keys
-        const prevKeys = ['bunny_cc_v7.3.0', 'bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
+        const prevKeys = ['bunny_cc_v7.4.0', 'bunny_cc_v7.3.0', 'bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
         for (const k of prevKeys) {
             try {
                 const oldData = localStorage.getItem(k);
@@ -1075,11 +1090,13 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.4.0 已启动', 'info');
+        logEvent('兔可可王国 v7.5.0 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
         if (mono.started && mono.currentPlayer !== 0 && !mono.players[mono.currentPlayer]?.bankrupt) {
+            // If trade was pending, skip trade and continue AI turn
+            if (mono.pendingTrade) { mono.pendingTrade = false; }
             const aliveCount = mono.players.filter(p => !p.bankrupt).length;
             if (aliveCount > 1) {
                 _startWatchdog(); // Start watchdog for resumed AI turn
@@ -1153,6 +1170,7 @@
         if (mono.unlockedEras === undefined) mono.unlockedEras = 0;
         if (mono.voluntaryVisit === undefined) mono.voluntaryVisit = false;
         if (mono.pendingAction === undefined) mono.pendingAction = null;
+        if (mono.pendingTrade === undefined) mono.pendingTrade = false;
         if (mono.autoSaveTurn === undefined) mono.autoSaveTurn = 0;
         // Initialize multi-stock system (10 stocks)
         if (!mono.stockPrices || mono.stockPrices.length < STOCK_TYPES.length) {
@@ -1896,10 +1914,11 @@
                 break;
             }
             case 'event': {
-                const ev = MONO_EVENTS[Math.floor(Math.random()*MONO_EVENTS.length)];
+                const ev = pickRandomEvent();
                 ev.eff(mono, p);
                 checkBankruptcy(p);
-                monoLog(`🎲 随机事件: ${ev.ic} ${ev.nm} — ${ev.desc}`, 'info');
+                const rarityTag = ev.rarity === 'legendary' ? '✨传说' : ev.rarity === 'rare' ? '💎稀有' : ev.rarity === 'uncommon' ? '🔵不凡' : '';
+                monoLog(`🎲 随机事件: ${rarityTag} ${ev.ic} ${ev.nm} — ${ev.desc}`, 'info');
                 if (playerIdx === 0) {
                     showEventModal(ev, p);
                     return;
@@ -1919,15 +1938,25 @@
                 }
                 break;
             case 'stock': {
-                // Stock market fluctuation on landing
-                const fluct = (Math.random() - 0.45) * 20;
-                mono.stockMarket = Math.max(50, Math.min(200, mono.stockMarket + fluct));
-                // Dividend for stock holders when index is high
-                if (p.stocks > 0 && mono.stockMarket > 120) {
-                    const dividend = Math.floor(p.stocks * mono.stockMarket * 0.05);
-                    p.money += dividend;
-                    p.stats.stockProfit += dividend;
-                    monoLog(`${p.ic} 📈 分红收益 +${dividend}💰 (持有${p.stocks}股)`, 'success');
+                // Refresh stock prices when landing on stock tile
+                refreshStockPrices();
+                // Dividend for long-position holders when index is high
+                if (p.stockHoldings && mono.stockMarket > 120) {
+                    let totalDividend = 0;
+                    let totalShares = 0;
+                    for (let si = 0; si < STOCK_TYPES.length; si++) {
+                        const h = p.stockHoldings[si];
+                        if (h.shares > 0 && !h.isShort) {
+                            const div = Math.floor(h.shares * mono.stockPrices[si] * 0.03 * (mono.stockMarket / 100));
+                            totalDividend += div;
+                            totalShares += h.shares;
+                        }
+                    }
+                    if (totalDividend > 0) {
+                        p.money += totalDividend;
+                        p.stats.stockProfit += totalDividend;
+                        monoLog(`${p.ic} 📈 分红收益 +${totalDividend}💰 (持有${totalShares}股)`, 'success');
+                    }
                 }
                 if (playerIdx === 0) {
                     showStockModal();
@@ -3840,34 +3869,48 @@
         const targetHtml = opponents.map(t => {
             const idx = mono.players.indexOf(t);
             const offerCards = t.cards.length > 0 ? t.cards.map(c => `${c.ic}${c.n}`).join(', ') : '无手牌';
+            const vehicleStr = t.vehicle ? `${t.vehicle.ic}${t.vehicle.nm}` : '无载具';
             return `<div style="padding:.4rem;background:var(--card2);border-radius:6px;margin-top:.3rem;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <span>${t.ic} ${t.nm} (💰${t.money})</span>
                     <button class="btn btn-primary btn-sm" onclick="proposeTrade(${idx})">发起交易</button>
                 </div>
-                <div style="font-size:.65rem;color:var(--text2);">手牌：${offerCards}</div>
+                <div style="font-size:.65rem;color:var(--text2);">手牌：${offerCards} | 载具：${vehicleStr}</div>
             </div>`;
         }).join('');
         showModal(`<div class="modal-title">🤝 选择交易对象</div>
-            <div style="font-size:.7rem;color:var(--text2);margin-bottom:.3rem;">你可以用卡牌/金币交换对方的卡牌/金币</div>
+            <div style="font-size:.7rem;color:var(--text2);margin-bottom:.3rem;">用卡牌/载具/金币交换对方的卡牌/载具/金币，支持多轮还价</div>
             ${targetHtml}
             <button class="btn btn-secondary" style="width:100%;margin-top:.5rem;" onclick="showMarketModal()">返回</button>`);
     }
+
+    /* Trade negotiation state */
+    let tradeNegotiation = null;
 
     function proposeTrade(targetIdx) {
         const p = mono.players[0];
         const target = mono.players[targetIdx];
         if (!target || target.bankrupt) return;
-        const myCards = p.cards.length > 0 ? p.cards.map((c, i) => `<option value="card_${i}">${c.ic} ${c.n}</option>`).join('') : '';
-        const targetCards = target.cards.length > 0 ? target.cards.map((c, i) => `<option value="card_${i}">${c.ic} ${c.n}</option>`).join('') : '';
+        const myCards = p.cards.length > 0 ? p.cards.map((c, i) => `<option value="card_${i}">${c.ic} ${c.n} (${c.rarity})</option>`).join('') : '';
+        const targetCards = target.cards.length > 0 ? target.cards.map((c, i) => `<option value="card_${i}">${c.ic} ${c.n} (${c.rarity})</option>`).join('') : '';
+        const myVehicleOpt = p.vehicle ? `<option value="vehicle">🚗 ${p.vehicle.ic} ${p.vehicle.nm}</option>` : '';
+        const targetVehicleOpt = target.vehicle ? `<option value="vehicle">🚗 ${target.vehicle.ic} ${target.vehicle.nm}</option>` : '';
+
+        // Reset negotiation state
+        tradeNegotiation = { targetIdx, round: 0, maxRounds: 3 };
 
         showModal(`<div class="modal-title">🤝 与 ${target.ic} ${target.nm} 交易</div>
+            <div style="font-size:.65rem;color:var(--text2);margin-bottom:.3rem;">💡 提示：给出价值越高，AI越可能接受。AI也可能还价。</div>
             <div style="display:flex;gap:.5rem;margin-top:.5rem;">
                 <div style="flex:1;padding:.5rem;background:var(--card2);border-radius:8px;">
                     <div style="font-size:.75rem;font-weight:700;color:var(--accent);">你给出</div>
                     <select id="give-card" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
                         <option value="none">不选卡牌</option>
                         ${myCards}
+                    </select>
+                    <select id="give-vehicle" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
+                        <option value="none">不选载具</option>
+                        ${myVehicleOpt}
                     </select>
                     <input type="number" id="give-money" placeholder="金币" min="0" max="${p.money}" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
                 </div>
@@ -3877,69 +3920,357 @@
                         <option value="none">不选卡牌</option>
                         ${targetCards}
                     </select>
+                    <select id="want-vehicle" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
+                        <option value="none">不选载具</option>
+                        ${targetVehicleOpt}
+                    </select>
                     <input type="number" id="want-money" placeholder="金币" min="0" max="${target.money}" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
                 </div>
             </div>
-            <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="executeTrade(${targetIdx})">提交提案</button>
+            <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="submitTradeOffer()">提交提案</button>
             <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showMarketModal()">返回</button>`);
     }
 
-    function executeTrade(targetIdx) {
+    /* Calculate trade value of an item */
+    function getTradeValue(player, cardVal, vehicleVal, money) {
+        let val = money || 0;
+        if (cardVal && cardVal !== 'none') {
+            const cardIdx = parseInt(cardVal.split('_')[1]);
+            val += CARD_PRICE_BASE[player.cards[cardIdx].rarity] || 500;
+        }
+        if (vehicleVal === 'vehicle' && player.vehicle) {
+            const vp = VEHICLE_POOL.find(v => v.id === player.vehicle.id);
+            val += vp ? vp.price : 0;
+        }
+        return val;
+    }
+
+    /* Execute a trade with given parameters */
+    function doExecuteTrade(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney) {
         const p = mono.players[0];
         const target = mono.players[targetIdx];
-        if (!target || target.bankrupt) return;
 
-        const giveCardVal = document.getElementById('give-card')?.value || 'none';
-        const giveMoney = parseInt(document.getElementById('give-money')?.value) || 0;
-        const wantCardVal = document.getElementById('want-card')?.value || 'none';
-        const wantMoney = parseInt(document.getElementById('want-money')?.value) || 0;
-
-        if (giveCardVal === 'none' && giveMoney === 0) { monoLog('请提供交易内容', 'error'); return; }
-        if (wantCardVal === 'none' && wantMoney === 0) { monoLog('请选择想要的回报', 'error'); return; }
-        if (giveMoney > p.money) { monoLog('资金不足', 'error'); return; }
-
-        // Calculate trade value for AI decision
-        let giveValue = giveMoney;
-        let wantValue = wantMoney;
+        // Transfer cards
         if (giveCardVal !== 'none') {
             const cardIdx = parseInt(giveCardVal.split('_')[1]);
-            giveValue += CARD_PRICE_BASE[p.cards[cardIdx].rarity] || 500;
+            const card = p.cards[cardIdx];
+            p.cards.splice(cardIdx, 1);
+            if (target.cards.length < 8) target.cards.push({...card});
         }
         if (wantCardVal !== 'none') {
             const cardIdx = parseInt(wantCardVal.split('_')[1]);
-            wantValue += CARD_PRICE_BASE[target.cards[cardIdx].rarity] || 500;
+            const card = target.cards[cardIdx];
+            target.cards.splice(cardIdx, 1);
+            if (p.cards.length < 8) p.cards.push({...card});
         }
+        // Transfer vehicles
+        if (giveVehicleVal === 'vehicle' && p.vehicle) {
+            const tmp = p.vehicle;
+            p.vehicle = target.vehicle || null;
+            target.vehicle = tmp;
+        } else if (wantVehicleVal === 'vehicle' && target.vehicle) {
+            const tmp = target.vehicle;
+            target.vehicle = p.vehicle || null;
+            p.vehicle = tmp;
+        }
+        // Transfer money
+        if (giveMoney > 0) { p.money -= giveMoney; target.money += giveMoney; }
+        if (wantMoney > 0) { target.money -= wantMoney; p.money += wantMoney; }
+    }
 
-        // AI acceptance logic: more likely if giveValue > wantValue
+    function submitTradeOffer() {
+        const p = mono.players[0];
+        const targetIdx = tradeNegotiation.targetIdx;
+        const target = mono.players[targetIdx];
+        if (!target || target.bankrupt) { showMarketModal(); return; }
+
+        const giveCardVal = document.getElementById('give-card')?.value || 'none';
+        const giveVehicleVal = document.getElementById('give-vehicle')?.value || 'none';
+        const giveMoney = parseInt(document.getElementById('give-money')?.value) || 0;
+        const wantCardVal = document.getElementById('want-card')?.value || 'none';
+        const wantVehicleVal = document.getElementById('want-vehicle')?.value || 'none';
+        const wantMoney = parseInt(document.getElementById('want-money')?.value) || 0;
+
+        if (giveCardVal === 'none' && giveVehicleVal === 'none' && giveMoney === 0) {
+            monoLog('请提供交易内容', 'error'); return;
+        }
+        if (wantCardVal === 'none' && wantVehicleVal === 'none' && wantMoney === 0) {
+            monoLog('请选择想要的回报', 'error'); return;
+        }
+        if (giveMoney > p.money) { monoLog('资金不足', 'error'); return; }
+        if (wantMoney > target.money) { monoLog('对方资金不足', 'error'); return; }
+
+        const giveValue = getTradeValue(p, giveCardVal, giveVehicleVal, giveMoney);
+        const wantValue = getTradeValue(target, wantCardVal, wantVehicleVal, wantMoney);
+
+        tradeNegotiation.round++;
         const personality = AI_PERSONALITIES[target.personality];
+
+        // AI evaluates the offer
         const ratio = wantValue / Math.max(1, giveValue);
-        const acceptChance = Math.max(0.1, 1 - ratio) * (personality === 'aggressive' ? 1.2 : personality === 'conservative' ? 0.8 : 1);
+        // Personality affects acceptance threshold
+        const threshold = personality === 'aggressive' ? 0.7 : personality === 'conservative' ? 0.9 : 0.8;
+        const acceptChance = Math.max(0.05, 1 - ratio) * (personality === 'aggressive' ? 1.2 : personality === 'conservative' ? 0.8 : 1);
 
         if (Math.random() < acceptChance && target.money >= wantMoney) {
-            // Execute trade
-            if (giveCardVal !== 'none') {
-                const cardIdx = parseInt(giveCardVal.split('_')[1]);
-                const card = p.cards[cardIdx];
-                p.cards.splice(cardIdx, 1);
-                if (target.cards.length < 8) target.cards.push({...card});
-            }
-            if (giveMoney > 0) { p.money -= giveMoney; target.money += giveMoney; }
-            if (wantCardVal !== 'none') {
-                const cardIdx = parseInt(wantCardVal.split('_')[1]);
-                const card = target.cards[cardIdx];
-                target.cards.splice(cardIdx, 1);
-                if (p.cards.length < 8) p.cards.push({...card});
-            }
-            if (wantMoney > 0) { target.money -= wantMoney; p.money += wantMoney; }
-            monoLog(`🤝 ${target.ic} ${target.nm} 接受了交易！`, 'success');
+            // AI accepts
+            doExecuteTrade(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney);
+            monoLog(`🤝 ${target.ic} ${target.nm} 接受了交易！(第${tradeNegotiation.round}轮)`, 'success');
             showToast(`✓ 交易成功`, 'success');
+            tradeNegotiation = null;
+            showMarketModal();
+            saveMonopoly();
+        } else if (tradeNegotiation.round < tradeNegotiation.maxRounds) {
+            // AI generates counter-offer
+            showCounterOffer(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue);
         } else {
-            monoLog(`🤝 ${target.ic} ${target.nm} 拒绝了交易`, 'info');
-            showToast(`${target.nm} 拒绝了交易`, 'info');
+            // Max rounds reached, AI walks away
+            monoLog(`🤝 ${target.ic} ${target.nm} 谈判破裂（已达${tradeNegotiation.maxRounds}轮上限）`, 'error');
+            showToast(`${target.nm} 谈判破裂`, 'error');
+            tradeNegotiation = null;
+            showMarketModal();
+            saveMonopoly();
         }
+    }
+
+    function showCounterOffer(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue) {
+        const p = mono.players[0];
+        const target = mono.players[targetIdx];
+        const personality = AI_PERSONALITIES[target.personality];
+
+        // AI generates counter: ask for more money or different items
+        let counterType = '';
+        let counterDesc = '';
+        let adjustedGiveMoney = giveMoney;
+        let adjustedWantMoney = wantMoney;
+
+        // Decide counter strategy based on value gap
+        const gap = wantValue - giveValue;
+        if (gap > 0) {
+            // AI is getting less than giving — ask for more money from player
+            const extra = Math.floor(gap * (personality === 'aggressive' ? 1.1 : 0.9));
+            adjustedGiveMoney = Math.min(p.money, giveMoney + extra);
+            counterType = 'request_more';
+            counterDesc = `需要你额外支付 💰${extra} 金币`;
+        } else {
+            // AI is getting more than giving — offer less money back
+            const reduce = Math.floor(Math.abs(gap) * 0.5);
+            adjustedWantMoney = Math.max(0, wantMoney - reduce);
+            counterType = 'offer_less';
+            counterDesc = `只愿意支付 💰${adjustedWantMoney} 金币（减少${reduce}）`;
+        }
+
+        // Build counter-offer summary
+        let giveSummary = [];
+        if (giveCardVal !== 'none') giveSummary.push(`${p.cards[parseInt(giveCardVal.split('_')[1])]?.ic}卡牌`);
+        if (giveVehicleVal === 'vehicle') giveSummary.push('载具');
+        if (adjustedGiveMoney > 0) giveSummary.push(`💰${adjustedGiveMoney}`);
+        let wantSummary = [];
+        if (wantCardVal !== 'none') wantSummary.push(`${target.cards[parseInt(wantCardVal.split('_')[1])]?.ic}卡牌`);
+        if (wantVehicleVal === 'vehicle') wantSummary.push('载具');
+        if (adjustedWantMoney > 0) wantSummary.push(`💰${adjustedWantMoney}`);
+
+        showModal(`<div class="modal-title">🤝 ${target.ic} ${target.nm} 的还价</div>
+            <div style="text-align:center;padding:.5rem;background:var(--card2);border-radius:8px;margin-bottom:.5rem;">
+                <div style="font-size:.8rem;color:var(--text2);">${target.ic} 摇了摇头...</div>
+                <div style="font-size:.75rem;margin-top:.3rem;color:var(--warn);">「${counterDesc}」</div>
+                <div style="font-size:.6rem;color:var(--text2);margin-top:.2rem;">谈判第 ${tradeNegotiation.round}/${tradeNegotiation.maxRounds} 轮</div>
+            </div>
+            <div style="display:flex;gap:.5rem;margin-top:.3rem;">
+                <div style="flex:1;padding:.4rem;background:var(--card2);border-radius:6px;text-align:center;">
+                    <div style="font-size:.7rem;font-weight:700;color:var(--accent);">你需给出</div>
+                    <div style="font-size:.75rem;margin-top:.2rem;">${giveSummary.join(' + ') || '无'}</div>
+                </div>
+                <div style="flex:1;padding:.4rem;background:var(--card2);border-radius:6px;text-align:center;">
+                    <div style="font-size:.7rem;font-weight:700;color:var(--accent);">你将获得</div>
+                    <div style="font-size:.75rem;margin-top:.2rem;">${wantSummary.join(' + ') || '无'}</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:.3rem;margin-top:.5rem;">
+                <button class="btn btn-primary" style="flex:1;font-size:.75rem;" onclick="acceptCounterOffer('${giveCardVal}','${giveVehicleVal}',${adjustedGiveMoney},'${wantCardVal}','${wantVehicleVal}',${adjustedWantMoney})">✓ 接受还价</button>
+                <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="rejectCounterOffer()">✗ 拒绝还价</button>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;font-size:.7rem;" onclick="showMarketModal()">放弃交易</button>`);
+    }
+
+    window.acceptCounterOffer = function(giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney) {
+        const targetIdx = tradeNegotiation.targetIdx;
+        const target = mono.players[targetIdx];
+        const p = mono.players[0];
+
+        if (giveMoney > p.money) { monoLog('资金不足，无法接受还价', 'error'); return; }
+        if (wantMoney > target.money) { monoLog('对方资金不足', 'error'); return; }
+
+        doExecuteTrade(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney);
+        monoLog(`🤝 你接受了 ${target.nm} 的还价，交易达成！`, 'success');
+        showToast(`✓ 交易成功`, 'success');
+        tradeNegotiation = null;
         showMarketModal();
         saveMonopoly();
+    };
+
+    window.rejectCounterOffer = function() {
+        const targetIdx = tradeNegotiation.targetIdx;
+        const target = mono.players[targetIdx];
+        if (tradeNegotiation.round < tradeNegotiation.maxRounds) {
+            // Player can modify and resubmit
+            monoLog(`🤝 你拒绝了还价，可以修改提案重新提交`, 'info');
+            proposeTrade(targetIdx);
+        } else {
+            monoLog(`🤝 谈判破裂（已达${tradeNegotiation.maxRounds}轮上限）`, 'error');
+            tradeNegotiation = null;
+            showMarketModal();
+        }
+    };
+
+    /* AI-initiated trade proposal to player */
+    function aiInitiateTrade(aiIdx) {
+        const ai = mono.players[aiIdx];
+        const p = mono.players[0];
+        if (!ai || ai.bankrupt || ai.cards.length === 0) return;
+
+        // AI picks a card it wants to offer and what it wants in return
+        const offerCardIdx = Math.floor(Math.random() * ai.cards.length);
+        const offerCard = ai.cards[offerCardIdx];
+        const offerCardVal = CARD_PRICE_BASE[offerCard.rarity] || 500;
+
+        // AI wants either money or one of player's cards
+        const wantMoney = Math.floor(offerCardVal * (0.7 + Math.random() * 0.3));
+        let wantCardIdx = -1;
+        if (p.cards.length > 0 && Math.random() < 0.4) {
+            // Pick a player card of similar or lower value
+            const candidates = p.cards.map((c, i) => ({c, i})).filter(({c}) => (CARD_PRICE_BASE[c.rarity] || 500) <= offerCardVal * 1.2);
+            if (candidates.length > 0) {
+                const pick = candidates[Math.floor(Math.random() * candidates.length)];
+                wantCardIdx = pick.i;
+            }
+        }
+
+        const wantCardLabel = wantCardIdx >= 0 ? `${p.cards[wantCardIdx].ic} ${p.cards[wantCardIdx].n}` : `💰${wantMoney}`;
+
+        showModal(`<div class="modal-title">🤝 ${ai.ic} ${ai.nm} 向你发起交易</div>
+            <div style="text-align:center;padding:.5rem;background:var(--card2);border-radius:8px;margin-bottom:.5rem;">
+                <div style="font-size:.8rem;">${ai.ic} 想用 <span style="color:var(--accent);font-weight:700;">${offerCard.ic} ${offerCard.n} (${offerCard.rarity})</span></div>
+                <div style="font-size:.75rem;margin-top:.2rem;">交换你的 <span style="color:var(--accent);font-weight:700;">${wantCardLabel}</span></div>
+            </div>
+            <div style="display:flex;gap:.3rem;margin-top:.5rem;">
+                <button class="btn btn-primary" style="flex:1;" onclick="acceptAiTrade(${aiIdx},${offerCardIdx},${wantCardIdx},${wantMoney})">✓ 接受</button>
+                <button class="btn btn-danger" style="flex:1;" onclick="rejectAiTrade(${aiIdx})">✗ 拒绝</button>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;font-size:.7rem;" onclick="counterAiTrade(${aiIdx},${offerCardIdx},${wantCardIdx},${wantMoney})">🔄 还价</button>`);
+        // Pause AI turn — wait for player response
+        mono.pendingTrade = true;
     }
+
+    /* Resume AI turn after trade response */
+    function continueAiTurn(idx) {
+        const p = mono.players[idx];
+        if (p.bankrupt) { nextTurn(); return; }
+        const personality = AI_PERSONALITIES[p.personality];
+
+        // Use card?
+        if (p.cards.length > 0 && Math.random() < personality.cardUseChance) {
+            const ci = Math.floor(Math.random() * p.cards.length);
+            const card = p.cards[ci];
+            p.cards.splice(ci, 1);
+            if (card.monoEff) {
+                if (card.isCurse) {
+                    const targets = mono.players.filter((pl, i) => i !== idx && !pl.bankrupt);
+                    if (targets.length > 0) {
+                        const target = targets[Math.floor(Math.random() * targets.length)];
+                        const effResult = card.monoEff(p, mono, target) || '';
+                        monoLog(`🔥 ${p.ic} 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
+                    }
+                } else {
+                    card.monoEff(p, mono);
+                    monoLog(`${p.ic} 使用 ${card.ic} ${card.n}`, 'info');
+                }
+            }
+            renderMonopoly();
+        }
+
+        mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
+        let total = mono.dice[0] + mono.dice[1];
+        const extra = p.speed || 0;
+        if (extra) p.speed = 0;
+        if (p.doubleDice) { total *= 2; p.doubleDice = false; }
+        const aiVehicleSpeed = getVehicleBonus(p, 'speed');
+        if (aiVehicleSpeed) total += aiVehicleSpeed;
+        renderMonopoly();
+        monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
+
+        mono.pendingAction = 'movePlayer';
+        saveMonopoly();
+        setTimeout(() => { try { movePlayer(idx, total + extra); } catch(e) { console.error('[AI movePlayer Error]', e); _clearWatchdog(); nextTurn(); } }, 600);
+    }
+
+    window.acceptAiTrade = function(aiIdx, offerCardIdx, wantCardIdx, wantMoney) {
+        const ai = mono.players[aiIdx];
+        const p = mono.players[0];
+        const card = ai.cards[offerCardIdx];
+        if (!card) { closeModal(); mono.pendingTrade = false; continueAiTurn(aiIdx); return; }
+        if (p.cards.length >= 8) { monoLog('手牌已满，无法接受', 'error'); closeModal(); mono.pendingTrade = false; continueAiTurn(aiIdx); return; }
+
+        ai.cards.splice(offerCardIdx, 1);
+        if (wantCardIdx >= 0 && p.cards[wantCardIdx]) {
+            const pc = p.cards[wantCardIdx];
+            p.cards.splice(wantCardIdx, 1);
+            if (ai.cards.length < 8) ai.cards.push({...pc});
+        } else if (wantMoney > 0) {
+            if (p.money < wantMoney) { monoLog('资金不足', 'error'); ai.cards.push({...card}); closeModal(); mono.pendingTrade = false; continueAiTurn(aiIdx); return; }
+            p.money -= wantMoney;
+            ai.money += wantMoney;
+        }
+        p.cards.push({...card});
+        monoLog(`🤝 你接受了 ${ai.nm} 的交易，获得 ${card.ic} ${card.n}`, 'success');
+        showToast(`✓ 获得 ${card.n}`, 'success');
+        mono.pendingTrade = false;
+        closeModal();
+        renderMonopoly();
+        saveMonopoly();
+        continueAiTurn(aiIdx);
+    };
+
+    window.rejectAiTrade = function(aiIdx) {
+        const ai = mono.players[aiIdx];
+        monoLog(`🤝 你拒绝了 ${ai.nm} 的交易提议`, 'info');
+        mono.pendingTrade = false;
+        closeModal();
+        continueAiTurn(aiIdx);
+    };
+
+    window.counterAiTrade = function(aiIdx, offerCardIdx, wantCardIdx, wantMoney) {
+        const ai = mono.players[aiIdx];
+        const p = mono.players[0];
+        const card = ai.cards[offerCardIdx];
+        if (!card) { closeModal(); mono.pendingTrade = false; continueAiTurn(aiIdx); return; }
+        // AI may accept counter with 40% chance, or reject
+        if (Math.random() < 0.4) {
+            // AI accepts counter — same card, less money
+            const reducedMoney = Math.floor(wantMoney * 0.6);
+            if (p.cards.length >= 8) { monoLog('手牌已满', 'error'); closeModal(); mono.pendingTrade = false; continueAiTurn(aiIdx); return; }
+            ai.cards.splice(offerCardIdx, 1);
+            if (wantCardIdx >= 0 && p.cards[wantCardIdx]) {
+                const pc = p.cards[wantCardIdx];
+                p.cards.splice(wantCardIdx, 1);
+                if (ai.cards.length < 8) ai.cards.push({...pc});
+            } else if (reducedMoney > 0) {
+                p.money -= reducedMoney;
+                ai.money += reducedMoney;
+            }
+            p.cards.push({...card});
+            monoLog(`🤝 ${ai.nm} 接受了你的还价！获得 ${card.ic} ${card.n}`, 'success');
+            showToast(`✓ 还价成功`, 'success');
+        } else {
+            monoLog(`🤝 ${ai.nm} 拒绝了你的还价`, 'info');
+            showToast(`${ai.nm} 拒绝还价`, 'info');
+        }
+        mono.pendingTrade = false;
+        closeModal();
+        renderMonopoly();
+        saveMonopoly();
+        continueAiTurn(aiIdx);
+    };
 
     /* ==================== Monopoly: Casino System ==================== */
     const CASINO_MIN_BET = 100;
@@ -4353,6 +4684,13 @@
         // AI might buy a vehicle
         aiVehicleDecision(p);
 
+        // AI might propose a trade to the human player (15% chance if AI has cards)
+        if (idx !== 0 && p.cards.length > 0 && mono.players[0] && !mono.players[0].bankrupt && Math.random() < 0.15) {
+            aiInitiateTrade(idx);
+            // Pause AI turn — resume after player responds via continueAiTurn()
+            return;
+        }
+
         // Use card?
         if (p.cards.length > 0 && Math.random() < personality.cardUseChance) {
             const ci = Math.floor(Math.random() * p.cards.length);
@@ -4496,11 +4834,16 @@
 
     // Event modal (random event triggers — ends turn after closing)
     function showEventModal(ev, p) {
+        const rarityLabels = { common: '普通', uncommon: '不凡', rare: '稀有', legendary: '传说' };
+        const rarityColors = { common: 'var(--text2)', uncommon: '#3b82f6', rare: '#a855f7', legendary: '#f59e0b' };
+        const rarityLabel = rarityLabels[ev.rarity] || '普通';
+        const rarityColor = rarityColors[ev.rarity] || 'var(--text2)';
         const modal = document.getElementById('modal-content');
         modal.innerHTML = `
             <div class="modal-title">🎲 随机事件</div>
             <div style="text-align:center;padding:1rem 0;">
                 <div style="font-size:3rem;margin-bottom:.5rem;">${ev.ic}</div>
+                <div style="font-size:.65rem;font-weight:700;color:${rarityColor};margin-bottom:.3rem;">${rarityLabel.toUpperCase()}</div>
                 <h3 style="margin-bottom:.5rem;color:var(--accent);">${ev.nm}</h3>
                 <p style="color:var(--text2);font-size:.9rem;line-height:1.6;">${ev.desc}</p>
             </div>
@@ -5911,7 +6254,18 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.4.0</strong> — 多股市场 & 杠杆交易 & 做空机制</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.5.0</strong> — 交易谈判 & AI主动交易 & 事件稀有度</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🤝 交易系统重做：支持卡牌/载具/金币交换，3轮还价谈判</li>
+                <li>🔄 AI反报价：拒绝时自动生成还价，可接受/拒绝/修改重提</li>
+                <li>🤖 AI主动交易：AI 回合 15% 概率向你发起卡牌交换提议</li>
+                <li>🔄 玩家可还价AI交易：40% 概率AI接受还价，降价 40%</li>
+                <li>💎 随机事件稀有度：普通/不凡/稀有/传说四档权重抽取</li>
+                <li>📊 事件弹窗显示稀有度标签和颜色</li>
+                <li>📈 修复股市分红Bug：旧 p.stocks 字段 → 新多股持仓计算</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.4.0</strong> — 多股市场 & 杠杆交易 & 做空机制</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>📊 10 种独立股票：农业、地产、能源、工业、医药、游戏、航天、零售、金融、宝石</li>
                 <li>📈 杠杆交易：1x / 2x / 5x / 10x 倍数选择，放大收益与风险</li>
