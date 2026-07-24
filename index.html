@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v6.3.0 -->
+    <!-- VERSION: v6.4.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.3.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.3.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.3.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.3.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.3.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.3.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.4.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.4.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.4.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.4.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.4.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.4.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -178,6 +178,7 @@
             width: 220px; flex-shrink: 0; padding: 1.5rem 1rem;
             background: var(--bg2); border-right: 1px solid var(--border);
             display: flex; flex-direction: column; gap: .5rem; transition: background var(--transition);
+            overflow-y: auto; overflow-x: hidden; min-height: 0;
         }
         .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; }
         .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; }
@@ -274,12 +275,12 @@
         .mono-tile-cell.owned { border-color: var(--good); }
         .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
         .mono-tile-cell.highlighted { border-color: var(--warn); box-shadow: 0 0 12px rgba(255,152,0,.5); animation: tilePulse 0.8s ease 3; }
-        .mono-tile-cell .tile-ic { font-size: clamp(.8rem, .5vw + .6rem, 1.1rem); line-height: 1; margin-top: 2px; }
-        .mono-tile-cell .tile-nm { font-size: clamp(.4rem, .15vw + .3rem, .5rem); color: var(--text2); margin-top: 1px; line-height: 1.1; overflow: hidden; max-height: 1.8em; }
-        .mono-tile-cell .tile-cost { font-size: clamp(.38rem, .15vw + .3rem, .48rem); color: var(--accent); font-weight: 700; }
-        .mono-tile-cell .tile-level { font-size: clamp(.35rem, .1vw + .3rem, .42rem); color: var(--good); }
+        .mono-tile-cell .tile-ic { font-size: 1rem; line-height: 1; margin-top: 2px; }
+        .mono-tile-cell .tile-nm { font-size: .5rem; color: var(--text2); margin-top: 1px; line-height: 1.1; overflow: hidden; max-height: 1.8em; }
+        .mono-tile-cell .tile-cost { font-size: .48rem; color: var(--accent); font-weight: 700; }
+        .mono-tile-cell .tile-level { font-size: .42rem; color: var(--good); }
         .mono-tile-cell .tile-owner { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; }
-        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: clamp(.45rem, .1vw + .4rem, .58rem); }
+        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: .55rem; }
         .tile-tooltip {
             display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
             background: var(--card); border: 1px solid var(--accent); border-radius: 6px; padding: .4rem .6rem;
@@ -289,22 +290,22 @@
         .mono-tile-cell:hover .tile-tooltip { display: block; }
 
         .mono-dice-area { text-align: center; padding: .5rem 0; }
-        .mono-dice { font-size: clamp(1.2rem, .5vw + 1rem, 1.6rem); display: flex; gap: .4rem; align-items: center; justify-content: center; }
-        .mono-dice-num { font-size: clamp(1.5rem, 1vw + 1rem, 2.2rem); font-weight: 800; color: var(--accent); }
+        .mono-dice { font-size: 1.4rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
+        .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
         .mono-players { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
         .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: clamp(52px, 3vw + 44px, 64px); transition: all var(--transition); position: relative; cursor: pointer; }
         .mono-player:hover { border-color: var(--accent); transform: translateY(-2px); }
         .mono-player.active { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow); }
-        .mono-player .mp-ic { font-size: clamp(1rem, .3vw + .8rem, 1.2rem); }
-        .mono-player .mp-name { font-size: clamp(.5rem, .1vw + .4rem, .58rem); color: var(--text2); }
-        .mono-player .mp-money { font-weight: 800; font-size: clamp(.65rem, .15vw + .5rem, .8rem); color: var(--accent); }
-        .mono-player .mp-status { font-size: clamp(.42rem, .08vw + .35rem, .52rem); display: flex; gap: 1px; }
-        .mono-player .mp-personality { font-size: clamp(.4rem, .08vw + .33rem, .48rem); color: var(--text2); }
+        .mono-player .mp-ic { font-size: 1.1rem; }
+        .mono-player .mp-name { font-size: .55rem; color: var(--text2); }
+        .mono-player .mp-money { font-weight: 800; font-size: .75rem; color: var(--accent); }
+        .mono-player .mp-status { font-size: .5rem; display: flex; gap: 1px; }
+        .mono-player .mp-personality { font-size: .45rem; color: var(--text2); }
         .mono-cards { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; }
-        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: clamp(.5rem, .1vw + .4rem, .65rem); position: relative; display: flex; flex-direction: column; align-items: center; }
+        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; }
         .mono-card-item:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .mono-card-item .mc-desc { font-size: clamp(.35rem, .05vw + .3rem, .42rem); color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .mono-log { font-size: clamp(.55rem, .1vw + .45rem, .68rem); color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
+        .mono-card-item .mc-desc { font-size: .4rem; color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mono-log { font-size: .65rem; color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
         .mono-log .log-line { padding: .1rem 0; }
         .mono-log .log-line.success { color: var(--good); }
         .mono-log .log-line.error { color: var(--bad); }
@@ -427,6 +428,26 @@
         .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem; }
         .modal-close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: var(--text2); cursor: pointer; }
 
+        /* ==================== Toast Notifications ==================== */
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 600; display: flex; flex-direction: column; gap: .5rem; pointer-events: none; }
+        .toast { background: var(--card); border-radius: var(--radius-sm); padding: .7rem 1rem; box-shadow: 0 4px 20px rgba(0,0,0,.2); border-left: 3px solid var(--accent); max-width: 300px; animation: toastIn .3s ease, toastOut .3s ease 2.5s forwards; pointer-events: auto; }
+        .toast.success { border-left-color: var(--good); }
+        .toast.error { border-left-color: var(--bad); }
+        .toast.info { border-left-color: var(--accent); }
+        .toast.god { border-left-color: var(--warn); }
+        .toast-text { font-size: .8rem; color: var(--text); }
+        @keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
+
+        /* ==================== Loading Overlay ==================== */
+        .load-overlay { position: fixed; inset: 0; z-index: 700; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); }
+        .load-overlay.show { display: flex; animation: fadeIn .2s ease; }
+        .load-content { text-align: center; }
+        .load-spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto .8rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .load-text { color: var(--text); font-size: .9rem; font-weight: 700; }
+        @keyframes bounceIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 60% { transform: scale(1.2) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+
         /* ==================== Mobile Tab Bar ==================== */
         .tab-bar {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
@@ -514,7 +535,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v6.3.0</div>
+                <div class="subtitle">v6.4.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -595,6 +616,7 @@
                         <div style="display:flex;gap:.4rem;margin-top:.5rem;">
                             <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openStockExchange()" title="随时交易股票">📈 交易所</button>
                             <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openBank()" title="随时办理银行业务">🏦 银行</button>
+                            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="showVehicleShop()" title="购买载具获得加成">🚗 载具店</button>
                         </div>
                         <div class="mono-section-title" style="margin-top:.5rem;">🃏 手牌</div>
                         <div class="mono-cards" id="mono-cards"></div>
@@ -606,7 +628,7 @@
                         <div class="mono-inventory-grid" id="mono-inventory"></div>
                         <div class="mono-section-title" style="margin-top:.75rem;">📊 股市指数</div>
                         <div style="text-align:center;">
-                            <span style="font-size:1.5rem;font-weight:800;color:var(--accent);cursor:pointer;" id="mono-stock" onclick="showStockModal()" title="点击交易股票">100</span>
+                            <span style="font-size:1.5rem;font-weight:800;color:var(--accent);cursor:pointer;" id="mono-stock" onclick="openStockExchange()" title="点击交易股票">100</span>
                             <div style="font-size:.6rem;color:var(--text2);margin-top:.2rem;" id="mono-stock-portfolio"></div>
                         </div>
                     </div>
@@ -701,7 +723,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.3.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.4.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -740,11 +762,22 @@
         <div class="modal" id="modal-content"></div>
     </div>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div class="load-overlay" id="load-overlay">
+        <div class="load-content">
+            <div class="load-spinner"></div>
+            <div class="load-text" id="load-text">读取中...</div>
+        </div>
+    </div>
+
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v6.3.0',
-        SAVE_KEY: 'bunny_cc_v6.3.0',
+        VERSION: 'v6.4.0',
+        SAVE_KEY: 'bunny_cc_v6.4.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -835,6 +868,34 @@
         // Legendary
         {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=true;p.lucky=true;return '+3000💰, 护盾+幸运'}},
         {id:'teleport_home', ic:'🎯', n:'回归起点', desc:'传送回起点并获奖金', rarity:'legendary', monoEff:(p,mono)=>{p.pos=0;p.money+=2000;return '回到起点 +2000💰'}},
+        // Curse cards (target other players)
+        {id:'curse_jail', ic:'⛓️', n:'禁锢咒', desc:'将对手送进监狱', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了禁锢咒`;}
+            target.jailTurns=2;return `将 ${target.nm} 送入监狱 2 回合`;
+        }},
+        {id:'curse_ban', ic:'🚫', n:'封印咒', desc:'禁止对手下回合交易', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了封印咒`;}
+            target.banned=1;return `封印了 ${target.nm} 的交易能力 1 回合`;
+        }},
+        {id:'curse_hospital', ic:'🏥', n:'重病咒', desc:'对手进入医院暂停1回合', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了重病咒`;}
+            target.jailTurns=1;target.hospital=true;return `${target.nm} 被送进医院暂停 1 回合`;
+        }},
+        {id:'curse_drain', ic:'🧛', n:'吸血咒', desc:'吸取对手2000💰', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了吸血咒`;}
+            const drain=Math.min(2000,target.money);target.money-=drain;p.money+=drain;return `从 ${target.nm} 吸取了 ${drain}💰`;
+        }},
+        {id:'curse_backtrack', ic:'⏪', n:'回退咒', desc:'对手后退5格', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了回退咒`;}
+            const total=getUnlockedTileCount();target.pos=(target.pos-5+total)%total;return `${target.nm} 被回退了 5 格`;
+        }},
+        {id:'curse_downgrade', ic:'📉', n:'贬值咒', desc:'对手随机房产降级', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了贬值咒`;}
+            const ti=mono.players.indexOf(target);
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===ti&&mono.properties[t.id].level>0);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;return `${target.nm} 的 ${t.nm} 降级了`;}
+            return `${target.nm} 没有可降级的房产`;
+        }},
     ];
     const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
     const RARITY_WEIGHTS = {common:40, uncommon:30, rare:20, legendary:10};
@@ -864,6 +925,13 @@
             if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level++;}
         }},
         {nm:'神秘商人', ic:'🧙', desc:'当前玩家获得一张随机卡牌', eff:(mono,p)=>{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}},
+        {nm:'流星雨', ic:'☄️', desc:'所有玩家失去 300💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=300})}},
+        {nm:'宝藏猎人', ic:'🗝️', desc:'当前玩家获得一张稀有卡牌', eff:(mono,p)=>{const rare=CARD_POOL.filter(c=>c.rarity==='rare'||c.rarity==='legendary');p.cards.push({...rare[Math.floor(Math.random()*rare.length)]})}},
+        {nm:'幸运转盘', ic:'🎡', desc:'当前玩家随机获得金钱或卡牌', eff:(mono,p)=>{if(Math.random()<0.5){const amt=500+Math.floor(Math.random()*3000);p.money+=amt;}else{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}}},
+        {nm:'黑市拍卖', ic:'🏪', desc:'当前玩家随机获得一张诅咒卡', eff:(mono,p)=>{const curses=CARD_POOL.filter(c=>c.isCurse);if(curses.length)p.cards.push({...curses[Math.floor(Math.random()*curses.length)]})}},
+        {nm:'投资回报', ic:'💼', desc:'当前玩家每处房产收入 200💰', eff:(mono,p)=>{const pi=mono.players.indexOf(p);let cnt=0;mono.tiles.forEach((t,i)=>{if(t.type==='property'&&mono.properties[t.id]?.owner===pi){p.money+=200;cnt++;}});if(cnt===0)p.money+=200;}},
+        {nm:'快递到达', ic:'📦', desc:'当前玩家获得载具加成或金币', eff:(mono,p)=>{if(Math.random()<0.3){p.speed=2;}else{p.money+=1200;}}},
+        {nm:'节日礼花', ic:'🎆', desc:'所有玩家获得随机卡牌', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})})}},
     ];
 
     const MONO_PLAYERS_INIT = [
@@ -883,6 +951,17 @@
         conservative: {nm:'保守', buyChance:0.3, cardUseChance:0.15, loanChance:0.2, upgradeChance:0.25},
         balanced:     {nm:'平衡', buyChance:0.55, cardUseChance:0.3, loanChance:0.4, upgradeChance:0.4},
     };
+
+    /* Vehicle system: each vehicle gives unique bonuses */
+    const VEHICLE_POOL = [
+        {id:'scooter',  ic:'🛴', nm:'胡萝卜滑板车', price:2000,  bonus:{type:'speed', val:1, label:'移动+1'},          desc:'轻便灵活，每回合移动多1步'},
+        {id:'bike',     ic:'🚲', nm:'兔兔自行车',   price:4000,  bonus:{type:'speed', val:2, label:'移动+2'},          desc:'环保出行，每回合移动多2步'},
+        {id:'car',      ic:'🚗', nm:'胡萝卜跑车',   price:8000,  bonus:{type:'rentDiscount', val:0.2, label:'租金-20%'}, desc:'风驰电掣，经过他人地产租金减免20%'},
+        {id:'tank',     ic:'🚜', nm:'胡萝卜坦克',   price:12000, bonus:{type:'rentImmune', val:0.15, label:'15%免租'},   desc:'坚不可摧，15%概率免疫一次租金'},
+        {id:'rocket',   ic:'🚀', nm:'兔兔火箭',     price:20000, bonus:{type:'speed', val:3, label:'移动+3'},          desc:'一飞冲天，每回合移动多3步'},
+        {id:'ufo',      ic:'🛸', nm:'UFO飞碟',      price:50000, bonus:{type:'rentDiscount', val:0.5, label:'租金-50%'}, desc:'外星科技，经过他人地产租金减免50%'},
+        {id:'dragon',   ic:'🐉', nm:'胡萝卜巨龙',   price:100000, bonus:{type:'allInOne', val:3, label:'全能加成'},       desc:'传说神兽，移动+3且租金减免50%且15%免租'},
+    ];
 
     /* ==================== State ==================== */
     let mono = null;
@@ -944,7 +1023,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v6.3.0 已启动', 'info');
+        logEvent('兔可可王国 v6.4.0 已启动', 'info');
     }
 
     function validateMono() {
@@ -967,6 +1046,7 @@
             if (p.cards === undefined) p.cards = [];
             if (p.loans === undefined) p.loans = [];
             if (p.credit === undefined) p.credit = 100;
+            if (p.vehicle === undefined) p.vehicle = null;
             if (p.isHuman === undefined) p.isHuman = false;
             if (p.personality === undefined) p.personality = 'balanced';
             if (p.stocks === undefined) p.stocks = 0;
@@ -1056,7 +1136,7 @@
                 ...p, money: 10000, pos: startPositions[i], cards: [],
                 shield: false, lucky: false, speed: 0, doubleDice: false,
                 jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
-                loans: [], credit: 100,
+                loans: [], credit: 100, vehicle: null,
                 stocks: 0, stockAvgCost: 0,
                 stats: {
                     propertiesBought: 0, purchaseSpent: 0,
@@ -1147,6 +1227,7 @@
             if (p.speed) statusIcons.push(`🚀${p.speed}`);
             if (p.jailTurns > 0) statusIcons.push('🔒');
             if (p.taxFree > 0) statusIcons.push('🧾');
+            if (p.vehicle) statusIcons.push(p.vehicle.ic);
             return `<div class="mono-player ${active?'active':''}" ${p.bankrupt?'style="opacity:.4;"':''} onclick="locatePlayer(${i})" title="点击定位到地图位置">
                 <div class="mp-ic">${p.ic}</div>
                 <div class="mp-name">${p.nm}</div>
@@ -1483,6 +1564,9 @@
                 const extra = p.speed || 0;
                 if (extra) p.speed = 0;
                 if (p.doubleDice) { total *= 2; p.doubleDice = false; monoLog('🎲 双倍骰子激活！', 'success'); }
+                // Vehicle speed bonus
+                const vehicleSpeed = getVehicleBonus(p, 'speed');
+                if (vehicleSpeed) { total += vehicleSpeed; monoLog(`${p.vehicle.ic} 载具加速 +${vehicleSpeed}`, 'success'); }
                 movePlayer(0, total + extra);
             }
         }, 80);
@@ -1621,7 +1705,19 @@
                         p.taxFree--;
                         monoLog(`🧾 ${p.nm} 免税卡生效，免付租金`, 'success');
                     } else {
-                        const rent = tile.rent * (prop.level + 1);
+                        let rent = tile.rent * (prop.level + 1);
+                        // Vehicle rent discount
+                        const rentDiscount = getVehicleBonus(p, 'rentDiscount');
+                        if (rentDiscount) {
+                            rent = Math.floor(rent * (1 - rentDiscount));
+                            monoLog(`${p.vehicle.ic} 载具减免租金 ${Math.round(rentDiscount*100)}%`, 'success');
+                        }
+                        // Vehicle rent immunity chance
+                        const immuneChance = getVehicleBonus(p, 'rentImmune');
+                        if (immuneChance && Math.random() < immuneChance) {
+                            monoLog(`${p.vehicle.ic} 载具免疫本次租金！`, 'success');
+                            break;
+                        }
                         if (p.shield) { p.shield = false; monoLog(`🛡️ 护盾抵消租金！`, 'success'); break; }
                         p.money -= rent;
                         const owner = mono.players[prop.owner];
@@ -1722,12 +1818,13 @@
     function buyProperty(pos) {
         const tile = mono.tiles[pos];
         const p = mono.players[0];
-        if (p.money < tile.price) { monoLog('资金不足！', 'error'); closeModal(); skipBuy(); return; }
+        if (p.money < tile.price) { monoLog('资金不足！', 'error'); showToast('资金不足！', 'error'); closeModal(); skipBuy(); return; }
         mono.properties[pos].owner = 0;
         p.money -= tile.price;
         p.stats.propertiesBought++;
         p.stats.purchaseSpent += tile.price;
         monoLog(`🐰 购买了 ${tile.nm}！(-💰${tile.price})`, 'success');
+        showToast(`✓ 购买 ${tile.nm}！-💰${tile.price}`, 'success');
         closeModal();
         saveMonopoly();
         renderMonopoly();
@@ -1745,6 +1842,7 @@
         const p = mono.players[0];
         const propValue = getPlayerPropertyValue(p);
         const maxLoan = Math.floor(propValue * 0.5);
+        const creditLoanMax = Math.floor(p.credit * 100); // Credit-based loan, no collateral needed
         const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
         const nextPayment = p.loans.length > 0 ? p.loans[0] : null;
         const nextPayAmount = nextPayment ? Math.floor(nextPayment.amount * nextPayment.rate / 5) + Math.floor(nextPayment.amount / 5) : 0;
@@ -1756,7 +1854,7 @@
             p.loans.forEach((l, i) => {
                 const pay = Math.floor(l.amount * l.rate / 5) + Math.floor(l.amount / 5);
                 loanListHtml += `<div style="display:flex;justify-content:space-between;font-size:.75rem;padding:.2rem 0;${i < p.loans.length-1 ? 'border-bottom:1px solid var(--border);' : ''}">
-                    <span>💰${l.amount} @ ${(l.rate*100).toFixed(1)}% (${l.remaining}回合)</span>
+                    <span>${l.type === 'credit' ? '💳' : '🏠'} 💰${l.amount} @ ${(l.rate*100).toFixed(1)}% (${l.remaining}回合)</span>
                     <button class="btn btn-sm btn-secondary" onclick="repaySingleLoan(${i})" ${p.money < l.amount ? 'disabled' : ''}>还💰${l.amount}</button>
                 </div>`;
             });
@@ -1806,7 +1904,8 @@
             ${loanListHtml}
             ${mortgageHtml}
             <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;">
-                <button class="btn btn-primary" onclick="takeLoan(${maxLoan})" ${maxLoan<=0?'disabled':''}>💸 申请贷款 (💰${maxLoan}, 5回合还清)</button>
+                <button class="btn btn-primary" onclick="takeLoan(${maxLoan})" ${maxLoan<=0?'disabled':''}>🏠 抵押贷款 (💰${maxLoan}, 5回合)</button>
+                <button class="btn btn-primary" onclick="takeCreditLoan()" ${p.credit<40?'disabled':''}>💳 信用贷 (💰${creditLoanMax}, 无需抵押, 3回合)</button>
                 <button class="btn btn-secondary" onclick="repayLoan()" ${totalDebt<=0||p.money<totalDebt?'disabled':''}>💰 还清所有贷款 (需💰${totalDebt})</button>
                 <button class="btn btn-secondary" onclick="closeBankModal()">离开银行</button>
             </div>`;
@@ -1818,10 +1917,24 @@
         if (amount <= 0) { monoLog('无地产可做抵押', 'error'); return; }
         const rate = 0.08 + (100 - p.credit) * 0.001;
         p.money += amount;
-        p.loans.push({amount, remaining: 5, rate});
+        p.loans.push({amount, remaining: 5, rate, type: 'mortgage'});
         p.credit = Math.max(10, p.credit - 5);
         monoLog(`🏦 兔可可贷款 ${amount}💰，利率 ${(rate*100).toFixed(1)}%`, 'info');
         showBankModal(); // Refresh modal instead of closing
+        saveMonopoly();
+    }
+
+    /* Credit loan: no collateral, based on credit score, shorter term */
+    function takeCreditLoan() {
+        const p = mono.players[0];
+        const creditLoanMax = Math.floor(p.credit * 100);
+        if (creditLoanMax <= 0) { monoLog('信用评分不足，无法申请信用贷', 'error'); return; }
+        const rate = 0.12 + (100 - p.credit) * 0.002; // Higher rate than mortgage
+        p.money += creditLoanMax;
+        p.loans.push({amount: creditLoanMax, remaining: 3, rate, type: 'credit'});
+        p.credit = Math.max(10, p.credit - 15);
+        monoLog(`💳 信用贷款 ${creditLoanMax}💰，利率 ${(rate*100).toFixed(1)}%，3回合还清`, 'info');
+        showBankModal();
         saveMonopoly();
     }
 
@@ -1885,6 +1998,125 @@
     }
 
     /* ---- Property mortgage system ---- */
+    /* ==================== Vehicle System ==================== */
+    function getVehicleBonus(p, bonusType) {
+        if (!p.vehicle) return 0;
+        const v = p.vehicle;
+        if (v.bonus.type === 'allInOne') {
+            if (bonusType === 'speed') return v.bonus.val;
+            if (bonusType === 'rentDiscount') return 0.5;
+            if (bonusType === 'rentImmune') return 0.15;
+        }
+        if (v.bonus.type === bonusType) return v.bonus.val;
+        return 0;
+    }
+
+    function showVehicleShop() {
+        if (mono.currentPlayer !== 0) { monoLog('等待其他玩家行动...', 'info'); return; }
+        const p = mono.players[0];
+        const currentVehicle = p.vehicle;
+        const sellPrice = currentVehicle ? Math.floor(currentVehicle.price * 0.5) : 0;
+
+        let vehicleListHtml = VEHICLE_POOL.map(v => {
+            const owned = currentVehicle && currentVehicle.id === v.id;
+            const affordable = p.money >= v.price;
+            const upgrade = currentVehicle && v.price > (currentVehicle.price || 0);
+            return `<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--card2);border-radius:8px;margin-bottom:.4rem;${owned?'border:1px solid var(--accent);':''}">
+                <div style="font-size:1.5rem;">${v.ic}</div>
+                <div style="flex:1;">
+                    <div style="font-size:.8rem;font-weight:700;">${v.nm} ${owned?'<span style="color:var(--good);">✓已拥有</span>':''}</div>
+                    <div style="font-size:.65rem;color:var(--text2);">${v.desc}</div>
+                    <div style="font-size:.65rem;color:var(--accent);">加成：${v.bonus.label}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:.75rem;font-weight:700;color:${affordable?'var(--accent)':'var(--bad)'};">💰${v.price}</div>
+                    ${owned ? '<span style="font-size:.6rem;color:var(--text2);">当前</span>' :
+                      `<button class="btn btn-sm btn-primary" onclick="buyVehicle('${v.id}')" ${!affordable?'disabled':''}>购买</button>`}
+                </div>
+            </div>`;
+        }).join('');
+
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">🚗 载具商店</div>
+            <div style="text-align:center;padding:.5rem 0;">
+                <div style="font-size:.9rem;">你的资金：💰${p.money}</div>
+                ${currentVehicle ? `<div style="font-size:.8rem;color:var(--accent);margin-top:.2rem;">当前载具：${currentVehicle.ic} ${currentVehicle.nm}</div>
+                <div style="font-size:.7rem;color:var(--text2);">加成：${currentVehicle.bonus.label}</div>` : '<div style="font-size:.8rem;color:var(--text2);">暂无载具</div>'}
+            </div>
+            ${vehicleListHtml}
+            <div style="display:flex;gap:.5rem;margin-top:.75rem;">
+                ${currentVehicle ? `<button class="btn btn-secondary" onclick="sellVehicle()">出售载具 (💰${sellPrice})</button>` : ''}
+                <button class="btn btn-secondary" onclick="closeVehicleShop()">离开商店</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function buyVehicle(vehicleId) {
+        const p = mono.players[0];
+        const v = VEHICLE_POOL.find(x => x.id === vehicleId);
+        if (!v) { monoLog('载具不存在', 'error'); return; }
+        if (p.money < v.price) { monoLog('资金不足', 'error'); return; }
+        // If already has a vehicle, sell it at 50% first
+        if (p.vehicle) {
+            const refund = Math.floor(p.vehicle.price * 0.5);
+            p.money += refund;
+            monoLog(`📉 旧载具 ${p.vehicle.ic} 折价出售 +${refund}💰`, 'info');
+        }
+        p.money -= v.price;
+        p.vehicle = {...v};
+        monoLog(`🚗 购买了 ${v.ic} ${v.nm}！${v.bonus.label}`, 'success');
+        showVehicleModal(v);
+        showVehicleShop();
+        saveMonopoly();
+        renderMonopoly();
+    }
+
+    function sellVehicle() {
+        const p = mono.players[0];
+        if (!p.vehicle) { monoLog('没有载具可出售', 'error'); return; }
+        const refund = Math.floor(p.vehicle.price * 0.5);
+        p.money += refund;
+        monoLog(`📉 出售载具 ${p.vehicle.ic} +${refund}💰`, 'info');
+        p.vehicle = null;
+        showVehicleShop();
+        saveMonopoly();
+        renderMonopoly();
+    }
+
+    function showVehicleModal(v) {
+        showModal(`<div style="text-align:center;padding:1rem;">
+            <div style="font-size:3rem;margin-bottom:.5rem;animation:bounceIn .5s;">${v.ic}</div>
+            <h3 style="color:var(--accent);">${v.nm}</h3>
+            <p style="color:var(--text2);margin:.5rem 0;">${v.desc}</p>
+            <div style="background:var(--card2);padding:.5rem;border-radius:8px;margin:.5rem 0;">
+                <div style="font-size:.8rem;color:var(--accent);">✨ ${v.bonus.label}</div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="closeModal()">开始驾驶！</button>
+        </div>`);
+    }
+
+    function closeVehicleShop() {
+        closeModal();
+    }
+
+    /* AI vehicle purchase logic */
+    function aiVehicleDecision(p) {
+        if (p.vehicle) return; // Already has one
+        const personality = AI_PERSONALITIES[p.personality];
+        if (p.money > 15000 && Math.random() < (personality.buyChance * 0.3)) {
+            // AI picks an affordable vehicle, prefers speed type
+            const affordable = VEHICLE_POOL.filter(v => v.price <= p.money * 0.4);
+            if (affordable.length > 0) {
+                const pick = affordable[Math.floor(Math.random() * Math.min(3, affordable.length))];
+                p.money -= pick.price;
+                p.vehicle = {...pick};
+                monoLog(`${p.ic} 购买了 ${pick.ic} ${pick.nm}`, 'info');
+            }
+        }
+    }
+
+    /* ==================== Property mortgage system ==================== */
     function mortgageProperty(idx) {
         const p = mono.players[0];
         const tile = mono.tiles[idx];
@@ -1980,7 +2212,8 @@
         p.stats.stockTrades++;
         mono.stockMarket = Math.min(200, mono.stockMarket + amount * 0.2);
         monoLog(`📈 买入 ${amount} 股 @ 💰${price}，花费 💰${cost}`, 'success');
-        closeStockModal();
+        showStockModal(); // Refresh modal for continuous trading
+        saveMonopoly();
     }
 
     function sellStock() {
@@ -1998,7 +2231,8 @@
         p.stockAvgCost = 0;
         mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.3);
         monoLog(`📉 卖出 ${amount} 股 @ 💰${price}，收入 💰${revenue}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(profit)}`, profit >= 0 ? 'success' : 'error');
-        closeStockModal();
+        showStockModal(); // Refresh modal for continuous trading
+        saveMonopoly();
     }
 
     /* Partial sell: sell only the amount entered in the input */
@@ -2258,6 +2492,11 @@
         if (mono.rolling) return; // Can't use during roll
         const card = p.cards[cardIdx];
         if (!card) return;
+        // Curse cards need target selection
+        if (card.isCurse) {
+            showCurseTargetModal(cardIdx, card);
+            return;
+        }
         p.cards.splice(cardIdx, 1);
         let effResult = '';
         if (card.monoEff) effResult = card.monoEff(p, mono) || '';
@@ -2265,6 +2504,61 @@
         showCardUseModal(card, effResult);
         saveMonopoly();
         renderMonopoly();
+    }
+
+    /* Curse card target selection */
+    function showCurseTargetModal(cardIdx, card) {
+        const targets = mono.players.filter((p, i) => i !== 0 && !p.bankrupt);
+        if (targets.length === 0) { monoLog('没有可施咒的对手', 'error'); return; }
+        const targetHtml = targets.map(t => `<button class="btn btn-secondary btn-sm" style="width:100%;margin-top:.3rem;" onclick="executeCurse(${cardIdx}, ${mono.players.indexOf(t)})">${t.ic} ${t.nm} (💰${t.money})</button>`).join('');
+        showModal(`<div class="modal-title">${card.ic} ${card.n}</div>
+            <div style="text-align:center;font-size:.8rem;color:var(--text2);padding:.5rem 0;">${card.desc}</div>
+            <div style="font-size:.75rem;color:var(--accent);margin-bottom:.3rem;">选择施咒目标：</div>
+            ${targetHtml}
+            <button class="btn btn-secondary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">取消</button>`);
+    }
+
+    function executeCurse(cardIdx, targetIdx) {
+        const p = mono.players[0];
+        const card = p.cards[cardIdx];
+        const target = mono.players[targetIdx];
+        if (!card || !target || target.bankrupt) return;
+        p.cards.splice(cardIdx, 1);
+        let effResult = '';
+        if (card.monoEff) effResult = card.monoEff(p, mono, target) || '';
+        monoLog(`🔥 兔可可 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
+        // Hit effect animation
+        showCurseHitEffect(target, card);
+        saveMonopoly();
+        renderMonopoly();
+    }
+
+    /* Visual hit effect for curse cards */
+    function showCurseHitEffect(target, card) {
+        const effect = document.createElement('div');
+        effect.style.cssText = `position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:curseFade 2s ease forwards;`;
+        effect.innerHTML = `<div style="text-align:center;animation:curseHit 0.8s ease;">
+            <div style="font-size:4rem;">${card.ic}</div>
+            <div style="font-size:1.5rem;font-weight:800;color:var(--bad);margin-top:.5rem;">${target.nm}</div>
+            <div style="font-size:1.2rem;color:var(--accent);margin-top:.3rem;">${card.n}</div>
+        </div>`;
+        // Add CSS animation if not exists
+        if (!document.getElementById('curse-effect-style')) {
+            const style = document.createElement('style');
+            style.id = 'curse-effect-style';
+            style.textContent = `@keyframes curseHit{0%{transform:scale(0) rotate(-180deg);opacity:0}50%{transform:scale(1.3) rotate(0);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}@keyframes curseFade{0%{opacity:1}70%{opacity:1}100%{opacity:0}}`;
+            document.head.appendChild(style);
+        }
+        document.body.appendChild(effect);
+        setTimeout(() => {
+            effect.remove();
+            showModal(`<div style="text-align:center;padding:1rem;">
+                <div style="font-size:2.5rem;margin-bottom:.5rem;">${card.ic}</div>
+                <h3 style="color:var(--bad);">诅咒命中！</h3>
+                <p style="color:var(--text2);margin:.5rem 0;">${target.ic} ${target.nm} 被 ${card.n} 击中</p>
+                <button class="btn btn-primary" style="width:100%;" onclick="closeModal()">确定</button>
+            </div>`);
+        }, 1500);
     }
 
     /* ==================== Monopoly: Carry Card from Inventory ==================== */
@@ -2338,13 +2632,28 @@
 
         const personality = AI_PERSONALITIES[p.personality];
 
+        // AI might buy a vehicle
+        aiVehicleDecision(p);
+
         // Use card?
         if (p.cards.length > 0 && Math.random() < personality.cardUseChance) {
             const ci = Math.floor(Math.random() * p.cards.length);
             const card = p.cards[ci];
             p.cards.splice(ci, 1);
-            if (card.monoEff) card.monoEff(p, mono);
-            monoLog(`${p.ic} 使用 ${card.ic} ${card.n}`, 'info');
+            if (card.monoEff) {
+                if (card.isCurse) {
+                    // AI picks a random target for curse cards
+                    const targets = mono.players.filter((pl, i) => i !== idx && !pl.bankrupt);
+                    if (targets.length > 0) {
+                        const target = targets[Math.floor(Math.random() * targets.length)];
+                        const effResult = card.monoEff(p, mono, target) || '';
+                        monoLog(`🔥 ${p.ic} 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
+                    }
+                } else {
+                    card.monoEff(p, mono);
+                    monoLog(`${p.ic} 使用 ${card.ic} ${card.n}`, 'info');
+                }
+            }
             renderMonopoly();
         }
 
@@ -2353,6 +2662,9 @@
         const extra = p.speed || 0;
         if (extra) p.speed = 0;
         if (p.doubleDice) { total *= 2; p.doubleDice = false; }
+        // AI vehicle speed bonus
+        const aiVehicleSpeed = getVehicleBonus(p, 'speed');
+        if (aiVehicleSpeed) total += aiVehicleSpeed;
         renderMonopoly();
         monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
 
@@ -2380,7 +2692,7 @@
                 ...newPlayerData, money: 10000, pos: newPos, cards: [],
                 shield: false, lucky: false, speed: 0, doubleDice: false,
                 jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
-                loans: [], credit: 100,
+                loans: [], credit: 100, vehicle: null,
                 stocks: 0, stockAvgCost: 0,
                 stats: {
                     propertiesBought: 0, purchaseSpent: 0,
@@ -2425,6 +2737,13 @@
     function closeModal(e) {
         if (e && e.target !== e.currentTarget) return;
         document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    // Generic modal helper
+    function showModal(htmlContent) {
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = htmlContent;
+        document.getElementById('modal-overlay').classList.add('show');
     }
 
     // Card use modal (player uses card from hand — does NOT end turn)
@@ -2790,6 +3109,29 @@
         if (currentView === 'logs') renderEvents();
     }
 
+    /* ==================== Toast & Loading ==================== */
+    function showToast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<div class="toast-text">${msg}</div>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showLoading(text = '读取中...') {
+        const overlay = document.getElementById('load-overlay');
+        const textEl = document.getElementById('load-text');
+        if (textEl) textEl.textContent = text;
+        if (overlay) overlay.classList.add('show');
+    }
+
+    function hideLoading() {
+        const overlay = document.getElementById('load-overlay');
+        if (overlay) overlay.classList.remove('show');
+    }
+
     function renderEvents() {
         const el = document.getElementById('events-list');
         if (!el) return;
@@ -2812,12 +3154,17 @@
         if (godModeActive) {
             el.innerHTML = `
                 <div class="god-status success show">✨ 上帝模式已激活！</div>
-                <div style="font-size:.8rem;color:var(--text2);text-align:center;line-height:1.8;">
-                    大富翁初始资金翻倍（20000💰）<br>
-                    每次推进时代额外获得 5000💰<br>
-                    首次激活赠送 10000💰
+                <div style="font-size:.8rem;color:var(--text2);text-align:center;line-height:1.8;margin:.5rem 0;">
+                    🎁 大富翁初始资金翻倍（20000💰）<br>
+                    ⬆️ 每次推进时代额外获得 5000💰<br>
+                    💰 首次激活赠送 10000💰
                 </div>
-                <button class="btn btn-danger btn-sm" style="margin-top:.75rem;width:100%;" onclick="deactivateGodMode()">❌ 关闭上帝模式</button>`;
+                <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.75rem;">
+                    <button class="btn btn-primary btn-sm" onclick="godRandomBonus()">🎲 随机加成</button>
+                    <button class="btn btn-secondary btn-sm" onclick="godBlessAll()">💖 全员祝福</button>
+                    <button class="btn btn-secondary btn-sm" onclick="godTimeAccelerate()">⏩ 加速时代</button>
+                    <button class="btn btn-danger btn-sm" onclick="deactivateGodMode()">❌ 关闭上帝模式</button>
+                </div>`;
             return;
         }
         const challenge = localStorage.getItem('godChallenge') || generateChallenge();
@@ -2867,11 +3214,20 @@
                 localStorage.setItem('godModeActive', 'true');
                 const gi = document.getElementById('god-indicator');
                 if (gi) gi.classList.add('show');
+                // Show god panel immediately (not hidden)
+                const gp = document.getElementById('god-panel');
+                if (gp) gp.style.display = '';
                 status.textContent = '✨ 激活成功！上帝模式已开启';
                 status.className = 'god-status success show';
                 logEvent('✨ 上帝模式已激活！', 'god');
-                if (mono) { mono.players[0].money += 10000; saveMonopoly(); renderMonopoly(); }
-                setTimeout(() => renderGodPanel(), 1500);
+                showToast('✨ 上帝模式已激活！+10000💰', 'god');
+                // Apply immediate effects to current game
+                if (mono && mono.players && mono.players[0]) {
+                    mono.players[0].money += 10000;
+                    saveMonopoly();
+                    renderMonopoly();
+                }
+                renderGodPanel(); // Render immediately, no delay
             } else {
                 status.textContent = '❌ 签名验证失败';
                 status.className = 'god-status error show';
@@ -2889,6 +3245,52 @@
         if (gi) gi.classList.remove('show');
         renderGodPanel();
         logEvent('上帝模式已关闭', 'info');
+        showToast('上帝模式已关闭', 'info');
+    }
+
+    /* ---- God Mode bonus functions ---- */
+    function godRandomBonus() {
+        if (!godModeActive || !mono?.players?.[0]) return;
+        const p = mono.players[0];
+        const bonuses = [
+            () => { const amt = 3000 + Math.floor(Math.random() * 7000); p.money += amt; return `💰 获得 ${amt} 金币`; },
+            () => { const amt = 5 + Math.floor(Math.random() * 20); p.stocks += amt; return `📈 获赠 ${amt} 股票`; },
+            () => { p.shield = true; return `🛡️ 获得护盾保护`; },
+            () => { p.lucky = true; return `🍀 获得幸运加成`; },
+            () => { p.doubleDice = true; return `🎲 下次掷骰双倍`; },
+            () => { p.jailFree = true; return `🔑 获得出狱卡`; },
+            () => { p.taxFree = 3; return `🧾 获得 3 回合免税`; },
+            () => { const amt = 20 + Math.floor(Math.random() * 30); p.stats.stockProfit += amt; p.money += amt; return `💎 神秘宝藏 ${amt} 金币`; },
+            () => { const v = VEHICLE_POOL[Math.floor(Math.random() * VEHICLE_POOL.length)]; p.vehicle = {...v}; return `🚗 神赐载具 ${v.ic} ${v.nm}！`; },
+            () => { p.credit = 100; return `💯 信用评分恢复满分`; },
+        ];
+        const bonus = bonuses[Math.floor(Math.random() * bonuses.length)];
+        const msg = bonus();
+        saveMonopoly();
+        renderMonopoly();
+        monoLog(`✨ 上帝恩赐：${msg}`, 'god');
+        showToast(`✨ ${msg}`, 'god');
+        showModal(`<div style="text-align:center;padding:1rem;"><div style="font-size:2.5rem;margin-bottom:.5rem;">✨</div><h3 style="color:var(--accent);">上帝恩赐</h3><p style="color:var(--text2);margin:.5rem 0;">${msg}</p><button class="btn btn-primary" style="width:100%;" onclick="closeModal()">感谢恩赐</button></div>`);
+    }
+
+    function godBlessAll() {
+        if (!godModeActive || !mono?.players) return;
+        mono.players.forEach(p => {
+            if (!p.bankrupt) {
+                p.money += 5000;
+                p.credit = Math.min(100, p.credit + 20);
+            }
+        });
+        saveMonopoly();
+        renderMonopoly();
+        monoLog('💖 上帝祝福全员：每人 +5000💰，信用 +20', 'god');
+        showModal(`<div style="text-align:center;padding:1rem;"><div style="font-size:2.5rem;margin-bottom:.5rem;">💖</div><h3 style="color:var(--accent);">全员祝福</h3><p style="color:var(--text2);margin:.5rem 0;">所有玩家获得 5000💰 和 20 信用评分</p><button class="btn btn-primary" style="width:100%;" onclick="closeModal()">感谢祝福</button></div>`);
+    }
+
+    function godTimeAccelerate() {
+        if (!godModeActive || !mono) return;
+        advanceEra();
+        monoLog('⏩ 上帝加速时代推进', 'god');
     }
 
     /* ==================== Save Slot Management (3 slots) ==================== */
@@ -2943,44 +3345,63 @@
     }
 
     function saveToSlot(slot) {
-        if (!mono) { logEvent('无游戏数据可保存', 'error'); return; }
+        if (!mono) { showToast('无游戏数据可保存', 'error'); return; }
         try {
-            const data = JSON.parse(JSON.stringify(mono));
-            data._savedAt = Date.now();
-            localStorage.setItem(getSaveSlotKey(slot), JSON.stringify(data));
-            logEvent(`✓ 游戏已保存到存档 ${slot+1}`, 'success');
-            renderSaveSlots();
+            showLoading('保存中...');
+            setTimeout(() => {
+                const data = JSON.parse(JSON.stringify(mono));
+                data._savedAt = Date.now();
+                localStorage.setItem(getSaveSlotKey(slot), JSON.stringify(data));
+                logEvent(`✓ 游戏已保存到存档 ${slot+1}`, 'success');
+                showToast(`✓ 已保存到存档 ${slot+1}`, 'success');
+                renderSaveSlots();
+                hideLoading();
+            }, 400);
         } catch(e) {
+            hideLoading();
+            showToast('保存失败: ' + e.message, 'error');
             logEvent('保存失败: ' + e.message, 'error');
         }
     }
 
     function loadSaveSlot(slot) {
-        try {
-            const raw = localStorage.getItem(getSaveSlotKey(slot));
-            if (!raw) { logEvent('该存档为空', 'error'); return; }
-            const data = JSON.parse(raw);
-            if (!data.tiles || !data.players) { logEvent('存档损坏', 'error'); return; }
-            // Validate tile count
-            const expected = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
-            if (data.tiles.length !== expected) {
-                logEvent('存档与当前地图不兼容', 'error');
-                return;
+        showLoading('读取存档中...');
+        setTimeout(() => {
+            try {
+                const raw = localStorage.getItem(getSaveSlotKey(slot));
+                if (!raw) { hideLoading(); showToast('该存档为空', 'error'); return; }
+                const data = JSON.parse(raw);
+                if (!data.tiles || !data.players) { hideLoading(); showToast('存档损坏', 'error'); return; }
+                // Validate tile count
+                const expected = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
+                if (data.tiles.length !== expected) {
+                    hideLoading();
+                    showToast('存档与当前地图不兼容', 'error');
+                    return;
+                }
+                delete data._savedAt;
+                mono = data;
+                validateMono();
+                saveMonopoly();
+                renderMonopoly();
+                hideLoading();
+                const eraName = MONO_REGIONS[mono.unlockedEras]?.eraName || '';
+                showToast(`✓ 已读取存档 ${slot+1} — ${eraName} 第${mono.turn}回合`, 'success');
+                logEvent(`✓ 已读取存档 ${slot+1} — ${eraName} 第${mono.turn}回合`, 'success');
+                // Switch to game view
+                navigateTo('monopoly');
+            } catch(e) {
+                hideLoading();
+                showToast('读取失败: ' + e.message, 'error');
+                logEvent('读取失败: ' + e.message, 'error');
             }
-            delete data._savedAt;
-            mono = data;
-            validateMono();
-            saveMonopoly();
-            renderMonopoly();
-            logEvent(`✓ 已读取存档 ${slot+1}`, 'success');
-        } catch(e) {
-            logEvent('读取失败: ' + e.message, 'error');
-        }
+        }, 600);
     }
 
     function deleteSaveSlot(slot) {
         if (!confirm(`确定删除存档 ${slot+1} 吗？`)) return;
         localStorage.removeItem(getSaveSlotKey(slot));
+        showToast(`存档 ${slot+1} 已删除`, 'info');
         logEvent(`存档 ${slot+1} 已删除`, 'info');
         renderSaveSlots();
     }
@@ -3623,16 +4044,29 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.3.0</strong> — 响应式缩放 & 统计系统 & 股市贷款 & 时代进阶</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.4.0</strong> — 载具系统 & 诅咒卡 & Toast通知 & 性能优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📱 自适应缩放：clamp() 流式字体，多分辨率下字体不再过小</li>
-                <li>🎯 点击玩家头像可定位到所在格子并高亮</li>
-                <li>🏠 房产统计卡片：购买次数、升级次数、总花费明细</li>
-                <li>💰 租金统计卡片：总收入记录、路过玩家详情日志</li>
-                <li>📈 股市玩法：兔兔指数买卖、浮盈浮亏实时计算、AI交易</li>
-                <li>🏦 贷款增强：部分还款、信用评分、多笔贷款管理</li>
-                <li>🕰️ 时代进阶：仅新区域未拥有房产小幅通胀，不影响已有租金</li>
+                <li>🚗 载具系统：7种载具（滑板车到巨龙），移动加成/租金减免/免租概率</li>
+                <li>🃏 诅咒技能卡：禁锢咒、封印咒、退步咒、住院咒等6种诅咒卡</li>
+                <li>🎯 击中特效：诅咒卡使用时有粒子动画和弹窗提示</li>
+                <li>🎲 更多随机事件：流星雨、宝藏猎人、幸运转盘、节日礼花等</li>
+                <li>🔔 Toast通知系统：右上角浮动提示，替代部分弹窗</li>
+                <li>💾 读档优化：加载动画+进度提示+自动切换到游戏视图</li>
+                <li>⚡ 上帝模式即时生效+随机恩赐系统</li>
+                <li>📱 响应式字体缩放跟随设置</li>
             </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.3.0</strong> — 响应式缩放 & 统计系统 & 股市贷款 & 时代进阶</div>
+                <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                    <li>📱 自适应缩放：clamp() 流式字体，多分辨率下字体不再过小</li>
+                    <li>🎯 点击玩家头像可定位到所在格子并高亮</li>
+                    <li>🏠 房产统计卡片：购买次数、升级次数、总花费明细</li>
+                    <li>💰 租金统计卡片：总收入记录、路过玩家详情日志</li>
+                    <li>📈 股市玩法：兔兔指数买卖、浮盈浮亏实时计算、AI交易</li>
+                    <li>🏦 贷款增强：部分还款、信用评分、多笔贷款管理</li>
+                    <li>🕰️ 时代进阶：仅新区域未拥有房产小幅通胀，不影响已有租金</li>
+                </ul>
+            </div>
             <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
                 <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.2.0</strong> — 卡牌效果修复 & 事件提示优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
