@@ -133,6 +133,35 @@
         #bunny-canvas { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
         #epic-overlay { position: fixed; inset: 0; z-index: 9996; pointer-events: none; display: none; }
 
+        /* Egg Painting Mode: disable text selection, image drag, and all interactions */
+        body.egg-painting {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            cursor: crosshair !important;
+        }
+        body.egg-painting img {
+            -webkit-user-drag: none !important;
+            user-drag: none !important;
+            pointer-events: none !important;
+        }
+        body.egg-painting a,
+        body.egg-painting button,
+        body.egg-painting input,
+        body.egg-painting .nav-item,
+        body.egg-painting .tab-item,
+        body.egg-painting .setting-row,
+        body.egg-painting .toggle,
+        body.egg-painting .sidebar-logo,
+        body.egg-painting .avatar-img,
+        body.egg-painting .card,
+        body.egg-painting .mono-tile-cell,
+        body.egg-painting .theme-grid,
+        body.egg-painting .btn {
+            -webkit-user-drag: none !important;
+            pointer-events: none !important;
+        }
+
         /* ==================== Layout ==================== */
         .app { display: flex; height: 100vh; height: 100dvh; }
         .sidebar {
@@ -437,6 +466,7 @@
     <canvas id="trail-canvas"></canvas>
     <canvas id="bunny-canvas"></canvas>
     <div id="epic-overlay"></div>
+    <div id="egg-block" style="position:fixed;inset:0;z-index:9994;display:none;pointer-events:auto;background:transparent;cursor:crosshair;"></div>
     <div id="egg-whiteout" style="position:fixed;inset:0;z-index:9995;pointer-events:none;display:none;background:#fff;opacity:0;"></div>
 
     <div class="app">
@@ -2353,6 +2383,11 @@
         eggInkPersistStart = performance.now();
         lastMouseMoveTime = performance.now();
 
+        // Disable all interactions: text selection, image drag, button clicks
+        document.body.classList.add('egg-painting');
+        const eggBlock = document.getElementById('egg-block');
+        if (eggBlock) eggBlock.style.display = 'block';
+
         const whiteout = document.getElementById('egg-whiteout');
         if (whiteout) {
             whiteout.style.display = 'block';
@@ -2384,6 +2419,10 @@
         const remaining = Math.max(0, 8000 - elapsed);
         inkPersistEndTimer = setTimeout(() => {
             eggInkPersistMode = false;
+            // Re-enable interactions
+            document.body.classList.remove('egg-painting');
+            const eggBlock = document.getElementById('egg-block');
+            if (eggBlock) eggBlock.style.display = 'none';
             // Clear trail canvas gradually after screenshot window
             const trailCanvasEl = document.getElementById('trail-canvas');
             if (trailCanvasEl && trailCtx) {
