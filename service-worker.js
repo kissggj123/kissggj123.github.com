@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.5.0
-const CACHE_VERSION = 'v7.5.0';
+// Service Worker - Bunny CC v7.6.0
+const CACHE_VERSION = 'v7.6.0';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 const CORE_ASSETS = [
@@ -12,6 +12,12 @@ const CORE_ASSETS = [
 
 // Old cache versions to force-purge (ensures icon refresh)
 const OLD_CACHE_PATTERNS = [
+    'bunny-cc-v7.5.0', 'bunny-cc-runtime-v7.5.0',
+    'bunny-cc-v7.4.0', 'bunny-cc-runtime-v7.4.0',
+    'bunny-cc-v7.3.0', 'bunny-cc-runtime-v7.3.0',
+    'bunny-cc-v7.2.0', 'bunny-cc-runtime-v7.2.0',
+    'bunny-cc-v7.1.0', 'bunny-cc-runtime-v7.1.0',
+    'bunny-cc-v7.0.0', 'bunny-cc-runtime-v7.0.0',
     'bunny-cc-v6.4.0', 'bunny-cc-runtime-v6.4.0',
     'bunny-cc-v6.3.0', 'bunny-cc-runtime-v6.3.0',
     'bunny-cc-v6.2.0', 'bunny-cc-runtime-v6.2.0',
@@ -112,4 +118,57 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// === Push notifications ===
+self.addEventListener('push', (event) => {
+    let data = { title: '🐰 兔可可王国', body: '你有一条新消息' };
+    try {
+        if (event.data) data = event.data.json();
+    } catch(e) {
+        if (event.data) data.body = event.data.text();
+    }
+    event.waitUntil(
+        self.registration.showNotification(data.title || '🐰 兔可可王国', {
+            body: data.body,
+            icon: '/icon/192.png',
+            badge: '/icon/96.png',
+            tag: data.tag || 'bunny-cc-push',
+            vibrate: [200, 100, 200],
+            data: { url: data.url || '/' },
+        })
+    );
+});
+
+// === Notification click — focus or open the app ===
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+            // Focus existing window if found
+            for (const client of clients) {
+                if (client.url.includes(self.location.origin)) {
+                    return client.focus();
+                }
+            }
+            // Otherwise open new window
+            return self.clients.openWindow(targetUrl);
+        })
+    );
+});
+
+// === Periodic background sync (if supported) — refresh cache for offline ===
+self.addEventListener('periodicsync', (event) => {
+    if (event.tag === 'bunny-cc-refresh') {
+        event.waitUntil(
+            caches.open(RUNTIME_CACHE).then((cache) => {
+                return Promise.allSettled(
+                    CORE_ASSETS.map(url => fetch(url).then(resp => {
+                        if (resp && resp.status === 200) cache.put(url, resp.clone());
+                    }).catch(() => {}))
+                );
+            })
+        );
+    }
 });

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v7.5.0 -->
+    <!-- VERSION: v7.6.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.5.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.5.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.5.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.5.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.5.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.5.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.6.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.6.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.6.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -464,6 +464,13 @@
         .tab-item.active .tab-icon { transform: translateY(-2px); transition: transform var(--transition); }
 
         /* ==================== Responsive ==================== */
+        /* Touch optimization — prevent double-tap zoom on interactive elements */
+        .btn, .tab-item, .toggle, .sidebar-logo, .mono-tile-cell, .card-title {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        /* Prevent text selection on game UI for better mobile experience */
+        .mono-board, .tab-bar, .sidebar { -webkit-user-select: none; user-select: none; }
         /* Extra small screens (phones) */
         @media (max-width: 480px) {
             body { overflow-y: auto; overflow-x: hidden; }
@@ -534,13 +541,26 @@
     <div id="egg-block" style="position:fixed;inset:0;z-index:9994;display:none;pointer-events:auto;background:transparent;cursor:crosshair;"></div>
     <div id="egg-whiteout" style="position:fixed;inset:0;z-index:9995;pointer-events:none;display:none;background:#fff;opacity:0;"></div>
 
+    <!-- PWA: Offline indicator -->
+    <div id="offline-indicator" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:#EF4444;color:#fff;text-align:center;font-size:.75rem;padding:.25rem;transform:translateY(-100%);transition:transform .3s ease;pointer-events:none;">📡 离线模式 — 部分功能受限</div>
+    <!-- PWA: Install prompt banner -->
+    <div id="pwa-install-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card-bg,#fff);border-top:2px solid var(--accent,#FF6B9D);padding:.75rem 1rem;display:none;align-items:center;gap:.75rem;box-shadow:0 -4px 20px rgba(0,0,0,.15);">
+        <span style="font-size:1.5rem;">🐰</span>
+        <div style="flex:1;">
+            <div style="font-size:.85rem;font-weight:600;color:var(--text,#333);">安装兔可可王国</div>
+            <div style="font-size:.7rem;color:var(--text2,#888);">添加到主屏幕，随时畅玩</div>
+        </div>
+        <button onclick="installPWA()" style="background:var(--accent,#FF6B9D);color:#fff;border:none;border-radius:.5rem;padding:.4rem .9rem;font-size:.75rem;font-weight:600;cursor:pointer;">安装</button>
+        <button onclick="dismissPWAInstall()" style="background:none;border:none;color:var(--text2,#888);font-size:1.1rem;cursor:pointer;padding:.2rem;">✕</button>
+    </div>
+
     <div class="app">
         <!-- Sidebar (Desktop) -->
         <nav class="sidebar">
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.5.0</div>
+                <div class="subtitle">v7.6.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -720,6 +740,14 @@
                         <span>全屏模式</span>
                         <button class="btn btn-secondary btn-sm" onclick="toggleFullscreen()">🖥️ 切换</button>
                     </div>
+                    <div class="setting-row">
+                        <span>🔔 回合通知</span>
+                        <button class="btn btn-secondary btn-sm" id="notify-toggle-btn" onclick="subscribePushNotifications()">开启</button>
+                    </div>
+                    <div class="setting-row">
+                        <span>📲 安装App</span>
+                        <button class="btn btn-secondary btn-sm" onclick="installPWA()">添加到主屏</button>
+                    </div>
                 </div>
                 <div class="card" id="god-panel" style="margin-bottom:1rem;display:none;">
                     <div class="card-title">✨ 上帝模式</div>
@@ -733,7 +761,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.5.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.6.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -786,8 +814,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.5.0',
-        SAVE_KEY: 'bunny_cc_v7.5.0',
+        VERSION: 'v7.6.0',
+        SAVE_KEY: 'bunny_cc_v7.6.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -907,6 +935,30 @@
             if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;return `${target.nm} 的 ${t.nm} 降级了`;}
             return `${target.nm} 没有可降级的房产`;
         }},
+        // === New cards: tactical & strategic ===
+        {id:'rent_double', ic:'🏘️', n:'收租令', desc:'下回合经过你的地产的玩家租金翻倍', rarity:'rare', monoEff:(p)=>{p.rentDouble=1;return '收租令已激活，租金翻倍 1 回合'}},
+        {id:'freeze', ic:'❄️', n:'冰冻咒', desc:'指定对手跳过下回合', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了冰冻咒`;}
+            target.jailTurns=Math.max(target.jailTurns,1);target.hospital=true;return `${target.nm} 被冰冻，跳过下回合`;
+        }},
+        {id:'mirror', ic:'🪞', n:'镜像反射', desc:'下回合反弹所有负面效果', rarity:'legendary', monoEff:(p)=>{p.mirror=true;return '镜像反射已激活'}},
+        {id:'teleport_random', ic:'🌀', n:'随机传送', desc:'传送到地图随机位置', rarity:'uncommon', monoEff:(p,mono)=>{
+            const total=getUnlockedTileCount();p.pos=Math.floor(Math.random()*total);return `传送到了第 ${p.pos} 格`;
+        }},
+        {id:'interest_free', ic:'💳', n:'免息卡', desc:'下回合贷款免利息', rarity:'uncommon', monoEff:(p)=>{p.interestFree=1;return '下回合贷款免息'}},
+        {id:'stock_tip', ic:'📊', n:'内幕消息', desc:'获得随机股票 5 股', rarity:'rare', monoEff:(p,mono)=>{
+            if(!p.stockHoldings) return '股票系统未初始化';
+            const si=Math.floor(Math.random()*STOCK_TYPES.length);
+            const h=p.stockHoldings[si];const price=mono.stockPrices[si];
+            h.avgCost=h.shares>0?(h.avgCost*h.shares+price*5)/(h.shares+5):price;
+            h.shares+=5;h.isShort=false;
+            return `获得 5 股 ${STOCK_TYPES[si].nm}`;
+        }},
+        {id:'curse_confuse', ic:'😵', n:'混乱咒', desc:'对手下回合随机移动方向', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了混乱咒`;}
+            target.confused=1;return `${target.nm} 陷入混乱，下回随机移动`;
+        }},
+        {id:'gold_rush', ic:'🪙', n:'淘金热', desc:'获得当前回合数 × 100💰', rarity:'legendary', monoEff:(p,mono)=>{const amt=mono.turn*100;p.money+=amt;return `淘金热 +${amt}💰`}},
     ];
     const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
     const RARITY_WEIGHTS = {common:40, uncommon:30, rare:20, legendary:10};
@@ -947,6 +999,16 @@
         // Legendary (weight 0.3) — game-changing
         {nm:'彩票中奖', ic:'🎰', desc:'当前玩家获得 5000💰', rarity:'legendary', eff:(mono,p)=>{p.money+=5000}},
         {nm:'宝藏猎人', ic:'🗝️', desc:'当前玩家获得一张稀有卡牌', rarity:'legendary', eff:(mono,p)=>{const rare=CARD_POOL.filter(c=>c.rarity==='rare'||c.rarity==='legendary');p.cards.push({...rare[Math.floor(Math.random()*rare.length)]})}},
+        // === New events: more variety ===
+        {nm:'经济危机', ic:'💼', desc:'所有玩家失去 5% 资金', rarity:'uncommon', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=Math.floor(pl.money*0.05)})}},
+        {nm:'股市暴涨', ic:'🚀', desc:'所有股价上涨 15%', rarity:'rare', eff:(mono,p)=>{if(mono.stockPrices)mono.stockPrices=mono.stockPrices.map(pr=>Math.floor(pr*1.15));mono.stockMarket=getStockIndex()}},
+        {nm:'股市崩盘', ic:'💥', desc:'所有股价下跌 20%', rarity:'rare', eff:(mono,p)=>{if(mono.stockPrices)mono.stockPrices=mono.stockPrices.map(pr=>Math.max(1,Math.floor(pr*0.8)));mono.stockMarket=getStockIndex()}},
+        {nm:'免费抽卡日', ic:'🎁', desc:'所有玩家免费抽取 2 张卡牌', rarity:'uncommon', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt){for(let i=0;i<2;i++)pl.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}})}},
+        {nm:'地产大亨', ic:'👑', desc:'当前玩家随机地产升 2 级', rarity:'rare', eff:(mono,p)=>{const pi=mono.players.indexOf(p);const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<4);if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.min(5,mono.properties[t.id].level+2)}}}},
+        {nm:'慈善晚宴', ic:'🤝', desc:'最富有玩家向最穷玩家捐赠 2000💰', rarity:'uncommon', eff:(mono,p)=>{const sorted=[...mono.players].filter(pl=>!pl.bankrupt).sort((a,b)=>b.money-a.money);if(sorted.length>=2){sorted[0].money-=2000;sorted[sorted.length-1].money+=2000}}},
+        {nm:'黄金时代', ic:'🌟', desc:'所有玩家获得 5% 资金加成', rarity:'legendary', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=Math.floor(pl.money*0.05)})}},
+        {nm:'载具展览', ic:'🏎️', desc:'当前玩家获得 1500💰或随机载具折扣', rarity:'uncommon', eff:(mono,p)=>{if(Math.random()<0.4){p.vehicleDiscount=1000;p.money+=500;}else{p.money+=1500;}}},
+        {nm:'遗产继承', ic:'📜', desc:'当前玩家获得 4000💰', rarity:'legendary', eff:(mono,p)=>{p.money+=4000}},
     ];
     const EVENT_RARITY_WEIGHTS = { common: 3, uncommon: 2, rare: 1, legendary: 0.3 };
 
@@ -1048,7 +1110,7 @@
     /* ==================== Save Migration ==================== */
     function migrateSaveKey() {
         // Migrate card inventory from previous version keys
-        const prevKeys = ['bunny_cc_v7.4.0', 'bunny_cc_v7.3.0', 'bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
+        const prevKeys = ['bunny_cc_v7.5.0', 'bunny_cc_v7.4.0', 'bunny_cc_v7.3.0', 'bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
         for (const k of prevKeys) {
             try {
                 const oldData = localStorage.getItem(k);
@@ -1090,7 +1152,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.5.0 已启动', 'info');
+        logEvent('兔可可王国 v7.6.0 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1234,23 +1296,64 @@
         });
         mono.stockMarket = getStockIndex();
         mono.stockLastUpdate = Date.now();
+        // Check for margin calls after price update
+        checkMarginCalls();
     }
 
-    /* Get player's total stock portfolio value */
+    /* Get player's total stock portfolio P/L (profit/loss) */
     function getStockPortfolioValue(p) {
         if (!p.stockHoldings) return 0;
         let total = 0;
         for (let i = 0; i < STOCK_TYPES.length; i++) {
             const h = p.stockHoldings[i];
             const price = mono.stockPrices[i];
+            const lev = h.leverage || 1;
             if (h.isShort) {
-                // Short position value: (avgCost - currentPrice) * shares
-                total += (h.avgCost - price) * h.shares;
+                total += (h.avgCost - price) * h.shares * lev;
             } else {
-                total += price * h.shares;
+                total += (price - h.avgCost) * h.shares * lev;
             }
         }
         return Math.floor(total);
+    }
+
+    /* Get player's total stock position count */
+    function getTotalStockShares(p) {
+        if (!p.stockHoldings) return 0;
+        return p.stockHoldings.reduce((s, h) => s + h.shares, 0);
+    }
+
+    /* Check and force-liquidate positions that breach margin (爆仓) */
+    function checkMarginCalls() {
+        const liquidated = [];
+        for (let pi = 0; pi < mono.players.length; pi++) {
+            const p = mono.players[pi];
+            if (p.bankrupt || !p.stockHoldings) continue;
+            for (let si = 0; si < STOCK_TYPES.length; si++) {
+                const h = p.stockHoldings[si];
+                if (h.shares <= 0) continue;
+                const price = mono.stockPrices[si];
+                const lev = h.leverage || 1;
+                // Calculate unrealized P/L
+                const unrealizedPnL = h.isShort
+                    ? (h.avgCost - price) * h.shares * lev
+                    : (price - h.avgCost) * h.shares * lev;
+                // Margin paid = avgCost * shares / leverage
+                const marginPaid = Math.ceil(h.avgCost * h.shares / lev);
+                // Force liquidate if loss exceeds 80% of margin (margin call)
+                if (unrealizedPnL < -marginPaid * 0.8) {
+                    // Force close position
+                    const marginReturn = Math.max(0, marginPaid + unrealizedPnL);
+                    p.money += marginReturn;
+                    p.stats.stockProfit += unrealizedPnL;
+                    const stockNm = STOCK_TYPES[si].nm;
+                    liquidated.push(`${p.ic} ${stockNm} ${h.isShort ? '空仓' : '多仓'} ${h.shares}股 (x${lev})`);
+                    monoLog(`💥 ${p.ic} ${stockNm} 爆仓！强制平仓 ${h.shares} 股 (x${lev}杠杆)，亏损 💰${Math.abs(Math.floor(unrealizedPnL))}`, 'error');
+                    h.shares = 0; h.avgCost = 0; h.leverage = 1;
+                }
+            }
+        }
+        return liquidated;
     }
 
     /* ==================== Dynamic Economy Engine ==================== */
@@ -1796,9 +1899,10 @@
         if (!el) return;
         const p = mono.players[0];
         if (!p) return;
-        if (p.stocks > 0) {
-            const value = Math.floor(p.stocks * mono.stockMarket);
-            el.innerHTML = `持有 ${p.stocks} 股 | 市值 💰${value} | <span style="color:var(--accent);text-decoration:underline;cursor:pointer;" onclick="openStockExchange()">点击交易</span>`;
+        const totalShares = getTotalStockShares(p);
+        const plValue = getStockPortfolioValue(p);
+        if (totalShares > 0) {
+            el.innerHTML = `持有 ${totalShares} 股 | 盈亏 ${plValue >= 0 ? '+' : ''}💰${plValue} | <span style="color:var(--accent);text-decoration:underline;cursor:pointer;" onclick="openStockExchange()">点击交易</span>`;
         } else {
             el.innerHTML = `<span style="color:var(--text2);">无持仓 | </span><span style="color:var(--accent);text-decoration:underline;cursor:pointer;" onclick="openStockExchange()">点击交易</span>`;
         }
@@ -1851,6 +1955,11 @@
                 // Vehicle speed bonus
                 const vehicleSpeed = getVehicleBonus(p, 'speed');
                 if (vehicleSpeed) { total += vehicleSpeed; monoLog(`${p.vehicle.ic} 载具加速 +${vehicleSpeed}`, 'success'); }
+                // Confused effect — random direction
+                if (p.confused > 0) {
+                    p.confused--;
+                    if (Math.random() < 0.5) { total = -total; monoLog('😵 混乱效果触发！反向移动', 'error'); }
+                }
                 movePlayer(0, total + extra);
             }
         }, 80);
@@ -1860,14 +1969,19 @@
         const p = mono.players[playerIdx];
         const oldPos = p.pos;
         const total = getUnlockedTileCount();
-        p.pos = (p.pos + steps) % total;
+        // Handle backward movement (confused effect) — wrap around correctly
+        let newPos = (p.pos + steps) % total;
+        if (newPos < 0) newPos += total; // Fix JS modulo for negative numbers
+        p.pos = newPos;
 
-        // Pass start bonus
-        const laps = Math.floor((oldPos + steps) / total);
-        if (laps > 0) {
-            const bonus = 2000 * laps;
-            p.money += bonus;
-            monoLog(`${p.ic} ${p.nm} 经过起点，获得 ${bonus}💰`, 'success');
+        // Pass start bonus (only when moving forward past start)
+        if (steps > 0) {
+            const laps = Math.floor((oldPos + steps) / total);
+            if (laps > 0) {
+                const bonus = 2000 * laps;
+                p.money += bonus;
+                monoLog(`${p.ic} ${p.nm} 经过起点，获得 ${bonus}💰`, 'success');
+            }
         }
 
         mono.rolling = false;
@@ -2027,6 +2141,12 @@
                         monoLog(`🧾 ${p.nm} 免税卡生效，免付租金`, 'success');
                     } else {
                         let rent = calculateRent(tile, prop);
+                        // Rent double card (owner's active effect)
+                        const owner = mono.players[prop.owner];
+                        if (owner.rentDouble > 0) {
+                            rent *= 2;
+                            monoLog(`🏘️ ${owner.nm} 的收租令生效！租金翻倍`, 'event');
+                        }
                         // Vehicle rent discount
                         const rentDiscount = getVehicleBonus(p, 'rentDiscount');
                         if (rentDiscount) {
@@ -2040,8 +2160,16 @@
                             break;
                         }
                         if (p.shield) { p.shield = false; monoLog(`🛡️ 护盾抵消租金！`, 'success'); break; }
+                        // Mirror reflection — bounce negative effect back
+                        if (p.mirror) {
+                            p.mirror = false;
+                            owner.money -= rent;
+                            p.money += rent;
+                            monoLog(`🪞 ${p.nm} 镜像反射！租金反弹给 ${owner.nm}`, 'event');
+                            checkBankruptcy(owner);
+                            break;
+                        }
                         p.money -= rent;
-                        const owner = mono.players[prop.owner];
                         owner.money += rent;
                         // Track rent stats
                         p.stats.rentPaidTotal += rent;
@@ -2097,13 +2225,24 @@
                     p.vehicle = null;
                     monoLog(`${p.ic} 载具折价变卖获得 💰${refund}`, 'info');
                 }
-                // Release stocks at current market price
-                if (p.stocks > 0) {
-                    const stockValue = Math.floor(p.stocks * mono.stockMarket * 0.5);
-                    p.money += stockValue;
-                    monoLog(`${p.ic} 股票清算获得 💰${stockValue}`, 'info');
-                    p.stocks = 0;
-                    p.stockAvgCost = 0;
+                // Release stocks at current market price (multi-stock)
+                if (p.stockHoldings) {
+                    let stockTotal = 0;
+                    for (let si = 0; si < STOCK_TYPES.length; si++) {
+                        const h = p.stockHoldings[si];
+                        if (h.shares > 0) {
+                            const price = mono.stockPrices[si];
+                            const lev = h.leverage || 1;
+                            const marginReturn = Math.ceil(h.avgCost * h.shares / lev);
+                            const pnl = h.isShort ? (h.avgCost - price) * h.shares * lev : (price - h.avgCost) * h.shares * lev;
+                            stockTotal += Math.max(0, marginReturn + pnl);
+                            h.shares = 0; h.avgCost = 0; h.leverage = 1;
+                        }
+                    }
+                    if (stockTotal > 0) {
+                        p.money += stockTotal;
+                        monoLog(`${p.ic} 股票清算获得 💰${stockTotal}`, 'info');
+                    }
                 }
                 // Clear all debts
                 p.loans = [];
@@ -2845,41 +2984,47 @@
         const p = mono.players[0];
         const price = mono.stockPrices[stockIdx];
         const amount = parseInt(document.getElementById('stock-amount')?.value) || 1;
-        const cost = price * amount; // Leverage doesn't increase cost for buying, but increases exposure
-        if (p.money < cost) { monoLog('资金不足！', 'error'); return; }
+        // Leverage: player pays margin = price * amount / leverage, but P/L is amplified by leverage
+        const margin = Math.ceil(price * amount / leverage);
+        if (p.money < margin) { monoLog('保证金不足！', 'error'); return; }
         const h = p.stockHoldings[stockIdx];
         // If already shorting this stock, buying reduces short position
         if (h.isShort && h.shares > 0) {
             if (amount >= h.shares) {
                 // Close short and go long with remainder
                 const closeShares = h.shares;
-                const shortProfit = (h.avgCost - price) * closeShares;
-                p.money += shortProfit;
+                const shortProfit = (h.avgCost - price) * closeShares * h.leverage;
+                const shortMarginReturn = Math.floor(h.avgCost * closeShares / h.leverage);
+                p.money += shortProfit + shortMarginReturn;
                 p.stats.stockProfit += shortProfit;
                 const remaining = amount - closeShares;
                 h.shares = remaining;
                 h.avgCost = price;
                 h.isShort = false;
                 h.leverage = leverage;
-                p.money -= cost - price * closeShares;
+                const remainMargin = Math.ceil(price * remaining / leverage);
+                p.money -= remainMargin;
                 monoLog(`📈 平仓做空并做多 ${remaining} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage})`, 'success');
             } else {
                 h.shares -= amount;
-                const shortProfit = (h.avgCost - price) * amount;
-                p.money += shortProfit;
+                const shortProfit = (h.avgCost - price) * amount * h.leverage;
+                const shortMarginReturn = Math.floor(h.avgCost * amount / h.leverage);
+                p.money += shortProfit + shortMarginReturn;
                 p.stats.stockProfit += shortProfit;
                 monoLog(`📈 部分平仓做空 ${amount} 股，盈利 💰${Math.floor(shortProfit)}`, 'success');
             }
         } else {
-            // Normal buy or add to long position
-            const totalCost = h.shares > 0 ? (h.avgCost * h.shares + cost) : cost;
+            // Normal buy or add to long position — leverage means player pays margin only
+            const prevMargin = h.shares > 0 ? Math.ceil(h.avgCost * h.shares / h.leverage) : 0;
+            const totalMargin = prevMargin + margin;
             const totalShares = h.shares + amount;
-            h.avgCost = totalCost / totalShares;
+            // Weighted avg cost (stored as actual price for P/L calc, leverage handled at sell time)
+            h.avgCost = h.shares > 0 ? (h.avgCost * h.shares + price * amount) / totalShares : price;
             h.shares = totalShares;
             h.leverage = leverage;
             h.isShort = false;
-            p.money -= cost;
-            monoLog(`📈 买入 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage}杠杆)，花费 💰${cost}`, 'success');
+            p.money -= margin;
+            monoLog(`📈 买入 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage}杠杆)，保证金 💰${margin}`, 'success');
         }
         p.stats.stockTrades++;
         // Price impact: buying pushes price up slightly
@@ -2893,40 +3038,41 @@
         const p = mono.players[0];
         const price = mono.stockPrices[stockIdx];
         const amount = parseInt(document.getElementById('stock-amount')?.value) || 1;
-        // Short selling requires margin (50% of position value)
-        const margin = Math.floor(price * amount * 0.5);
-        if (p.money < margin) { monoLog('保证金不足（需50%）！', 'error'); return; }
+        // Short selling with leverage: margin = price * amount / leverage (50% base * 2/leverage)
+        const margin = Math.ceil(price * amount / leverage);
+        if (p.money < margin) { monoLog(`保证金不足（需💰${margin}）！`, 'error'); return; }
         const h = p.stockHoldings[stockIdx];
         // If already long, shorting reduces long position
         if (!h.isShort && h.shares > 0) {
             if (amount >= h.shares) {
                 const closeShares = h.shares;
-                const longProfit = (price - h.avgCost) * closeShares;
-                p.money += longProfit;
+                const longProfit = (price - h.avgCost) * closeShares * h.leverage;
+                const longMarginReturn = Math.ceil(h.avgCost * closeShares / h.leverage);
+                p.money += longProfit + longMarginReturn;
                 p.stats.stockProfit += longProfit;
                 const remaining = amount - closeShares;
                 h.shares = remaining;
                 h.avgCost = price;
                 h.isShort = true;
                 h.leverage = leverage;
-                p.money -= margin;
+                const remainMargin = Math.ceil(price * remaining / leverage);
+                p.money -= remainMargin;
                 monoLog(`🔻 平仓做多并做空 ${remaining} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage})`, 'info');
             } else {
                 h.shares -= amount;
-                const longProfit = (price - h.avgCost) * amount;
-                p.money += longProfit;
+                const longProfit = (price - h.avgCost) * amount * h.leverage;
+                const longMarginReturn = Math.ceil(h.avgCost * amount / h.leverage);
+                p.money += longProfit + longMarginReturn;
                 p.stats.stockProfit += longProfit;
                 monoLog(`📈 部分平仓做多 ${amount} 股，盈利 💰${Math.floor(longProfit)}`, 'success');
             }
         } else {
             // Open or add to short position
-            const totalShares = h.shares + amount;
-            const totalValue = h.shares > 0 ? (h.avgCost * h.shares + price * amount) : (price * amount);
-            h.avgCost = totalValue / totalShares;
-            h.shares = totalShares;
+            h.avgCost = h.shares > 0 ? (h.avgCost * h.shares + price * amount) / (h.shares + amount) : price;
+            h.shares += amount;
             h.leverage = leverage;
             h.isShort = true;
-            p.money -= margin; // Margin held
+            p.money -= margin;
             monoLog(`🔻 做空 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage}杠杆)，保证金 💰${margin}`, 'info');
         }
         p.stats.stockTrades++;
@@ -2943,25 +3089,25 @@
         if (h.shares <= 0) return;
         const price = mono.stockPrices[stockIdx];
         const amount = Math.min(h.shares, parseInt(document.getElementById('stock-amount')?.value) || h.shares);
+        const lev = h.leverage || 1;
         if (h.isShort) {
-            // Close short position: buy back at current price
-            const profit = (h.avgCost - price) * amount;
-            const marginReturn = Math.floor(price * amount * 0.5);
+            // Close short position: P/L amplified by leverage, margin returned based on avgCost
+            const profit = (h.avgCost - price) * amount * lev;
+            const marginReturn = Math.ceil(h.avgCost * amount / lev);
             p.money += marginReturn + profit;
             p.stats.stockProfit += profit;
             h.shares -= amount;
             if (h.shares === 0) { h.avgCost = 0; h.leverage = 1; }
-            monoLog(`📉 平仓做空 ${amount} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(Math.floor(profit))}`, profit >= 0 ? 'success' : 'error');
+            monoLog(`📉 平仓做空 ${amount} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${lev})，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(Math.floor(profit))}`, profit >= 0 ? 'success' : 'error');
         } else {
-            // Close long position: sell at current price
-            const revenue = price * amount;
-            const cost = Math.floor(h.avgCost * amount);
-            const profit = revenue - cost;
-            p.money += revenue;
+            // Close long position: P/L amplified by leverage, margin returned + profit
+            const profit = (price - h.avgCost) * amount * lev;
+            const marginReturn = Math.ceil(h.avgCost * amount / lev);
+            p.money += marginReturn + profit;
             p.stats.stockProfit += profit;
             h.shares -= amount;
             if (h.shares === 0) { h.avgCost = 0; h.leverage = 1; }
-            monoLog(`📉 卖出 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price}，收入 💰${revenue}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(profit)}`, profit >= 0 ? 'success' : 'error');
+            monoLog(`📉 卖出 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${lev})，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(Math.floor(profit))}`, profit >= 0 ? 'success' : 'error');
         }
         p.stats.stockTrades++;
         // Price impact
@@ -2989,49 +3135,67 @@
     function aiStockDecision(p) {
         if (!p.stockHoldings || p.stockHoldings.length === 0) return;
         const personality = AI_PERSONALITIES[p.personality];
-        const idx = mono.players.indexOf(p);
         const stockIdx = Math.floor(Math.random() * STOCK_TYPES.length);
         const stock = STOCK_TYPES[stockIdx];
         const price = mono.stockPrices[stockIdx];
         const h = p.stockHoldings[stockIdx];
 
+        // AI closes short position when price falls below avgCost (profit taking)
+        if (h.isShort && h.shares > 0 && price < h.avgCost * 0.9 && Math.random() < 0.5) {
+            const closeShares = h.shares;
+            const profit = (h.avgCost - price) * closeShares * (h.leverage || 1);
+            const marginReturn = Math.ceil(h.avgCost * closeShares / (h.leverage || 1));
+            p.money += marginReturn + profit;
+            p.stats.stockProfit += profit;
+            p.stats.stockTrades++;
+            monoLog(`${p.ic} 📉 平仓做空 ${closeShares} 股 ${stock.ic}，盈利 💰${Math.floor(profit)}`, 'success');
+            h.shares = 0; h.avgCost = 0; h.leverage = 1; h.isShort = false;
+            // Use closeShares (not h.shares which is now 0) for price impact — closing short pushes price up
+            mono.stockPrices[stockIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + closeShares * 0.005)));
+            mono.stockMarket = getStockIndex();
+            return;
+        }
+        // AI closes long position when price rises above avgCost (profit taking)
+        if (!h.isShort && h.shares > 0 && price > h.avgCost * 1.15 && Math.random() < 0.5) {
+            const soldShares = h.shares;
+            const profit = (price - h.avgCost) * soldShares * (h.leverage || 1);
+            const marginReturn = Math.ceil(h.avgCost * soldShares / (h.leverage || 1));
+            p.money += marginReturn + profit;
+            p.stats.stockProfit += profit;
+            p.stats.stockTrades++;
+            monoLog(`${p.ic} 📉 卖出 ${soldShares} 股 ${stock.ic}，盈利 💰${Math.floor(profit)}`, 'success');
+            h.shares = 0; h.avgCost = 0; h.leverage = 1;
+            // Use soldShares (not h.shares which is now 0) for price impact
+            mono.stockPrices[stockIdx] = Math.max(stock.basePrice * 0.2, Math.floor(price * (1 - soldShares * 0.005)));
+            mono.stockMarket = getStockIndex();
+            return;
+        }
         // AI buys when price is below base and has cash
         if (price < stock.basePrice * 0.85 && p.money > price * 5 && Math.random() < personality.buyChance * 0.4) {
             const amount = Math.floor(Math.min(p.money * 0.15, p.money) / price);
             if (amount > 0) {
-                const cost = price * amount;
-                const totalCost = h.shares > 0 ? (h.avgCost * h.shares + cost) : cost;
-                h.avgCost = totalCost / (h.shares + amount);
-                h.shares += amount;
-                h.isShort = false;
-                h.leverage = 1;
-                p.money -= cost;
-                p.stats.stockTrades++;
-                mono.stockPrices[stockIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + amount * 0.005)));
-                mono.stockMarket = getStockIndex();
-                monoLog(`${p.ic} 📈 买入 ${amount} 股 ${stock.ic}`, 'info');
+                const margin = Math.ceil(price * amount); // AI uses 1x leverage
+                if (p.money >= margin) {
+                    h.avgCost = h.shares > 0 ? (h.avgCost * h.shares + price * amount) / (h.shares + amount) : price;
+                    h.shares += amount;
+                    h.isShort = false;
+                    h.leverage = 1;
+                    p.money -= margin;
+                    p.stats.stockTrades++;
+                    mono.stockPrices[stockIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + amount * 0.005)));
+                    mono.stockMarket = getStockIndex();
+                    monoLog(`${p.ic} 📈 买入 ${amount} 股 ${stock.ic}`, 'info');
+                }
             }
         }
-        // AI sells when price is above base and holds long
-        else if (price > stock.basePrice * 1.2 && h.shares > 0 && !h.isShort && Math.random() < 0.5) {
-            const revenue = price * h.shares;
-            const profit = revenue - Math.floor(h.avgCost * h.shares);
-            p.money += revenue;
-            p.stats.stockProfit += profit;
-            p.stats.stockTrades++;
-            monoLog(`${p.ic} 📉 卖出 ${h.shares} 股 ${stock.ic}`, 'info');
-            h.shares = 0; h.avgCost = 0; h.leverage = 1;
-            mono.stockPrices[stockIdx] = Math.max(stock.basePrice * 0.2, Math.floor(price * (1 - h.shares * 0.005)));
-            mono.stockMarket = getStockIndex();
-        }
         // Aggressive AI may short sell
-        else if (price > stock.basePrice * 1.3 && p.money > price * 3 && personality === AI_PERSONALITIES.aggressive && Math.random() < 0.3) {
+        else if (price > stock.basePrice * 1.3 && p.money > price * 3 && p.personality === 'aggressive' && Math.random() < 0.3) {
             const amount = Math.floor(Math.min(p.money * 0.1, p.money) / price);
             if (amount > 0) {
-                const margin = Math.floor(price * amount * 0.5);
+                const margin = Math.ceil(price * amount);
                 if (p.money >= margin) {
+                    h.avgCost = h.shares > 0 ? (h.avgCost * h.shares + price * amount) / (h.shares + amount) : price;
                     h.shares += amount;
-                    h.avgCost = h.shares > 0 ? ((h.avgCost * (h.shares - amount)) + price * amount) / h.shares : price;
                     h.isShort = true;
                     h.leverage = 1;
                     p.money -= margin;
@@ -3040,12 +3204,7 @@
                 }
             }
         }
-        // Dividend for long positions when index is high
-        if (h.shares > 0 && !h.isShort && mono.stockMarket > 120) {
-            const dividend = Math.floor(h.shares * price * 0.03);
-            p.money += dividend;
-            p.stats.stockProfit += dividend;
-        }
+        // NOTE: Dividend is now only paid via triggerTile stock tile, not here (fixes double dividend)
     }
 
     /* ==================== Monopoly: Enhanced Auction ==================== */
@@ -4585,12 +4744,20 @@
         }
         // Process loans for the new player
         processLoans(mono.players[next]);
+        // Decrement active status effects for the new player (they expire at start of their turn)
+        const newP = mono.players[next];
+        if (newP.rentDouble > 0) newP.rentDouble--;
         // Auto-save each turn
         mono.pendingAction = null;
         mono.autoSaveTurn = mono.turn;
         saveMonopoly();
         saveInventory();
         renderMonopoly();
+
+        // Push notification when it becomes the human player's turn
+        if (mono.currentPlayer === 0 && mono.started) {
+            notifyMyTurn();
+        }
 
         if (mono.currentPlayer !== 0 && mono.started) {
             mono.pendingAction = 'aiTurn';
@@ -4602,6 +4769,25 @@
 
     function processLoans(p) {
         if (p.loans.length === 0) return;
+        // Interest-free card: skip interest this turn
+        if (p.interestFree > 0) {
+            p.interestFree--;
+            monoLog(`💳 ${p.nm} 免息卡生效，本轮贷款免息`, 'success');
+            // Only pay principal, no interest
+            let principalPayment = 0;
+            p.loans.forEach(l => {
+                principalPayment += Math.floor(l.amount / 5);
+                l.remaining--;
+            });
+            if (p.money >= principalPayment) {
+                p.money -= principalPayment;
+                p.loans = p.loans.filter(l => l.remaining > 0);
+            } else {
+                p.money = Math.max(0, p.money);
+                p.loans.forEach(l => l.remaining = Math.max(l.remaining, 1) + 1);
+            }
+            return;
+        }
         let totalPayment = 0;
         let deferred = false;
         p.loans.forEach(l => {
@@ -4721,6 +4907,11 @@
         // AI vehicle speed bonus
         const aiVehicleSpeed = getVehicleBonus(p, 'speed');
         if (aiVehicleSpeed) total += aiVehicleSpeed;
+        // Confused effect — random direction for AI too
+        if (p.confused > 0) {
+            p.confused--;
+            if (Math.random() < 0.5) { total = -total; monoLog(`😵 ${p.nm} 混乱效果触发！反向移动`, 'error'); }
+        }
         renderMonopoly();
         monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
 
@@ -4762,6 +4953,7 @@
                     taxFree: 0, bankrupt: false,
                     loans: [], credit: 100, vehicle: null,
                     stocks: 0, stockAvgCost: 0,
+                    stockHoldings: STOCK_TYPES.map(s => ({shares: 0, avgCost: 0, leverage: 1, isShort: false})),
                     stats: {
                         propertiesBought: 0, purchaseSpent: 0,
                         upgradesDone: 0, upgradeSpent: 0,
@@ -5447,7 +5639,7 @@
         const p = mono.players[0];
         const bonuses = [
             () => { const amt = 3000 + Math.floor(Math.random() * 7000); p.money += amt; return `💰 获得 ${amt} 金币`; },
-            () => { const amt = 5 + Math.floor(Math.random() * 20); p.stocks += amt; return `📈 获赠 ${amt} 股票`; },
+            () => { const amt = 5 + Math.floor(Math.random() * 20); const si = Math.floor(Math.random() * STOCK_TYPES.length); const h = p.stockHoldings[si]; h.avgCost = h.shares > 0 ? (h.avgCost * h.shares + mono.stockPrices[si] * amt) / (h.shares + amt) : mono.stockPrices[si]; h.shares += amt; return `📈 获赠 ${amt} 股 ${STOCK_TYPES[si].nm}`; },
             () => { p.shield = true; return `🛡️ 获得护盾保护`; },
             () => { p.lucky = true; return `🍀 获得幸运加成`; },
             () => { p.doubleDice = true; return `🎲 下次掷骰双倍`; },
@@ -5829,7 +6021,18 @@
             fxCanvas.height = window.innerHeight;
         }
         resize();
-        window.addEventListener('resize', resize);
+        // Debounced resize — re-render game UI and adjust DPI-aware font scaling
+        let _resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(() => {
+                resize();
+                // Re-apply DPI-aware font scaling on resolution/DPI change
+                if (typeof loadFontScale === 'function') loadFontScale();
+                // Re-render game board to fit new dimensions
+                if (typeof renderMonopoly === 'function' && mono.started) renderMonopoly();
+            }, 200);
+        });
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
@@ -6231,6 +6434,8 @@
     }
 
     /* ==================== PWA ==================== */
+    let _deferredPrompt = null;
+
     function initPWA() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js').catch(() => {});
@@ -6247,6 +6452,131 @@
                 console.log('Service Worker controller changed');
             });
         }
+
+        // === BeforeInstallPrompt — custom install banner ===
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            _deferredPrompt = e;
+            // Show banner only if not previously dismissed and not already installed
+            const dismissed = localStorage.getItem('pwa_install_dismissed');
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            if (!dismissed && !standalone) {
+                const banner = document.getElementById('pwa-install-banner');
+                if (banner) {
+                    banner.style.display = 'flex';
+                    banner.style.animation = 'slideUp .4s ease';
+                }
+            }
+        });
+
+        // Detect if already installed (PWA mode)
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.style.display = 'none';
+            _deferredPrompt = null;
+        });
+
+        // === Offline / Online indicator ===
+        const offlineEl = document.getElementById('offline-indicator');
+        function updateOnlineStatus() {
+            if (!offlineEl) return;
+            if (navigator.onLine) {
+                offlineEl.style.transform = 'translateY(-100%)';
+            } else {
+                offlineEl.style.transform = 'translateY(0)';
+            }
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+
+        // === Push Notification subscription ===
+        initPushNotifications();
+    }
+
+    async function installPWA() {
+        if (!_deferredPrompt) {
+            monoLog('当前浏览器不支持安装提示，请使用浏览器菜单"添加到主屏幕"', 'info');
+            return;
+        }
+        _deferredPrompt.prompt();
+        const { outcome } = await _deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('User accepted PWA install');
+        }
+        _deferredPrompt = null;
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) banner.style.display = 'none';
+    }
+
+    function dismissPWAInstall() {
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) banner.style.display = 'none';
+        localStorage.setItem('pwa_install_dismissed', Date.now().toString());
+    }
+
+    async function initPushNotifications() {
+        if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+        // Request permission lazily — only when user interacts (not on load)
+        // Permission will be requested when user opts in via settings
+    }
+
+    async function subscribePushNotifications() {
+        if (!('Notification' in window)) {
+            monoLog('当前浏览器不支持通知', 'error');
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            monoLog('通知已开启', 'success');
+            return;
+        }
+        if (Notification.permission === 'denied') {
+            monoLog('通知已被浏览器屏蔽，请在设置中手动开启', 'error');
+            return;
+        }
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+            monoLog('✅ 通知已开启，将在重要事件时提醒你', 'success');
+            // Send a test notification
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                if (reg.showNotification) {
+                    reg.showNotification('🐰 兔可可王国', {
+                        body: '通知已开启！将在回合轮到你时提醒',
+                        icon: '/icon/192.png',
+                        badge: '/icon/96.png',
+                        tag: 'bunny-cc-notify',
+                    });
+                } else {
+                    new Notification('🐰 兔可可王国', {
+                        body: '通知已开启！将在回合轮到你时提醒',
+                        icon: '/icon/192.png',
+                    });
+                }
+            } catch(e) { console.warn('Notification error:', e); }
+        } else {
+            monoLog('通知未开启', 'info');
+        }
+    }
+
+    /* Notify player when it's their turn (if permission granted) */
+    function notifyMyTurn() {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        try {
+            const reg = navigator.serviceWorker.controller;
+            if (reg && 'showNotification' in window) {
+                navigator.serviceWorker.ready.then(swReg => {
+                    swReg.showNotification('🐰 轮到你了！', {
+                        body: '兔可可王国 — 你的回合开始了',
+                        icon: '/icon/192.png',
+                        badge: '/icon/96.png',
+                        tag: 'bunny-cc-turn',
+                        vibrate: [200, 100, 200],
+                    });
+                }).catch(() => {});
+            }
+        } catch(e) {}
     }
 
     /* ==================== Changelog ==================== */
@@ -6254,7 +6584,20 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.5.0</strong> — 交易谈判 & AI主动交易 & 事件稀有度</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.6.0</strong> — PWA终极优化 & 股市修复 & 内容扩充</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📱 PWA安装提示：beforeinstallprompt自定义安装横幅，可一键安装到主屏</li>
+                <li>📡 离线模式指示器：断网时顶部红色提示栏，联网自动隐藏</li>
+                <li>🔔 推送通知：设置中开启回合通知，轮到你时自动提醒</li>
+                <li>📲 SW增强：push/notificationclick事件，后台缓存刷新</li>
+                <li>💥 股市爆仓机制：亏损达保证金80%时强制平仓</li>
+                <li>🔧 修复AI平空仓价格影响bug（用closeShares替代已清零的h.shares）</li>
+                <li>🎴 新增8张卡牌：收租令/冰冻咒/镜像反射/随机传送/免息卡/内幕消息/混乱咒/淘金热</li>
+                <li>❓ 新增9个随机事件：经济危机/股市暴涨崩盘/免费抽卡日/慈善晚宴/黄金时代等</li>
+                <li>⚡ UI/UX优化：resize防抖、touch-action防双击缩放、移动端触摸适配</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.5.0</strong> — 交易谈判 & AI主动交易 & 事件稀有度</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🤝 交易系统重做：支持卡牌/载具/金币交换，3轮还价谈判</li>
                 <li>🔄 AI反报价：拒绝时自动生成还价，可接受/拒绝/修改重提</li>
