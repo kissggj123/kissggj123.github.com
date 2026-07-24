@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v6.1.0 -->
+    <!-- VERSION: v6.2.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.1.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.1.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.1.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.1.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6.2.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=6.2.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=6.2.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=6.2.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=6.2.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6.2.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -482,7 +482,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v6.1.0</div>
+                <div class="subtitle">v6.2.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -641,7 +641,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.1.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.2.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -683,8 +683,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v6.1.0',
-        SAVE_KEY: 'bunny_cc_v6.1.0',
+        VERSION: 'v6.2.0',
+        SAVE_KEY: 'bunny_cc_v6.2.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -745,33 +745,36 @@
     // Card pool — shared between home draw and monopoly card tiles
     const CARD_POOL = [
         // Common
-        {id:'funds_boost', ic:'💰', n:'财富祝福', desc:'获得 2000💰', rarity:'common', monoEff:(p)=>{p.money+=2000}},
-        {id:'speed_boost', ic:'🚀', n:'加速冲刺', desc:'下回合多走3步', rarity:'common', monoEff:(p)=>{p.speed=3}},
-        {id:'shield', ic:'🛡️', n:'护盾', desc:'免疫下次负面效果', rarity:'common', monoEff:(p)=>{p.shield=true}},
-        {id:'lucky', ic:'🍀', n:'幸运', desc:'下次正面效果翻倍', rarity:'common', monoEff:(p)=>{p.lucky=true}},
-        {id:'heal', ic:'💊', n:'治疗', desc:'恢复 1500💰', rarity:'common', monoEff:(p)=>{p.money+=1500}},
+        {id:'funds_boost', ic:'💰', n:'财富祝福', desc:'获得 2000💰', rarity:'common', monoEff:(p)=>{p.money+=2000;return '+2000💰'}},
+        {id:'speed_boost', ic:'🚀', n:'加速冲刺', desc:'下回合多走3步', rarity:'common', monoEff:(p)=>{p.speed=3;return '下回合 +3 步'}},
+        {id:'shield', ic:'🛡️', n:'护盾', desc:'免疫下次负面效果', rarity:'common', monoEff:(p)=>{p.shield=true;return '护盾已激活'}},
+        {id:'lucky', ic:'🍀', n:'幸运', desc:'下次正面效果翻倍', rarity:'common', monoEff:(p)=>{p.lucky=true;return '幸运已激活'}},
+        {id:'heal', ic:'💊', n:'治疗', desc:'恢复 1500💰', rarity:'common', monoEff:(p)=>{p.money+=1500;return '+1500💰'}},
         // Uncommon
         {id:'swap', ic:'🔄', n:'交换', desc:'与随机玩家交换位置', rarity:'uncommon', monoEff:(p,mono)=>{
             const others=mono.players.filter(o=>o!==p&&!o.bankrupt);
-            if(others.length){const t=others[Math.floor(Math.random()*others.length)];[p.pos,t.pos]=[t.pos,p.pos];}
+            if(others.length){const t=others[Math.floor(Math.random()*others.length)];[p.pos,t.pos]=[t.pos,p.pos];return `与 ${t.nm} 交换了位置`;}
+            return '没有可交换的对手';
         }},
         {id:'steal', ic:'🦹', n:'偷取', desc:'从最近玩家偷取 800💰', rarity:'uncommon', monoEff:(p,mono)=>{
             const total=getUnlockedTileCount();
             const targets=mono.players.filter(o=>o!==p&&!o.bankrupt).map(o=>({p:o,d:Math.min(Math.abs(o.pos-p.pos),total-Math.abs(o.pos-p.pos))})).sort((a,b)=>a.d-b.d);
-            if(targets.length){targets[0].p.money=Math.max(0,targets[0].p.money-800);p.money+=800;}
+            if(targets.length){targets[0].p.money=Math.max(0,targets[0].p.money-800);p.money+=800;return `从 ${targets[0].p.nm} 偷取了 800💰`;}
+            return '没有可偷取的对手';
         }},
-        {id:'double_dice', ic:'🎲', n:'双倍骰子', desc:'下回合掷骰点数翻倍', rarity:'uncommon', monoEff:(p)=>{p.doubleDice=true}},
-        {id:'jail_free', ic:'🔑', n:'出狱卡', desc:'免于监狱惩罚', rarity:'uncommon', monoEff:(p)=>{p.jailFree=true}},
+        {id:'double_dice', ic:'🎲', n:'双倍骰子', desc:'下回合掷骰点数翻倍', rarity:'uncommon', monoEff:(p)=>{p.doubleDice=true;return '下回合骰子翻倍'}},
+        {id:'jail_free', ic:'🔑', n:'出狱卡', desc:'免于监狱惩罚', rarity:'uncommon', monoEff:(p)=>{p.jailFree=true;return '出狱卡已准备好'}},
         // Rare
-        {id:'mega_funds', ic:'💎', n:'天降横财', desc:'获得 5000💰', rarity:'rare', monoEff:(p)=>{p.money+=5000}},
-        {id:'tax_free', ic:'🧾', n:'免税卡', desc:'下3回合免付租金', rarity:'rare', monoEff:(p)=>{p.taxFree=3}},
+        {id:'mega_funds', ic:'💎', n:'天降横财', desc:'获得 5000💰', rarity:'rare', monoEff:(p)=>{p.money+=5000;return '+5000💰'}},
+        {id:'tax_free', ic:'🧾', n:'免税卡', desc:'下3回合免付租金', rarity:'rare', monoEff:(p)=>{p.taxFree=3;return '免税 3 回合'}},
         {id:'upgrade_free', ic:'⬆️', n:'免费升级', desc:'随机地产免费升级', rarity:'rare', monoEff:(p,mono)=>{
             const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===mono.players.indexOf(p));
-            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];if(mono.properties[t.id].level<5)mono.properties[t.id].level++;}
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];if(mono.properties[t.id].level<5){mono.properties[t.id].level++;return `${t.nm} 升级到 Lv.${mono.properties[t.id].level}`;}return `${t.nm} 已满级`;}
+            return '没有可升级的地产';
         }},
         // Legendary
-        {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=true;p.lucky=true}},
-        {id:'teleport_home', ic:'🎯', n:'回归起点', desc:'传送回起点并获奖金', rarity:'legendary', monoEff:(p,mono)=>{p.pos=0;p.money+=2000}},
+        {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=true;p.lucky=true;return '+3000💰, 护盾+幸运'}},
+        {id:'teleport_home', ic:'🎯', n:'回归起点', desc:'传送回起点并获奖金', rarity:'legendary', monoEff:(p,mono)=>{p.pos=0;p.money+=2000;return '回到起点 +2000💰'}},
     ];
     const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
     const RARITY_WEIGHTS = {common:40, uncommon:30, rare:20, legendary:10};
@@ -880,7 +883,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v6.1.0 已启动', 'info');
+        logEvent('兔可可王国 v6.2.0 已启动', 'info');
     }
 
     function validateMono() {
@@ -1256,14 +1259,22 @@
             case 'card': {
                 const card = {...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]};
                 p.cards.push(card);
-                monoLog(`${p.ic} 抽到 ${card.ic} ${card.nm} — ${card.desc}`, 'success');
+                monoLog(`${p.ic} 抽到 ${card.ic} ${card.n} — ${card.desc}`, 'success');
+                if (playerIdx === 0) {
+                    showCardDrawModal(card, p);
+                    return;
+                }
                 break;
             }
             case 'event': {
                 const ev = MONO_EVENTS[Math.floor(Math.random()*MONO_EVENTS.length)];
-                monoLog(`${ev.ic} ${ev.nm} — ${ev.desc}`, 'info');
                 ev.eff(mono, p);
                 checkBankruptcy(p);
+                monoLog(`🎲 随机事件: ${ev.ic} ${ev.nm} — ${ev.desc}`, 'info');
+                if (playerIdx === 0) {
+                    showEventModal(ev, p);
+                    return;
+                }
                 break;
             }
             case 'teleport':
@@ -1654,8 +1665,10 @@
         const card = p.cards[cardIdx];
         if (!card) return;
         p.cards.splice(cardIdx, 1);
-        if (card.monoEff) card.monoEff(p, mono);
-        monoLog(`🃏 兔可可 使用 ${card.ic} ${card.nm}`, 'success');
+        let effResult = '';
+        if (card.monoEff) effResult = card.monoEff(p, mono) || '';
+        monoLog(`🃏 兔可可 使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : card.desc ? ' — ' + card.desc : ''}`, 'success');
+        showCardUseModal(card, effResult);
         saveMonopoly();
         renderMonopoly();
     }
@@ -1669,7 +1682,7 @@
         if (!card) return;
         cardInventory.splice(invIdx, 1);
         p.cards.push({...card});
-        monoLog(`🎒 携带 ${card.ic} ${card.nm} 到游戏中`, 'success');
+        monoLog(`🎒 携带 ${card.ic} ${card.n} 到游戏中`, 'success');
         saveInventory();
         saveMonopoly();
         renderMonopoly();
@@ -1734,7 +1747,7 @@
             const card = p.cards[ci];
             p.cards.splice(ci, 1);
             if (card.monoEff) card.monoEff(p, mono);
-            monoLog(`${p.ic} 使用 ${card.ic} ${card.nm}`, 'info');
+            monoLog(`${p.ic} 使用 ${card.ic} ${card.n}`, 'info');
             renderMonopoly();
         }
 
@@ -1797,6 +1810,65 @@
     function closeModal(e) {
         if (e && e.target !== e.currentTarget) return;
         document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    // Card use modal (player uses card from hand — does NOT end turn)
+    function showCardUseModal(card, effResult) {
+        const modal = document.getElementById('modal-content');
+        const descText = effResult || card.desc || '';
+        modal.innerHTML = `
+            <div class="modal-title">🃏 卡牌发动</div>
+            <div style="text-align:center;padding:1rem 0;">
+                <div style="font-size:3rem;margin-bottom:.5rem;">${card.ic}</div>
+                <div style="font-weight:800;font-size:1.2rem;color:var(--accent);">${card.n}</div>
+                <div style="font-size:.7rem;font-weight:700;color:${RARITY_COLORS[card.rarity]};margin-bottom:.5rem;">${card.rarity.toUpperCase()}</div>
+                <div style="color:var(--text2);font-size:.9rem;line-height:1.6;">${descText}</div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="closeModal()">确定</button>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    // Event modal (random event triggers — ends turn after closing)
+    function showEventModal(ev, p) {
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">🎲 随机事件</div>
+            <div style="text-align:center;padding:1rem 0;">
+                <div style="font-size:3rem;margin-bottom:.5rem;">${ev.ic}</div>
+                <h3 style="margin-bottom:.5rem;color:var(--accent);">${ev.nm}</h3>
+                <p style="color:var(--text2);font-size:.9rem;line-height:1.6;">${ev.desc}</p>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="closeEventModal()">确定</button>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function closeEventModal() {
+        closeModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    // Card draw modal (player lands on card tile — ends turn after closing)
+    function showCardDrawModal(card, p) {
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">🃏 抽到卡牌</div>
+            <div style="text-align:center;padding:1rem 0;">
+                <div style="font-size:3rem;margin-bottom:.5rem;">${card.ic}</div>
+                <div style="font-weight:800;font-size:1.2rem;color:var(--accent);">${card.n}</div>
+                <div style="font-size:.7rem;font-weight:700;color:${RARITY_COLORS[card.rarity]};margin-bottom:.5rem;">${card.rarity.toUpperCase()}</div>
+                <div style="color:var(--text2);font-size:.9rem;line-height:1.6;">${card.desc}</div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="closeCardDrawModal()">确定</button>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function closeCardDrawModal() {
+        closeModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
     }
 
     /* ==================== Card Draw System (with Cooldown) ==================== */
@@ -2921,7 +2993,16 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.1.0</strong> — 超大地图 & 胡萝卜图标更新</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.2.0</strong> — 卡牌效果修复 & 事件提示优化</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🃏 修复卡牌名称显示 undefined（card.nm → card.n）</li>
+                <li>🃏 使用卡牌时弹出效果提示弹窗</li>
+                <li>🎲 随机事件触发时显示事件详情弹窗</li>
+                <li>🃏 踩到卡牌格时显示抽卡结果弹窗</li>
+                <li>📝 日志信息增强：卡牌效果描述、事件前缀标识</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.1.0</strong> — 超大地图 & 胡萝卜图标更新</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🗺️ 地图扩展至 1248 格（312×4 超大地图）</li>
                 <li>🐰 PWA 图标更新为胡萝卜版本（全尺寸 16~1024px）</li>
