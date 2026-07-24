@@ -353,9 +353,10 @@
         .inventory-card .ic-desc { font-size: .35rem; color: var(--text2); text-align: center; line-height: 1.1; padding: 0 2px; overflow: hidden; max-height: 2.4em; }
 
         .god-challenge-box { background: var(--card2); border: 2px dashed var(--accent); border-radius: var(--radius); padding: 1rem; text-align: center; margin-bottom: 1rem; }
-        .god-code-display { font-family: 'Press Start 2P', monospace; font-size: .7rem; word-break: break-all; color: var(--accent); margin: .5rem 0; line-height: 1.8; }
-        .god-input { width: 100%; padding: .75rem; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--card2); color: var(--text); font-family: 'Press Start 2P', monospace; font-size: .65rem; transition: border var(--transition); }
-        .god-input:focus { outline: none; border-color: var(--accent); }
+        .god-code-display { font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace; font-size: .8rem; font-weight: 600; word-break: break-all; color: var(--accent); margin: .5rem 0; line-height: 2; letter-spacing: .5px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+        .god-input { width: 100%; padding: .75rem; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--card2); color: var(--text); font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace; font-size: .8rem; letter-spacing: .5px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; transition: border var(--transition); }
+        .god-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,107,157,.12); }
+        .god-input::placeholder { color: var(--text2); opacity: .5; font-family: inherit; }
         .god-status { padding: .75rem; border-radius: var(--radius-sm); text-align: center; font-weight: 700; margin-bottom: .5rem; display: none; }
         .god-status.show { display: block; }
         .god-status.success { background: rgba(76,175,80,.1); color: var(--good); }
@@ -2067,12 +2068,12 @@
                 输入激活码以解锁上帝模式<br>使用私钥对挑战码进行 ECDSA-SHA256 签名
             </div>
             <div class="god-challenge-box">
-                <div style="font-size:.7rem;color:var(--text2);">挑战码 Challenge：</div>
+                <div style="font-size:.7rem;color:var(--text2);margin-bottom:.25rem;">挑战码 Challenge (32字符 hex)</div>
                 <div class="god-code-display">${challenge}</div>
                 <button class="btn btn-secondary btn-sm" onclick="generateChallenge();renderGodPanel();">🔄 刷新挑战码</button>
             </div>
             <div class="god-status" id="god-status"></div>
-            <input type="text" class="god-input" id="god-input" placeholder="输入十六进制签名..." style="margin-bottom:.5rem;">
+            <input type="text" class="god-input" id="god-input" placeholder="粘贴 128 字符 hex 签名..." style="margin-bottom:.5rem;">
             <button class="btn btn-primary" style="width:100%;" onclick="verifyGodMode()">🔓 验证激活</button>`;
     }
 
