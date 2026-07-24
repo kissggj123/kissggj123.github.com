@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v7.3.0 -->
+    <!-- VERSION: v7.4.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.3.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.3.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.3.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.3.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.3.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.3.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.4.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.4.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.4.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.4.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.4.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.4.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -540,7 +540,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.3.0</div>
+                <div class="subtitle">v7.4.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -733,7 +733,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.3.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.4.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -786,8 +786,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.3.0',
-        SAVE_KEY: 'bunny_cc_v7.3.0',
+        VERSION: 'v7.4.0',
+        SAVE_KEY: 'bunny_cc_v7.4.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -987,6 +987,22 @@
         {id:'dragon',   ic:'🐉', nm:'胡萝卜巨龙',   price:100000, bonus:{type:'allInOne', val:3, label:'全能加成'},       desc:'传说神兽，移动+3且租金减免50%且15%免租'},
     ];
 
+    /* Stock market: 10 stock types with varying volatility */
+    const STOCK_TYPES = [
+        {id:0, ic:'🥕', nm:'胡萝卜农业',  basePrice:50,  volatility:0.08, trend:'stable',    desc:'稳健蓝筹，低波动，适合长期持有'},
+        {id:1, ic:'🏰', nm:'城堡地产',    basePrice:120, volatility:0.12, trend:'stable',    desc:'地产龙头，分红稳定，中等波动'},
+        {id:2, ic:'⚡', nm:'能源电力',    basePrice:80,  volatility:0.15, trend:'cyclical',  desc:'周期性强，经济好时大涨，差时大跌'},
+        {id:3, ic:'🔧', nm:'工业制造',    basePrice:100, volatility:0.10, trend:'stable',    desc:'工业基础，波动适中'},
+        {id:4, ic:'💊', nm:'医药健康',    basePrice:150, volatility:0.07, trend:'growth',    desc:'防御性强，熊市抗跌，稳步增长'},
+        {id:5, ic:'🎮', nm:'游戏娱乐',    basePrice:200, volatility:0.25, trend:'growth',    desc:'高成长高波动，暴涨暴跌'},
+        {id:6, ic:'🚀', nm:'航天科技',    basePrice:300, volatility:0.30, trend:'growth',    desc:'高风险高回报，波动极大'},
+        {id:7, ic:'🛒', nm:'零售消费',    basePrice:60,  volatility:0.06, trend:'stable',    desc:'日常消费，最低波动，适合保守投资'},
+        {id:8, ic:'🏦', nm:'金融银行',    basePrice:180, volatility:0.18, trend:'cyclical',  desc:'与经济周期强相关，波动较大'},
+        {id:9, ic:'🔮', nm:'神秘宝石',    basePrice:500, volatility:0.35, trend:'volatile',  desc:'投机性极强，巨幅波动，赌徒最爱'},
+    ];
+    const STOCK_LEVERAGES = [1, 2, 5, 10];
+    const STOCK_REFRESH_INTERVAL = 30000; // 30 seconds
+
     /* ==================== State ==================== */
     let mono = null;
     let godModeActive = false;
@@ -1017,7 +1033,7 @@
     /* ==================== Save Migration ==================== */
     function migrateSaveKey() {
         // Migrate card inventory from previous version keys
-        const prevKeys = ['bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
+        const prevKeys = ['bunny_cc_v7.3.0', 'bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
         for (const k of prevKeys) {
             try {
                 const oldData = localStorage.getItem(k);
@@ -1059,7 +1075,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.3.0 已启动', 'info');
+        logEvent('兔可可王国 v7.4.0 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1115,6 +1131,8 @@
             if (p.personality === undefined) p.personality = 'balanced';
             if (p.stocks === undefined) p.stocks = 0;
             if (p.stockAvgCost === undefined) p.stockAvgCost = 0;
+            // Migrate to multi-stock holdings
+            migrateStockHoldings(p);
             if (!p.stats) p.stats = {
                 propertiesBought: 0, purchaseSpent: 0,
                 upgradesDone: 0, upgradeSpent: 0,
@@ -1136,6 +1154,11 @@
         if (mono.voluntaryVisit === undefined) mono.voluntaryVisit = false;
         if (mono.pendingAction === undefined) mono.pendingAction = null;
         if (mono.autoSaveTurn === undefined) mono.autoSaveTurn = 0;
+        // Initialize multi-stock system (10 stocks)
+        if (!mono.stockPrices || mono.stockPrices.length < STOCK_TYPES.length) {
+            mono.stockPrices = STOCK_TYPES.map(s => s.basePrice);
+        }
+        if (mono.stockLastUpdate === undefined) mono.stockLastUpdate = Date.now();
         if (mono.properties === undefined) {
             mono.properties = mono.tiles.map(t => t.type === 'property' ? {owner:-1, level:0} : null);
         }
@@ -1147,6 +1170,69 @@
         if (!mono.economy) {
             mono.economy = calculateEconomyState();
         }
+    }
+
+    /* Migrate old single-stock holdings to multi-stock format */
+    function migrateStockHoldings(p) {
+        if (p.stockHoldings && p.stockHoldings.length > 0) return; // Already migrated
+        p.stockHoldings = STOCK_TYPES.map(s => ({shares: 0, avgCost: 0, leverage: 1, isShort: false}));
+        // Migrate old stocks to stock 0 (胡萝卜农业)
+        if (p.stocks > 0) {
+            p.stockHoldings[0].shares = p.stocks;
+            p.stockHoldings[0].avgCost = p.stockAvgCost || mono.stockPrices[0];
+            p.stockHoldings[0].leverage = 1;
+            p.stockHoldings[0].isShort = false;
+        }
+    }
+
+    /* Calculate overall market index from individual stock prices */
+    function getStockIndex() {
+        if (!mono.stockPrices || mono.stockPrices.length === 0) return mono.stockMarket || 100;
+        const avg = mono.stockPrices.reduce((s, p) => s + p, 0) / mono.stockPrices.length;
+        // Normalize to base 100 (average of base prices)
+        const baseAvg = STOCK_TYPES.reduce((s, st) => s + st.basePrice, 0) / STOCK_TYPES.length;
+        return Math.floor((avg / baseAvg) * 100);
+    }
+
+    /* Refresh stock prices based on volatility and economy (called every 30s or per turn) */
+    function refreshStockPrices() {
+        if (!mono.stockPrices) return;
+        const economy = mono.economy || calculateEconomyState();
+        const inflation = economy.inflation || 0.03;
+        const prosperity = economy.prosperity || 1.0;
+        mono.stockPrices = mono.stockPrices.map((price, i) => {
+            const stock = STOCK_TYPES[i];
+            let change = (Math.random() - 0.5) * 2 * stock.volatility;
+            // Trend influence
+            if (stock.trend === 'growth') change += 0.02;
+            else if (stock.trend === 'cyclical') change += (prosperity - 1) * 0.05;
+            else if (stock.trend === 'volatile') change += (Math.random() - 0.5) * 0.1;
+            // Inflation drift
+            change += inflation * 0.3;
+            let newPrice = price * (1 + change);
+            // Clamp to 20%-300% of base price
+            newPrice = Math.max(stock.basePrice * 0.2, Math.min(stock.basePrice * 3, newPrice));
+            return Math.floor(newPrice);
+        });
+        mono.stockMarket = getStockIndex();
+        mono.stockLastUpdate = Date.now();
+    }
+
+    /* Get player's total stock portfolio value */
+    function getStockPortfolioValue(p) {
+        if (!p.stockHoldings) return 0;
+        let total = 0;
+        for (let i = 0; i < STOCK_TYPES.length; i++) {
+            const h = p.stockHoldings[i];
+            const price = mono.stockPrices[i];
+            if (h.isShort) {
+                // Short position value: (avgCost - currentPrice) * shares
+                total += (h.avgCost - price) * h.shares;
+            } else {
+                total += price * h.shares;
+            }
+        }
+        return Math.floor(total);
     }
 
     /* ==================== Dynamic Economy Engine ==================== */
@@ -1240,6 +1326,7 @@
                 taxFree: 0, bankrupt: false,
                 loans: [], credit: 100, vehicle: null,
                 stocks: 0, stockAvgCost: 0,
+                stockHoldings: STOCK_TYPES.map(s => ({shares: 0, avgCost: 0, leverage: 1, isShort: false})),
                 stats: {
                     propertiesBought: 0, purchaseSpent: 0,
                     upgradesDone: 0, upgradeSpent: 0,
@@ -1257,6 +1344,8 @@
             unlockedEras: 0,
             started: false,
             stockMarket: 100,
+            stockPrices: STOCK_TYPES.map(s => s.basePrice),
+            stockLastUpdate: Date.now(),
             economy: null, // Will be calculated by calculateEconomyState()
             pendingAction: null, // Tracks pending AI action for refresh recovery
             autoSaveTurn: 0, // Last auto-saved turn
@@ -2611,150 +2700,250 @@
         saveMonopoly();
     }
 
-    /* ==================== Monopoly: Stock Market ==================== */
+    /* ==================== Monopoly: Stock Market (10 Stocks + Leverage + Short) ==================== */
+    let _stockRefreshTimer = null;
+    let _selectedStockIdx = 0;
+    let _selectedLeverage = 1;
+
     function showStockModal() {
         const p = mono.players[0];
-        const price = Math.floor(mono.stockMarket);
-        const portfolioValue = p.stocks > 0 ? Math.floor(p.stocks * price) : 0;
-        const profitLoss = p.stocks > 0 ? portfolioValue - Math.floor(p.stocks * p.stockAvgCost) : 0;
-        const maxBuy = Math.floor(p.money / price);
         const isMyTurn = mono.currentPlayer === 0;
+        const portfolioValue = getStockPortfolioValue(p);
+        const stockIndex = getStockIndex();
+        // Count total positions
+        let totalShares = 0;
+        p.stockHoldings.forEach(h => totalShares += h.shares);
+
+        // Auto-refresh if 30s passed
+        if (Date.now() - (mono.stockLastUpdate || 0) > STOCK_REFRESH_INTERVAL) {
+            refreshStockPrices();
+        }
+
+        const stockListHtml = STOCK_TYPES.map((s, i) => {
+            const price = mono.stockPrices[i];
+            const changePct = ((price - s.basePrice) / s.basePrice * 100).toFixed(1);
+            const isUp = price >= s.basePrice;
+            const holding = p.stockHoldings[i];
+            const hasPosition = holding.shares > 0;
+            const posValue = holding.isShort
+                ? Math.floor((holding.avgCost - price) * holding.shares)
+                : Math.floor(price * holding.shares);
+            const posIcon = holding.isShort ? '🔻' : '📈';
+            const trendIcon = s.trend === 'growth' ? '🚀' : s.trend === 'cyclical' ? '🔄' : s.trend === 'volatile' ? '🎲' : '📊';
+
+            return `<div style="padding:.4rem;background:var(--card2);border-radius:8px;margin-top:.3rem;border-left:3px solid ${isUp ? 'var(--good)' : 'var(--bad)'};${_selectedStockIdx === i ? 'box-shadow:0 0 0 2px var(--accent);' : ''}">
+                <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="selectStock(${i})">
+                    <div>
+                        <span style="font-size:1.1rem;">${s.ic}</span>
+                        <span style="font-size:.8rem;font-weight:700;">${s.nm}</span>
+                        <span style="font-size:.6rem;color:var(--text2);">${trendIcon}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:700;font-size:.85rem;">💰${price}</div>
+                        <div style="font-size:.6rem;color:${isUp ? 'var(--good)' : 'var(--bad)'};">${isUp ? '+' : ''}${changePct}%</div>
+                    </div>
+                </div>
+                ${hasPosition ? `<div style="font-size:.65rem;color:var(--text2);margin-top:.15rem;padding-left:.2rem;">
+                    ${posIcon} ${holding.shares}股 @ 💰${Math.floor(holding.avgCost)} ${holding.leverage > 1 ? `(x${holding.leverage}杠杆)` : ''} | 市值💰${posValue}
+                </div>` : ''}
+            </div>`;
+        }).join('');
+
+        // Selected stock detail
+        const selStock = STOCK_TYPES[_selectedStockIdx];
+        const selPrice = mono.stockPrices[_selectedStockIdx];
+        const selHolding = p.stockHoldings[_selectedStockIdx];
+        const maxBuy = Math.floor(p.money / selPrice);
+        const leverageHtml = STOCK_LEVERAGES.map(lev =>
+            `<button class="btn btn-sm ${_selectedLeverage === lev ? 'btn-primary' : 'btn-secondary'}" style="flex:1;font-size:.7rem;" onclick="selectLeverage(${lev})" ${!isMyTurn ? 'disabled' : ''}>${lev}x</button>`
+        ).join('');
+
         const modal = document.getElementById('modal-content');
         modal.innerHTML = `
-            <div class="modal-title">📊 股票交易</div>
-            <div style="text-align:center;padding:.5rem 0;">
-                <div style="font-size:2rem;">📈</div>
-                <div style="font-weight:800;font-size:1.2rem;color:var(--accent);">兔兔指数 ${price}</div>
-                <div style="font-size:.7rem;color:var(--text2);margin-top:.2rem;">${mono.stockMarket >= 100 ? '↑ 上涨趋势' : '↓ 下跌趋势'}</div>
-                ${!isMyTurn ? '<div style="font-size:.7rem;color:var(--warn);margin-top:.2rem;">⚠️ 非你的回合，仅可查看</div>' : ''}
+            <div class="modal-title">📊 股票交易所</div>
+            <div style="text-align:center;padding:.3rem 0;">
+                <div style="font-weight:800;font-size:1.1rem;color:var(--accent);">兔兔指数 ${stockIndex}</div>
+                <div style="font-size:.65rem;color:var(--text2);">💰现金：${p.money} | 📊持仓：${totalShares}股 | 💵市值：💰${portfolioValue}</div>
+                ${!isMyTurn ? '<div style="font-size:.7rem;color:var(--warn);margin-top:.15rem;">⚠️ 非你的回合，仅可查看</div>' : ''}
             </div>
-            <div style="margin:.5rem 0;padding:.5rem;background:var(--card2);border-radius:8px;">
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
-                    <span>💰 现金</span><span style="font-weight:700;">💰${p.money}</span>
+            <div style="max-height:180px;overflow-y:auto;">${stockListHtml}</div>
+            <div style="margin-top:.4rem;padding:.5rem;background:var(--card);border-radius:8px;border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span style="font-size:1.2rem;">${selStock.ic}</span>
+                        <span style="font-weight:700;font-size:.85rem;">${selStock.nm}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:800;">💰${selPrice}</div>
+                    </div>
                 </div>
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
-                    <span>📊 持仓</span><span style="font-weight:700;">${p.stocks} 股</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
-                    <span>💵 持仓市值</span><span style="font-weight:700;">💰${portfolioValue}</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;">
-                    <span>${profitLoss >= 0 ? '📈' : '📉'} 浮盈/浮亏</span>
-                    <span style="font-weight:700;color:${profitLoss >= 0 ? 'var(--good)' : 'var(--bad)'};">${profitLoss >= 0 ? '+' : ''}💰${profitLoss}</span>
-                </div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;">
-                <div style="display:flex;gap:.3rem;align-items:center;">
-                    <input type="number" id="stock-amount" min="1" max="${maxBuy}" value="1" style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-size:.85rem;" placeholder="数量" ${!isMyTurn ? 'disabled' : ''}>
+                <div style="font-size:.65rem;color:var(--text2);margin-top:.15rem;">${selStock.desc}</div>
+                ${selHolding.shares > 0 ? `<div style="font-size:.65rem;margin-top:.15rem;color:${selHolding.isShort ? 'var(--bad)' : 'var(--accent)'};">
+                    ${selHolding.isShort ? '🔻做空' : '📈做多'} ${selHolding.shares}股 @ 💰${Math.floor(selHolding.avgCost)} ${selHolding.leverage > 1 ? `x${selHolding.leverage}` : ''}
+                </div>` : ''}
+                <div style="font-size:.65rem;color:var(--text2);margin-top:.15rem;">杠杆倍数：</div>
+                <div style="display:flex;gap:.2rem;margin-top:.2rem;">${leverageHtml}</div>
+                <div style="display:flex;gap:.3rem;margin-top:.3rem;">
+                    <input type="number" id="stock-amount" min="1" max="${maxBuy}" value="1" style="flex:1;padding:.3rem;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-size:.8rem;" placeholder="数量" ${!isMyTurn ? 'disabled' : ''}>
                     <button class="btn btn-secondary btn-sm" onclick="document.getElementById('stock-amount').value=${Math.max(1,maxBuy)}" ${!isMyTurn ? 'disabled' : ''}>最大</button>
                 </div>
-                <div style="display:flex;gap:.5rem;">
-                    <button class="btn btn-primary" style="flex:1;" onclick="buyStock()" ${maxBuy<1||!isMyTurn?'disabled':''}>📈 买入 (💰${price}/股)</button>
-                    <button class="btn btn-danger" style="flex:1;" onclick="sellStock()" ${p.stocks<=0||!isMyTurn?'disabled':''}>📉 卖出全部</button>
+                <div style="display:flex;gap:.3rem;margin-top:.3rem;">
+                    <button class="btn btn-primary" style="flex:1;font-size:.75rem;" onclick="buyStockMulti(${_selectedStockIdx}, ${_selectedLeverage})" ${maxBuy<1||!isMyTurn?'disabled':''}>📈做多</button>
+                    <button class="btn btn-danger" style="flex:1;font-size:.75rem;" onclick="shortSellStock(${_selectedStockIdx}, ${_selectedLeverage})" ${maxBuy<1||!isMyTurn?'disabled':''}>🔻做空</button>
                 </div>
-                <div style="display:flex;gap:.5rem;">
-                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockPartial()" ${p.stocks<=0||!isMyTurn?'disabled':''}>📤 部分卖出</button>
-                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockToPlayer()" ${p.stocks<=0||!isMyTurn?'disabled':''}>🤝 二手交易 (90%)</button>
+                <div style="display:flex;gap:.3rem;margin-top:.2rem;">
+                    <button class="btn btn-secondary" style="flex:1;font-size:.7rem;" onclick="sellStockMulti(${_selectedStockIdx})" ${selHolding.shares<=0||!isMyTurn?'disabled':''}>卖出/平仓</button>
+                    <button class="btn btn-secondary" style="flex:1;font-size:.7rem;" onclick="closeStockModal()">离开</button>
                 </div>
-                <div style="font-size:.65rem;color:var(--text2);padding:.2rem 0;line-height:1.4;">
-                    💡 二手交易：以市价90%卖给其他玩家，不影指数，快速变现
-                </div>
-                <button class="btn btn-secondary" onclick="closeStockModal()">离开交易所</button>
             </div>`;
         document.getElementById('modal-overlay').classList.add('show');
+
+        // Start auto-refresh timer if not running
+        if (!_stockRefreshTimer && mono.started) {
+            _stockRefreshTimer = setInterval(() => {
+                if (mono.started && document.getElementById('modal-overlay').classList.contains('show')) {
+                    refreshStockPrices();
+                    showStockModal(); // Re-render with new prices
+                }
+            }, STOCK_REFRESH_INTERVAL);
+        }
     }
 
-    function buyStock() {
+    window.selectStock = function(idx) { _selectedStockIdx = idx; showStockModal(); };
+    window.selectLeverage = function(lev) { _selectedLeverage = lev; showStockModal(); };
+
+    function buyStockMulti(stockIdx, leverage) {
         const p = mono.players[0];
-        const price = Math.floor(mono.stockMarket);
+        const price = mono.stockPrices[stockIdx];
         const amount = parseInt(document.getElementById('stock-amount')?.value) || 1;
-        const cost = price * amount;
+        const cost = price * amount; // Leverage doesn't increase cost for buying, but increases exposure
         if (p.money < cost) { monoLog('资金不足！', 'error'); return; }
-        // Update average cost
-        if (p.stocks > 0) {
-            p.stockAvgCost = ((p.stockAvgCost * p.stocks) + cost) / (p.stocks + amount);
+        const h = p.stockHoldings[stockIdx];
+        // If already shorting this stock, buying reduces short position
+        if (h.isShort && h.shares > 0) {
+            if (amount >= h.shares) {
+                // Close short and go long with remainder
+                const closeShares = h.shares;
+                const shortProfit = (h.avgCost - price) * closeShares;
+                p.money += shortProfit;
+                p.stats.stockProfit += shortProfit;
+                const remaining = amount - closeShares;
+                h.shares = remaining;
+                h.avgCost = price;
+                h.isShort = false;
+                h.leverage = leverage;
+                p.money -= cost - price * closeShares;
+                monoLog(`📈 平仓做空并做多 ${remaining} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage})`, 'success');
+            } else {
+                h.shares -= amount;
+                const shortProfit = (h.avgCost - price) * amount;
+                p.money += shortProfit;
+                p.stats.stockProfit += shortProfit;
+                monoLog(`📈 部分平仓做空 ${amount} 股，盈利 💰${Math.floor(shortProfit)}`, 'success');
+            }
         } else {
-            p.stockAvgCost = price;
+            // Normal buy or add to long position
+            const totalCost = h.shares > 0 ? (h.avgCost * h.shares + cost) : cost;
+            const totalShares = h.shares + amount;
+            h.avgCost = totalCost / totalShares;
+            h.shares = totalShares;
+            h.leverage = leverage;
+            h.isShort = false;
+            p.money -= cost;
+            monoLog(`📈 买入 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage}杠杆)，花费 💰${cost}`, 'success');
         }
-        p.stocks += amount;
-        p.money -= cost;
         p.stats.stockTrades++;
-        mono.stockMarket = Math.min(200, mono.stockMarket + amount * 0.2);
-        monoLog(`📈 买入 ${amount} 股 @ 💰${price}，花费 💰${cost}`, 'success');
-        showStockModal(); // Refresh modal for continuous trading
+        // Price impact: buying pushes price up slightly
+        mono.stockPrices[stockIdx] = Math.min(STOCK_TYPES[stockIdx].basePrice * 3, Math.floor(mono.stockPrices[stockIdx] * (1 + amount * 0.005)));
+        mono.stockMarket = getStockIndex();
+        showStockModal();
         saveMonopoly();
     }
 
-    function sellStock() {
+    function shortSellStock(stockIdx, leverage) {
         const p = mono.players[0];
-        if (p.stocks <= 0) return;
-        const price = Math.floor(mono.stockMarket);
-        const amount = p.stocks;
-        const revenue = price * amount;
-        const cost = Math.floor(p.stockAvgCost * amount);
-        const profit = revenue - cost;
-        p.money += revenue;
-        p.stats.stockProfit += profit;
-        p.stats.stockTrades++;
-        p.stocks = 0;
-        p.stockAvgCost = 0;
-        mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.3);
-        monoLog(`📉 卖出 ${amount} 股 @ 💰${price}，收入 💰${revenue}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(profit)}`, profit >= 0 ? 'success' : 'error');
-        showStockModal(); // Refresh modal for continuous trading
-        saveMonopoly();
-    }
-
-    /* Partial sell: sell only the amount entered in the input */
-    function sellStockPartial() {
-        const p = mono.players[0];
-        if (p.stocks <= 0) return;
-        const price = Math.floor(mono.stockMarket);
-        const amount = Math.min(p.stocks, parseInt(document.getElementById('stock-amount')?.value) || 1);
-        if (amount <= 0) { monoLog('请输入有效数量', 'error'); return; }
-        const revenue = price * amount;
-        const cost = Math.floor(p.stockAvgCost * amount);
-        const profit = revenue - cost;
-        p.money += revenue;
-        p.stats.stockProfit += profit;
-        p.stats.stockTrades++;
-        p.stocks -= amount;
-        if (p.stocks === 0) p.stockAvgCost = 0;
-        mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.2);
-        monoLog(`📤 部分卖出 ${amount} 股 @ 💰${price}，收入 💰${revenue}`, profit >= 0 ? 'success' : 'error');
-        showStockModal(); // Refresh modal
-        saveMonopoly();
-    }
-
-    /* Secondary trading: sell to other players at 90% market price (no index impact) */
-    function sellStockToPlayer() {
-        const p = mono.players[0];
-        if (p.stocks <= 0) return;
-        const price = Math.floor(mono.stockMarket);
-        const amount = Math.min(p.stocks, parseInt(document.getElementById('stock-amount')?.value) || p.stocks);
-        const sellPrice = Math.floor(price * 0.9); // 90% of market price
-        const revenue = sellPrice * amount;
-        // Find an AI buyer
-        const buyers = mono.players.filter((pl, i) => i !== 0 && !pl.bankrupt && pl.money > revenue);
-        if (buyers.length === 0) { monoLog('没有玩家愿意接盘', 'error'); return; }
-        const buyer = buyers[Math.floor(Math.random() * buyers.length)];
-        p.money += revenue;
-        p.stocks -= amount;
-        if (p.stocks === 0) p.stockAvgCost = 0;
-        p.stats.stockTrades++;
-        // Buyer acquires stocks
-        if (buyer.stocks > 0) {
-            buyer.stockAvgCost = ((buyer.stockAvgCost * buyer.stocks) + revenue) / (buyer.stocks + amount);
+        const price = mono.stockPrices[stockIdx];
+        const amount = parseInt(document.getElementById('stock-amount')?.value) || 1;
+        // Short selling requires margin (50% of position value)
+        const margin = Math.floor(price * amount * 0.5);
+        if (p.money < margin) { monoLog('保证金不足（需50%）！', 'error'); return; }
+        const h = p.stockHoldings[stockIdx];
+        // If already long, shorting reduces long position
+        if (!h.isShort && h.shares > 0) {
+            if (amount >= h.shares) {
+                const closeShares = h.shares;
+                const longProfit = (price - h.avgCost) * closeShares;
+                p.money += longProfit;
+                p.stats.stockProfit += longProfit;
+                const remaining = amount - closeShares;
+                h.shares = remaining;
+                h.avgCost = price;
+                h.isShort = true;
+                h.leverage = leverage;
+                p.money -= margin;
+                monoLog(`🔻 平仓做多并做空 ${remaining} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage})`, 'info');
+            } else {
+                h.shares -= amount;
+                const longProfit = (price - h.avgCost) * amount;
+                p.money += longProfit;
+                p.stats.stockProfit += longProfit;
+                monoLog(`📈 部分平仓做多 ${amount} 股，盈利 💰${Math.floor(longProfit)}`, 'success');
+            }
         } else {
-            buyer.stockAvgCost = sellPrice;
+            // Open or add to short position
+            const totalShares = h.shares + amount;
+            const totalValue = h.shares > 0 ? (h.avgCost * h.shares + price * amount) : (price * amount);
+            h.avgCost = totalValue / totalShares;
+            h.shares = totalShares;
+            h.leverage = leverage;
+            h.isShort = true;
+            p.money -= margin; // Margin held
+            monoLog(`🔻 做空 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price} (x${leverage}杠杆)，保证金 💰${margin}`, 'info');
         }
-        buyer.stocks += amount;
-        buyer.money -= revenue;
-        monoLog(`🤝 二手交易：卖出 ${amount} 股给 ${buyer.ic} @ 💰${sellPrice}/股（市价90%），收入 💰${revenue}`, 'success');
-        showStockModal(); // Refresh modal
+        p.stats.stockTrades++;
+        // Price impact: short selling pushes price down slightly
+        mono.stockPrices[stockIdx] = Math.max(STOCK_TYPES[stockIdx].basePrice * 0.2, Math.floor(mono.stockPrices[stockIdx] * (1 - amount * 0.005)));
+        mono.stockMarket = getStockIndex();
+        showStockModal();
+        saveMonopoly();
+    }
+
+    function sellStockMulti(stockIdx) {
+        const p = mono.players[0];
+        const h = p.stockHoldings[stockIdx];
+        if (h.shares <= 0) return;
+        const price = mono.stockPrices[stockIdx];
+        const amount = Math.min(h.shares, parseInt(document.getElementById('stock-amount')?.value) || h.shares);
+        if (h.isShort) {
+            // Close short position: buy back at current price
+            const profit = (h.avgCost - price) * amount;
+            const marginReturn = Math.floor(price * amount * 0.5);
+            p.money += marginReturn + profit;
+            p.stats.stockProfit += profit;
+            h.shares -= amount;
+            if (h.shares === 0) { h.avgCost = 0; h.leverage = 1; }
+            monoLog(`📉 平仓做空 ${amount} 股 ${STOCK_TYPES[stockIdx].nm} @ 💰${price}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(Math.floor(profit))}`, profit >= 0 ? 'success' : 'error');
+        } else {
+            // Close long position: sell at current price
+            const revenue = price * amount;
+            const cost = Math.floor(h.avgCost * amount);
+            const profit = revenue - cost;
+            p.money += revenue;
+            p.stats.stockProfit += profit;
+            h.shares -= amount;
+            if (h.shares === 0) { h.avgCost = 0; h.leverage = 1; }
+            monoLog(`📉 卖出 ${amount} 股 ${STOCK_TYPES[stockIdx].ic} ${STOCK_TYPES[stockIdx].nm} @ 💰${price}，收入 💰${revenue}，${profit >= 0 ? '盈利' : '亏损'} 💰${Math.abs(profit)}`, profit >= 0 ? 'success' : 'error');
+        }
+        p.stats.stockTrades++;
+        // Price impact
+        mono.stockPrices[stockIdx] = Math.max(STOCK_TYPES[stockIdx].basePrice * 0.2, Math.floor(mono.stockPrices[stockIdx] * (1 - amount * 0.005)));
+        mono.stockMarket = getStockIndex();
+        showStockModal();
         saveMonopoly();
     }
 
     function closeStockModal() {
+        if (_stockRefreshTimer) { clearInterval(_stockRefreshTimer); _stockRefreshTimer = null; }
         closeModal();
         saveMonopoly();
         renderMonopoly();
@@ -2764,47 +2953,67 @@
 
     /* ---- Voluntary stock exchange entry (doesn't consume turn) ---- */
     function openStockExchange() {
-        // Allow viewing anytime, but only allow trading on player's turn
         mono.voluntaryVisit = true;
         showStockModal();
     }
 
     function aiStockDecision(p) {
-        const price = Math.floor(mono.stockMarket);
+        if (!p.stockHoldings || p.stockHoldings.length === 0) return;
         const personality = AI_PERSONALITIES[p.personality];
-        // AI buys when index is low and has cash
-        if (mono.stockMarket < 90 && p.money > price * 5 && Math.random() < personality.buyChance * 0.5) {
-            const amount = Math.floor(Math.min(p.money * 0.2, p.money) / price);
+        const idx = mono.players.indexOf(p);
+        const stockIdx = Math.floor(Math.random() * STOCK_TYPES.length);
+        const stock = STOCK_TYPES[stockIdx];
+        const price = mono.stockPrices[stockIdx];
+        const h = p.stockHoldings[stockIdx];
+
+        // AI buys when price is below base and has cash
+        if (price < stock.basePrice * 0.85 && p.money > price * 5 && Math.random() < personality.buyChance * 0.4) {
+            const amount = Math.floor(Math.min(p.money * 0.15, p.money) / price);
             if (amount > 0) {
                 const cost = price * amount;
-                if (p.stocks > 0) {
-                    p.stockAvgCost = ((p.stockAvgCost * p.stocks) + cost) / (p.stocks + amount);
-                } else {
-                    p.stockAvgCost = price;
-                }
-                p.stocks += amount;
+                const totalCost = h.shares > 0 ? (h.avgCost * h.shares + cost) : cost;
+                h.avgCost = totalCost / (h.shares + amount);
+                h.shares += amount;
+                h.isShort = false;
+                h.leverage = 1;
                 p.money -= cost;
                 p.stats.stockTrades++;
-                mono.stockMarket = Math.min(200, mono.stockMarket + amount * 0.2);
-                monoLog(`${p.ic} 📈 买入 ${amount} 股`, 'info');
+                mono.stockPrices[stockIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + amount * 0.005)));
+                mono.stockMarket = getStockIndex();
+                monoLog(`${p.ic} 📈 买入 ${amount} 股 ${stock.ic}`, 'info');
             }
         }
-        // AI sells when index is high and holds stocks
-        else if (mono.stockMarket > 130 && p.stocks > 0 && Math.random() < 0.6) {
-            const amount = p.stocks;
-            const revenue = price * amount;
-            const profit = revenue - Math.floor(p.stockAvgCost * amount);
+        // AI sells when price is above base and holds long
+        else if (price > stock.basePrice * 1.2 && h.shares > 0 && !h.isShort && Math.random() < 0.5) {
+            const revenue = price * h.shares;
+            const profit = revenue - Math.floor(h.avgCost * h.shares);
             p.money += revenue;
             p.stats.stockProfit += profit;
             p.stats.stockTrades++;
-            p.stocks = 0;
-            p.stockAvgCost = 0;
-            mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.3);
-            monoLog(`${p.ic} 📉 卖出 ${amount} 股`, 'info');
+            monoLog(`${p.ic} 📉 卖出 ${h.shares} 股 ${stock.ic}`, 'info');
+            h.shares = 0; h.avgCost = 0; h.leverage = 1;
+            mono.stockPrices[stockIdx] = Math.max(stock.basePrice * 0.2, Math.floor(price * (1 - h.shares * 0.005)));
+            mono.stockMarket = getStockIndex();
         }
-        // Dividend for AI
-        if (p.stocks > 0 && mono.stockMarket > 120) {
-            const dividend = Math.floor(p.stocks * mono.stockMarket * 0.05);
+        // Aggressive AI may short sell
+        else if (price > stock.basePrice * 1.3 && p.money > price * 3 && personality === AI_PERSONALITIES.aggressive && Math.random() < 0.3) {
+            const amount = Math.floor(Math.min(p.money * 0.1, p.money) / price);
+            if (amount > 0) {
+                const margin = Math.floor(price * amount * 0.5);
+                if (p.money >= margin) {
+                    h.shares += amount;
+                    h.avgCost = h.shares > 0 ? ((h.avgCost * (h.shares - amount)) + price * amount) / h.shares : price;
+                    h.isShort = true;
+                    h.leverage = 1;
+                    p.money -= margin;
+                    p.stats.stockTrades++;
+                    monoLog(`${p.ic} 🔻 做空 ${amount} 股 ${stock.ic}`, 'info');
+                }
+            }
+        }
+        // Dividend for long positions when index is high
+        if (h.shares > 0 && !h.isShort && mono.stockMarket > 120) {
+            const dividend = Math.floor(h.shares * price * 0.03);
             p.money += dividend;
             p.stats.stockProfit += dividend;
         }
@@ -5702,7 +5911,18 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.3.0</strong> — 卡牌详情弹窗 & 银行灵活还款</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.4.0</strong> — 多股市场 & 杠杆交易 & 做空机制</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📊 10 种独立股票：农业、地产、能源、工业、医药、游戏、航天、零售、金融、宝石</li>
+                <li>📈 杠杆交易：1x / 2x / 5x / 10x 倍数选择，放大收益与风险</li>
+                <li>🔻 做空机制：50% 保证金开空仓，价格下跌时获利</li>
+                <li>🔄 30 秒自动刷新股价，受通胀/繁荣度/趋势影响波动</li>
+                <li>💰 持仓管理：多空仓位自动转换，部分平仓/全部平仓</li>
+                <li>🤖 AI 交易智能化：根据性格和股价趋势决定买卖做空，高指数分红</li>
+                <li>📈 兔兔指数：10 股加权平均，反映整体市场走势</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.3.0</strong> — 卡牌详情弹窗 & 银行灵活还款</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🃏 卡牌背包点击弹出详情框：显示卡牌说明、稀有度，可选「移到手牌」或「立即使用」</li>
                 <li>⚡ 背包直接使用：无需先携带到手牌，点击「立即使用」直接发动效果</li>
