@@ -334,6 +334,12 @@
         @keyframes epicFlash {
             0% { opacity: 0; } 10% { opacity: .6; } 100% { opacity: 0; }
         }
+        @keyframes eggWhiteout {
+            0% { opacity: 0; }
+            8% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
         @keyframes epicFirework {
             0% { transform: translate(0,0) scale(1); opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
@@ -431,6 +437,7 @@
     <canvas id="trail-canvas"></canvas>
     <canvas id="bunny-canvas"></canvas>
     <div id="epic-overlay"></div>
+    <div id="egg-whiteout" style="position:fixed;inset:0;z-index:9995;pointer-events:none;display:none;background:#fff;opacity:0;"></div>
 
     <div class="app">
         <!-- Sidebar (Desktop) -->
@@ -590,13 +597,17 @@
                     <div id="god-content"></div>
                 </div>
                 <div class="card" style="margin-bottom:1rem;">
+                    <div class="card-title">💾 存档管理</div>
+                    <div id="save-slots" style="display:flex;flex-direction:column;gap:.6rem;"></div>
+                </div>
+                <div class="card" style="margin-bottom:1rem;">
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.0.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
-                        <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域312格岛屿</div>
+                        <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
                         <div style="margin-top:.2rem;font-size:.7rem;color:var(--text2);opacity:.6;">点击查看更多信息</div>
                     </div>
                 </div>
@@ -660,14 +671,14 @@
     };
 
     /* ==================== Monopoly Game Data ==================== */
-    // 6 regions, each with theme color and price range. Total tiles: 28+48+52+56+60+68 = 312
+    // 6 regions, each with theme color and price range. Total tiles: 112+192+208+224+240+272 = 1248 (312×4)
     const MONO_REGIONS = [
-        {id:0, name:'胡萝卜草原', eraName:'草原时代', color:'#FFD700', priceMin:500, priceMax:1500, tileCount:28},
-        {id:1, name:'草莓森林', eraName:'森林时代', color:'#FF69B4', priceMin:1500, priceMax:3000, tileCount:48},
-        {id:2, name:'星光湖畔', eraName:'湖畔时代', color:'#7DD3FC', priceMin:3000, priceMax:6000, tileCount:52},
-        {id:3, name:'彩虹山谷', eraName:'彩虹时代', color:'#A78BFA', priceMin:6000, priceMax:12000, tileCount:56},
-        {id:4, name:'水晶海湾', eraName:'水晶时代', color:'#22D3EE', priceMin:12000, priceMax:25000, tileCount:60},
-        {id:5, name:'天空之城', eraName:'天空时代', color:'#FBBF24', priceMin:25000, priceMax:50000, tileCount:68},
+        {id:0, name:'胡萝卜草原', eraName:'草原时代', color:'#FFD700', priceMin:500, priceMax:1500, tileCount:112},
+        {id:1, name:'草莓森林', eraName:'森林时代', color:'#FF69B4', priceMin:1500, priceMax:3000, tileCount:192},
+        {id:2, name:'星光湖畔', eraName:'湖畔时代', color:'#7DD3FC', priceMin:3000, priceMax:6000, tileCount:208},
+        {id:3, name:'彩虹山谷', eraName:'彩虹时代', color:'#A78BFA', priceMin:6000, priceMax:12000, tileCount:224},
+        {id:4, name:'水晶海湾', eraName:'水晶时代', color:'#22D3EE', priceMin:12000, priceMax:25000, tileCount:240},
+        {id:5, name:'天空之城', eraName:'天空时代', color:'#FBBF24', priceMin:25000, priceMax:50000, tileCount:272},
     ];
 
     const TILE_TYPES = {
@@ -837,6 +848,13 @@
 
     function validateMono() {
         if (!mono || !mono.tiles || !mono.players) { newMonopolyGame(); return; }
+        // Validate tile count matches current map configuration (1248 tiles)
+        const expectedTiles = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
+        if (mono.tiles.length !== expectedTiles) {
+            // Map configuration changed (e.g., 312 -> 1248), start new game
+            newMonopolyGame();
+            return;
+        }
         mono.players.forEach(p => {
             if (p.shield === undefined) p.shield = false;
             if (p.lucky === undefined) p.lucky = false;
@@ -1925,6 +1943,7 @@
         if (view === 'anniversary') renderAnniversary();
         if (view === 'logs') renderEvents();
         if (view === 'settings' && godModeActive) renderGodPanel();
+        if (view === 'settings') renderSaveSlots();
     }
 
     function handleLogoClick() {
@@ -2133,6 +2152,100 @@
         logEvent('上帝模式已关闭', 'info');
     }
 
+    /* ==================== Save Slot Management (3 slots) ==================== */
+    const SAVE_SLOTS = 3;
+    function getSaveSlotKey(slot) { return `bunny_mono_save_slot_${slot}`; }
+    function getSaveSlotMeta(slot) {
+        try {
+            const raw = localStorage.getItem(getSaveSlotKey(slot));
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            return {
+                turn: data.turn || 0,
+                players: (data.players || []).map(p => ({ ic: p.ic, nm: p.nm, money: p.money, bankrupt: p.bankrupt })),
+                unlockedEras: data.unlockedEras || 0,
+                savedAt: data._savedAt || 0,
+            };
+        } catch(e) { return null; }
+    }
+
+    function renderSaveSlots() {
+        const el = document.getElementById('save-slots');
+        if (!el) return;
+        let h = '';
+        for (let i = 0; i < SAVE_SLOTS; i++) {
+            const meta = getSaveSlotMeta(i);
+            const eraName = meta ? (MONO_REGIONS[meta.unlockedEras]?.eraName || '?') : '';
+            const time = meta?.savedAt ? new Date(meta.savedAt).toLocaleString('zh-CN', {month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'}) : '';
+            const playersSummary = meta?.players?.length
+                ? meta.players.map(p => `${p.ic}${p.money}💰`).join(' ')
+                : '';
+            h += `<div style="background:var(--card2);border-radius:var(--radius-sm);padding:.7rem;border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+                    <strong style="font-size:.85rem;color:var(--accent);">📄 存档 ${i+1}</strong>
+                    ${meta ? `<span style="font-size:.65rem;color:var(--text2);">${time}</span>` : '<span style="font-size:.65rem;color:var(--text2);opacity:.5;">空槽位</span>'}
+                </div>
+                ${meta ? `
+                    <div style="font-size:.7rem;color:var(--text2);line-height:1.5;margin-bottom:.5rem;">
+                        ${eraName} · 第${meta.turn}回合<br>
+                        ${playersSummary}
+                    </div>
+                    <div style="display:flex;gap:.4rem;">
+                        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="loadSaveSlot(${i})">📂 读取</button>
+                        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="saveToSlot(${i})">💾 覆盖</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSaveSlot(${i})">🗑️</button>
+                    </div>
+                ` : `
+                    <button class="btn btn-primary btn-sm" style="width:100%;" onclick="saveToSlot(${i})">💾 保存到此处</button>
+                `}
+            </div>`;
+        }
+        el.innerHTML = h;
+    }
+
+    function saveToSlot(slot) {
+        if (!mono) { logEvent('无游戏数据可保存', 'error'); return; }
+        try {
+            const data = JSON.parse(JSON.stringify(mono));
+            data._savedAt = Date.now();
+            localStorage.setItem(getSaveSlotKey(slot), JSON.stringify(data));
+            logEvent(`✓ 游戏已保存到存档 ${slot+1}`, 'success');
+            renderSaveSlots();
+        } catch(e) {
+            logEvent('保存失败: ' + e.message, 'error');
+        }
+    }
+
+    function loadSaveSlot(slot) {
+        try {
+            const raw = localStorage.getItem(getSaveSlotKey(slot));
+            if (!raw) { logEvent('该存档为空', 'error'); return; }
+            const data = JSON.parse(raw);
+            if (!data.tiles || !data.players) { logEvent('存档损坏', 'error'); return; }
+            // Validate tile count
+            const expected = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
+            if (data.tiles.length !== expected) {
+                logEvent('存档与当前地图不兼容', 'error');
+                return;
+            }
+            delete data._savedAt;
+            mono = data;
+            validateMono();
+            saveMonopoly();
+            renderMonopoly();
+            logEvent(`✓ 已读取存档 ${slot+1}`, 'success');
+        } catch(e) {
+            logEvent('读取失败: ' + e.message, 'error');
+        }
+    }
+
+    function deleteSaveSlot(slot) {
+        if (!confirm(`确定删除存档 ${slot+1} 吗？`)) return;
+        localStorage.removeItem(getSaveSlotKey(slot));
+        logEvent(`存档 ${slot+1} 已删除`, 'info');
+        renderSaveSlots();
+    }
+
     /* ==================== Avatar Click Effects (Upgraded Epic) ==================== */
     function initAvatarEffect() {
         const avatar = document.getElementById('avatar-img');
@@ -2226,13 +2339,72 @@
             if (trailCount >= 8) clearInterval(trailInterval);
         }, 250);
 
-        // Clean up after 2.5s
+        // Clean up epic overlay after 2.5s
         setTimeout(() => {
             overlay.style.display = 'none';
             overlay.innerHTML = '';
         }, 2500);
 
+        // 7. === Egg Whiteout Mode ===
+        // Random duration between 6-12 seconds (no less than 6s)
+        const whiteoutDuration = 6000 + Math.random() * 6000;
+        // Activate ink-persistence mode for mouse trail
+        eggInkPersistMode = true;
+        eggInkPersistStart = performance.now();
+        lastMouseMoveTime = performance.now();
+
+        const whiteout = document.getElementById('egg-whiteout');
+        if (whiteout) {
+            whiteout.style.display = 'block';
+            whiteout.style.opacity = '0';
+            whiteout.style.animation = `eggWhiteout ${whiteoutDuration}ms ease forwards`;
+            // Force reflow to start animation
+            void whiteout.offsetWidth;
+        }
+
+        // After whiteout ends, deactivate ink-persist mode
+        // But keep ink visible for 8 seconds after last mouse movement for screenshot
+        setTimeout(() => {
+            if (whiteout) {
+                whiteout.style.display = 'none';
+                whiteout.style.animation = '';
+            }
+            // Schedule ink-persist deactivation: wait for last movement + 8s
+            scheduleInkPersistEnd();
+        }, whiteoutDuration);
+
         logEvent('✨ 兔可可的祝福降临！华丽彩蛋触发！', 'god');
+    }
+
+    // === Ink Persist Mode for Egg Whiteout ===
+    function scheduleInkPersistEnd() {
+        if (inkPersistEndTimer) clearTimeout(inkPersistEndTimer);
+        // Wait 8 seconds after the last mouse movement
+        const elapsed = performance.now() - lastMouseMoveTime;
+        const remaining = Math.max(0, 8000 - elapsed);
+        inkPersistEndTimer = setTimeout(() => {
+            eggInkPersistMode = false;
+            // Clear trail canvas gradually after screenshot window
+            const trailCanvasEl = document.getElementById('trail-canvas');
+            if (trailCanvasEl && trailCtx) {
+                // Fade out existing ink over 1 second
+                let fadeFrames = 0;
+                const fadeMax = 30;
+                const fadeInk = () => {
+                    if (fadeFrames >= fadeMax) {
+                        trailCtx.clearRect(0, 0, trailCanvasEl.width, trailCanvasEl.height);
+                        return;
+                    }
+                    trailCtx.globalCompositeOperation = 'destination-out';
+                    trailCtx.fillStyle = `rgba(0,0,0,${0.15})`;
+                    trailCtx.fillRect(0, 0, trailCanvasEl.width, trailCanvasEl.height);
+                    trailCtx.globalCompositeOperation = 'source-over';
+                    fadeFrames++;
+                    requestAnimationFrame(fadeInk);
+                };
+                fadeInk();
+            }
+        }, remaining);
     }
 
     /* ==================== Mouse Trail — Gorgeous Edition (v5.2华丽版 + v6.0像素兔子) ==================== */
@@ -2245,6 +2417,11 @@
     let trailCanvas = null, fxCanvas = null;
     const MAX_TRAIL_POINTS = 50;
     const TRAIL_LIFETIME = 500;
+    // Egg whiteout ink-persist mode variables
+    let eggInkPersistMode = false;
+    let eggInkPersistStart = 0;
+    let lastMouseMoveTime = 0;
+    let inkPersistEndTimer = null;
 
     // 10x10 pixel rabbit head map: 1=accent fill, 2=eye/dark, 0=transparent
     const RABBIT_PIXELS = [
@@ -2290,6 +2467,7 @@
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+            if (eggInkPersistMode) lastMouseMoveTime = performance.now();
             if (mouseBunnyEnabled) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
                 if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
@@ -2303,6 +2481,7 @@
             if (!e.touches[0]) return;
             mouseX = e.touches[0].clientX;
             mouseY = e.touches[0].clientY;
+            if (eggInkPersistMode) lastMouseMoveTime = performance.now();
             if (mouseBunnyEnabled) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
                 if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
@@ -2362,15 +2541,39 @@
         const now = performance.now();
         const cfg = getTrailConfig();
 
-        // Fade trail canvas (destination-out creates elegant fade)
+        // Fade trail canvas
         fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-        trailCtx.globalCompositeOperation = 'destination-out';
-        trailCtx.fillStyle = 'rgba(0,0,0,0.12)';
-        trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
-        trailCtx.globalCompositeOperation = 'source-over';
 
-        // Remove old points
-        trailPoints = trailPoints.filter(p => now - p.t < TRAIL_LIFETIME);
+        if (eggInkPersistMode) {
+            // Ink persist mode: very slow fade (from浓 to淡 gradually)
+            // Fade rate reduces over time since last mouse movement
+            const sinceMove = now - lastMouseMoveTime;
+            if (sinceMove < 8000) {
+                // During screenshot window: minimal fade, ink stays visible
+                trailCtx.globalCompositeOperation = 'destination-out';
+                trailCtx.fillStyle = 'rgba(0,0,0,0.008)';
+                trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+                trailCtx.globalCompositeOperation = 'source-over';
+            } else {
+                // After 8s: normal fade resumes
+                trailCtx.globalCompositeOperation = 'destination-out';
+                trailCtx.fillStyle = 'rgba(0,0,0,0.12)';
+                trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+                trailCtx.globalCompositeOperation = 'source-over';
+            }
+            // In ink-persist mode, keep trail points longer (don't filter by TRAIL_LIFETIME)
+            // Only filter very old points to prevent memory issues
+            trailPoints = trailPoints.filter(p => now - p.t < 30000);
+        } else {
+            // Normal mode: elegant fade
+            trailCtx.globalCompositeOperation = 'destination-out';
+            trailCtx.fillStyle = 'rgba(0,0,0,0.12)';
+            trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+            trailCtx.globalCompositeOperation = 'source-over';
+            // Remove old points
+            trailPoints = trailPoints.filter(p => now - p.t < TRAIL_LIFETIME);
+        }
+
         if (trailPoints.length >= 2 && mouseBunnyEnabled) {
             switch (cfg.style) {
                 case 'lightsaber': drawLightsaberTrail(cfg); break;
@@ -2388,8 +2591,8 @@
         // Draw particles
         drawTrailParticles(cfg);
 
-        // Draw pixel rabbit at the head
-        if (trailPoints.length > 0 && mouseBunnyEnabled) {
+        // Draw pixel rabbit at the head (only in normal mode, not during ink persist)
+        if (trailPoints.length > 0 && mouseBunnyEnabled && !eggInkPersistMode) {
             const head = trailPoints[trailPoints.length - 1];
             drawPixelRabbit(fxCtx, head.x, head.y, cfg.accent, 18);
         }
