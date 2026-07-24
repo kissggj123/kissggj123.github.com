@@ -111,7 +111,8 @@
         /* ==================== Base ==================== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         /* Fluid root font-size: scales from 13px (320px viewport) to 17px (1920px+) */
-        html { font-size: clamp(13px, 0.35vw + 11.5px, 17px); }
+        /* --font-scale: user-controlled multiplier (0.8 ~ 1.6), persisted in localStorage */
+        html { font-size: calc(clamp(13px, 0.35vw + 11.5px, 17px) * var(--font-scale, 1)); }
         body {
             font-family: 'Nunito', -apple-system, sans-serif;
             font-size: clamp(.85rem, .85rem + .1vw, 1rem); font-weight: 600;
@@ -591,6 +592,10 @@
                     <div class="card">
                         <div class="mono-section-title">🎲 行动</div>
                         <div class="mono-dice-area" id="mono-dice-area"></div>
+                        <div style="display:flex;gap:.4rem;margin-top:.5rem;">
+                            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openStockExchange()" title="随时交易股票">📈 交易所</button>
+                            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openBank()" title="随时办理银行业务">🏦 银行</button>
+                        </div>
                         <div class="mono-section-title" style="margin-top:.5rem;">🃏 手牌</div>
                         <div class="mono-cards" id="mono-cards"></div>
                         <div class="mono-log" id="mono-log" style="margin-top:.5rem;"></div>
@@ -661,6 +666,16 @@
                 </div>
                 <div class="card" style="margin-bottom:1rem;">
                     <div class="card-title">⚙️ 偏好设置</div>
+                    <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>🔤 字体缩放</span>
+                            <span id="font-scale-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">100%</span>
+                        </div>
+                        <input type="range" id="font-scale-slider" min="80" max="160" value="100" step="5" style="width:100%;accent-color:var(--accent);" oninput="setFontScale(this.value)">
+                        <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--text2);">
+                            <span>小</span><span>标准</span><span>大</span>
+                        </div>
+                    </div>
                     <div class="setting-row">
                         <span>像素字体模式</span>
                         <div class="toggle" id="font-toggle" onclick="togglePixelFont()"></div>
@@ -884,6 +899,7 @@
     /* ==================== Init ==================== */
     window.onload = () => {
         const safe = (fn) => { try { fn(); } catch(e) { console.error(e); } };
+        safe(loadFontScale);
         safe(loadTheme);
         safe(initMonopoly);
         safe(initCardSystem);
@@ -973,9 +989,14 @@
         });
         if (mono.stockMarket === undefined) mono.stockMarket = 100;
         if (mono.unlockedEras === undefined) mono.unlockedEras = 0;
+        if (mono.voluntaryVisit === undefined) mono.voluntaryVisit = false;
         if (mono.properties === undefined) {
             mono.properties = mono.tiles.map(t => t.type === 'property' ? {owner:-1, level:0} : null);
         }
+        // Ensure mortgaged flag exists on all properties
+        mono.properties.forEach(prop => {
+            if (prop && prop.mortgaged === undefined) prop.mortgaged = false;
+        });
     }
 
     function generateAllTiles() {
@@ -1185,16 +1206,18 @@
             const lockedClass = isUnlocked ? '' : 'locked';
             const ownerDot = prop && prop.owner >= 0
                 ? `<div class="tile-owner" style="background:${mono.players[prop.owner].color};"></div>` : '';
+            const mortgageTag = prop && prop.mortgaged
+                ? `<div style="position:absolute;top:2px;left:2px;font-size:.5rem;">🔒</div>` : '';
             const pins = players.map(p => `<span style="color:${p.color}">${p.ic}</span>`).join('');
             const levelStr = prop && prop.level > 0 ? `<div class="tile-level">Lv${prop.level}</div>` : '';
             const priceStr = tile.price ? `<div class="tile-cost">💰${tile.price}</div>` : '';
-            h += `<div class="mono-tile-cell ${isCurrent?'current':''} ${ownedClass} ${lockedClass}">
+            h += `<div class="mono-tile-cell ${isCurrent?'current':''} ${ownedClass} ${lockedClass}" onclick="showTileDetail(${i})">
                 <div class="tile-ic">${tile.ic}</div>
                 <div class="tile-nm">${tile.nm}</div>
                 ${priceStr}${levelStr}
-                ${ownerDot}
+                ${ownerDot}${mortgageTag}
                 <div class="tile-pins">${pins}</div>
-                <div class="tile-tooltip"><strong>${tile.ic} ${tile.nm}</strong><br>${tile.desc}${tile.price?`<br>💰 买价:${tile.price} 租金:${tile.rent}`:''}${prop&&prop.owner>=0?`<br>归属:${mono.players[prop.owner].ic} ${mono.players[prop.owner].nm}`:''}</div>
+                <div class="tile-tooltip"><strong>${tile.ic} ${tile.nm}</strong><br>${tile.desc}${tile.price?`<br>💰 买价:${tile.price} 租金:${tile.rent}`:''}${prop&&prop.owner>=0?`<br>归属:${mono.players[prop.owner].ic} ${mono.players[prop.owner].nm}`:''}${prop&&prop.mortgaged?'<br>🔒 已抵押':''}</div>
             </div>`;
         }
         el.innerHTML = h;
@@ -1205,6 +1228,76 @@
         if (scroll && currentTile) {
             const scrollLeft = currentTile.offsetLeft - scroll.offsetWidth / 2 + currentTile.offsetWidth / 2;
             scroll.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+        }
+    }
+
+    /* ---- Tile detail modal: click any tile to inspect & jump ---- */
+    function showTileDetail(idx) {
+        const tile = mono.tiles[idx];
+        if (!tile) return;
+        const prop = mono.properties[idx];
+        const region = MONO_REGIONS[tile.region] || { name: '未知', color: '#999' };
+        const isUnlocked = idx < getUnlockedTileCount();
+        const ownerInfo = prop && prop.owner >= 0
+            ? `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.2rem 0;">
+                <span>🏠 归属</span><span style="font-weight:700;color:${mono.players[prop.owner].color};">${mono.players[prop.owner].ic} ${mono.players[prop.owner].nm}</span>
+              </div>` : '';
+        const levelInfo = prop && prop.level > 0
+            ? `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.2rem 0;">
+                <span>🏗️ 等级</span><span style="font-weight:700;color:var(--good);">Lv ${prop.level}</span>
+              </div>` : '';
+        const mortgageInfo = prop && prop.mortgaged
+            ? `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.2rem 0;">
+                <span>🔒 抵押状态</span><span style="font-weight:700;color:var(--warn);">已抵押（不收租金）</span>
+              </div>` : '';
+        const priceInfo = tile.price
+            ? `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.2rem 0;">
+                <span>💰 买价</span><span style="font-weight:700;">💰${tile.price}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.2rem 0;">
+                <span>💸 租金</span><span style="font-weight:700;color:var(--bad);">💰${tile.rent}</span>
+              </div>` : '';
+        const lockedWarn = !isUnlocked
+            ? '<div style="font-size:.75rem;color:var(--warn);padding:.3rem 0;">🔒 尚未解锁，推进时代后开放</div>' : '';
+
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">${tile.ic} ${tile.nm}</div>
+            <div style="text-align:center;padding:.3rem 0;">
+                <span style="font-size:.7rem;padding:.15rem .5rem;border-radius:10px;background:${region.color};color:#fff;">${region.name}</span>
+                <span style="font-size:.7rem;color:var(--text2);margin-left:.3rem;">第 ${idx + 1} 格</span>
+            </div>
+            <div style="margin:.5rem 0;padding:.5rem;background:var(--card2);border-radius:8px;">
+                <div style="font-size:.8rem;color:var(--text2);line-height:1.6;padding:.2rem 0;">${tile.desc}</div>
+                ${priceInfo}${levelInfo}${mortgageInfo}${ownerInfo}
+            </div>
+            ${lockedWarn}
+            <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+                <button class="btn btn-primary" style="flex:1;" onclick="locateTile(${idx})">📍 定位到此格</button>
+                <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function locateTile(idx) {
+        closeModal();
+        const strip = document.getElementById('mono-map-strip');
+        const scroll = document.getElementById('mono-map-scroll');
+        if (!strip || !scroll) return;
+        let tileCount = 0;
+        let targetTile = null;
+        for (const child of strip.children) {
+            if (child.classList.contains('mono-tile-cell')) {
+                if (tileCount === idx) { targetTile = child; break; }
+                tileCount++;
+            }
+        }
+        if (targetTile) {
+            const scrollLeft = targetTile.offsetLeft - scroll.offsetWidth / 2 + targetTile.offsetWidth / 2;
+            scroll.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+            targetTile.classList.add('highlighted');
+            setTimeout(() => targetTile.classList.remove('highlighted'), 3000);
+            monoLog(`📍 定位到 ${mono.tiles[idx].ic} ${mono.tiles[idx].nm}`, 'info');
         }
     }
 
@@ -1290,16 +1383,26 @@
 
         // Count owned properties
         let ownedCount = 0, totalLevels = 0, propValue = 0;
+        const myProps = []; // {idx, tile, prop}
         mono.tiles.forEach((t, i) => {
             const prop = mono.properties[i];
             if (t.type === 'property' && prop && prop.owner === 0) {
                 ownedCount++;
                 totalLevels += prop.level;
                 propValue += t.price * (prop.level + 1);
+                myProps.push({ idx: i, tile: t, prop });
             }
         });
 
         if (propEl) {
+            // Build clickable property list
+            const propListHtml = myProps.length > 0
+                ? myProps.map(p => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.25rem .4rem;background:var(--card2);border-radius:6px;cursor:pointer;margin-top:.2rem;transition:all var(--transition);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='transparent'" onclick="locateTile(${p.idx})">
+                    <span style="font-size:.75rem;">${p.tile.ic} ${p.tile.nm} ${p.prop.level > 0 ? `<span style="color:var(--good);font-size:.65rem;">Lv${p.prop.level}</span>` : ''}</span>
+                    <span style="font-size:.7rem;color:var(--accent);font-weight:700;">💰${p.tile.price}</span>
+                </div>`).join('')
+                : '<div style="font-size:.7rem;color:var(--text2);padding:.3rem 0;">还没有购买任何房产</div>';
+
             propEl.innerHTML = `
                 <div class="stat-row"><span class="stat-label">🏠 持有地产</span><span class="stat-value">${ownedCount} 块</span></div>
                 <div class="stat-row"><span class="stat-label">🏗️ 总升级数</span><span class="stat-value">Lv ${totalLevels}</span></div>
@@ -1308,6 +1411,8 @@
                 <div class="stat-row"><span class="stat-label">⬆️ 升级次数</span><span class="stat-value">${s.upgradesDone}</span></div>
                 <div class="stat-row"><span class="stat-label">💸 升级花费</span><span class="stat-value">💰${s.upgradeSpent}</span></div>
                 <div class="stat-row"><span class="stat-label">💎 地产总值</span><span class="stat-value" style="color:var(--good);">💰${propValue}</span></div>
+                <div class="mono-section-title" style="margin-top:.5rem;font-size:.7rem;">📋 我的房产明细（点击跳转）</div>
+                ${propListHtml}
             `;
         }
 
@@ -1509,7 +1614,10 @@
                         }
                     }
                 } else if (prop.owner !== playerIdx) {
-                    if (p.taxFree > 0) {
+                    // Mortgaged properties don't collect rent
+                    if (prop.mortgaged) {
+                        monoLog(`🏠 ${tile.nm} 已被抵押，免租金通过`, 'info');
+                    } else if (p.taxFree > 0) {
                         p.taxFree--;
                         monoLog(`🧾 ${p.nm} 免税卡生效，免付租金`, 'success');
                     } else {
@@ -1655,6 +1763,35 @@
             loanListHtml += '</div>';
         }
 
+        // Build mortgage list: owned properties that can be mortgaged or unmortgaged
+        const myProps = [];
+        mono.tiles.forEach((t, i) => {
+            const prop = mono.properties[i];
+            if (t.type === 'property' && prop && prop.owner === 0) {
+                myProps.push({ idx: i, tile: t, prop });
+            }
+        });
+        let mortgageHtml = '';
+        if (myProps.length > 0) {
+            mortgageHtml = '<div style="margin-top:.5rem;padding:.5rem;background:var(--card2);border-radius:8px;"><div style="font-size:.7rem;color:var(--text2);margin-bottom:.3rem;">🏠 房产抵押（获得买价50%，赎回需55%）</div>';
+            myProps.forEach(({ idx, tile, prop }) => {
+                const mortgageValue = Math.floor(tile.price * 0.5);
+                const unmortgageCost = Math.floor(tile.price * 0.55);
+                if (prop.mortgaged) {
+                    mortgageHtml += `<div style="display:flex;justify-content:space-between;font-size:.7rem;padding:.2rem 0;align-items:center;">
+                        <span>🔒 ${tile.ic} ${tile.nm}</span>
+                        <button class="btn btn-sm btn-secondary" onclick="unmortgageProperty(${idx})" ${p.money < unmortgageCost ? 'disabled' : ''}>赎回 💰${unmortgageCost}</button>
+                    </div>`;
+                } else {
+                    mortgageHtml += `<div style="display:flex;justify-content:space-between;font-size:.7rem;padding:.2rem 0;align-items:center;">
+                        <span>${tile.ic} ${tile.nm}</span>
+                        <button class="btn btn-sm btn-secondary" onclick="mortgageProperty(${idx})">抵押 💰${mortgageValue}</button>
+                    </div>`;
+                }
+            });
+            mortgageHtml += '</div>';
+        }
+
         const modal = document.getElementById('modal-content');
         modal.innerHTML = `
             <div class="modal-title">🏦 兔兔银行</div>
@@ -1667,6 +1804,7 @@
                 ${nextPayment ? `<div style="font-size:.7rem;color:var(--warn);margin-top:.15rem;">下回合还款：💰${nextPayAmount}</div>` : ''}
             </div>
             ${loanListHtml}
+            ${mortgageHtml}
             <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;">
                 <button class="btn btn-primary" onclick="takeLoan(${maxLoan})" ${maxLoan<=0?'disabled':''}>💸 申请贷款 (💰${maxLoan}, 5回合还清)</button>
                 <button class="btn btn-secondary" onclick="repayLoan()" ${totalDebt<=0||p.money<totalDebt?'disabled':''}>💰 还清所有贷款 (需💰${totalDebt})</button>
@@ -1716,7 +1854,15 @@
 
     function closeBankModal() {
         closeModal();
+        if (mono.voluntaryVisit) { mono.voluntaryVisit = false; return; }
         if (!checkGameOver()) nextTurn();
+    }
+
+    /* ---- Voluntary bank entry (doesn't consume turn) ---- */
+    function openBank() {
+        if (mono.currentPlayer !== 0) { monoLog('等待其他玩家行动...', 'info'); return; }
+        mono.voluntaryVisit = true;
+        showBankModal();
     }
 
     function aiBankDecision(p) {
@@ -1736,6 +1882,34 @@
             p.credit = Math.max(10, p.credit - 10);
             monoLog(`${p.ic} 申请贷款 ${maxLoan}💰`, 'info');
         }
+    }
+
+    /* ---- Property mortgage system ---- */
+    function mortgageProperty(idx) {
+        const p = mono.players[0];
+        const tile = mono.tiles[idx];
+        const prop = mono.properties[idx];
+        if (!tile || !prop || prop.owner !== 0 || prop.mortgaged) return;
+        const value = Math.floor(tile.price * 0.5);
+        prop.mortgaged = true;
+        p.money += value;
+        monoLog(`🏠 抵押 ${tile.ic} ${tile.nm}，获得 💰${value}`, 'info');
+        showBankModal();
+        saveMonopoly();
+    }
+
+    function unmortgageProperty(idx) {
+        const p = mono.players[0];
+        const tile = mono.tiles[idx];
+        const prop = mono.properties[idx];
+        if (!tile || !prop || !prop.mortgaged) return;
+        const cost = Math.floor(tile.price * 0.55);
+        if (p.money < cost) { monoLog('资金不足以赎回', 'error'); return; }
+        prop.mortgaged = false;
+        p.money -= cost;
+        monoLog(`🔑 赎回 ${tile.ic} ${tile.nm}，花费 💰${cost}`, 'success');
+        showBankModal();
+        saveMonopoly();
     }
 
     /* ==================== Monopoly: Stock Market ==================== */
@@ -1776,6 +1950,13 @@
                 <div style="display:flex;gap:.5rem;">
                     <button class="btn btn-primary" style="flex:1;" onclick="buyStock()" ${maxBuy<1?'disabled':''}>📈 买入 (💰${price}/股)</button>
                     <button class="btn btn-danger" style="flex:1;" onclick="sellStock()" ${p.stocks<=0?'disabled':''}>📉 卖出全部</button>
+                </div>
+                <div style="display:flex;gap:.5rem;">
+                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockPartial()" ${p.stocks<=0?'disabled':''}>📤 部分卖出</button>
+                    <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="sellStockToPlayer()" ${p.stocks<=0?'disabled':''}>🤝 二手交易 (90%)</button>
+                </div>
+                <div style="font-size:.65rem;color:var(--text2);padding:.2rem 0;line-height:1.4;">
+                    💡 二手交易：以市价90%卖给其他玩家，不影指数，快速变现
                 </div>
                 <button class="btn btn-secondary" onclick="closeStockModal()">离开交易所</button>
             </div>`;
@@ -1820,11 +2001,69 @@
         closeStockModal();
     }
 
+    /* Partial sell: sell only the amount entered in the input */
+    function sellStockPartial() {
+        const p = mono.players[0];
+        if (p.stocks <= 0) return;
+        const price = Math.floor(mono.stockMarket);
+        const amount = Math.min(p.stocks, parseInt(document.getElementById('stock-amount')?.value) || 1);
+        if (amount <= 0) { monoLog('请输入有效数量', 'error'); return; }
+        const revenue = price * amount;
+        const cost = Math.floor(p.stockAvgCost * amount);
+        const profit = revenue - cost;
+        p.money += revenue;
+        p.stats.stockProfit += profit;
+        p.stats.stockTrades++;
+        p.stocks -= amount;
+        if (p.stocks === 0) p.stockAvgCost = 0;
+        mono.stockMarket = Math.max(50, mono.stockMarket - amount * 0.2);
+        monoLog(`📤 部分卖出 ${amount} 股 @ 💰${price}，收入 💰${revenue}`, profit >= 0 ? 'success' : 'error');
+        showStockModal(); // Refresh modal
+        saveMonopoly();
+    }
+
+    /* Secondary trading: sell to other players at 90% market price (no index impact) */
+    function sellStockToPlayer() {
+        const p = mono.players[0];
+        if (p.stocks <= 0) return;
+        const price = Math.floor(mono.stockMarket);
+        const amount = Math.min(p.stocks, parseInt(document.getElementById('stock-amount')?.value) || p.stocks);
+        const sellPrice = Math.floor(price * 0.9); // 90% of market price
+        const revenue = sellPrice * amount;
+        // Find an AI buyer
+        const buyers = mono.players.filter((pl, i) => i !== 0 && !pl.bankrupt && pl.money > revenue);
+        if (buyers.length === 0) { monoLog('没有玩家愿意接盘', 'error'); return; }
+        const buyer = buyers[Math.floor(Math.random() * buyers.length)];
+        p.money += revenue;
+        p.stocks -= amount;
+        if (p.stocks === 0) p.stockAvgCost = 0;
+        p.stats.stockTrades++;
+        // Buyer acquires stocks
+        if (buyer.stocks > 0) {
+            buyer.stockAvgCost = ((buyer.stockAvgCost * buyer.stocks) + revenue) / (buyer.stocks + amount);
+        } else {
+            buyer.stockAvgCost = sellPrice;
+        }
+        buyer.stocks += amount;
+        buyer.money -= revenue;
+        monoLog(`🤝 二手交易：卖出 ${amount} 股给 ${buyer.ic} @ 💰${sellPrice}/股（市价90%），收入 💰${revenue}`, 'success');
+        showStockModal(); // Refresh modal
+        saveMonopoly();
+    }
+
     function closeStockModal() {
         closeModal();
         saveMonopoly();
         renderMonopoly();
+        if (mono.voluntaryVisit) { mono.voluntaryVisit = false; return; }
         if (!checkGameOver()) nextTurn();
+    }
+
+    /* ---- Voluntary stock exchange entry (doesn't consume turn) ---- */
+    function openStockExchange() {
+        if (mono.currentPlayer !== 0) { monoLog('等待其他玩家行动...', 'info'); return; }
+        mono.voluntaryVisit = true;
+        showStockModal();
     }
 
     function aiStockDecision(p) {
@@ -2054,6 +2293,9 @@
         }
         mono.currentPlayer = next;
         mono.turn++;
+        // Random stock market fluctuation each turn
+        const fluct = (Math.random() - 0.45) * 15;
+        mono.stockMarket = Math.max(50, Math.min(200, mono.stockMarket + fluct));
         // Process loans for the new player
         processLoans(mono.players[next]);
         saveMonopoly();
@@ -2387,6 +2629,21 @@
         document.documentElement.classList.toggle('font-pixel', pixelFontEnabled);
         const ft = document.getElementById('font-toggle');
         if (ft) ft.classList.toggle('on', pixelFontEnabled);
+    }
+
+    /* ---- Custom font scale: persisted multiplier 0.8 ~ 1.6 ---- */
+    function setFontScale(pct) {
+        const scale = Math.max(0.8, Math.min(1.6, pct / 100));
+        document.documentElement.style.setProperty('--font-scale', scale);
+        localStorage.setItem('fontScale', String(pct));
+        const valEl = document.getElementById('font-scale-val');
+        if (valEl) valEl.textContent = pct + '%';
+    }
+    function loadFontScale() {
+        const saved = parseInt(localStorage.getItem('fontScale')) || 100;
+        setFontScale(saved);
+        const slider = document.getElementById('font-scale-slider');
+        if (slider) slider.value = saved;
     }
 
     function toggleMouseBunny() {
