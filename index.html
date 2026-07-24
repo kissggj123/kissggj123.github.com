@@ -1,575 +1,2735 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="dark">
+<html lang="zh-CN" data-theme="bunny">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v4.3.0 -->
-    <title>档案：兔可可 vX [AEON_UNLIMITED_FINAL_v4.3.0]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- VERSION: v6.0.0 -->
+    <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
     <!-- PWA -->
-    <meta name="theme-color" content="#0c0a1d">
+    <meta name="theme-color" content="#FFF0F5">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="兔可可">
     <link rel="apple-touch-icon" href="/icon/192.png">
     <link rel="manifest" href="/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        // Apply saved theme IMMEDIATELY before any rendering to prevent flash
+        (function(){
+            try {
+                var t = localStorage.getItem('theme');
+                if (t) document.documentElement.setAttribute('data-theme', t);
+            } catch(e) {}
+        })();
+    </script>
     <style>
+        /* ==================== Theme Variables ==================== */
         :root {
-            --glow-rgb: 236,72,153; --accent-rgb: 251,191,36; --bg-color: #0c0a1d;
-            --text-color: #e6edf3; --text-color-rgb: 230,237,243; --text-muted-color: #8b949e;
-            --mouse-x: 50%; --mouse-y: 50%;
-            --color-red: 239,68,68; --color-green: 34,197,94; --color-yellow: 251,191,36; --color-blue:59,130,246;
-        }
-        body { font-family:'Noto Sans SC',sans-serif;font-size:14px;background-color:var(--bg-color);color:var(--text-color);overflow:hidden;opacity:0;animation:fadeIn 1s ease forwards;cursor:none;position:relative;z-index:0; }
-        body.font-pixel { font-family:'Press Start 2P','Noto Sans SC',sans-serif;font-size:12px; }
-        body.font-pixel .lcars-button,body.font-pixel .accent-text,body.font-pixel .glow-text,body.font-pixel h1,body.font-pixel h2,body.font-pixel #theme-page-title,body.font-pixel .modal-container h2,body.font-pixel .sim-button{letter-spacing:1px;}
-
-        #singularity-background { position:fixed;inset:0;z-index:-5;background:#0c0a1d; }
-        #circuitry-background { position:fixed;inset:0;z-index:-4;background-image:linear-gradient(rgba(var(--glow-rgb),.03) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--glow-rgb),.03) 1px,transparent 1px);background-size:25px 25px;animation:hue-cycle 30s linear infinite; }
-        @keyframes hue-cycle { from{filter:hue-rotate(0deg);} to{filter:hue-rotate(360deg);} }
-        body::before { content:'';position:fixed;inset:0;z-index:-3;background-image:linear-gradient(rgba(var(--glow-rgb),.08) 1px,transparent 1px),linear-gradient(to right,rgba(var(--glow-rgb),.08) 1px,transparent 1px);background-size:75px 75px;animation:grid-scroll 15s linear infinite;opacity:.7; }
-        @keyframes grid-scroll { from{background-position:0 0;} to{background-position:75px 150px;} }
-        body::after { content:'';position:fixed;inset:0;z-index:-2;background:radial-gradient(800px at var(--mouse-x) var(--mouse-y),rgba(var(--glow-rgb),.18),transparent 80%);pointer-events:none; }
-        
-        .effect-canvas { position:fixed;inset:0;pointer-events:none; } #vfx-canvas { z-index:11; } #bunny-trail-canvas { z-index:9998; }
-        .pixel-entity { position:fixed;width:32px;height:32px;background-size:contain;pointer-events:none;transform:translate(-50%,-50%);transition:filter .5s,opacity .5s;will-change:transform,left,top; }
-        #mouse-bunny { z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4h1v1h1v1h4v-1h1v-1h1v3h1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-2z' fill='rgb(var(--glow-rgb))'/%3E%3Cpath d='M7 6h1v1h-1z' fill='%23000'/%3E%3Cpath d='M4 4h1v1h-1zM10 4h1v1h-1zM5 6h1v1h-1z' fill='rgb(var(--accent-rgb))'/%3E%3C/svg%3E");filter:drop-shadow(0 0 8px rgba(var(--glow-rgb),.8)); }
-        
-        .lcars-container { display:flex;height:100vh;padding:1rem;gap:1rem;position:relative;z-index:10; }
-        .lcars-sidebar { width:150px;display:flex;flex-direction:column;gap:1rem;flex-shrink:0; }
-        .lcars-main { flex-grow:1;display:flex;flex-direction:column;gap:1rem;min-width:0; }
-        .lcars-element { background:rgb(var(--glow-rgb));transition:all .3s ease; }
-        .lcars-elbow { width:100%;height:60px;background:rgb(var(--glow-rgb));border-top-left-radius:30px;border-bottom-left-radius:30px; }
-        .lcars-content-panel { flex-grow:1;background:rgba(8,8,8,.8);backdrop-filter:blur(2px);border:2px solid rgb(var(--glow-rgb));padding:1.5rem;display:flex;flex-direction:column;gap:1.5rem;overflow-y:auto;min-height:0;animation:border-glow-in 2s ease-out forwards; }
-        .lcars-button { background:#080808;border:2px solid rgb(var(--accent-rgb));color:rgb(var(--accent-rgb));text-shadow:0 0 8px rgba(var(--accent-rgb),.8);transition:all .2s ease;display:flex;align-items:center;justify-content:center;gap:.5rem; }
-        .lcars-button:hover, .sim-button:hover:not(:disabled) { background:rgb(var(--accent-rgb));color:#000;box-shadow:0 0 15px rgba(var(--accent-rgb),.7); }
-        .sim-button:disabled { filter:grayscale(80%);cursor:not-allowed;opacity:.5; }
-
-        .modal-overlay { display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);transition:opacity .3s ease; }
-        .modal-container { background:#080808;border:2px solid rgb(var(--glow-rgb));box-shadow:0 0 30px rgba(var(--glow-rgb),.5);transition:transform .3s ease; }
-        .modal-overlay.hidden { pointer-events:none; } .modal-overlay.hidden .modal-container { transform:scale(.95); }
-        
-        #city-management-modal .status-bar-container { background:#222;border-radius:.25rem;overflow:hidden;border:1px solid #333;height:.7rem; }
-        #city-management-modal .status-bar-fill { height:.7rem;border-radius:.25rem;transition:width .5s ease;text-align:center;font-size:.55rem;color:black;font-weight:bold;line-height:.7rem; }
-        #city-main-screen { min-height:70px;background-color:#111;border:1px solid rgba(var(--glow-rgb),.2);border-radius:.5rem;padding:.5rem;display:flex;flex-direction:column;justify-content:center;text-align:left;white-space:pre-wrap;transition:all .3s;font-size:.7rem; }
-        .sim-button { flex-grow:1;margin:.2rem;padding:.35rem .15rem;border-radius:.25rem;background:#222;border:1px solid rgb(var(--accent-rgb));color:rgb(var(--accent-rgb));transition:all .2s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.55rem;line-height:1;text-align:center; }
-        .sim-button svg { width:.9rem;height:.9rem;margin-bottom:.1rem; }
-        .sim-panel-content { max-height:40vh;overflow-y:auto;padding:.5rem;border-top:1px solid rgba(var(--glow-rgb),.2);display:none; }
-        .resource-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(75px,1fr));gap:.25rem;font-size:.6rem; }
-        .resource-item span:first-child {color:var(--text-muted-color);} .resource-item span:last-child {color:rgb(var(--accent-rgb));font-weight:bold;}
-        .detail-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:.2rem;font-size:.6rem;margin-top:.25rem; }
-        .detail-item { padding:.1rem .15rem;background-color:rgba(var(--text-color-rgb),.03);border-radius:.2rem; }
-        .tooltip { position:relative;display:inline-block; } .tooltip .tooltiptext { visibility:hidden;min-width:100px;background-color:#333;color:#fff;text-align:center;border-radius:4px;padding:3px 5px;position:absolute;z-index:100;bottom:115%;left:50%;margin-left:-50px;opacity:0;transition:opacity .2s;font-size:.6rem;box-shadow:0 2px 5px rgba(0,0,0,.5); } .tooltip:hover .tooltiptext { visibility:visible;opacity:1; }
-        .list-item { padding:.3rem;border:1px solid rgba(var(--glow-rgb),.1);border-radius:.3rem;margin-bottom:.3rem; }
-        .list-item:hover { background-color:rgba(var(--accent-rgb),.1); }
-        .list-item.abandoned { border-color: rgb(var(--color-red)); background-color: rgba(var(--color-red), 0.1); }
-        .god-mode-input { background:rgba(var(--text-color-rgb),.1);border:1px solid rgba(var(--accent-rgb),.5);color:var(--text-color);padding:.2rem .4rem;border-radius:.2rem;width:auto;text-align:right;font-size:.7rem; }
-        .rci-demand-container { display: flex; gap: 0.5rem; align-items: center; font-size: 0.7rem; font-weight: bold; }
-        .rci-bar { flex-grow: 1; height: 1rem; background-color: #333; border-radius: 0.25rem; overflow: hidden; }
-        .rci-bar-fill { height: 100%; transition: width 0.5s ease; text-shadow: 1px 1px 1px #000; color: white; text-align: right; padding-right: 4px; font-size: 0.6rem; line-height: 1rem; }
-        .rci-res { background-color: #22c55e; } .rci-com { background-color: #3b82f6; } .rci-ind { background-color: #f59e0b; }
-        #sim-delete-button { border-color: rgb(var(--color-red)); color: rgb(var(--color-red)); }
-        #sim-delete-button:hover:not(:disabled) { background-color: rgb(var(--color-red)); color: #000; box-shadow:0 0 15px rgba(var(--color-red),.7); }
-
-        .ui-module { opacity:0;transform:translateY(20px) scale(.98);animation:module-boot .6s ease-out forwards; }
-        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} } @keyframes module-boot { to{opacity:1;transform:translateY(0) scale(1);} }
-        @keyframes border-glow-in { from{box-shadow:0 0 0px rgba(var(--glow-rgb),0);} to{box-shadow:0 0 20px rgba(var(--glow-rgb),.3);} }
-        #avatar-container { position:relative;cursor:pointer; } #profile-pic { transition:opacity .5s ease;will-change:opacity; }
-        .record-scrollbar::-webkit-scrollbar { width:6px; } .record-scrollbar::-webkit-scrollbar-track { background:transparent; } .record-scrollbar::-webkit-scrollbar-thumb { background:rgba(var(--glow-rgb),.4);border-radius:3px; }
-        /* ===== PWA Mobile Adaptation ===== */
-        :root {
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-lg: 24px;
+            --transition: .3s cubic-bezier(.4,0,.2,1);
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --tab-bar-height: 60px;
+            --tab-h: 64px;
+            /* Default theme (bunny) */
+            --bg: #FFF0F5; --bg2: #FFE4EC; --card: #FFFFFF; --card2: #FFF8FB;
+            --text: #5D4E37; --text2: #9B8E7E; --accent: #FF6B9D; --accent-rgb:255,107,157;
+            --accent2: #FFB5BA; --border: #FFD0DE; --shadow: rgba(255,107,157,.12);
+            --good: #4CAF50; --warn: #FF9800; --bad: #F44336; --glow: none;
+            --trail-style: 'ribbon'; --trail-width: 6; --trail-glow: 12px;
         }
-        #bottom-tab-bar {
-            position:fixed; bottom:0; left:0; right:0; z-index:300;
-            display:none; align-items:center; justify-content:space-around;
-            height:calc(var(--tab-bar-height) + var(--safe-bottom)); padding-bottom:var(--safe-bottom);
-            background:rgba(12,10,29,0.92);
-            backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
-            border-top:1px solid rgba(var(--glow-rgb),0.3);
-            box-shadow:0 -4px 20px rgba(0,0,0,0.4);
+        [data-theme="bunny"] {
+            --bg: #FFF0F5; --bg2: #FFE4EC; --card: #FFFFFF; --card2: #FFF8FB;
+            --text: #5D4E37; --text2: #9B8E7E; --accent: #FF6B9D; --accent-rgb:255,107,157;
+            --accent2: #FFB5BA; --border: #FFD0DE; --shadow: rgba(255,107,157,.12);
+            --good: #4CAF50; --warn: #FF9800; --bad: #F44336; --glow: none;
+            --trail-style: 'ribbon'; --trail-width: 6; --trail-glow: 12px;
         }
-        .tab-item {
-            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
-            flex:1; height:100%; padding-top:8px;
-            color:var(--text-muted-color); font-size:0.6rem; cursor:pointer;
-            transition:color .2s ease,transform .15s ease;
-            -webkit-tap-highlight-color:transparent; user-select:none;
+        [data-theme="forest"] {
+            --bg: #F0F7EE; --bg2: #D8E8D5; --card: #FFFFFF; --card2: #F5FAF3;
+            --text: #2D4A2D; --text2: #5A7A5A; --accent: #4CAF50; --accent-rgb:76,175,80;
+            --accent2: #A5D6A7; --border: #C8E0C5; --shadow: rgba(76,175,80,.12);
+            --good: #2E7D32; --warn: #FF9800; --bad: #D32F2F; --glow: none;
+            --trail-style: 'leaf'; --trail-width: 5; --trail-glow: 8px;
         }
-        .tab-item svg { width:1.4rem; height:1.4rem; }
-        .tab-item.active { color:rgb(var(--accent-rgb)); transform:translateY(-2px); }
-        .tab-item.active svg { filter:drop-shadow(0 0 6px rgba(var(--accent-rgb),0.5)); }
-        .tab-item:active { transform:scale(0.92); }
-        .mobile-content { padding-top:var(--safe-top); }
-        /* Modal → inline conversion for mobile */
-        .modal-overlay.mobile-inline {
-            position:relative !important; inset:auto !important;
-            background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
-            z-index:1 !important; display:block !important; opacity:1 !important;
-            padding:0; margin-bottom:1rem;
+        [data-theme="ocean"] {
+            --bg: #E8F4FD; --bg2: #C7E4F7; --card: #FFFFFF; --card2: #F0F8FF;
+            --text: #1A3A52; --text2: #4A6A82; --accent: #0EA5E9; --accent-rgb:14,165,233;
+            --accent2: #7DD3FC; --border: #A0D0EB; --shadow: rgba(14,165,233,.12);
+            --good: #059669; --warn: #F59E0B; --bad: #DC2626; --glow: none;
+            --trail-style: 'wave'; --trail-width: 7; --trail-glow: 15px;
         }
-        .modal-overlay.mobile-inline .modal-container {
-            max-width:100% !important; max-height:none !important; width:100% !important;
-            margin:0; position:relative !important; transform:none !important;
-            border:2px solid rgb(var(--glow-rgb)) !important; border-radius:0.5rem;
-            box-shadow:0 0 20px rgba(var(--glow-rgb),0.3) !important; background:rgba(8,8,8,0.9) !important;
+        [data-theme="starlight"] {
+            --bg: #1a1a2e; --bg2: #16213e; --card: #1f2940; --card2: #243352;
+            --text: #e6edf3; --text2: #8b949e; --accent: #a78bfa; --accent-rgb:167,139,250;
+            --accent2: #C4B5FD; --border: #312e81; --shadow: rgba(167,139,250,.2);
+            --good: #34D399; --warn: #FBBF24; --bad: #F87171; --glow: 0 0 12px rgba(167,139,250,.3);
+            --trail-style: 'magic'; --trail-width: 8; --trail-glow: 20px;
         }
-        /* Mobile-only elements */
-        .mobile-only { display:none; }
-        @media (display-mode: standalone) {
-            #bottom-tab-bar { display:flex; }
-            .lcars-sidebar { display:none; }
-            .lcars-container { height:calc(100vh - var(--tab-bar-height) - var(--safe-bottom)); }
+        [data-theme="cyber"] {
+            --bg: #0c0a1d; --bg2: #1a0a2e; --card: #0d0d18; --card2: #12121f;
+            --text: #e6edf3; --text2: #8b949e; --accent: #fbbf24; --accent-rgb:251,191,36;
+            --accent2: #ec4899; --border: #2a2a3e; --shadow: rgba(251,191,36,.15);
+            --good: #22c55e; --warn: #f59e0b; --bad: #ef4444; --glow: 0 0 8px rgba(251,191,36,.3);
+            --trail-style: 'lightsaber'; --trail-width: 4; --trail-glow: 25px;
         }
+        /* New themes: sunset, mint, rose */
+        [data-theme="sunset"] {
+            --bg: #FFF3E0; --bg2: #FFE0B2; --card: #FFFFFF; --card2: #FFF8E7;
+            --text: #5D4037; --text2: #8D6E63; --accent: #FF6B35; --accent-rgb:255,107,53;
+            --accent2: #FFB74D; --border: #FFCC80; --shadow: rgba(255,107,53,.12);
+            --good: #4CAF50; --warn: #FF9800; --bad: #E53935; --glow: 0 0 10px rgba(255,107,53,.2);
+            --trail-style: 'flame'; --trail-width: 6; --trail-glow: 18px;
+        }
+        [data-theme="mint"] {
+            --bg: #E8F5E9; --bg2: #C8E6C9; --card: #FFFFFF; --card2: #F1F8E9;
+            --text: #1B5E20; --text2: #4E6E50; --accent: #26A69A; --accent-rgb:38,166,154;
+            --accent2: #80CBC4; --border: #A5D6A7; --shadow: rgba(38,166,154,.12);
+            --good: #2E7D32; --warn: #FF9800; --bad: #D32F2F; --glow: none;
+            --trail-style: 'mintBubble'; --trail-width: 6; --trail-glow: 12px;
+        }
+        [data-theme="rose"] {
+            --bg: #FCE4EC; --bg2: #F8BBD0; --card: #FFFFFF; --card2: #FFF0F5;
+            --text: #880E4F; --text2: #AD5E7A; --accent: #E91E63; --accent-rgb:233,30,99;
+            --accent2: #F48FB1; --border: #F8BBD0; --shadow: rgba(233,30,99,.12);
+            --good: #4CAF50; --warn: #FF9800; --bad: #D32F2F; --glow: 0 0 10px rgba(233,30,99,.15);
+            --trail-style: 'petal'; --trail-width: 5; --trail-glow: 14px;
+        }
+
+        /* ==================== Base ==================== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Nunito', -apple-system, sans-serif;
+            font-size: 15px; font-weight: 600;
+            background: var(--bg); color: var(--text);
+            line-height: 1.6; overflow: hidden;
+        }
+        body.font-pixel { font-family: 'Press Start 2P', monospace; font-size: 13px; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.3); border-radius: 3px; }
+        a { color: var(--accent); text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+        /* ==================== Background ==================== */
+        #bg-layer { position: fixed; inset: 0; z-index: -5; background: var(--bg); transition: background var(--transition); }
+        #bg-pattern { position: fixed; inset: 0; z-index: -4; opacity: .5;
+            background-image: radial-gradient(circle at 20% 50%, rgba(var(--accent-rgb),.06) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 80%, rgba(var(--accent-rgb),.04) 0%, transparent 50%);
+            transition: opacity var(--transition); }
+        #bg-grid { position: fixed; inset: 0; z-index: -3; opacity: .03;
+            background-image: linear-gradient(rgba(var(--accent-rgb),1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(var(--accent-rgb),1) 1px, transparent 1px);
+            background-size: 40px 40px; }
+        #bg-glow { position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background: radial-gradient(400px at var(--mx,50%) var(--my,50%), rgba(var(--accent-rgb),.08), transparent 70%); }
+        #trail-canvas { position: fixed; inset: 0; z-index: 9998; pointer-events: none; }
+        #bunny-canvas { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
+        #epic-overlay { position: fixed; inset: 0; z-index: 9996; pointer-events: none; display: none; }
+
+        /* ==================== Layout ==================== */
+        .app { display: flex; height: 100vh; height: 100dvh; }
+        .sidebar {
+            width: 220px; flex-shrink: 0; padding: 1.5rem 1rem;
+            background: var(--bg2); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: .5rem; transition: background var(--transition);
+        }
+        .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; }
+        .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; }
+        .sidebar-logo .title { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+        .sidebar-logo .subtitle { font-size: .7rem; color: var(--text2); }
+        .nav-item {
+            display: flex; align-items: center; gap: .75rem;
+            padding: .75rem 1rem; border-radius: var(--radius-sm);
+            color: var(--text2); font-weight: 700; transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .nav-item:hover { background: rgba(var(--accent-rgb),.08); color: var(--text); }
+        .nav-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--shadow); }
+        .nav-item .icon { font-size: 1.3rem; flex-shrink: 0; }
+        .nav-item .label { font-size: .9rem; }
+        .sidebar-footer { margin-top: auto; text-align: center; font-size: .7rem; color: var(--text2); }
+        .god-indicator { display: none; padding: .5rem .75rem; border-radius: var(--radius-sm);
+            background: rgba(244,67,54,.1); color: var(--bad); font-size: .75rem; font-weight: 700;
+            text-align: center; margin-bottom: .5rem; }
+        .god-indicator.show { display: block; animation: pulse 2s ease infinite; }
+        @keyframes pulse { 50% { opacity: .6; } }
+
+        .content { flex: 1; overflow-y: auto; padding: 1.5rem; padding-top: calc(1.5rem + var(--safe-top)); }
+        .view { display: none; animation: slideUp .4s ease; }
+        .view.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==================== Cards ==================== */
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.5rem;
+            box-shadow: 0 2px 8px var(--shadow); transition: all var(--transition);
+        }
+        .card:hover { box-shadow: 0 8px 24px var(--shadow); transform: translateY(-2px); }
+        .card-title { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+        .card-grid { display: grid; gap: 1rem; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-auto { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+        /* ==================== Buttons ==================== */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+            padding: .6rem 1.2rem; border-radius: var(--radius-sm); font-weight: 700; font-size: .85rem;
+            transition: all var(--transition); white-space: nowrap;
+        }
+        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--shadow); }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-secondary { background: rgba(var(--accent-rgb),.1); color: var(--accent); }
+        .btn-secondary:hover { background: rgba(var(--accent-rgb),.2); }
+        .btn-danger { background: rgba(244,67,54,.1); color: var(--bad); }
+        .btn-danger:hover { background: var(--bad); color: #fff; }
+        .btn-sm { padding: .4rem .8rem; font-size: .75rem; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+
+        /* ==================== Stats ==================== */
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: .5rem 0; border-bottom: 1px solid var(--border); }
+        .stat-row:last-child { border: none; }
+        .stat-label { color: var(--text2); font-size: .85rem; }
+        .stat-value { font-weight: 800; color: var(--text); }
+        .stat-bar { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; margin-top: .25rem; }
+        .stat-bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; background: var(--accent); }
+
+        /* ==================== Monopoly (Expanded) ==================== */
+        .mono-era-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
+        .mono-era-info { display: flex; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 700; }
+        .mono-era-badge { padding: .25rem .6rem; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-size: .75rem; font-weight: 800; }
+        .mono-era-progress { flex: 1; min-width: 120px; height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+        .mono-era-progress-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s; }
+
+        .mono-map-scroll {
+            overflow-x: auto; overflow-y: hidden; padding: .5rem;
+            background: var(--card2); border-radius: var(--radius-sm);
+            border: 1px solid var(--border); margin-bottom: .75rem;
+            scroll-behavior: smooth;
+        }
+        .mono-map-strip { display: flex; gap: 3px; min-width: max-content; align-items: stretch; }
+        .region-divider {
+            display: flex; align-items: center; justify-content: center;
+            writing-mode: vertical-rl; text-orientation: mixed;
+            padding: .25rem .3rem; border-radius: 6px; font-size: .6rem; font-weight: 800;
+            color: #fff; min-width: 18px; white-space: nowrap; flex-shrink: 0;
+        }
+        .mono-tile-cell {
+            width: 60px; min-height: 76px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 6px; padding: 3px; display: flex; flex-direction: column; align-items: center;
+            justify-content: flex-start; text-align: center; position: relative; transition: all var(--transition);
+            flex-shrink: 0; cursor: help;
+        }
+        .mono-tile-cell:hover { border-color: var(--accent); box-shadow: 0 2px 8px var(--shadow); transform: translateY(-2px); z-index: 10; }
+        .mono-tile-cell.current { border-color: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb),.4); animation: tilePulse 1s ease infinite; }
+        @keyframes tilePulse { 50% { box-shadow: 0 0 14px rgba(var(--accent-rgb),.5); } }
+        .mono-tile-cell.owned { border-color: var(--good); }
+        .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
+        .mono-tile-cell .tile-ic { font-size: 1rem; line-height: 1; margin-top: 2px; }
+        .mono-tile-cell .tile-nm { font-size: .45rem; color: var(--text2); margin-top: 1px; line-height: 1.1; overflow: hidden; max-height: 1.8em; }
+        .mono-tile-cell .tile-cost { font-size: .45rem; color: var(--accent); font-weight: 700; }
+        .mono-tile-cell .tile-level { font-size: .4rem; color: var(--good); }
+        .mono-tile-cell .tile-owner { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; }
+        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: .55rem; }
+        .tile-tooltip {
+            display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            background: var(--card); border: 1px solid var(--accent); border-radius: 6px; padding: .4rem .6rem;
+            font-size: .65rem; white-space: nowrap; z-index: 200; box-shadow: 0 4px 12px var(--shadow);
+            pointer-events: none; margin-bottom: 4px; max-width: 200px; white-space: normal; text-align: center;
+        }
+        .mono-tile-cell:hover .tile-tooltip { display: block; }
+
+        .mono-dice-area { text-align: center; padding: .5rem 0; }
+        .mono-dice { font-size: 1.5rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
+        .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+        .mono-players { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
+        .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: 60px; transition: all var(--transition); position: relative; }
+        .mono-player.active { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow); }
+        .mono-player .mp-ic { font-size: 1.1rem; }
+        .mono-player .mp-name { font-size: .55rem; color: var(--text2); }
+        .mono-player .mp-money { font-weight: 800; font-size: .75rem; color: var(--accent); }
+        .mono-player .mp-status { font-size: .5rem; display: flex; gap: 1px; }
+        .mono-player .mp-personality { font-size: .45rem; color: var(--text2); }
+        .mono-cards { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; }
+        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .mono-card-item:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .mono-card-item .mc-desc { font-size: .4rem; color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mono-log { font-size: .65rem; color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
+        .mono-log .log-line { padding: .1rem 0; }
+        .mono-log .log-line.success { color: var(--good); }
+        .mono-log .log-line.error { color: var(--bad); }
+        .mono-log .log-line.god { color: #a78bfa; }
+        .mono-buy { margin-top: .5rem; text-align: center; display: flex; gap: .5rem; justify-content: center; align-items: center; }
+        .mono-section { margin-bottom: .75rem; }
+        .mono-section-title { font-size: .8rem; font-weight: 800; color: var(--accent); margin-bottom: .4rem; }
+        .mono-inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; }
+
+        /* ==================== Anniversary ==================== */
+        .anniversary-hero { text-align: center; padding: 2rem 1rem; }
+        .anniversary-days { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+        .anniversary-label { color: var(--text2); font-size: .9rem; margin-top: .25rem; }
+        .anniversary-time { font-size: 1.2rem; font-weight: 700; margin-top: .75rem; color: var(--text); }
+        .anniversary-start-date { font-size: .8rem; color: var(--text2); margin-top: .5rem; }
+        .next-milestone-box { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .75rem; text-align: center; margin-top: .75rem; }
+        .next-milestone-box .nm-date { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+        .next-milestone-box .nm-countdown { font-size: .8rem; color: var(--text2); margin-top: .25rem; }
+        .milestone-item { display: flex; align-items: center; gap: .75rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
+        .milestone-item:last-child { border: none; }
+        .milestone-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--accent2); }
+        .milestone-dot.reached { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+        .milestone-text { font-size: .85rem; flex: 1; }
+        .milestone-text .milestone-date { font-size: .7rem; color: var(--text2); }
+        .milestone-text .milestone-remain { font-size: .7rem; }
+
+        /* ==================== Settings ==================== */
+        .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: .75rem; }
+        .theme-card { padding: 1rem; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: pointer; transition: all var(--transition); text-align: center; }
+        .theme-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
+        .theme-card.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.2); }
+        .theme-preview { width: 100%; height: 40px; border-radius: 6px; margin-bottom: .5rem; }
+        .theme-name { font-size: .75rem; font-weight: 700; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid var(--border); }
+        .setting-row:last-child { border: none; }
+        .toggle { position: relative; width: 44px; height: 24px; background: var(--bg2); border-radius: 12px; cursor: pointer; transition: background var(--transition); }
+        .toggle.on { background: var(--accent); }
+        .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left var(--transition); }
+        .toggle.on::after { left: 22px; }
+
+        #avatar-img { cursor: pointer; transition: transform .3s cubic-bezier(.4,0,.2,1); }
+        #avatar-img:hover { transform: scale(1.05); }
+        #avatar-img:active { transform: scale(0.95); }
+        .avatar-burst { position: fixed; pointer-events: none; z-index: 9997; }
+        @keyframes sparkle {
+            0% { transform: translate(0,0) scale(1) rotate(0); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); opacity: 0; }
+        }
+        @keyframes ringExpand {
+            0% { transform: translate(-50%,-50%) scale(0); opacity: .8; }
+            100% { transform: translate(-50%,-50%) scale(3); opacity: 0; }
+        }
+        @keyframes avatarShake {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+        @keyframes epicRing {
+            0% { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%,-50%) scale(5); opacity: 0; }
+        }
+        @keyframes epicText {
+            0% { transform: translate(-50%,-50%) scale(0.3); opacity: 0; }
+            20% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+            80% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%,-50%) scale(2); opacity: 0; }
+        }
+        @keyframes epicFlash {
+            0% { opacity: 0; } 10% { opacity: .6; } 100% { opacity: 0; }
+        }
+        @keyframes epicFirework {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* ==================== Card Draw ==================== */
+        .game-card:hover { transform: translateY(-4px) scale(1.08) !important; box-shadow: 0 4px 12px var(--shadow); z-index: 10; }
+        .game-card:active { transform: scale(0.95) !important; }
+        .game-card .gc-desc { font-size: .4rem; color: var(--text2); text-align: center; margin-top: 1px; line-height: 1.1; padding: 0 2px; max-height: 2.2em; overflow: hidden; }
+        .cooldown-btn { position: relative; overflow: hidden; }
+        .cooldown-btn .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.1); pointer-events: none; }
+        .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; }
+        .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; }
+        .inventory-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .inventory-card .ic-icon { font-size: 1.2rem; }
+        .inventory-card .ic-name { font-size: .42rem; font-weight: 700; text-align: center; line-height: 1.1; margin-top: 1px; }
+        .inventory-card .ic-desc { font-size: .35rem; color: var(--text2); text-align: center; line-height: 1.1; padding: 0 2px; overflow: hidden; max-height: 2.4em; }
+
+        .god-challenge-box { background: var(--card2); border: 2px dashed var(--accent); border-radius: var(--radius); padding: 1rem; text-align: center; margin-bottom: 1rem; }
+        .god-code-display { font-family: 'Press Start 2P', monospace; font-size: .7rem; word-break: break-all; color: var(--accent); margin: .5rem 0; line-height: 1.8; }
+        .god-input { width: 100%; padding: .75rem; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--card2); color: var(--text); font-family: 'Press Start 2P', monospace; font-size: .65rem; transition: border var(--transition); }
+        .god-input:focus { outline: none; border-color: var(--accent); }
+        .god-status { padding: .75rem; border-radius: var(--radius-sm); text-align: center; font-weight: 700; margin-bottom: .5rem; display: none; }
+        .god-status.show { display: block; }
+        .god-status.success { background: rgba(76,175,80,.1); color: var(--good); }
+        .god-status.error { background: rgba(244,67,54,.1); color: var(--bad); }
+
+        /* ==================== Events Log ==================== */
+        .event-item { padding: .5rem .75rem; border-radius: var(--radius-sm); background: var(--card2); margin-bottom: .4rem; font-size: .8rem; display: flex; gap: .5rem; align-items: start; }
+        .event-time { color: var(--text2); font-size: .65rem; flex-shrink: 0; min-width: 50px; }
+        .event-text { flex: 1; }
+        .event-info { color: var(--text); }
+        .event-success { color: var(--good); }
+        .event-warn { color: var(--warn); }
+        .event-error { color: var(--bad); }
+        .event-god { color: #a78bfa; }
+
+        /* ==================== Modal ==================== */
+        .modal-overlay { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); }
+        .modal-overlay.show { display: flex; animation: fadeIn .3s ease; }
+        .modal { background: var(--card); border-radius: var(--radius); padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); position: relative; }
+        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: var(--text2); cursor: pointer; }
+
+        /* ==================== Mobile Tab Bar ==================== */
+        .tab-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+            display: none; align-items: center; justify-content: space-around;
+            height: calc(var(--tab-h) + var(--safe-bottom)); padding-bottom: var(--safe-bottom);
+            background: var(--bg2); border-top: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+        }
+        .tab-item { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; height: 100%; padding-top: 8px; color: var(--text2); transition: color var(--transition); -webkit-tap-highlight-color: transparent; user-select: none; }
+        .tab-item .tab-icon { font-size: 1.4rem; }
+        .tab-item .tab-label { font-size: .6rem; font-weight: 700; }
+        .tab-item.active { color: var(--accent); }
+        .tab-item.active .tab-icon { transform: translateY(-2px); transition: transform var(--transition); }
+
+        /* ==================== Responsive ==================== */
         @media (max-width: 768px) {
-            body { overflow-y:auto; overflow-x:hidden; }
-            .lcars-container { padding:0.5rem; gap:0.5rem; height:auto; min-height:calc(100vh - var(--tab-bar-height) - var(--safe-bottom) - var(--safe-top)); }
-            .lcars-sidebar { display:none; }
-            #bottom-tab-bar { display:flex; }
-            .lcars-content-panel { padding:0.75rem; gap:0.75rem; }
-            .ui-module { margin-bottom:0.5rem; }
-            /* Hide content panel when a non-home tab is active */
-            body[data-mobile-tab="city"] .lcars-content-panel,
-            body[data-mobile-tab="anniversary"] .lcars-content-panel,
-            body[data-mobile-tab="logs"] .lcars-content-panel,
-            body[data-mobile-tab="settings"] .lcars-content-panel { display:none !important; }
-            /* Show content panel on home tab */
-            body[data-mobile-tab="home"] .lcars-content-panel { display:flex !important; }
-            /* Hide all non-inline modals on mobile */
-            .modal-overlay:not(.mobile-inline):not(#god-mode-calculator-modal):not(#god-mode-activation-modal) { display:none !important; }
-            .mobile-only { display:block; }
-            .chart-container { height:200px !important; }
-            #avatar-container { width:120px !important; height:120px !important; }
-            #city-main-screen { min-height:80px; }
+            body { overflow-y: auto; overflow-x: hidden; }
+            .app { flex-direction: column; height: auto; min-height: 100vh; }
+            .sidebar { display: none; }
+            .content { flex: 1; padding: 1rem; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 1rem); }
+            .tab-bar { display: flex; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .anniversary-days { font-size: 2.5rem; }
+            .card { padding: 1rem; }
+            .mono-tile-cell { width: 48px; min-height: 60px; }
+            .mono-tile-cell .tile-ic { font-size: .8rem; }
+            .mono-tile-cell .tile-nm { font-size: .38rem; }
+            .mono-dice-num { font-size: 1.5rem; }
+        }
+        @media (display-mode: standalone) {
+            .tab-bar { display: flex; }
+            .sidebar { display: none; }
         }
     </style>
+    <script>
+        // Apply theme immediately before paint to prevent flash/black screen
+        (function() {
+            var t = localStorage.getItem('theme') || 'bunny';
+            document.documentElement.setAttribute('data-theme', t);
+            var pf = localStorage.getItem('pixelFont') === '1';
+            if (pf) document.documentElement.classList.add('font-pixel');
+        })();
+    </script>
 </head>
 <body>
-    <div id="singularity-background"></div> <div id="circuitry-background"></div>
-    <canvas id="vfx-canvas" class="effect-canvas"></canvas> <canvas id="bunny-trail-canvas" class="effect-canvas"></canvas>
-    <div id="mouse-bunny" class="pixel-entity"></div>
-    
-    <div class="lcars-container">
-        <div class="lcars-sidebar">
-            <div class="lcars-elbow"></div>
-            <div class="flex-grow flex flex-col justify-end gap-4">
-                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('changelog-modal')">更新日志</button>
-                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('theme-modal')">主题</button>
-                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleFullscreen()">全屏</button>
-                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('performance-modal')">性能</button>
-                <button class="lcars-button p-2 rounded-r-full text-xs" onclick="toggleModal('city-management-modal')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"> <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /><path d="M16 4.586V17a1 1 0 01-1 1h-1.5a1 1 0 01-1-1v-2.268a2 2 0 00-2-2h-1.06a2 2 0 00-2 2V17a1 1 0 01-1 1H6a1 1 0 01-1-1V4.586l7-7 4 4zM9 13.732V17h2v-3.268a4.002 4.002 0 00-2-.001z" fill-rule="evenodd" clip-rule="evenodd"/> </svg>
-                    <span>城市系统</span>
-                </button>
+    <div id="bg-layer"></div>
+    <div id="bg-pattern"></div>
+    <div id="bg-grid"></div>
+    <div id="bg-glow"></div>
+    <canvas id="trail-canvas"></canvas>
+    <canvas id="bunny-canvas"></canvas>
+    <div id="epic-overlay"></div>
+
+    <div class="app">
+        <!-- Sidebar (Desktop) -->
+        <nav class="sidebar">
+            <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
+                <span class="bunny-icon">🐰</span>
+                <div class="title">兔可可王国</div>
+                <div class="subtitle">v6.0.0</div>
             </div>
-        </div>
-        <div class="lcars-main">
-            <div id="main-title-area" class="h-16 flex justify-between items-center flex-shrink-0 cursor-pointer" title="多次点击此处有惊喜...">
-                <div class="flex items-center">
-                    <div class="lcars-element w-24 h-16 rounded-l-full"></div>
-                    <div class="ml-4"><p class="text-xl sm:text-2xl font-bold tracking-wider glow-text">SIM-BCC</p><p class="accent-text text-sm">AEON_UNLIMITED_FINAL_v4.3.0</p></div>
-                </div>
-                <div id="god-mode-indicator" class="text-xs text-red-500 font-bold hidden mr-4">上帝模式已开启</div>
+            <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
+            <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
+                <span class="icon">🏠</span><span class="label">首页</span>
             </div>
-            <div class="lcars-content-panel record-scrollbar">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-1 flex flex-col space-y-6">
-                        <div class="ui-module text-center">
-                            <div id="avatar-container" class="w-40 h-40 mx-auto"> <img id="profile-pic" class="w-full h-full rounded-full object-cover p-1 border-2" style="border-color:rgb(var(--glow-rgb));"> </div>
-                            <h1 class="text-2xl font-bold mt-4 glow-text">兔可可市长</h1>
+            <div class="nav-item" data-view="monopoly" onclick="navigateTo('monopoly')">
+                <span class="icon">🎲</span><span class="label">大富翁王国</span>
+            </div>
+            <div class="nav-item" data-view="anniversary" onclick="navigateTo('anniversary')">
+                <span class="icon">💕</span><span class="label">纪念日</span>
+            </div>
+            <div class="nav-item" data-view="logs" onclick="navigateTo('logs')">
+                <span class="icon">📜</span><span class="label">事件日志</span>
+            </div>
+            <div class="nav-item" data-view="settings" onclick="navigateTo('settings')">
+                <span class="icon">⚙️</span><span class="label">设置</span>
+            </div>
+            <div class="sidebar-footer">兔可可王国 · 虚拟纪元</div>
+        </nav>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- Home View -->
+            <section id="view-home" class="view active">
+                <div class="card-grid grid-2" style="margin-bottom:1rem;">
+                    <div class="card" style="text-align:center;">
+                        <div style="width:120px;height:120px;margin:0 auto 1rem;border-radius:50%;overflow:hidden;border:3px solid var(--accent);box-shadow:0 0 20px var(--shadow);">
+                            <img id="avatar-img" src="./dist/Bunny CC_Profile.JPG" alt="兔可可" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.innerHTML='🐰'">
                         </div>
-                        <div class="ui-module"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom:1px solid rgba(var(--accent-rgb),.3)">里程碑</h2><div id="timing" class="space-y-3" style="color:var(--text-muted-color)"></div></div>
+                        <div style="font-size:1.3rem;font-weight:800;color:var(--accent);">兔可可市长</div>
+                        <div style="font-size:.8rem;color:var(--text2);margin-top:.25rem;">兔可可王国 · 虚拟纪元</div>
                     </div>
-                    <div class="md:col-span-2 flex flex-col space-y-6">
-<div class="ui-module">
-    <h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom:1px solid rgba(var(--accent-rgb),.3)">兔可可纪念日</h2>
-    <div class="space-y-4">
-        <div class="text-center p-4 rounded-lg" style="background-color:rgba(var(--glow-rgb),.1); border:1px solid rgba(var(--glow-rgb),.3)">
-            <p class="text-sm text-gray-400">兔可可已经到来</p>
-            <p class="text-3xl font-bold glow-text my-1"><span id="memorial-days">0.0000</span> 天</p>
-            <p class="text-xs accent-text" id="memorial-time">0 小时 0 分 0 秒</p>
-        </div>
-        <div id="memorial-milestones" class="text-xs space-y-2 text-gray-300">
-            <!-- Dynamic milestones will be injected here -->
-        </div>
-        <div class="mt-4 pt-4 border-t border-gray-800 space-y-3 italic text-xs text-gray-400 leading-relaxed">
-            <p>\"在命运的洪流中，我们只是一叶扁舟，但我们绝不放弃希望。 —— Watership Down Hazel\"</p>
-            <p>\"To Juliet and Rosamund, remembering the road to Stratford-on-Avon\" —Dedication, Watership Down</p>
-        </div>
+                    <div class="card">
+                        <div class="card-title">🐰 兔可可纪念日</div>
+                        <div style="text-align:center;padding:1rem 0;">
+                            <div style="font-size:2.5rem;font-weight:800;color:var(--accent);" id="home-days">0</div>
+                            <div style="font-size:.8rem;color:var(--text2);">天</div>
+                            <div style="margin-top:.5rem;font-weight:700;color:var(--text);" id="home-time">0时 0分 0秒</div>
+                        </div>
+                        <div id="home-milestones" style="margin-top:.5rem;"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🃏 兔兔抽卡</div>
+                    <div style="text-align:center;padding:.5rem 0;">
+                        <div style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem;">每次抽取 10 张随机卡牌，可携带至大富翁中使用</div>
+                        <div id="card-draw-area" style="min-height:120px;"></div>
+                        <button class="btn btn-primary cooldown-btn" id="draw-btn" style="margin-top:.5rem;" onclick="drawCards()">🎴 抽卡 (10张)</button>
+                    </div>
+                    <div id="card-inventory-area" style="margin-top:.75rem;"></div>
+                </div>
+            </section>
+
+            <!-- Monopoly View -->
+            <section id="view-monopoly" class="view">
+                <div class="card" style="margin-bottom:1rem;">
+                    <div class="mono-era-bar">
+                        <div class="mono-era-info">
+                            <span class="mono-era-badge" id="mono-era-badge">草原时代</span>
+                            <span id="mono-era-region">胡萝卜草原</span>
+                        </div>
+                        <div class="mono-era-progress"><div class="mono-era-progress-fill" id="mono-era-progress" style="width:0%;"></div></div>
+                        <button class="btn btn-primary btn-sm" id="mono-advance-btn" style="display:none;" onclick="advanceEra()">⬆️ 推进时代</button>
+                        <button class="btn btn-secondary btn-sm" onclick="newMonopolyGame();renderMonopoly();">🔄 新游戏</button>
+                    </div>
+                    <div class="mono-players" id="mono-players"></div>
+                </div>
+                <div class="card" style="margin-bottom:1rem;">
+                    <div class="mono-section-title">🗺️ 岛屿地图</div>
+                    <div class="mono-map-scroll" id="mono-map-scroll">
+                        <div class="mono-map-strip" id="mono-map-strip"></div>
+                    </div>
+                </div>
+                <div class="card-grid grid-2">
+                    <div class="card">
+                        <div class="mono-section-title">🎲 行动</div>
+                        <div class="mono-dice-area" id="mono-dice-area"></div>
+                        <div class="mono-section-title" style="margin-top:.5rem;">🃏 手牌</div>
+                        <div class="mono-cards" id="mono-cards"></div>
+                        <div class="mono-log" id="mono-log" style="margin-top:.5rem;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="mono-section-title">🎒 卡牌背包</div>
+                        <div style="font-size:.7rem;color:var(--text2);margin-bottom:.4rem;">从首页抽到的卡牌可携带到游戏中使用</div>
+                        <div class="mono-inventory-grid" id="mono-inventory"></div>
+                        <div class="mono-section-title" style="margin-top:.75rem;">📊 股市指数</div>
+                        <div style="text-align:center;font-size:1.5rem;font-weight:800;color:var(--accent);" id="mono-stock">100</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Anniversary View -->
+            <section id="view-anniversary" class="view">
+                <div class="card">
+                    <div class="anniversary-hero">
+                        <div style="font-size:1rem;color:var(--text2);margin-bottom:.5rem;">🐰 兔可可已经到来</div>
+                        <div class="anniversary-days" id="anni-days">0</div>
+                        <div class="anniversary-label">天</div>
+                        <div class="anniversary-time" id="anni-time">0 时 0 分 0 秒</div>
+                        <div class="anniversary-start-date">起始日期：2024/03/12</div>
+                        <div class="next-milestone-box" id="anni-next-milestone"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:1rem;">
+                    <div class="card-title">🎯 里程碑</div>
+                    <div id="anni-milestones"></div>
+                </div>
+                <div class="card" style="margin-top:1rem;">
+                    <div class="card-title">📖 兔可可王国传承</div>
+                    <p style="font-size:.85rem;color:var(--text2);line-height:1.8;">
+                        在虚拟纪元的曙光中，兔可可王国从一片数字草原上崛起。这不是现实中的城市，而是一座由爱与想象构筑的永恒之国。
+                        兔可可是这个王国的灵魂化身——一位超越了现实边界的安哥拉兔，从像素中诞生，在数据中成长，最终成为万民爱戴的永恒市长。
+                        每一栋建筑都是一段记忆，每一位市民都是一个故事，而兔可可的温柔与柔软绒毛，是这座虚拟王国最真实的魔法。
+                    </p>
+                </div>
+            </section>
+
+            <!-- Logs View -->
+            <section id="view-logs" class="view">
+                <div class="card">
+                    <div class="card-title">📜 事件日志</div>
+                    <div id="events-list"></div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="view-settings" class="view">
+                <div class="card" style="margin-bottom:1rem;">
+                    <div class="card-title">🎨 主题选择</div>
+                    <div class="theme-grid" id="theme-grid"></div>
+                </div>
+                <div class="card" style="margin-bottom:1rem;">
+                    <div class="card-title">⚙️ 偏好设置</div>
+                    <div class="setting-row">
+                        <span>像素字体模式</span>
+                        <div class="toggle" id="font-toggle" onclick="togglePixelFont()"></div>
+                    </div>
+                    <div class="setting-row">
+                        <span>鼠标光效跟随</span>
+                        <div class="toggle on" id="mouse-toggle" onclick="toggleMouseBunny()"></div>
+                    </div>
+                    <div class="setting-row">
+                        <span>全屏模式</span>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleFullscreen()">🖥️ 切换</button>
+                    </div>
+                </div>
+                <div class="card" id="god-panel" style="margin-bottom:1rem;display:none;">
+                    <div class="card-title">✨ 上帝模式</div>
+                    <div id="god-content"></div>
+                </div>
+                <div class="card" style="margin-bottom:1rem;">
+                    <div class="card-title">ℹ️ 关于版本</div>
+                    <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v6.0.0</span></span>
+                            <span style="font-size:.7rem;">🐰</span>
+                        </div>
+                        <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域312格岛屿</div>
+                        <div style="margin-top:.2rem;font-size:.7rem;color:var(--text2);opacity:.6;">点击查看更多信息</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📋 更新日志</div>
+                    <div id="changelog-content" style="font-size:.85rem;color:var(--text2);"></div>
+                </div>
+            </section>
+        </main>
     </div>
-</div>
-                        <div class="ui-module"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom:1px solid rgba(var(--accent-rgb),.3)">数据可视化</h2>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                <div><h3 class="text-sm accent-text mb-1">人口趋势 (城市模拟)</h3><div class="h-56 chart-container"><canvas id="populationChart"></canvas></div><div id="population-change-info" class="mt-2 text-center p-2 rounded-lg h-10 flex items-center justify-center text-xs" style="background-color:rgba(var(--glow-rgb),.05);border:1px solid rgba(var(--glow-rgb),.2);"></div></div>
-                                <div id="pet-weight-module" style="display:none;"><h3 class="text-sm accent-text mb-1">体重档案 (历史遗珍)</h3><div class="h-56 chart-container"><canvas id="weightChart"></canvas></div><div id="weight-change-info" class="mt-2 text-center p-2 rounded-lg h-10 flex items-center justify-center text-xs" style="background-color:rgba(var(--glow-rgb),.05);border:1px solid rgba(var(--glow-rgb),.2);"></div></div>
-                            </div>
-                        </div>
-                        <div class="ui-module flex-grow flex flex-col"><h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom:1px solid rgba(var(--accent-rgb),.3)">事件流</h2>
-                            <div class="flex text-xs mb-2"><button id="log-toggle-city" class="px-2 py-1 border border-transparent border-b-2 font-bold accent-text" style="border-bottom-color:rgb(var(--accent-rgb))">城市日志</button><button id="log-toggle-pet" class="px-2 py-1 opacity-60 hover:opacity-100">历史档案</button></div>
-                            <div id="city-events-container" class="record-scrollbar flex-grow pr-2 space-y-3"></div>
-                            <div id="all-records-container" class="record-scrollbar flex-grow pr-2 space-y-3" style="display:none;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-6 p-6 ui-module">
-                <h2 class="text-lg font-bold pb-2 mb-4 accent-text" style="border-bottom:1px solid rgba(var(--accent-rgb),.3)">上海安哥拉兔传承</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm leading-relaxed text-gray-300">
-                    <div>
-                        <h3 class="text-md font-bold mb-2 accent-text">英系双血统安哥拉兔繁育</h3>
-                        <p>Ben John (MenglolitaBD) 扎根上海，多年来致力于英系双血统安哥拉兔的精心繁育与护理。每一代都追求健康、温顺的性格与那令人惊叹的柔软绒毛。从对这个品种温顺天性的深深着迷，到如今肩负起保护与传承这些非凡生灵的终身使命，这是一条充满温暖与绒毛的道路。</p>
-                    </div>
-                    <div>
-                        <h3 class="text-md font-bold mb-2 accent-text">与兔相伴的日子</h3>
-                        <p>安哥拉兔是最古老的家养品种之一，自18世纪以来就以其绒毛而备受珍视。在上海，这份传统延续着一种独特的现代温情 - 每只兔子都有自己的个性，每一窝幼崽都是无声的胜利。兔可可是这份事业的灵魂结晶 - 一只超越了兔笼的存在，成为了一座想象之城中备受爱戴的市长，也是温暖、绒毛与静谧尊严的真实象征。</p>
-                    </div>
-                </div>
-            </div>
+
+    <!-- Mobile Tab Bar -->
+    <nav class="tab-bar">
+        <div class="tab-item active" data-view="home" onclick="navigateTo('home')">
+            <span class="tab-icon">🏠</span><span class="tab-label">首页</span>
         </div>
-    </div>
-    
-    <div id="changelog-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="toggleModal('changelog-modal')"><div class="modal-container w-11/12 max-w-4xl max-h-[80vh] flex flex-col" onclick="event.stopPropagation()"><h2 class="text-xl p-4 glow-text border-b" style="border-color:rgba(var(--glow-rgb),.3)">更新日志</h2><div id="changelog-content" class="p-6 overflow-y-auto record-scrollbar"></div></div></div>
-    <div id="theme-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="toggleModal('theme-modal')"><div class="modal-container w-11/12 max-w-md" onclick="event.stopPropagation()"><div class="p-4 flex justify-between items-center border-b" style="border-color:rgba(var(--glow-rgb),.3)"><button id="prev-theme-page" class="text-2xl glow-text"><</button><h2 id="theme-page-title" class="text-xl glow-text">颜色循环</h2><button id="next-theme-page" class="text-2xl glow-text">></button></div><div id="theme-grid" class="p-6 grid grid-cols-5 gap-4"></div><div class="p-4 border-t flex items-center gap-4" style="border-color:rgba(var(--glow-rgb),.3)"><input id="custom-color-input" type="text" placeholder="色码 或 最终激活码..." class="flex-grow bg-transparent border text-center p-2 rounded-md" style="border-color:rgba(var(--accent-rgb),.5)"><button id="font-toggle-button" class="lcars-button rounded-md px-4 py-2 text-xs">像素字体</button></div></div></div>
-    <div id="performance-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="toggleModal('performance-modal')"><div class="modal-container w-11/12 max-w-lg p-6 flex flex-col" onclick="event.stopPropagation()"><h2 class="text-xl pb-4 mb-4 glow-text border-b flex-shrink-0" style="border-color:rgba(var(--glow-rgb),.3)">观察者核心</h2><div id="perf-modal-content" class="text-xs space-y-1 overflow-y-auto record-scrollbar max-h-[70vh]" style="font-family:'Press Start 2P',sans-serif;"></div></div></div>
-    <div id="anniversary-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="toggleModal('anniversary-modal')"><div class="modal-container w-11/12 max-w-md p-6 flex flex-col" onclick="event.stopPropagation()"><h2 class="text-xl pb-4 mb-4 glow-text border-b flex-shrink-0 text-center" style="border-color:rgba(var(--glow-rgb),.3)">纪念日</h2><div id="anniversary-content" class="text-sm space-y-3 overflow-y-auto record-scrollbar max-h-[70vh]" style="color:var(--text-muted-color)"></div></div></div>
-    
-    <div id="city-management-modal" class="modal-overlay fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="toggleModal('city-management-modal')">
-        <div class="modal-container w-11/12 max-w-3xl flex flex-col" style="max-height:95vh;" onclick="event.stopPropagation()">
-            <h2 class="text-xl p-2 glow-text border-b flex-shrink-0 text-center" style="border-color:rgba(var(--glow-rgb),.3)">BCC 文字大都会控制中心 <span id="god-mode-modal-indicator" class="text-xs text-red-400 hidden">(上帝模式)</span></h2>
-            <div class="p-2 space-y-1 flex-shrink-0 border-b" style="border-color:rgba(var(--glow-rgb),.1);">
-                <div id="rci-demand" class="rci-demand-container mb-2">
-                    <div class="rci-bar" title="住宅需求"><div id="rci-res-bar" class="rci-bar-fill rci-res">R</div></div>
-                    <div class="rci-bar" title="商业需求"><div id="rci-com-bar" class="rci-bar-fill rci-com">C</div></div>
-                    <div class="rci-bar" title="工业/办公需求"><div id="rci-ind-bar" class="rci-bar-fill rci-ind">I</div></div>
-                </div>
-                <div class="resource-grid mb-1">
-                    <div class="resource-item tooltip">💰<span class="tooltiptext">资金</span>:<span id="sim-funds">0</span></div> 
-                    <div class="resource-item tooltip">🧑‍🤝‍🧑<span class="tooltiptext">人口</span>:<span id="sim-population">0</span></div>
-                    <div class="resource-item tooltip">⚡<span class="tooltiptext">电力需求/产能</span>:<span id="sim-power">0/0</span></div> 
-                    <div class="resource-item tooltip">💧<span class="tooltiptext">水源需求/产能</span>:<span id="sim-water">0/0</span></div>
-                    <div class="resource-item tooltip">🏭<span class="tooltiptext">工业品产出</span>:<span id="sim-goods-produced">0</span></div>
-                    <div class="resource-item tooltip">🛍️<span class="tooltiptext">商品需求</span>:<span id="sim-goods-demand">0</span></div>
-                    <div class="resource-item">🗓️<span class="tooltiptext">日期</span>:<span id="sim-date">Y1D1</span></div> 
-                    <div class="resource-item tooltip">🔬<span class="tooltiptext">科研点</span>:<span id="sim-research">0</span></div>
-                    <div class="resource-item tooltip">🛠️<span class="tooltiptext">失业率</span>:<span id="sim-unemployment">0%</span></div>
-                    <div class="resource-item tooltip">💡<span class="tooltiptext">顾问状态</span>:<span id="sim-bunny-status">良好</span></div>
-                    <div class="resource-item tooltip">🏆<span class="tooltiptext">城市等级(经验)</span>:<span id="sim-city-level">1(0/100)</span></div>
-                    <div class="resource-item tooltip">🪨<span class="tooltiptext">原材料储备</span>:<span id="sim-raw-materials">0</span></div>
-                </div>
-                <div class="detail-grid">
-                    <div class="detail-item tooltip">😊<span class="tooltiptext">平均满意度</span>:<span id="sim-satisfaction-perc" class="ml-1">0</span>% <div class="status-bar-container mt-px"><div id="sim-satisfaction-bar" class="status-bar-fill" style="background:linear-gradient(90deg,#10b981,#34d399);"></div></div></div>
-                    <div class="detail-item tooltip">🌳<span class="tooltiptext">环境质量</span>:<span id="sim-environment-perc" class="ml-1">0</span>% <div class="status-bar-container mt-px"><div id="sim-environment-bar" class="status-bar-fill" style="background:linear-gradient(90deg,#22c55e,#4ade80);"></div></div></div>
-                    <div class="detail-item tooltip">🚗<span class="tooltiptext">交通压力</span>:<span id="sim-traffic-perc" class="ml-1">0</span>% <div class="status-bar-container mt-px"><div id="sim-traffic-bar" class="status-bar-fill" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div></div>
-                    <div class="detail-item tooltip">🎓<span class="tooltiptext">教育水平</span>:<span id="sim-education-perc" class="ml-1">0</span>% <div class="status-bar-container mt-px"><div id="sim-education-bar" class="status-bar-fill" style="background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div></div>
-                </div>
-            </div>
-            <div id="sim-main-screen" class="p-2 record-scrollbar flex-grow overflow-y-auto">初始化中...</div>
-            <div id="sim-panel-container" class="flex-shrink-0 border-t" style="border-color:rgba(var(--glow-rgb),.2);">
-                <div class="flex flex-wrap p-1">
-                    <button class="sim-button active" onclick="showCityPanel('status')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>状态</button>
-                    <button class="sim-button" onclick="showCityPanel('build')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M19 7v14M4 4h16M2 21h20M7 11h2M7 15h2M15 11h2M15 15h2"/></svg>建筑</button>
-                    <button class="sim-button" onclick="showCityPanel('tech')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>科技</button>
-                    <button class="sim-button" onclick="showCityPanel('policy')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>政策</button>
-                    <button class="sim-button" onclick="showCityPanel('monopoly')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>地产</button>
-                    <button id="god-mode-tab-button" class="sim-button hidden" onclick="showCityPanel('god')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>上帝</button>
-                </div>
-                <div id="sim-panel-status" class="sim-panel-content" style="display:block;"></div>
-                <div id="sim-panel-build" class="sim-panel-content"></div>
-                <div id="sim-panel-tech" class="sim-panel-content"></div>
-                <div id="sim-panel-policy" class="sim-panel-content"></div>
-                <div id="sim-panel-monopoly" class="sim-panel-content"></div>
-                <div id="sim-panel-god" class="sim-panel-content"></div>
-            </div>
-            <div class="p-2 border-t flex gap-2 flex-shrink-0" style="border-color:rgba(var(--glow-rgb),.1);">
-                <button class="sim-button" onclick="advanceDay()">推进一日</button>
-                <button class="sim-button" onclick="saveCity()">手动保存</button>
-                <button id="sim-delete-button" class="sim-button" onclick="deleteSave()">重置存档</button>
-            </div>
+        <div class="tab-item" data-view="monopoly" onclick="navigateTo('monopoly')">
+            <span class="tab-icon">🎲</span><span class="tab-label">大富翁</span>
         </div>
+        <div class="tab-item" data-view="anniversary" onclick="navigateTo('anniversary')">
+            <span class="tab-icon">💕</span><span class="tab-label">纪念</span>
+        </div>
+        <div class="tab-item" data-view="logs" onclick="navigateTo('logs')">
+            <span class="tab-icon">📜</span><span class="tab-label">日志</span>
+        </div>
+        <div class="tab-item" data-view="settings" onclick="navigateTo('settings')">
+            <span class="tab-icon">⚙️</span><span class="tab-label">设置</span>
+        </div>
+    </nav>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" id="modal-content"></div>
     </div>
 
     <script>
-        const CONFIG={PROFILE_PIC_PATH:'./dist/Bunny CC_Profile.JPG',PET_RECORDS_PATH:'./dist/bunnycc/PetRecords.json',CITY_SAVE_KEY:'bunny_cc_sim_save_v4.3.0',START_DATE:'2024/03/12 00:00:00',MOUSE_SNAKE_LENGTH:20,COSMIC_DUST_COUNT:800,AVATAR_EFFECT_PRESETS:5,MAX_LOCALSTORAGE_SAVE_BYTES:4.5*1024*1024,GOD_MODE_TITLE_CLICKS:7,GOD_MODE_CALC_SALT_S1:12345,GOD_MODE_JS_ADDON:5678,GOD_MODE_TIME_SALT_S2:97531,GOD_MODE_CHECKSUM_SALT:24680,THEMES:`pink/236,72,153 gold/251,191,36 cyan/34,211,238 magenta/244,114,182 lime/132,204,22 red/239,68,68 indigo/88,86,214 green/34,197,94 white/229,231,235 purple/168,85,247 sky/56,189,248 rose/251,113,133 emerald/16,185,129 amber/245,158,11 violet/139,92,246 fuchsia/217,70,239 teal/20,184,166 blue/59,130,246 lightblue/14,165,233 forest/22,163,74 crimson/220,38,38 silver/156,163,175 bronze/205,133,63 steel/113,128,150 mint/10,200,150 lavender/216,180,254 salmon/250,128,114 turquoise/64,224,208 olive/128,128,0 maroon/128,0,0 navy/0,0,128 coral/255,127,80 orchid/218,112,214 plum/221,160,221 khaki/240,230,140 slateblue/106,90,205 sienna/160,82,45 hotpink/255,105,180 deepskyblue/0,191,255 lawngreen/124,252,0 mediumvioletred/199,21,133 darkorange/255,140,0 dodgerblue/30,144,255 tomato/255,99,71 springgreen/0,255,127 aqua/0,255,255 chartreuse/127,255,0 darkviolet/148,0,211 electric/213,252,9 cosmic/45,15,128 nebula/188,45,225 solar/255,180,0 galactic/75,0,130 cyber/0,255,198 quantum/255,30,90 void/10,10,25 supernova/255,80,0 starlight/230,230,250`.split(' ').map(s=>({n:s.split('/')[0],r:s.split('/')[1]}))};
-        
-        let city, advisorBunny={energy:100,happiness:100}, petRecords=[], weightChart, populationChart, currentThemeIndex=0, godModeActive=false, titleClickCount=0, frameCount=0, lastPerfUpdateTime=0, currentLogView='city';
-        const simEls={scr:null,bs:null,l:null,r:null,f:null,rm:null,p:null,s:null,e:null,t:null,ed:null,d:null,w:null,gp:null,gd:null}, simPanels={status:null,build:null,tech:null,policy:null,monopoly:null,god:null}, cityEventsContainer=document.getElementById('city-events-container'), allRecordsContainer=document.getElementById('all-records-container');
-        
-        const RAW_MATERIALS_TYPES={STEEL:{n:'钢铁',u:'t'},CONCRETE:{n:'混凝土',u:'m³'},ENERGY_CELL:{n:'能核',u:'u'},BIOMASS:{n:'生物质',u:'kg'},MICROCHIPS:{n:'微芯片',u:'u'},CHEMICALS:{n:'化工品',u:'L'}};
-        const BUILDINGS={RES_SMALL:{n:'小型住宅',c:5000,p:10,e:1,w:1,r:'RES',zh:'提供基础居住空间。'},COM_SMALL:{n:'便利店',c:8000,p:5,e:2,w:1,r:'COM',zh:'基础商业设施，满足日常生活需求。'},IND_SMALL:{n:'手工作坊',c:10000,p:8,e:3,w:2,r:'IND',zh:'初期工业生产，提供就业但污染环境。'},OFFICE_SMALL:{n:'共享办公',c:12000,p:6,e:2,w:1,r:'OFFICE',zh:'现代办公空间，低污染。'},POWER_SOLAR:{n:'太阳能站',c:15000,e:-20,zh:'清洁能源，维护费低。'},WATER_PUMP:{n:'抽水站',c:12000,w:-20,zh:'基础供水设施。'},SCHOOL:{n:'小学',c:20000,e:5,w:2,zh:'提升市民受教育程度，降低犯罪率。'},CLINIC:{n:'诊所',c:18000,e:4,w:3,zh:'提供基础医疗保障，提升满意度。'}};
-        const TECHS={BASIC_SIM:{n:'模拟逻辑',c:0,zh:'解锁基础模拟系统。'},BANKING:{n:'现代银行业',c:50,zh:'解锁贷款功能。'},URBAN_PLANNING:{n:'城市规划',c:100,zh:'提升地价增幅上限。'},PUBLIC_TRANSIT:{n:'公共交通',c:150,zh:'大幅降低交通压力。'},GREEN_ENERGY:{n:'绿色能源',c:200,zh:'解锁高级环保发电设备。'}};
+    /* ==================== Config ==================== */
+    const CONFIG = {
+        VERSION: 'v6.0.0',
+        SAVE_KEY: 'bunny_cc_v6.0.0',
+        MONO_SAVE_KEY: 'bunny_mono_v6',
+        START_DATE: '2024/03/12 00:00:00',
+        GOD_MODE_CLICKS: 7,
+        CARD_COOLDOWN_MS: 60000,
+        THEMES: [
+            { id: 'bunny', name: '棉花糖兔', colors: ['#FFF0F5','#FF6B9D','#FFB5BA'] },
+            { id: 'forest', name: '森林兔窝', colors: ['#F0F7EE','#4CAF50','#A5D6A7'] },
+            { id: 'ocean', name: '海洋蓝', colors: ['#E8F4FD','#0EA5E9','#7DD3FC'] },
+            { id: 'starlight', name: '星空紫', colors: ['#1a1a2e','#a78bfa','#C4B5FD'] },
+            { id: 'cyber', name: '赛博朋克', colors: ['#0c0a1d','#fbbf24','#ec4899'] },
+            { id: 'sunset', name: '日落橙', colors: ['#FFF3E0','#FF6B35','#FFB74D'] },
+            { id: 'mint', name: '薄荷绿', colors: ['#E8F5E9','#26A69A','#80CBC4'] },
+            { id: 'rose', name: '玫瑰金', colors: ['#FCE4EC','#E91E63','#F48FB1'] },
+        ],
+        GOD_MODE_PUBLIC_KEY: {
+            kty: 'EC', crv: 'P-256',
+            x: 'aDWwzlvQjrXrOzIny62Ey1_Lrr0cA6hmJ-sNZ1Dz6bU',
+            y: 'q6i-Uwx6KiWEAbvkNio6b71M9FQ62bdM1aclPQZF7uc',
+            key_ops: ['verify'], ext: true
+        }
+    };
 
-        window.onload=()=>{
-            initCity();
-            initCharts();
-            initPWA();
-            renderChangelog();
-            requestAnimationFrame(updateLoop);
-            document.body.style.opacity='1';
-            
-            document.addEventListener('mousemove',e=>{
-                document.documentElement.style.setProperty('--mouse-x',`${e.clientX}px`);
-                document.documentElement.style.setProperty('--mouse-y',`${e.clientY}px`);
-                moveMouseBunny(e.clientX,e.clientY);
-            });
-            
-            document.getElementById('main-title-area').onclick=()=>{
-                titleClickCount++;
-                if(titleClickCount>=CONFIG.GOD_MODE_TITLE_CLICKS && !godModeActive){
-                    toggleModal('theme-modal');
-                    logCityEvent("已开启隐藏输入端口...",'warning');
-                    titleClickCount=0;
+    /* ==================== Monopoly Game Data ==================== */
+    // 6 regions, each with theme color and price range. Total tiles: 28+48+52+56+60+68 = 312
+    const MONO_REGIONS = [
+        {id:0, name:'胡萝卜草原', eraName:'草原时代', color:'#FFD700', priceMin:500, priceMax:1500, tileCount:28},
+        {id:1, name:'草莓森林', eraName:'森林时代', color:'#FF69B4', priceMin:1500, priceMax:3000, tileCount:48},
+        {id:2, name:'星光湖畔', eraName:'湖畔时代', color:'#7DD3FC', priceMin:3000, priceMax:6000, tileCount:52},
+        {id:3, name:'彩虹山谷', eraName:'彩虹时代', color:'#A78BFA', priceMin:6000, priceMax:12000, tileCount:56},
+        {id:4, name:'水晶海湾', eraName:'水晶时代', color:'#22D3EE', priceMin:12000, priceMax:25000, tileCount:60},
+        {id:5, name:'天空之城', eraName:'天空时代', color:'#FBBF24', priceMin:25000, priceMax:50000, tileCount:68},
+    ];
+
+    const TILE_TYPES = {
+        start:    {ic:'🏁', nm:'起点',   desc:'经过时获得起始奖金 2000💰'},
+        property: {ic:'🏠', nm:'地产',   desc:'可购买，他人经过需付租金'},
+        card:     {ic:'🎴', nm:'抽卡格', desc:'抽取一张随机卡牌'},
+        bonus:    {ic:'💎', nm:'奖励格', desc:'获得随机奖励'},
+        penalty:  {ic:'💸', nm:'惩罚格', desc:'税收、陷阱等，失去资金'},
+        event:    {ic:'❓', nm:'随机事件', desc:'触发随机事件'},
+        teleport: {ic:'🔄', nm:'传送格', desc:'随机传送到其他位置'},
+        bank:     {ic:'🏦', nm:'银行格', desc:'可申请贷款或还款'},
+        stock:    {ic:'📈', nm:'股市格', desc:'随机涨跌影响资金'},
+        auction:  {ic:'🔨', nm:'拍卖格', desc:'竞拍地产'},
+        upgrade:  {ic:'⬆️', nm:'升级格', desc:'升级已有地产'},
+        jail:     {ic:'🔒', nm:'监狱格', desc:'暂停一回合'},
+    };
+
+    const REGION_PROPERTY_NAMES = [
+        ['胡萝卜田','萝卜市集','草原小屋','向日葵农庄','蒲公英花园','三叶草草坪','风车牧场','雏菊小径'],
+        ['草莓小屋','蓝莓农场','蘑菇屋','松果塔','浆果市集','森林树屋','萤火虫小径','橡树庄园'],
+        ['星光别墅','月光公馆','湖畔公寓','银河观景台','倒影花园','水晶码头','涟漪水岸','极光阁'],
+        ['彩虹桥','七彩宫殿','光谱大厦','棱镜画廊','色彩乐园','霞光塔','极光穹顶','虹彩庭院'],
+        ['水晶宫','钻石海岸','珍珠湾','宝石塔','琥珀别墅','珊瑚礁','翡翠庄园','琉璃殿'],
+        ['天空之城','云端宫殿','星辰塔','彩虹之门','天界神殿','银河要塞','永恒之巅','苍穹圣所'],
+    ];
+
+    // Card pool — shared between home draw and monopoly card tiles
+    const CARD_POOL = [
+        // Common
+        {id:'funds_boost', ic:'💰', n:'财富祝福', desc:'获得 2000💰', rarity:'common', monoEff:(p)=>{p.money+=2000}},
+        {id:'speed_boost', ic:'🚀', n:'加速冲刺', desc:'下回合多走3步', rarity:'common', monoEff:(p)=>{p.speed=3}},
+        {id:'shield', ic:'🛡️', n:'护盾', desc:'免疫下次负面效果', rarity:'common', monoEff:(p)=>{p.shield=true}},
+        {id:'lucky', ic:'🍀', n:'幸运', desc:'下次正面效果翻倍', rarity:'common', monoEff:(p)=>{p.lucky=true}},
+        {id:'heal', ic:'💊', n:'治疗', desc:'恢复 1500💰', rarity:'common', monoEff:(p)=>{p.money+=1500}},
+        // Uncommon
+        {id:'swap', ic:'🔄', n:'交换', desc:'与随机玩家交换位置', rarity:'uncommon', monoEff:(p,mono)=>{
+            const others=mono.players.filter(o=>o!==p&&!o.bankrupt);
+            if(others.length){const t=others[Math.floor(Math.random()*others.length)];[p.pos,t.pos]=[t.pos,p.pos];}
+        }},
+        {id:'steal', ic:'🦹', n:'偷取', desc:'从最近玩家偷取 800💰', rarity:'uncommon', monoEff:(p,mono)=>{
+            const total=getUnlockedTileCount();
+            const targets=mono.players.filter(o=>o!==p&&!o.bankrupt).map(o=>({p:o,d:Math.min(Math.abs(o.pos-p.pos),total-Math.abs(o.pos-p.pos))})).sort((a,b)=>a.d-b.d);
+            if(targets.length){targets[0].p.money=Math.max(0,targets[0].p.money-800);p.money+=800;}
+        }},
+        {id:'double_dice', ic:'🎲', n:'双倍骰子', desc:'下回合掷骰点数翻倍', rarity:'uncommon', monoEff:(p)=>{p.doubleDice=true}},
+        {id:'jail_free', ic:'🔑', n:'出狱卡', desc:'免于监狱惩罚', rarity:'uncommon', monoEff:(p)=>{p.jailFree=true}},
+        // Rare
+        {id:'mega_funds', ic:'💎', n:'天降横财', desc:'获得 5000💰', rarity:'rare', monoEff:(p)=>{p.money+=5000}},
+        {id:'tax_free', ic:'🧾', n:'免税卡', desc:'下3回合免付租金', rarity:'rare', monoEff:(p)=>{p.taxFree=3}},
+        {id:'upgrade_free', ic:'⬆️', n:'免费升级', desc:'随机地产免费升级', rarity:'rare', monoEff:(p,mono)=>{
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===mono.players.indexOf(p));
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];if(mono.properties[t.id].level<5)mono.properties[t.id].level++;}
+        }},
+        // Legendary
+        {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=true;p.lucky=true}},
+        {id:'teleport_home', ic:'🎯', n:'回归起点', desc:'传送回起点并获奖金', rarity:'legendary', monoEff:(p,mono)=>{p.pos=0;p.money+=2000}},
+    ];
+    const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
+    const RARITY_WEIGHTS = {common:40, uncommon:30, rare:20, legendary:10};
+
+    // 15+ random events
+    const MONO_EVENTS = [
+        {nm:'金币雨', ic:'🌧️', desc:'所有玩家获得 1000💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=1000})}},
+        {nm:'地震', ic:'🌋', desc:'当前玩家失去 1000💰', eff:(mono,p)=>{p.money-=1000}},
+        {nm:'牛市', ic:'📈', desc:'当前玩家资金 +10%', eff:(mono,p)=>{p.money+=Math.floor(p.money*0.1)}},
+        {nm:'熊市', ic:'📉', desc:'当前玩家资金 -10%', eff:(mono,p)=>{p.money-=Math.floor(p.money*0.1)}},
+        {nm:'节日庆典', ic:'🎉', desc:'所有玩家获得 500💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=500})}},
+        {nm:'小偷出没', ic:'🦹', desc:'当前玩家失去 800💰', eff:(mono,p)=>{p.money-=800}},
+        {nm:'宝藏发现', ic:'🗺️', desc:'当前玩家获得 3000💰', eff:(mono,p)=>{p.money+=3000}},
+        {nm:'税务稽查', ic:'🧾', desc:'所有玩家缴纳 600💰', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money-=600})}},
+        {nm:'彩票中奖', ic:'🎰', desc:'当前玩家获得 5000💰', eff:(mono,p)=>{p.money+=5000}},
+        {nm:'自然灾害', ic:'🌪️', desc:'当前玩家随机地产降级', eff:(mono,p)=>{
+            const pi=mono.players.indexOf(p);
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level>0);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;}
+        }},
+        {nm:'招商引资', ic:'💼', desc:'当前玩家获得 1500💰', eff:(mono,p)=>{p.money+=1500}},
+        {nm:'人口迁移', ic:'🚶', desc:'当前玩家获得 800💰', eff:(mono,p)=>{p.money+=800}},
+        {nm:'物价波动', ic:'📊', desc:'当前玩家资金随机波动±15%', eff:(mono,p)=>{p.money=Math.max(0,Math.floor(p.money*(1+(Math.random()-0.5)*0.3)))}},
+        {nm:'科技突破', ic:'🔬', desc:'当前玩家随机地产升级', eff:(mono,p)=>{
+            const pi=mono.players.indexOf(p);
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<5);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level++;}
+        }},
+        {nm:'神秘商人', ic:'🧙', desc:'当前玩家获得一张随机卡牌', eff:(mono,p)=>{p.cards.push({...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]})}},
+    ];
+
+    const MONO_PLAYERS_INIT = [
+        {ic:'🐰', nm:'兔可可', color:'var(--accent)', isHuman:true},
+        {ic:'🦊', nm:'小狐', color:'#FF9800', personality:'aggressive'},
+        {ic:'🐱', nm:'咪咪', color:'#3b82f6', personality:'conservative'},
+        {ic:'🐼', nm:'团团', color:'#4CAF50', personality:'balanced'},
+    ];
+    const EXTRA_PLAYERS = [
+        {ic:'🦉', nm:'夜枭', color:'#8B5CF6', personality:'balanced'},
+        {ic:'🐧', nm:'波波', color:'#0EA5E9', personality:'conservative'},
+        {ic:'🦄', nm:'彩虹', color:'#EC4899', personality:'aggressive'},
+        {ic:'🐲', nm:'龙龙', color:'#10B981', personality:'balanced'},
+    ];
+    const AI_PERSONALITIES = {
+        aggressive:   {nm:'激进', buyChance:0.8, cardUseChance:0.5, loanChance:0.7, upgradeChance:0.6},
+        conservative: {nm:'保守', buyChance:0.3, cardUseChance:0.15, loanChance:0.2, upgradeChance:0.25},
+        balanced:     {nm:'平衡', buyChance:0.55, cardUseChance:0.3, loanChance:0.4, upgradeChance:0.4},
+    };
+
+    /* ==================== State ==================== */
+    let mono = null;
+    let godModeActive = false;
+    let titleClicks = 0;
+    let avatarClickCount = 0;
+    let currentView = 'home';
+    let mouseBunnyEnabled = true;
+    let pixelFontEnabled = false;
+    let cardInventory = [];
+    let eventLog = [];
+    let cooldownInterval = null;
+
+    /* ==================== Init ==================== */
+    window.onload = () => {
+        const safe = (fn) => { try { fn(); } catch(e) { console.error(e); } };
+        safe(loadTheme);
+        safe(initMonopoly);
+        safe(initCardSystem);
+        safe(initPWA);
+        safe(initThemeGrid);
+        safe(renderChangelog);
+        safe(initMouseTrail);
+        safe(initAvatarEffect);
+        safe(startLoop);
+    };
+
+    /* ==================== Save Migration ==================== */
+    function migrateSaveKey() {
+        // v6.0.0 uses a completely different data structure (monopoly, not city)
+        // Old city saves are incompatible, so clean them up
+        const oldCityKeys = ['bunny_cc_v5.2.0','bunny_cc_v5.1.0','bunny_cc_v5.0.0','bunny_cc_v4.3.0','bunny_cc_v1.2.0','bunny_cc_v1.1.0','bunny_cc_v1.0.0'];
+        oldCityKeys.forEach(k => { try { if (localStorage.getItem(k)) localStorage.removeItem(k); } catch(e){} });
+        // Old monopoly save (v1) is also incompatible with expanded map
+        try { if (localStorage.getItem('bunny_mono_v1')) localStorage.removeItem('bunny_mono_v1'); } catch(e){}
+    }
+
+    /* ==================== Monopoly: Initialization ==================== */
+    function initMonopoly() {
+        migrateSaveKey();
+        const saved = localStorage.getItem(CONFIG.MONO_SAVE_KEY);
+        if (saved) {
+            try { mono = JSON.parse(saved); validateMono(); }
+            catch(e) { newMonopolyGame(); }
+        } else {
+            newMonopolyGame();
+        }
+        // Load card inventory
+        const invSaved = localStorage.getItem(CONFIG.SAVE_KEY);
+        if (invSaved) {
+            try { cardInventory = JSON.parse(invSaved) || []; } catch(e) { cardInventory = []; }
+        }
+        godModeActive = localStorage.getItem('godModeActive') === 'true';
+        if (godModeActive) {
+            const gi = document.getElementById('god-indicator');
+            if (gi) gi.classList.add('show');
+            const gp = document.getElementById('god-panel');
+            if (gp) gp.style.display = '';
+        }
+        renderEvents();
+        logEvent('兔可可王国 v6.0.0 已启动', 'info');
+    }
+
+    function validateMono() {
+        if (!mono || !mono.tiles || !mono.players) { newMonopolyGame(); return; }
+        mono.players.forEach(p => {
+            if (p.shield === undefined) p.shield = false;
+            if (p.lucky === undefined) p.lucky = false;
+            if (p.speed === undefined) p.speed = 0;
+            if (p.doubleDice === undefined) p.doubleDice = false;
+            if (p.jailFree === undefined) p.jailFree = false;
+            if (p.jailTurns === undefined) p.jailTurns = 0;
+            if (p.taxFree === undefined) p.taxFree = 0;
+            if (p.cards === undefined) p.cards = [];
+            if (p.loans === undefined) p.loans = [];
+            if (p.credit === undefined) p.credit = 100;
+            if (p.isHuman === undefined) p.isHuman = false;
+            if (p.personality === undefined) p.personality = 'balanced';
+        });
+        if (mono.stockMarket === undefined) mono.stockMarket = 100;
+        if (mono.unlockedEras === undefined) mono.unlockedEras = 0;
+        if (mono.properties === undefined) {
+            mono.properties = mono.tiles.map(t => t.type === 'property' ? {owner:-1, level:0} : null);
+        }
+    }
+
+    function generateAllTiles() {
+        const tiles = [];
+        let tileId = 0;
+        for (let r = 0; r < MONO_REGIONS.length; r++) {
+            const region = MONO_REGIONS[r];
+            const names = REGION_PROPERTY_NAMES[r];
+            const count = region.tileCount;
+            for (let i = 0; i < count; i++) {
+                const isVeryFirst = tileId === 0;
+                let type;
+                if (isVeryFirst) {
+                    type = 'start';
+                } else {
+                    // Distribute special tiles at intervals, rest are properties
+                    const mod = i % 13;
+                    if (mod === 0) type = 'card';
+                    else if (mod === 3) type = i % 2 === 0 ? 'bonus' : 'penalty';
+                    else if (mod === 5) type = 'event';
+                    else if (mod === 7) type = i % 3 === 0 ? 'bank' : (i % 3 === 1 ? 'stock' : 'teleport');
+                    else if (mod === 9) type = i % 2 === 0 ? 'auction' : 'upgrade';
+                    else if (mod === 11) type = i % 4 === 0 ? 'jail' : 'card';
+                    else type = 'property';
                 }
-            };
-            
-            document.getElementById('log-toggle-city').onclick=()=>toggleLogView('city');
-            document.getElementById('log-toggle-pet').onclick=()=>toggleLogView('pet');
-            
-            document.querySelectorAll('.tab-item').forEach(item=>{
-                item.onclick=()=>tabBarNavigate(item.dataset.tab);
-            });
+                const tile = {
+                    id: tileId++,
+                    region: r,
+                    type: type,
+                    ic: TILE_TYPES[type].ic,
+                    nm: type === 'property' ? names[Math.floor(Math.random()*names.length)] : TILE_TYPES[type].nm,
+                    desc: TILE_TYPES[type].desc,
+                };
+                if (type === 'property') {
+                    tile.price = Math.floor(region.priceMin + Math.random() * (region.priceMax - region.priceMin));
+                    tile.rent = Math.floor(tile.price * 0.15);
+                }
+                if (type === 'bonus') tile.val = Math.floor(region.priceMin * 0.8 + Math.random() * region.priceMin * 0.6);
+                if (type === 'penalty') tile.val = Math.floor(region.priceMin * 0.5 + Math.random() * region.priceMin * 0.4);
+                tiles.push(tile);
+            }
+        }
+        return tiles;
+    }
+
+    function newMonopolyGame() {
+        const tiles = generateAllTiles();
+        const totalInitial = MONO_REGIONS[0].tileCount;
+        const startPositions = [];
+        while (startPositions.length < 4) {
+            const pos = Math.floor(Math.random() * totalInitial);
+            if (!startPositions.includes(pos)) startPositions.push(pos);
+        }
+        mono = {
+            tiles: tiles,
+            players: MONO_PLAYERS_INIT.map((p,i) => ({
+                ...p, money: 10000, pos: startPositions[i], cards: [],
+                shield: false, lucky: false, speed: 0, doubleDice: false,
+                jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
+                loans: [], credit: 100,
+            })),
+            currentPlayer: 0,
+            dice: [1, 1],
+            rolling: false,
+            properties: tiles.map(t => t.type === 'property' ? {owner: -1, level: 0} : null),
+            log: [],
+            turn: 1,
+            unlockedEras: 0,
+            started: false,
+            stockMarket: 100,
         };
+        if (godModeActive) mono.players[0].money = 20000; // God mode bonus
+        monoLog('🎲 新游戏开始！4位玩家在胡萝卜草原就位', 'info');
+        saveMonopoly();
+    }
 
-        function initPWA(){
-            if('serviceWorker' in navigator){
-                navigator.serviceWorker.register('/service-worker.js').catch(()=>{});
+    function saveMonopoly() {
+        try { localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono)); } catch(e){}
+    }
+
+    function saveInventory() {
+        try { localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(cardInventory)); } catch(e){}
+    }
+
+    function getUnlockedTileCount() {
+        let count = 0;
+        for (let i = 0; i <= mono.unlockedEras; i++) {
+            count += MONO_REGIONS[i].tileCount;
+        }
+        return count;
+    }
+
+    function monoLog(msg, type='info') {
+        mono.log.push({msg, type});
+        if (mono.log.length > 80) mono.log.shift();
+    }
+
+    /* ==================== Monopoly: Rendering ==================== */
+    function renderMonopoly() {
+        if (!mono) { initMonopoly(); }
+        const eraBar = document.getElementById('mono-era-badge');
+        const eraRegion = document.getElementById('mono-era-region');
+        const eraProgress = document.getElementById('mono-era-progress');
+        const advanceBtn = document.getElementById('mono-advance-btn');
+        const stockEl = document.getElementById('mono-stock');
+
+        if (eraBar) eraBar.textContent = MONO_REGIONS[mono.unlockedEras].eraName;
+        if (eraRegion) eraRegion.textContent = MONO_REGIONS[mono.unlockedEras].name;
+        if (stockEl) {
+            stockEl.textContent = mono.stockMarket.toFixed(0);
+            stockEl.style.color = mono.stockMarket >= 100 ? 'var(--good)' : 'var(--bad)';
+        }
+
+        // Era progress: advance every 15 turns per era
+        const turnsNeeded = (mono.unlockedEras + 1) * 15;
+        const turnsProgress = Math.min(1, mono.turn / turnsNeeded);
+        if (eraProgress) eraProgress.style.width = (turnsProgress * 100) + '%';
+        if (advanceBtn) advanceBtn.style.display = canAdvanceEra() ? '' : 'none';
+
+        renderMonoPlayers();
+        renderMonoMap();
+        renderMonoDice();
+        renderMonoCards();
+        renderMonoInventory();
+        renderMonoLog();
+    }
+
+    function renderMonoPlayers() {
+        const el = document.getElementById('mono-players');
+        if (!el) return;
+        const gameOver = mono.players.filter(p => !p.bankrupt).length <= 1;
+        el.innerHTML = mono.players.map((p, i) => {
+            const active = i === mono.currentPlayer && !gameOver;
+            const personalityNm = p.isHuman ? '玩家' : (AI_PERSONALITIES[p.personality]?.nm || 'AI');
+            const statusIcons = [];
+            if (p.shield) statusIcons.push('🛡️');
+            if (p.lucky) statusIcons.push('🍀');
+            if (p.speed) statusIcons.push(`🚀${p.speed}`);
+            if (p.jailTurns > 0) statusIcons.push('🔒');
+            if (p.taxFree > 0) statusIcons.push('🧾');
+            return `<div class="mono-player ${active?'active':''}" ${p.bankrupt?'style="opacity:.4;"':''}>
+                <div class="mp-ic">${p.ic}</div>
+                <div class="mp-name">${p.nm}</div>
+                <div class="mp-money">💰${p.money}</div>
+                <div class="mp-status">${statusIcons.join('')}</div>
+                <div class="mp-personality">${personalityNm}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderMonoMap() {
+        const el = document.getElementById('mono-map-strip');
+        if (!el) return;
+        const unlockedCount = getUnlockedTileCount();
+        let h = '';
+        let currentRegion = -1;
+        for (let i = 0; i < mono.tiles.length; i++) {
+            const tile = mono.tiles[i];
+            // Add region divider when entering a new region
+            if (tile.region !== currentRegion) {
+                currentRegion = tile.region;
+                const region = MONO_REGIONS[currentRegion];
+                h += `<div class="region-divider" style="background:${region.color};">${region.name}</div>`;
+            }
+            const isUnlocked = i < unlockedCount;
+            const players = mono.players.filter(p => p.pos === i && !p.bankrupt);
+            const isCurrent = mono.players[mono.currentPlayer]?.pos === i;
+            const prop = mono.properties[i];
+            const ownedClass = prop && prop.owner >= 0 ? 'owned' : '';
+            const lockedClass = isUnlocked ? '' : 'locked';
+            const ownerDot = prop && prop.owner >= 0
+                ? `<div class="tile-owner" style="background:${mono.players[prop.owner].color};"></div>` : '';
+            const pins = players.map(p => `<span style="color:${p.color}">${p.ic}</span>`).join('');
+            const levelStr = prop && prop.level > 0 ? `<div class="tile-level">Lv${prop.level}</div>` : '';
+            const priceStr = tile.price ? `<div class="tile-cost">💰${tile.price}</div>` : '';
+            h += `<div class="mono-tile-cell ${isCurrent?'current':''} ${ownedClass} ${lockedClass}">
+                <div class="tile-ic">${tile.ic}</div>
+                <div class="tile-nm">${tile.nm}</div>
+                ${priceStr}${levelStr}
+                ${ownerDot}
+                <div class="tile-pins">${pins}</div>
+                <div class="tile-tooltip"><strong>${tile.ic} ${tile.nm}</strong><br>${tile.desc}${tile.price?`<br>💰 买价:${tile.price} 租金:${tile.rent}`:''}${prop&&prop.owner>=0?`<br>归属:${mono.players[prop.owner].ic} ${mono.players[prop.owner].nm}`:''}</div>
+            </div>`;
+        }
+        el.innerHTML = h;
+
+        // Auto-scroll to current player position
+        const scroll = document.getElementById('mono-map-scroll');
+        const currentTile = el.querySelector('.mono-tile-cell.current');
+        if (scroll && currentTile) {
+            const scrollLeft = currentTile.offsetLeft - scroll.offsetWidth / 2 + currentTile.offsetWidth / 2;
+            scroll.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+        }
+    }
+
+    function renderMonoDice() {
+        const el = document.getElementById('mono-dice-area');
+        if (!el) return;
+        const cp = mono.players[mono.currentPlayer];
+        const isHumanTurn = mono.currentPlayer === 0 && !mono.rolling && !cp?.bankrupt;
+        const gameOver = mono.players.filter(p => !p.bankrupt).length <= 1;
+        let h = `<div class="mono-dice">
+            <span class="mono-dice-num">${mono.dice[0]}</span>
+            <span style="color:var(--text2);font-size:1rem;">+</span>
+            <span class="mono-dice-num">${mono.dice[1]}</span>
+            <span style="color:var(--text2);font-size:1rem;">=</span>
+            <span class="mono-dice-num">${mono.dice[0]+mono.dice[1]}</span>
+        </div>`;
+        if (gameOver) {
+            const winner = mono.players.find(p => !p.bankrupt);
+            h += `<div style="color:var(--good);font-weight:800;margin-top:.5rem;">🏆 ${winner?.ic} ${winner?.nm} 获胜！</div>`;
+        } else if (isHumanTurn) {
+            if (cp.jailTurns > 0) {
+                h += `<div style="color:var(--bad);font-weight:700;margin-top:.3rem;">🔒 在监狱中，暂停一回合</div>`;
+            } else {
+                h += `<button class="btn btn-primary" style="margin-top:.5rem;" onclick="rollDice()">🎲 掷骰子</button>`;
+            }
+        } else if (mono.rolling) {
+            h += `<div style="color:var(--text2);margin-top:.3rem;">🎲 掷骰中...</div>`;
+        } else {
+            h += `<div style="color:var(--text2);margin-top:.3rem;">${cp?.ic} ${cp?.nm} 思考中...</div>`;
+        }
+        el.innerHTML = h;
+    }
+
+    function renderMonoCards() {
+        const el = document.getElementById('mono-cards');
+        if (!el) return;
+        const p = mono.players[0];
+        if (!p || p.cards.length === 0) {
+            el.innerHTML = '<div style="font-size:.7rem;color:var(--text2);">暂无手牌</div>';
+            return;
+        }
+        el.innerHTML = p.cards.map((c, i) =>
+            `<div class="mono-card-item" onclick="monoUseCard(${i})" title="${c.desc}">
+                <span>${c.ic}</span>
+                <span style="font-size:.5rem;font-weight:700;color:${RARITY_COLORS[c.rarity]};">${c.n}</span>
+                <span class="mc-desc">${c.desc}</span>
+            </div>`
+        ).join('');
+    }
+
+    function renderMonoInventory() {
+        const el = document.getElementById('mono-inventory');
+        if (!el) return;
+        if (cardInventory.length === 0) {
+            el.innerHTML = '<div style="font-size:.7rem;color:var(--text2);">背包为空，去首页抽卡吧！</div>';
+            return;
+        }
+        el.innerHTML = cardInventory.map((c, i) =>
+            `<div class="mono-card-item" onclick="carryCard(${i})" title="${c.desc}">
+                <span>${c.ic}</span>
+                <span style="font-size:.5rem;font-weight:700;color:${RARITY_COLORS[c.rarity]};">${c.n}</span>
+                <span class="mc-desc">${c.desc}</span>
+            </div>`
+        ).join('');
+    }
+
+    function renderMonoLog() {
+        const el = document.getElementById('mono-log');
+        if (!el) return;
+        el.innerHTML = mono.log.slice(-8).map(l =>
+            `<div class="log-line ${l.type}">${l.msg}</div>`
+        ).join('');
+        el.scrollTop = el.scrollHeight;
+    }
+
+    /* ==================== Monopoly: Turn Logic ==================== */
+    function rollDice() {
+        if (mono.rolling || mono.currentPlayer !== 0) return;
+        const p = mono.players[0];
+        if (p.bankrupt) { nextTurn(); return; }
+        // Jail check
+        if (p.jailTurns > 0) {
+            p.jailTurns--;
+            monoLog(`🔒 ${p.nm} 在监狱中，暂停一回合（剩${p.jailTurns}回合）`, 'error');
+            saveMonopoly();
+            nextTurn();
+            return;
+        }
+        mono.rolling = true;
+        mono.started = true;
+        renderMonopoly();
+
+        let rolls = 0;
+        const interval = setInterval(() => {
+            mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
+            renderMonopoly();
+            rolls++;
+            if (rolls >= 8) {
+                clearInterval(interval);
+                let total = mono.dice[0] + mono.dice[1];
+                const extra = p.speed || 0;
+                if (extra) p.speed = 0;
+                if (p.doubleDice) { total *= 2; p.doubleDice = false; monoLog('🎲 双倍骰子激活！', 'success'); }
+                movePlayer(0, total + extra);
+            }
+        }, 80);
+    }
+
+    function movePlayer(playerIdx, steps) {
+        const p = mono.players[playerIdx];
+        const oldPos = p.pos;
+        const total = getUnlockedTileCount();
+        p.pos = (p.pos + steps) % total;
+
+        // Pass start bonus
+        const laps = Math.floor((oldPos + steps) / total);
+        if (laps > 0) {
+            const bonus = 2000 * laps;
+            p.money += bonus;
+            monoLog(`${p.ic} ${p.nm} 经过起点，获得 ${bonus}💰`, 'success');
+        }
+
+        mono.rolling = false;
+        monoLog(`${p.ic} ${p.nm} 移动 ${steps} 步 → ${mono.tiles[p.pos].nm}`, 'info');
+        renderMonopoly();
+        setTimeout(() => triggerTile(playerIdx), 400);
+    }
+
+    function triggerTile(playerIdx) {
+        const p = mono.players[playerIdx];
+        const tile = mono.tiles[p.pos];
+
+        switch(tile.type) {
+            case 'start':
+                p.money += 1000;
+                monoLog(`${p.ic} 到达起点 +1000💰`, 'success');
+                break;
+            case 'bonus': {
+                let bonus = tile.val || 1000;
+                if (p.lucky) { bonus *= 2; p.lucky = false; monoLog(`🍀 幸运翻倍！`, 'success'); }
+                p.money += bonus;
+                monoLog(`${p.ic} 获得 ${bonus}💰`, 'success');
+                break;
+            }
+            case 'penalty':
+                if (p.shield) { p.shield = false; monoLog(`🛡️ ${p.nm} 护盾抵消伤害！`, 'success'); break; }
+                p.money -= (tile.val || 800);
+                monoLog(`${p.ic} 失去 ${tile.val||800}💰`, 'error');
+                checkBankruptcy(p);
+                break;
+            case 'card': {
+                const card = {...CARD_POOL[Math.floor(Math.random()*CARD_POOL.length)]};
+                p.cards.push(card);
+                monoLog(`${p.ic} 抽到 ${card.ic} ${card.nm} — ${card.desc}`, 'success');
+                break;
+            }
+            case 'event': {
+                const ev = MONO_EVENTS[Math.floor(Math.random()*MONO_EVENTS.length)];
+                monoLog(`${ev.ic} ${ev.nm} — ${ev.desc}`, 'info');
+                ev.eff(mono, p);
+                checkBankruptcy(p);
+                break;
+            }
+            case 'teleport':
+                p.pos = Math.floor(Math.random() * getUnlockedTileCount());
+                monoLog(`🔄 ${p.nm} 传送到 ${mono.tiles[p.pos].nm}`, 'info');
+                break;
+            case 'bank':
+                if (playerIdx === 0) {
+                    showBankModal();
+                    return; // Don't auto-end turn, wait for modal
+                } else {
+                    aiBankDecision(p);
+                }
+                break;
+            case 'stock': {
+                const change = (Math.random() - 0.4) * 0.3;
+                const changeAmount = Math.floor(Math.abs(p.money * change));
+                if (change > 0) {
+                    p.money += changeAmount;
+                    mono.stockMarket = Math.min(200, mono.stockMarket + 10);
+                    monoLog(`${p.ic} 📈 牛市！股票收益 +${changeAmount}💰`, 'success');
+                } else {
+                    p.money -= changeAmount;
+                    mono.stockMarket = Math.max(50, mono.stockMarket - 10);
+                    monoLog(`${p.ic} 📉 熊市！股票亏损 -${changeAmount}💰`, 'error');
+                    checkBankruptcy(p);
+                }
+                break;
+            }
+            case 'auction':
+                if (handleAuction(playerIdx)) return; // Modal shown, wait for player
+                break;
+            case 'upgrade':
+                if (handleUpgradeTile(playerIdx)) return; // Modal shown, wait for player
+                break;
+            case 'jail':
+                if (p.jailFree) {
+                    p.jailFree = false;
+                    monoLog(`${p.ic} 使用出狱卡，免于监禁`, 'success');
+                } else {
+                    p.jailTurns = 1;
+                    monoLog(`${p.ic} 被关进监狱，暂停一回合`, 'error');
+                }
+                break;
+            case 'property': {
+                const prop = mono.properties[p.pos];
+                if (prop.owner === -1) {
+                    if (playerIdx === 0 && p.money >= tile.price) {
+                        showBuyModal(p.pos);
+                        return; // Wait for player decision
+                    } else if (playerIdx !== 0) {
+                        const personality = AI_PERSONALITIES[p.personality];
+                        if (p.money >= tile.price && Math.random() < personality.buyChance) {
+                            prop.owner = playerIdx;
+                            p.money -= tile.price;
+                            monoLog(`${p.ic} 购买了 ${tile.nm}`, 'success');
+                        }
+                    }
+                } else if (prop.owner !== playerIdx) {
+                    if (p.taxFree > 0) {
+                        p.taxFree--;
+                        monoLog(`🧾 ${p.nm} 免税卡生效，免付租金`, 'success');
+                    } else {
+                        const rent = tile.rent * (prop.level + 1);
+                        if (p.shield) { p.shield = false; monoLog(`🛡️ 护盾抵消租金！`, 'success'); break; }
+                        p.money -= rent;
+                        mono.players[prop.owner].money += rent;
+                        monoLog(`${p.ic} 向 ${mono.players[prop.owner].ic} 付租金 ${rent}💰`, 'error');
+                        checkBankruptcy(p);
+                    }
+                }
+                break;
             }
         }
 
-        function initCity(){
-            const saved=localStorage.getItem(CONFIG.CITY_SAVE_KEY);
-            if(saved){
-                try{ city=JSON.parse(saved); validateLoadedCity(); }catch(e){ city=getDefaultCity(); }
-            }else{ city=getDefaultCity(); }
-            
-            simEls.scr=document.getElementById('sim-main-screen');
-            simEls.bs=document.getElementById('sim-bunny-status');
-            simEls.l=document.getElementById('sim-city-level');
-            simEls.f=document.getElementById('sim-funds');
-            simEls.rm=document.getElementById('sim-raw-materials');
-            simEls.p=document.getElementById('sim-population');
-            simEls.s=document.getElementById('sim-satisfaction-perc');
-            simEls.e=document.getElementById('sim-environment-perc');
-            simEls.t=document.getElementById('sim-traffic-perc');
-            simEls.ed=document.getElementById('sim-education-perc');
-            simEls.d=document.getElementById('sim-date');
-            simEls.w=document.getElementById('sim-water');
-            simEls.pw=document.getElementById('sim-power');
-            simEls.gp=document.getElementById('sim-goods-produced');
-            simEls.gd=document.getElementById('sim-goods-demand');
-            
-            simPanels.status=document.getElementById('sim-panel-status');
-            simPanels.build=document.getElementById('sim-panel-build');
-            simPanels.tech=document.getElementById('sim-panel-tech');
-            simPanels.policy=document.getElementById('sim-panel-policy');
-            simPanels.monopoly=document.getElementById('sim-panel-monopoly');
-            simPanels.god=document.getElementById('sim-panel-god');
-            
-            updateCityUI();
-            logCityEvent("兔可可 OS 已就绪。版本：v4.3.0",'system');
-        }
+        saveMonopoly();
+        renderMonopoly();
+        checkGameOver();
+        if (!checkGameOver()) nextTurn();
+    }
 
-        function getDefaultCity(){
-            return {
-                name: "上海大都会", year:1, day:1, funds:100000, population:50, cityLevel:1, exp:0,
-                stats: { avgSatisfaction:80, environmentQuality:90, trafficIndex:5, landValue:10, healthLevel:85, educationLevel:10, crimeRate:2, fireRisk:1 },
-                buildings: [], unlockedTech: ['BASIC_SIM'], activePolicies: [], loans: [],
-                rawMaterialsStock: { STEEL:10, CONCRETE:50, ENERGY_CELL:5, BIOMASS:20, MICROCHIPS:2, CHEMICALS:5 },
-                availableParcels: [], ownedParcels: [], totalRentCollected:0, eventLog: []
-            };
-        }
-
-        function validateLoadedCity(){
-            if(!city.rawMaterialsStock) city.rawMaterialsStock=getDefaultCity().rawMaterialsStock;
-            if(!city.availableParcels) city.availableParcels=[];
-            if(!city.ownedParcels) city.ownedParcels=[];
-            if(!city.eventLog) city.eventLog=[];
-        }
-
-        function advanceDay(){
-            city.day++;
-            if(city.day>365){ city.day=1; city.year++; }
-            const buildEffect=city.buildings.reduce((acc,b)=>{
-                const base=BUILDINGS[b.type]||{};
-                acc.pop+=base.p||0;
-                acc.funds-=10;
-                return acc;
-            },{pop:0,funds:0});
-            city.population+=Math.floor(buildEffect.pop*0.1);
-            city.funds+=Math.floor(city.population*2)+buildEffect.funds;
-            if(city.day%30===0) logCityEvent(`城市报告：第 ${city.year} 年第 ${city.day} 天，当前人口 ${city.population}`,'info');
-            updateCityUI();
-            saveCity();
-        }
-
-        function updateCityUI(){
-            if(!simEls.f)return;
-            simEls.f.textContent=city.funds.toLocaleString();
-            simEls.p.textContent=city.population.toLocaleString();
-            simEls.l.textContent=`${city.cityLevel}(${city.exp}/100)`;
-            simEls.d.textContent=`Y${city.year}D${city.day}`;
-            simEls.s.textContent=city.stats.avgSatisfaction;
-            simEls.e.textContent=city.stats.environmentQuality;
-            simEls.t.textContent=city.stats.trafficIndex;
-            simEls.ed.textContent=city.stats.educationLevel;
-            document.getElementById('sim-satisfaction-bar').style.width=city.stats.avgSatisfaction+'%';
-            document.getElementById('sim-environment-bar').style.width=city.stats.environmentQuality+'%';
-            document.getElementById('sim-traffic-bar').style.width=city.stats.trafficIndex+'%';
-            document.getElementById('sim-education-bar').style.width=city.stats.educationLevel+'%';
-            renderStatusPanel();
-            renderCityLog();
-        }
-
-        function saveCity(){
-            localStorage.setItem(CONFIG.CITY_SAVE_KEY, JSON.stringify(city));
-        }
-
-        function deleteSave(){
-            if(confirm("确定要重置城市存档吗？")){
-                localStorage.removeItem(CONFIG.CITY_SAVE_KEY);
-                location.reload();
+    function checkBankruptcy(p) {
+        if (p.money < 0) {
+            // Try to take emergency loan
+            const propValue = getPlayerPropertyValue(p);
+            if (propValue > Math.abs(p.money) && p.credit > 30) {
+                const loanAmount = Math.abs(p.money) + 1000;
+                p.money += loanAmount;
+                p.loans.push({amount: loanAmount, remaining: 5, rate: 0.1 + (100 - p.credit) * 0.001});
+                p.credit = Math.max(10, p.credit - 20);
+                monoLog(`${p.ic} 紧急贷款 ${loanAmount}💰，信用下降`, 'warn');
+            } else {
+                p.money = 0;
+                p.bankrupt = true;
+                // Release all properties
+                mono.properties.forEach(prop => {
+                    if (prop && prop.owner === mono.players.indexOf(p)) {
+                        prop.owner = -1;
+                        prop.level = 0;
+                    }
+                });
+                monoLog(`${p.ic} ${p.nm} 破产了！`, 'error');
             }
         }
+    }
 
-        function showCityPanel(id){
-            Object.keys(simPanels).forEach(k=>{ if(simPanels[k]) simPanels[k].style.display=(k===id?'block':'none'); });
-            document.querySelectorAll('.sim-button').forEach(btn=>{
-                btn.classList.toggle('active', btn.textContent.includes(id==='status'?'状态':id==='build'?'建筑':id==='tech'?'科技':id==='policy'?'政策':id==='monopoly'?'地产':'上帝'));
-            });
-            if(id==='status') renderStatusPanel();
-            if(id==='build') renderBuildPanel();
-            if(id==='tech') renderTechTreePanel();
+    function getPlayerPropertyValue(p) {
+        const pi = mono.players.indexOf(p);
+        let total = 0;
+        mono.tiles.forEach((t, i) => {
+            if (t.type === 'property' && mono.properties[i].owner === pi) {
+                total += t.price * (mono.properties[i].level + 1);
+            }
+        });
+        return total;
+    }
+
+    function checkGameOver() {
+        const alive = mono.players.filter(p => !p.bankrupt);
+        if (alive.length <= 1 && mono.started) {
+            mono.started = false;
+            monoLog(`🏆 ${alive[0]?.ic} ${alive[0]?.nm} 获胜！`, 'success');
+            logEvent(`🏆 大富翁游戏结束 — ${alive[0]?.nm} 获胜！`, 'success');
+            renderMonopoly();
+            return true;
         }
+        return false;
+    }
 
-        function renderStatusPanel(){
-            let h=`<div class="text-xs space-y-2"><p class="font-bold accent-text">核心指标</p>`;
-            h+=`<div class="grid grid-cols-2 gap-2"><span>平均地价:</span><span class="text-white">${city.stats.landValue}</span><span>健康水平:</span><span class="text-white">${city.stats.healthLevel}%</span></div></div>`;
-            simPanels.status.innerHTML=h;
+    /* ==================== Monopoly: Buy Property ==================== */
+    function showBuyModal(pos) {
+        const tile = mono.tiles[pos];
+        const p = mono.players[0];
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">🏠 购买地产？</div>
+            <div style="text-align:center;padding:1rem 0;">
+                <div style="font-size:2rem;">${tile.ic}</div>
+                <div style="font-weight:800;font-size:1.1rem;">${tile.nm}</div>
+                <div style="font-size:.8rem;color:var(--text2);margin-top:.25rem;">${tile.desc}</div>
+                <div style="margin-top:.5rem;font-size:.9rem;">买价：💰${tile.price} | 基础租金：💰${tile.rent}</div>
+                <div style="font-size:.8rem;color:var(--text2);">你的资金：💰${p.money}</div>
+            </div>
+            <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;">
+                <button class="btn btn-primary" onclick="buyProperty(${pos})">✅ 购买</button>
+                <button class="btn btn-secondary" onclick="skipBuy()">❌ 跳过</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function buyProperty(pos) {
+        const tile = mono.tiles[pos];
+        const p = mono.players[0];
+        if (p.money < tile.price) { monoLog('资金不足！', 'error'); closeModal(); skipBuy(); return; }
+        mono.properties[pos].owner = 0;
+        p.money -= tile.price;
+        monoLog(`🐰 购买了 ${tile.nm}！`, 'success');
+        closeModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    function skipBuy() {
+        closeModal();
+        saveMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    /* ==================== Monopoly: Bank & Loans ==================== */
+    function showBankModal() {
+        const p = mono.players[0];
+        const propValue = getPlayerPropertyValue(p);
+        const maxLoan = Math.floor(propValue * 0.5);
+        const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">🏦 兔兔银行</div>
+            <div style="text-align:center;padding:.5rem 0;">
+                <div style="font-size:.9rem;">你的资金：💰${p.money}</div>
+                <div style="font-size:.8rem;color:var(--text2);">信用评分：${p.credit}</div>
+                <div style="font-size:.8rem;color:var(--text2);">地产总值：💰${propValue}</div>
+                <div style="font-size:.8rem;color:var(--text2);">当前负债：💰${totalDebt}</div>
+                <div style="font-size:.8rem;color:var(--accent);margin-top:.25rem;">可贷额度：💰${maxLoan}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:1rem;">
+                <button class="btn btn-primary" onclick="takeLoan(${maxLoan})" ${maxLoan<=0?'disabled':''}>💸 申请贷款 (💰${maxLoan}, 5回合还清)</button>
+                <button class="btn btn-secondary" onclick="repayLoan()" ${totalDebt<=0?'disabled':''}>💰 偿还贷款 (需💰${totalDebt})</button>
+                <button class="btn btn-secondary" onclick="closeBankModal()">离开银行</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function takeLoan(amount) {
+        const p = mono.players[0];
+        if (amount <= 0) { monoLog('无地产可做抵押', 'error'); return; }
+        const rate = 0.08 + (100 - p.credit) * 0.001;
+        p.money += amount;
+        p.loans.push({amount, remaining: 5, rate});
+        monoLog(`🏦 兔可可贷款 ${amount}💰，利率 ${(rate*100).toFixed(1)}%`, 'info');
+        closeBankModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    function repayLoan() {
+        const p = mono.players[0];
+        const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        if (p.money < totalDebt) { monoLog('资金不足以偿还全部贷款', 'error'); return; }
+        p.money -= totalDebt;
+        p.loans = [];
+        p.credit = Math.min(100, p.credit + 10);
+        monoLog(`💰 兔可可还清所有贷款，信用提升`, 'success');
+        closeBankModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    function closeBankModal() {
+        closeModal();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    function aiBankDecision(p) {
+        const personality = AI_PERSONALITIES[p.personality];
+        const propValue = getPlayerPropertyValue(p);
+        const maxLoan = Math.floor(propValue * 0.5);
+        const totalDebt = p.loans.reduce((s, l) => s + l.amount, 0);
+        if (totalDebt > 0 && p.money > totalDebt * 1.5) {
+            p.money -= totalDebt;
+            p.loans = [];
+            p.credit = Math.min(100, p.credit + 10);
+            monoLog(`${p.ic} 还清贷款`, 'info');
+        } else if (p.money < 2000 && maxLoan > 0 && Math.random() < personality.loanChance) {
+            const rate = 0.08 + (100 - p.credit) * 0.001;
+            p.money += maxLoan;
+            p.loans.push({amount: maxLoan, remaining: 5, rate});
+            p.credit = Math.max(10, p.credit - 10);
+            monoLog(`${p.ic} 申请贷款 ${maxLoan}💰`, 'info');
         }
+    }
 
-        function renderBuildPanel(){
-            let h=`<div class="grid grid-cols-2 gap-2">`;
-            Object.keys(BUILDINGS).forEach(k=>{
-                const b=BUILDINGS[k];
-                h+=`<button class="sim-button" onclick="buildStructure('${k}')"><span>${b.n}</span><span class="text-gray-500">$${b.c}</span></button>`;
-            });
-            h+=`</div>`;
-            simPanels.build.innerHTML=h;
-        }
-
-        function buildStructure(type){
-            const b=BUILDINGS[type];
-            if(city.funds>=b.c){
-                city.funds-=b.c;
-                city.buildings.push({type,id:Date.now()});
-                logCityEvent(`建设成功：${b.n}`,'build');
-                updateCityUI();
-            }else{
-                logCityEvent("资金不足！",'error');
+    /* ==================== Monopoly: Auction ==================== */
+    function handleAuction(playerIdx) {
+        const p = mono.players[playerIdx];
+        // Find a random unowned property in unlocked tiles
+        const unlockedCount = getUnlockedTileCount();
+        const unowned = [];
+        for (let i = 0; i < unlockedCount; i++) {
+            if (mono.tiles[i].type === 'property' && mono.properties[i].owner === -1) {
+                unowned.push(i);
             }
         }
+        if (unowned.length === 0) {
+            monoLog(`${p.ic} 拍卖会取消 — 无可拍地产`, 'info');
+            return false;
+        }
+        const tileIdx = unowned[Math.floor(Math.random() * unowned.length)];
+        const tile = mono.tiles[tileIdx];
+        const minBid = Math.floor(tile.price * 0.5);
 
-        function renderTechTreePanel(){
-            let h=`<div class="space-y-2">`;
-            Object.keys(TECHS).forEach(k=>{
-                const t=TECHS[k];
-                const isUnlocked=city.unlockedTech.includes(k);
-                h+=`<div class="p-2 border border-gray-700 rounded ${isUnlocked?'bg-green-900/20':''}">
-                    <p class="font-bold ${isUnlocked?'text-green-400':'text-gray-400'}">${t.n}</p>
-                    <p class="text-[10px] text-gray-500">${t.zh}</p>
+        if (playerIdx === 0) {
+            // Show auction modal for human player
+            const modal = document.getElementById('modal-content');
+            modal.innerHTML = `
+                <div class="modal-title">🔨 地产拍卖</div>
+                <div style="text-align:center;padding:.5rem 0;">
+                    <div style="font-size:2rem;">${tile.ic}</div>
+                    <div style="font-weight:800;">${tile.nm}</div>
+                    <div style="font-size:.8rem;color:var(--text2);">${tile.desc}</div>
+                    <div style="margin-top:.25rem;">市场价：💰${tile.price} | 起拍价：💰${minBid}</div>
+                    <div style="font-size:.8rem;color:var(--text2);">你的资金：💰${p.money}</div>
+                </div>
+                <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;">
+                    <button class="btn btn-primary" onclick="bidAuction(${tileIdx},${minBid})" ${p.money<minBid?'disabled':''}>🔨 竞拍 (💰${minBid})</button>
+                    <button class="btn btn-secondary" onclick="skipBuy()">跳过</button>
                 </div>`;
-            });
-            h+=`</div>`;
-            simPanels.tech.innerHTML=h;
-        }
-
-        function logCityEvent(msg,type='info'){
-            const time=`${city.year}-${city.day}`;
-            city.eventLog.unshift({message:msg,type,timestamp:time});
-            if(city.eventLog.length>50) city.eventLog.pop();
-            renderCityLog();
-        }
-
-        function renderCityLog(){
-            if(!cityEventsContainer)return;
-            const colors={system:'text-cyan-400',info:'text-gray-400',warning:'text-yellow-400',error:'text-red-500',build:'text-green-400',godmode:'text-fuchsia-500'};
-            cityEventsContainer.innerHTML=city.eventLog.map(l=>`<div class="text-[10px]"><span class="text-gray-600">[${l.timestamp}]</span> <span class="${colors[l.type]||'text-gray-300'}">${l.message}</span></div>`).join('');
-        }
-
-        function toggleLogView(view){
-            currentLogView=view;
-            cityEventsContainer.style.display=view==='city'?'block':'none';
-            allRecordsContainer.style.display=view==='pet'?'block':'none';
-            document.getElementById('log-toggle-city').style.opacity=view==='city'?'1':'0.6';
-            document.getElementById('log-toggle-pet').style.opacity=view==='pet'?'1':'0.6';
-        }
-
-        function toggleModal(id,show=true){
-            const el=document.getElementById(id);
-            if(!el)return;
-            el.classList.toggle('hidden',!show);
-            setTimeout(()=>el.classList.toggle('opacity-0',!show),10);
-            if(id==='changelog-modal' && show) renderChangelog();
-        }
-
-        function tabBarNavigate(tab){
-            document.querySelectorAll('.tab-item').forEach(i=>i.classList.toggle('active',i.dataset.tab===tab));
-            document.body.dataset.mobileTab=tab;
-        }
-
-        function updateLoop(ts){
-            frameCount++;
-            if(ts-lastPerfUpdateTime>1000){
-                updateMemorial();
-                lastPerfUpdateTime=ts;
+            document.getElementById('modal-overlay').classList.add('show');
+            return true; // Modal shown — wait for player decision
+        } else {
+            // AI decides
+            const personality = AI_PERSONALITIES[p.personality];
+            if (p.money >= minBid && Math.random() < personality.buyChance) {
+                const bid = minBid + Math.floor(Math.random() * (tile.price - minBid) * 0.3);
+                if (p.money >= bid) {
+                    mono.properties[tileIdx].owner = playerIdx;
+                    p.money -= bid;
+                    monoLog(`${p.ic} 拍得 ${tile.nm}，花费 ${bid}💰`, 'success');
+                }
             }
-            requestAnimationFrame(updateLoop);
+            return false;
+        }
+    }
+
+    function bidAuction(tileIdx, bid) {
+        const p = mono.players[0];
+        if (p.money < bid) { monoLog('资金不足！', 'error'); return; }
+        // AI may counter-bid
+        let finalBid = bid;
+        const aiBidders = mono.players.filter((pl, i) => i !== 0 && !pl.bankrupt && pl.money >= bid);
+        for (const ai of aiBidders) {
+            const personality = AI_PERSONALITIES[ai.personality];
+            if (Math.random() < personality.buyChance * 0.6) {
+                finalBid += Math.floor(bid * 0.2);
+                monoLog(`${ai.ic} 加价到 ${finalBid}💰`, 'info');
+                if (p.money < finalBid + Math.floor(bid * 0.2)) break;
+                finalBid += Math.floor(bid * 0.2);
+                monoLog(`🐰 加价到 ${finalBid}💰`, 'info');
+            }
+        }
+        if (p.money >= finalBid) {
+            mono.properties[tileIdx].owner = 0;
+            p.money -= finalBid;
+            monoLog(`🐰 拍得 ${mono.tiles[tileIdx].nm}，花费 ${finalBid}💰`, 'success');
+        } else {
+            monoLog('资金不足，放弃竞拍', 'error');
+        }
+        closeModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    /* ==================== Monopoly: Upgrade Tile ==================== */
+    function handleUpgradeTile(playerIdx) {
+        const p = mono.players[playerIdx];
+        const pi = playerIdx;
+        const owned = [];
+        for (let i = 0; i < mono.tiles.length; i++) {
+            if (mono.tiles[i].type === 'property' && mono.properties[i].owner === pi && mono.properties[i].level < 5) {
+                owned.push(i);
+            }
+        }
+        if (owned.length === 0) {
+            monoLog(`${p.ic} 没有可升级的地产`, 'info');
+            return false;
+        }
+        const tileIdx = owned[Math.floor(Math.random() * owned.length)];
+        const tile = mono.tiles[tileIdx];
+        const cost = Math.floor(tile.price * 0.3);
+
+        if (playerIdx === 0) {
+            const modal = document.getElementById('modal-content');
+            modal.innerHTML = `
+                <div class="modal-title">⬆️ 地产升级</div>
+                <div style="text-align:center;padding:.5rem 0;">
+                    <div style="font-size:2rem;">${tile.ic}</div>
+                    <div style="font-weight:800;">${tile.nm} (Lv.${mono.properties[tileIdx].level})</div>
+                    <div style="font-size:.8rem;color:var(--text2);">升级费用：💰${cost}</div>
+                    <div style="font-size:.8rem;color:var(--text2);">你的资金：💰${p.money}</div>
+                </div>
+                <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;">
+                    <button class="btn btn-primary" onclick="upgradeProperty(${tileIdx},${cost})" ${p.money<cost?'disabled':''}>⬆️ 升级</button>
+                    <button class="btn btn-secondary" onclick="skipBuy()">跳过</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.add('show');
+            return true; // Modal shown — wait for player decision
+        } else {
+            const personality = AI_PERSONALITIES[p.personality];
+            if (p.money >= cost && Math.random() < personality.upgradeChance) {
+                p.money -= cost;
+                mono.properties[tileIdx].level++;
+                monoLog(`${p.ic} 升级 ${tile.nm} 到 Lv.${mono.properties[tileIdx].level}`, 'success');
+            }
+            return false;
+        }
+    }
+
+    function upgradeProperty(tileIdx, cost) {
+        const p = mono.players[0];
+        if (p.money < cost) { monoLog('资金不足！', 'error'); return; }
+        p.money -= cost;
+        mono.properties[tileIdx].level++;
+        monoLog(`🐰 升级 ${mono.tiles[tileIdx].nm} 到 Lv.${mono.properties[tileIdx].level}`, 'success');
+        closeModal();
+        saveMonopoly();
+        renderMonopoly();
+        if (!checkGameOver()) nextTurn();
+    }
+
+    /* ==================== Monopoly: Use Card (renamed to monoUseCard) ==================== */
+    function monoUseCard(cardIdx) {
+        const p = mono.players[0];
+        if (mono.currentPlayer !== 0 || p.bankrupt) return;
+        if (mono.rolling) return; // Can't use during roll
+        const card = p.cards[cardIdx];
+        if (!card) return;
+        p.cards.splice(cardIdx, 1);
+        if (card.monoEff) card.monoEff(p, mono);
+        monoLog(`🃏 兔可可 使用 ${card.ic} ${card.nm}`, 'success');
+        saveMonopoly();
+        renderMonopoly();
+    }
+
+    /* ==================== Monopoly: Carry Card from Inventory ==================== */
+    function carryCard(invIdx) {
+        if (!mono) return;
+        const p = mono.players[0];
+        if (p.cards.length >= 8) { monoLog('手牌已满（最多8张）', 'error'); return; }
+        const card = cardInventory[invIdx];
+        if (!card) return;
+        cardInventory.splice(invIdx, 1);
+        p.cards.push({...card});
+        monoLog(`🎒 携带 ${card.ic} ${card.nm} 到游戏中`, 'success');
+        saveInventory();
+        saveMonopoly();
+        renderMonopoly();
+        renderCardDrawArea();
+    }
+
+    /* ==================== Monopoly: Next Turn & AI ==================== */
+    function nextTurn() {
+        const total = mono.players.length;
+        let next = mono.currentPlayer;
+        for (let i = 0; i < total; i++) {
+            next = (next + 1) % total;
+            if (!mono.players[next].bankrupt) break;
+        }
+        mono.currentPlayer = next;
+        mono.turn++;
+        // Process loans for the new player
+        processLoans(mono.players[next]);
+        saveMonopoly();
+        renderMonopoly();
+
+        if (mono.currentPlayer !== 0 && mono.started) {
+            setTimeout(() => aiTurn(), 900);
+        }
+    }
+
+    function processLoans(p) {
+        if (p.loans.length === 0) return;
+        let totalPayment = 0;
+        p.loans.forEach(l => {
+            const payment = Math.floor(l.amount * l.rate / 5) + Math.floor(l.amount / 5);
+            totalPayment += payment;
+            l.remaining--;
+        });
+        p.money -= totalPayment;
+        p.loans = p.loans.filter(l => l.remaining > 0);
+        if (totalPayment > 0) {
+            monoLog(`${p.ic} 偿还贷款 ${totalPayment}💰`, 'info');
+            checkBankruptcy(p);
+        }
+    }
+
+    function aiTurn() {
+        const idx = mono.currentPlayer;
+        const p = mono.players[idx];
+        if (p.bankrupt) { nextTurn(); return; }
+
+        // Jail check
+        if (p.jailTurns > 0) {
+            p.jailTurns--;
+            monoLog(`🔒 ${p.nm} 在监狱中，暂停一回合`, 'error');
+            saveMonopoly();
+            nextTurn();
+            return;
         }
 
-        function updateMemorial(){
-            const start=new Date(CONFIG.START_DATE).getTime();
-            const now=new Date().getTime();
-            const diff=now-start;
-            const days=(diff/86400000).toFixed(4);
-            const d=Math.floor(diff/86400000);
-            const h=Math.floor((diff%86400000)/3600000);
-            const m=Math.floor((diff%3600000)/60000);
-            const s=Math.floor((diff%60000)/1000);
-            const mDays=document.getElementById('memorial-days');
-            const mTime=document.getElementById('memorial-time');
-            if(mDays) mDays.textContent=days;
-            if(mTime) mTime.textContent=`${h} 小时 ${m} 分 ${s} 秒`;
-            const timing=document.getElementById('timing');
-            if(timing) timing.innerHTML=`<div class="flex justify-between"><span>到来至今:</span><span class="accent-text font-bold">${d}天</span></div>`;
+        const personality = AI_PERSONALITIES[p.personality];
+
+        // Use card?
+        if (p.cards.length > 0 && Math.random() < personality.cardUseChance) {
+            const ci = Math.floor(Math.random() * p.cards.length);
+            const card = p.cards[ci];
+            p.cards.splice(ci, 1);
+            if (card.monoEff) card.monoEff(p, mono);
+            monoLog(`${p.ic} 使用 ${card.ic} ${card.nm}`, 'info');
+            renderMonopoly();
         }
 
-        function moveMouseBunny(x,y){
-            const el=document.getElementById('mouse-bunny');
-            if(el){ el.style.left=x+'px'; el.style.top=y+'px'; }
+        mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
+        let total = mono.dice[0] + mono.dice[1];
+        const extra = p.speed || 0;
+        if (extra) p.speed = 0;
+        if (p.doubleDice) { total *= 2; p.doubleDice = false; }
+        renderMonopoly();
+        monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
+
+        setTimeout(() => movePlayer(idx, total + extra), 600);
+    }
+
+    /* ==================== Monopoly: Era Advancement ==================== */
+    function canAdvanceEra() {
+        return mono.unlockedEras < MONO_REGIONS.length - 1 &&
+               mono.turn >= (mono.unlockedEras + 1) * 15;
+    }
+
+    function advanceEra() {
+        if (!canAdvanceEra()) return;
+        mono.unlockedEras++;
+        const region = MONO_REGIONS[mono.unlockedEras];
+        monoLog(`⬆️ 推进到 ${region.eraName}！解锁 ${region.name}`, 'god');
+        logEvent(`⬆️ 大富翁推进到 ${region.eraName} — ${region.name}`, 'success');
+
+        // Maybe add a new player
+        if (mono.players.length < 8 && mono.unlockedEras <= 4) {
+            const newPlayerData = EXTRA_PLAYERS[mono.unlockedEras - 1] || EXTRA_PLAYERS[0];
+            const newPos = getUnlockedTileCount() - MONO_REGIONS[mono.unlockedEras].tileCount + Math.floor(Math.random() * MONO_REGIONS[mono.unlockedEras].tileCount);
+            mono.players.push({
+                ...newPlayerData, money: 10000, pos: newPos, cards: [],
+                shield: false, lucky: false, speed: 0, doubleDice: false,
+                jailFree: false, jailTurns: 0, taxFree: 0, bankrupt: false,
+                loans: [], credit: 100,
+            });
+            monoLog(`🎉 新玩家 ${newPlayerData.ic} ${newPlayerData.nm} 加入了游戏！`, 'success');
         }
 
-        function toggleFullscreen(){
-            if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else if(document.exitFullscreen) document.exitFullscreen();
+        // Property values change (increase 10%)
+        mono.tiles.forEach(t => {
+            if (t.type === 'property' && t.region <= mono.unlockedEras) {
+                t.price = Math.floor(t.price * 1.1);
+                t.rent = Math.floor(t.rent * 1.1);
+            }
+        });
+
+        // God mode bonus
+        if (godModeActive) {
+            mono.players[0].money += 5000;
+            monoLog(`✨ 上帝模式奖励 5000💰`, 'god');
         }
 
-        function renderChangelog(){
-            const cD=[{v:"v4.3.0",dt:"最终无限版",it:[{t:"🚀 全面中文化",zh:"UI标签、表头、按钮及统计数据全面翻译为简体中文。",en:"Full translation to Simplified Chinese."},{t:"✨ 身份同步",zh:"将所有“Bunny CC”及“Menglolita”引用更新为“兔可可”。",en:"Updated all references to '兔可可'."},{t:"🏙️ 属地迁移",zh:"城市背景及繁育地由大阪迁至上海。",en:"Relocated city background from Osaka to Shanghai."},{t:"🐇 血统认证",zh:"品种描述更新为“英系双血统安哥拉兔”。",en:"Updated breed to English Dual-Pedigree Angora Rabbit."}]}];
-            const el=document.getElementById('changelog-content');
-            if(el) el.innerHTML=cD.map(l=>`<div class="mb-4"><p class="font-bold accent-text">${l.v} <span class="text-[10px] text-gray-500">${l.dt}</span></p><ul class="text-xs space-y-1 mt-1">${l.it.map(i=>`<li>- ${i.zh}</li>`).join('')}</ul></div>`).join('');
+        saveMonopoly();
+        renderMonopoly();
+    }
+
+    /* ==================== Modal Helpers ==================== */
+    function closeModal(e) {
+        if (e && e.target !== e.currentTarget) return;
+        document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    /* ==================== Card Draw System (with Cooldown) ==================== */
+    function initCardSystem() {
+        renderCardDrawArea();
+        // Resume cooldown if it was active before page refresh
+        const lastDraw = parseInt(localStorage.getItem('lastCardDraw') || '0');
+        if (Date.now() - lastDraw < CONFIG.CARD_COOLDOWN_MS) {
+            startCooldownTimer();
+        }
+    }
+
+    function canDrawCard() {
+        const lastDraw = parseInt(localStorage.getItem('lastCardDraw') || '0');
+        return Date.now() - lastDraw >= CONFIG.CARD_COOLDOWN_MS;
+    }
+
+    function startCooldownTimer() {
+        if (cooldownInterval) clearInterval(cooldownInterval);
+        const tick = () => {
+            const btn = document.getElementById('draw-btn');
+            if (!btn) return;
+            const lastDraw = parseInt(localStorage.getItem('lastCardDraw') || '0');
+            const remaining = CONFIG.CARD_COOLDOWN_MS - (Date.now() - lastDraw);
+            if (remaining <= 0) {
+                clearInterval(cooldownInterval);
+                cooldownInterval = null;
+                btn.disabled = false;
+                btn.innerHTML = '🎴 抽卡 (10张)';
+                return;
+            }
+            const secs = Math.ceil(remaining / 1000);
+            btn.disabled = true;
+            btn.innerHTML = `⏳ 冷却中 ${secs}s`;
+        };
+        tick();
+        cooldownInterval = setInterval(tick, 1000);
+    }
+
+    function drawWeightedCard() {
+        const totalWeight = Object.values(RARITY_WEIGHTS).reduce((a, b) => a + b, 0);
+        let roll = Math.random() * totalWeight;
+        let rarity = 'common';
+        for (const [r, w] of Object.entries(RARITY_WEIGHTS)) {
+            if (roll < w) { rarity = r; break; }
+            roll -= w;
+        }
+        const pool = CARD_POOL.filter(c => c.rarity === rarity);
+        const card = pool[Math.floor(Math.random() * pool.length)];
+        return { ...card };
+    }
+
+    function drawCards() {
+        if (!canDrawCard()) return;
+        localStorage.setItem('lastCardDraw', Date.now().toString());
+        const drawn = [];
+        for (let i = 0; i < 10; i++) drawn.push(drawWeightedCard());
+        // Add to inventory (cap at 30, keep most recent)
+        cardInventory.push(...drawn);
+        if (cardInventory.length > 30) cardInventory = cardInventory.slice(-30);
+        saveInventory();
+        // Show drawn cards with visible descriptions
+        const el = document.getElementById('card-draw-area');
+        if (el) {
+            el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">✨ 本次抽卡结果</div>' +
+                '<div class="inventory-grid">' + drawn.map(c =>
+                    `<div class="inventory-card" style="border-color:${RARITY_COLORS[c.rarity]};animation:slideUp .4s ease;">
+                        <div class="ic-icon">${c.ic}</div>
+                        <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
+                        <div class="ic-desc">${c.desc}</div>
+                    </div>`
+                ).join('') + '</div>';
+        }
+        renderCardInventory();
+        const legendaryCount = drawn.filter(c => c.rarity === 'legendary').length;
+        logEvent(`🃏 抽到 10 张卡牌${legendaryCount > 0 ? `（含 ${legendaryCount} 张传说卡！）` : ''}`, 'info');
+        startCooldownTimer();
+    }
+
+    function renderCardDrawArea() {
+        const el = document.getElementById('card-draw-area');
+        if (!el) return;
+        if (cardInventory.length > 0) {
+            el.innerHTML = `<div style="font-size:.7rem;color:var(--text2);margin-bottom:.3rem;">🎒 背包：${cardInventory.length}/30 张卡牌</div>`;
+        } else {
+            el.innerHTML = '';
+        }
+        renderCardInventory();
+    }
+
+    function renderCardInventory() {
+        const el = document.getElementById('card-inventory-area');
+        if (!el) return;
+        if (cardInventory.length === 0) {
+            el.innerHTML = '<div style="font-size:.75rem;color:var(--text2);text-align:center;">背包空空如也，抽点卡牌吧！</div>';
+            return;
+        }
+        el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">🎒 卡牌背包（点击可携带至大富翁）</div>' +
+            '<div class="inventory-grid">' + cardInventory.map((c, i) =>
+                `<div class="inventory-card" title="${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};">
+                    <div class="ic-icon">${c.ic}</div>
+                    <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
+                    <div class="ic-desc">${c.desc}</div>
+                </div>`
+            ).join('') + '</div>';
+    }
+
+    /* ==================== Theme System ==================== */
+    function loadTheme() {
+        const t = localStorage.getItem('theme') || 'bunny';
+        document.documentElement.setAttribute('data-theme', t);
+        pixelFontEnabled = localStorage.getItem('pixelFont') === '1';
+        if (pixelFontEnabled) document.documentElement.classList.add('font-pixel');
+        const ft = document.getElementById('font-toggle');
+        if (ft && pixelFontEnabled) ft.classList.add('on');
+        mouseBunnyEnabled = localStorage.getItem('mouseBunny') !== '0';
+        const mt = document.getElementById('mouse-toggle');
+        if (mt) { if (mouseBunnyEnabled) mt.classList.add('on'); else mt.classList.remove('on'); }
+    }
+
+    function initThemeGrid() {
+        const el = document.getElementById('theme-grid');
+        if (!el) return;
+        const current = localStorage.getItem('theme') || 'bunny';
+        el.innerHTML = CONFIG.THEMES.map(t =>
+            `<div class="theme-card ${t.id === current ? 'active' : ''}" onclick="setTheme('${t.id}')">
+                <div class="theme-preview" style="background:linear-gradient(135deg, ${t.colors[0]}, ${t.colors[1]}, ${t.colors[2]});"></div>
+                <div class="theme-name">${t.name}</div>
+            </div>`
+        ).join('');
+    }
+
+    function setTheme(id) {
+        localStorage.setItem('theme', id);
+        document.documentElement.setAttribute('data-theme', id);
+        initThemeGrid();
+        logEvent(`🎨 切换主题：${CONFIG.THEMES.find(t => t.id === id)?.name || id}`, 'info');
+    }
+
+    function togglePixelFont() {
+        pixelFontEnabled = !pixelFontEnabled;
+        localStorage.setItem('pixelFont', pixelFontEnabled ? '1' : '0');
+        document.documentElement.classList.toggle('font-pixel', pixelFontEnabled);
+        const ft = document.getElementById('font-toggle');
+        if (ft) ft.classList.toggle('on', pixelFontEnabled);
+    }
+
+    function toggleMouseBunny() {
+        mouseBunnyEnabled = !mouseBunnyEnabled;
+        localStorage.setItem('mouseBunny', mouseBunnyEnabled ? '1' : '0');
+        const mt = document.getElementById('mouse-toggle');
+        if (mt) mt.classList.toggle('on', mouseBunnyEnabled);
+        if (!mouseBunnyEnabled) {
+            trailPoints = [];
+            if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+            if (fxCtx && fxCanvas) fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+        }
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    }
+
+    /* ==================== Navigation ==================== */
+    function navigateTo(view) {
+        closeModal(); // Close any open modals when switching views
+        currentView = view;
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        const target = document.getElementById('view-' + view);
+        if (target) target.classList.add('active');
+        // Update sidebar nav items
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+        // Update mobile tab bar
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+        // Render on demand
+        if (view === 'monopoly') renderMonopoly();
+        if (view === 'anniversary') renderAnniversary();
+        if (view === 'logs') renderEvents();
+        if (view === 'settings' && godModeActive) renderGodPanel();
+    }
+
+    function handleLogoClick() {
+        navigateTo('home');
+        titleClicks++;
+        if (titleClicks >= CONFIG.GOD_MODE_CLICKS) {
+            titleClicks = 0;
+            const gp = document.getElementById('god-panel');
+            if (gp) gp.style.display = '';
+            navigateTo('settings');
+            renderGodPanel();
+            logEvent('✨ 上帝模式入口已开启', 'god');
+        }
+    }
+
+    // About version click — also triggers God Mode entry (same as logo click)
+    let aboutClickCount = 0;
+    function handleAboutClick() {
+        aboutClickCount++;
+        const av = document.getElementById('about-version');
+        if (!av) return;
+        // Subtle visual feedback on each click
+        av.style.transition = 'transform .2s';
+        av.style.transform = 'scale(0.97)';
+        setTimeout(() => av.style.transform = '', 200);
+        if (aboutClickCount >= CONFIG.GOD_MODE_CLICKS) {
+            aboutClickCount = 0;
+            const gp = document.getElementById('god-panel');
+            if (gp) gp.style.display = '';
+            renderGodPanel();
+            logEvent('✨ 通过关于版本触发了上帝模式入口', 'god');
+        }
+    }
+
+    /* ==================== Anniversary & Milestones ==================== */
+    const MILESTONES = [
+        { days: 100, label: '100天纪念' },
+        { days: 365, label: '一周年 (365天)' },
+        { days: 500, label: '500天纪念' },
+        { days: 730, label: '两周年 (730天)' },
+        { days: 1000, label: '1000天纪念' },
+        { days: 1095, label: '三周年 (1095天)' },
+    ];
+
+    function formatDate(date) {
+        return date.getFullYear() + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0');
+    }
+
+    function renderAnniversary() {
+        const start = new Date(CONFIG.START_DATE);
+        const now = new Date();
+        const diff = now - start;
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+
+        const daysEl = document.getElementById('anni-days');
+        const timeEl = document.getElementById('anni-time');
+        if (daysEl) daysEl.textContent = days;
+        if (timeEl) timeEl.textContent = `${hours} 时 ${mins} 分 ${secs} 秒`;
+
+        // Milestones with dates
+        const el = document.getElementById('anni-milestones');
+        if (el) {
+            el.innerHTML = MILESTONES.map(m => {
+                const date = new Date(start.getTime() + m.days * 86400000);
+                const dateStr = formatDate(date);
+                const reached = days >= m.days;
+                const remain = m.days - days;
+                return `<div class="milestone-item">
+                    <div class="milestone-dot ${reached ? 'reached' : ''}"></div>
+                    <div class="milestone-text">
+                        ${m.label}
+                        <div class="milestone-date">📅 ${dateStr}</div>
+                        <div class="milestone-remain" style="color:${reached ? 'var(--good)' : 'var(--text2)'};">${reached ? '✅ 已达成' : `还有 ${remain} 天`}</div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        function initCharts(){
-            const ctx=document.getElementById('populationChart')?.getContext('2d');
-            if(ctx) populationChart=new Chart(ctx,{type:'line',data:{labels:[],datasets:[{label:'人口',data:[],borderColor:'#ec4899',tension:0.4,fill:true,backgroundColor:'rgba(236,72,153,0.1)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#8b949e',font:{size:10}}}}}});
+        // Next milestone box
+        const nextEl = document.getElementById('anni-next-milestone');
+        if (nextEl) {
+            const next = MILESTONES.find(m => days < m.days);
+            if (next) {
+                const nextDate = new Date(start.getTime() + next.days * 86400000);
+                const remain = next.days - days;
+                nextEl.innerHTML = `<div style="font-size:.75rem;color:var(--text2);">下一个纪念日</div>
+                    <div class="nm-date">${next.label}</div>
+                    <div style="font-size:.8rem;color:var(--text2);">📅 ${formatDate(nextDate)}</div>
+                    <div class="nm-countdown">还有 ${remain} 天</div>`;
+            } else {
+                nextEl.innerHTML = `<div class="nm-date">🏆 所有里程碑已达成！</div>`;
+            }
         }
+    }
+
+    /* ==================== Event Log ==================== */
+    function logEvent(msg, type = 'info') {
+        const now = new Date();
+        const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+        eventLog.unshift({ time, msg, type });
+        if (eventLog.length > 100) eventLog.pop();
+        if (currentView === 'logs') renderEvents();
+    }
+
+    function renderEvents() {
+        const el = document.getElementById('events-list');
+        if (!el) return;
+        if (eventLog.length === 0) {
+            el.innerHTML = '<div style="color:var(--text2);text-align:center;padding:1rem;">暂无事件</div>';
+            return;
+        }
+        el.innerHTML = eventLog.map(e =>
+            `<div class="event-item">
+                <div class="event-time">${e.time}</div>
+                <div class="event-text event-${e.type}">${e.msg}</div>
+            </div>`
+        ).join('');
+    }
+
+    /* ==================== God Mode (ECDSA, no city references) ==================== */
+    function renderGodPanel() {
+        const el = document.getElementById('god-content');
+        if (!el) return;
+        if (godModeActive) {
+            el.innerHTML = `
+                <div class="god-status success show">✨ 上帝模式已激活！</div>
+                <div style="font-size:.8rem;color:var(--text2);text-align:center;line-height:1.8;">
+                    大富翁初始资金翻倍（20000💰）<br>
+                    每次推进时代额外获得 5000💰<br>
+                    首次激活赠送 10000💰
+                </div>
+                <button class="btn btn-danger btn-sm" style="margin-top:.75rem;width:100%;" onclick="deactivateGodMode()">❌ 关闭上帝模式</button>`;
+            return;
+        }
+        const challenge = localStorage.getItem('godChallenge') || generateChallenge();
+        el.innerHTML = `
+            <div style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem;text-align:center;line-height:1.6;">
+                输入激活码以解锁上帝模式<br>使用私钥对挑战码进行 ECDSA-SHA256 签名
+            </div>
+            <div class="god-challenge-box">
+                <div style="font-size:.7rem;color:var(--text2);">挑战码 Challenge：</div>
+                <div class="god-code-display">${challenge}</div>
+                <button class="btn btn-secondary btn-sm" onclick="generateChallenge();renderGodPanel();">🔄 刷新挑战码</button>
+            </div>
+            <div class="god-status" id="god-status"></div>
+            <input type="text" class="god-input" id="god-input" placeholder="输入十六进制签名..." style="margin-bottom:.5rem;">
+            <button class="btn btn-primary" style="width:100%;" onclick="verifyGodMode()">🔓 验证激活</button>`;
+    }
+
+    function generateChallenge() {
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+        const challenge = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        localStorage.setItem('godChallenge', challenge);
+        return challenge;
+    }
+
+    async function verifyGodMode() {
+        const challenge = localStorage.getItem('godChallenge');
+        const input = document.getElementById('god-input');
+        const status = document.getElementById('god-status');
+        if (!challenge || !input || !status) return;
+        const sigHex = input.value.trim();
+        if (!sigHex) {
+            status.textContent = '请输入签名';
+            status.className = 'god-status error show';
+            return;
+        }
+        try {
+            const key = await crypto.subtle.importKey(
+                'jwk', CONFIG.GOD_MODE_PUBLIC_KEY,
+                { name: 'ECDSA', namedCurve: 'P-256' },
+                false, ['verify']
+            );
+            const enc = new TextEncoder().encode(challenge);
+            const sigBytes = new Uint8Array(sigHex.match(/.{1,2}/g).map(h => parseInt(h, 16)));
+            const valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, sigBytes, enc);
+            if (valid) {
+                godModeActive = true;
+                localStorage.setItem('godModeActive', 'true');
+                const gi = document.getElementById('god-indicator');
+                if (gi) gi.classList.add('show');
+                status.textContent = '✨ 激活成功！上帝模式已开启';
+                status.className = 'god-status success show';
+                logEvent('✨ 上帝模式已激活！', 'god');
+                if (mono) { mono.players[0].money += 10000; saveMonopoly(); renderMonopoly(); }
+                setTimeout(() => renderGodPanel(), 1500);
+            } else {
+                status.textContent = '❌ 签名验证失败';
+                status.className = 'god-status error show';
+            }
+        } catch (e) {
+            status.textContent = '❌ 验证出错：' + e.message;
+            status.className = 'god-status error show';
+        }
+    }
+
+    function deactivateGodMode() {
+        godModeActive = false;
+        localStorage.removeItem('godModeActive');
+        const gi = document.getElementById('god-indicator');
+        if (gi) gi.classList.remove('show');
+        renderGodPanel();
+        logEvent('上帝模式已关闭', 'info');
+    }
+
+    /* ==================== Avatar Click Effects (Upgraded Epic) ==================== */
+    function initAvatarEffect() {
+        const avatar = document.getElementById('avatar-img');
+        if (!avatar) return;
+        avatar.addEventListener('click', (e) => {
+            const rect = avatar.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            avatarClickCount++;
+            // Every click: particle burst
+            spawnAvatarParticles(x, y, 12);
+            // Avatar shake animation
+            avatar.style.animation = 'none';
+            void avatar.offsetWidth; // Force reflow
+            avatar.style.animation = 'avatarShake .4s ease';
+            // Every 7th click: epic multi-layer effect
+            if (avatarClickCount % CONFIG.GOD_MODE_CLICKS === 0) {
+                triggerEpicEffect(x, y);
+            }
+        });
+    }
+
+    function spawnAvatarParticles(x, y, count) {
+        const colors = ['#FF6B9D', '#FFD700', '#4CAF50', '#0EA5E9', '#a78bfa', '#FF6B35', '#E91E63', '#26A69A'];
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'avatar-burst';
+            const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+            const dist = 40 + Math.random() * 50;
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            const size = 4 + Math.random() * 6;
+            const c = colors[Math.floor(Math.random() * colors.length)];
+            p.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size}px;background:${c};border-radius:50%;--tx:${tx}px;--ty:${ty}px;animation:sparkle .8s ease forwards;`;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        }
+    }
+
+    function triggerEpicEffect(x, y) {
+        const overlay = document.getElementById('epic-overlay');
+        if (!overlay) return;
+        overlay.style.display = 'block';
+        overlay.innerHTML = '';
+
+        // 1. Background flash
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:absolute;inset:0;background:#fff;animation:epicFlash 1s ease;';
+        overlay.appendChild(flash);
+
+        // 2. Multi-rainbow rings (5 layers, different colors)
+        const ringColors = ['#FF6B9D', '#FFB347', '#FFEAA7', '#55EFC4', '#74B9FF'];
+        ringColors.forEach((c, i) => {
+            const ring = document.createElement('div');
+            ring.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:40px;height:40px;border-radius:50%;border:4px solid ${c};transform:translate(-50%,-50%);animation:epicRing 1.5s ease ${i * 0.12}s forwards;`;
+            overlay.appendChild(ring);
+        });
+
+        // 3. Full-screen fireworks (60 particles from center outward)
+        const fwColors = ['#FF6B9D', '#FFD700', '#4CAF50', '#0EA5E9', '#a78bfa', '#FF6B35', '#E91E63', '#26A69A', '#FFEB3B'];
+        for (let i = 0; i < 60; i++) {
+            const p = document.createElement('div');
+            const angle = (i / 60) * Math.PI * 2 + Math.random() * 0.3;
+            const dist = 100 + Math.random() * 250;
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            const size = 6 + Math.random() * 8;
+            const c = fwColors[Math.floor(Math.random() * fwColors.length)];
+            p.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:${size}px;height:${size}px;border-radius:50%;background:${c};--tx:${tx}px;--ty:${ty}px;animation:epicFirework 1.8s ease forwards;box-shadow:0 0 8px ${c};`;
+            overlay.appendChild(p);
+        }
+
+        // 4. Text effect — "✨ 兔可可的祝福降临！✨" scales up and fades
+        const text = document.createElement('div');
+        text.style.cssText = `position:absolute;left:${x}px;top:${y}px;transform:translate(-50%,-50%);font-size:1.4rem;font-weight:800;color:var(--accent);text-shadow:0 0 20px var(--accent),0 0 40px var(--accent);white-space:nowrap;animation:epicText 2s ease forwards;z-index:10;`;
+        text.textContent = '✨ 兔可可的祝福降临！✨';
+        overlay.appendChild(text);
+
+        // 5. Extra particle burst at center
+        spawnAvatarParticles(x, y, 20);
+
+        // 6. Trail sparkles for 2 seconds (8 bursts every 250ms)
+        let trailCount = 0;
+        const trailInterval = setInterval(() => {
+            spawnAvatarParticles(
+                x + (Math.random() - 0.5) * 120,
+                y + (Math.random() - 0.5) * 120,
+                5
+            );
+            trailCount++;
+            if (trailCount >= 8) clearInterval(trailInterval);
+        }, 250);
+
+        // Clean up after 2.5s
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            overlay.innerHTML = '';
+        }, 2500);
+
+        logEvent('✨ 兔可可的祝福降临！华丽彩蛋触发！', 'god');
+    }
+
+    /* ==================== Mouse Trail — Gorgeous Edition (v5.2华丽版 + v6.0像素兔子) ==================== */
+    // Combines the smooth-curve + particle-system algorithm from v5.2
+    // with the 8-theme system and pixel rabbit head from v6.0
+    let trailPoints = [];
+    let trailParticles = [];
+    let mouseX = 0, mouseY = 0;
+    let trailCtx = null, fxCtx = null;
+    let trailCanvas = null, fxCanvas = null;
+    const MAX_TRAIL_POINTS = 50;
+    const TRAIL_LIFETIME = 500;
+
+    // 10x10 pixel rabbit head map: 1=accent fill, 2=eye/dark, 0=transparent
+    const RABBIT_PIXELS = [
+        [0,1,0,0,0,0,0,0,1,0],
+        [0,1,1,0,0,0,0,0,1,1],
+        [0,1,1,0,0,0,0,0,1,1],
+        [0,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1],
+        [1,1,2,1,1,1,1,2,1,1],
+        [1,1,1,1,2,1,2,1,1,1],
+        [0,1,1,1,1,1,1,1,1,0],
+        [0,0,1,1,1,1,1,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+    ];
+
+    function getTrailConfig() {
+        const cs = getComputedStyle(document.documentElement);
+        return {
+            style: (cs.getPropertyValue('--trail-style') || '').trim().replace(/['"]/g, '') || 'ribbon',
+            width: parseFloat(cs.getPropertyValue('--trail-width')) || 6,
+            glow: parseFloat((cs.getPropertyValue('--trail-glow') || '0px').replace('px', '')) || 0,
+            accent: (cs.getPropertyValue('--accent') || '').trim() || '#FF6B9D',
+            accent2: (cs.getPropertyValue('--accent2') || '').trim() || '#FFB5BA',
+        };
+    }
+
+    function initMouseTrail() {
+        trailCanvas = document.getElementById('trail-canvas');
+        fxCanvas = document.getElementById('bunny-canvas');
+        if (!trailCanvas || !fxCanvas) return;
+        trailCtx = trailCanvas.getContext('2d');
+        fxCtx = fxCanvas.getContext('2d');
+
+        function resize() {
+            trailCanvas.width = window.innerWidth;
+            trailCanvas.height = window.innerHeight;
+            fxCanvas.width = window.innerWidth;
+            fxCanvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (mouseBunnyEnabled) {
+                trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
+                if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
+                spawnTrailParticles(mouseX, mouseY);
+            }
+            document.documentElement.style.setProperty('--mx', mouseX + 'px');
+            document.documentElement.style.setProperty('--my', mouseY + 'px');
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!e.touches[0]) return;
+            mouseX = e.touches[0].clientX;
+            mouseY = e.touches[0].clientY;
+            if (mouseBunnyEnabled) {
+                trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
+                if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
+                spawnTrailParticles(mouseX, mouseY);
+            }
+        }, { passive: true });
+
+        requestAnimationFrame(updateAndDrawTrail);
+    }
+
+    // --- Particle spawning per theme ---
+    function spawnTrailParticles(x, y) {
+        const cfg = getTrailConfig();
+        switch (cfg.style) {
+            case 'lightsaber':
+                if (Math.random() < 0.35) trailParticles.push({x, y, vx:(Math.random()-.5)*4, vy:(Math.random()-.5)*4, life:1, type:'spark', color:cfg.accent});
+                break;
+            case 'magic':
+                trailParticles.push({x:x+(Math.random()-.5)*12, y:y+(Math.random()-.5)*12, vx:(Math.random()-.5)*1.2, vy:-Math.random()*2-.5, life:1, type:'star', color:Math.random()<.5?cfg.accent:cfg.accent2, size:Math.random()*3+1.5});
+                break;
+            case 'flame':
+                trailParticles.push({x:x+(Math.random()-.5)*8, y:y+(Math.random()-.5)*4, vx:(Math.random()-.5)*1, vy:-Math.random()*2-.5, life:1, type:'flame', color:Math.random()<.5?'#FFEB3B':'#FF6B35', size:Math.random()*4+2});
+                break;
+            case 'mintBubble':
+                if (Math.random() < 0.3) trailParticles.push({x:x+(Math.random()-.5)*10, y:y+(Math.random()-.5)*10, vx:(Math.random()-.5)*.5, vy:-Math.random()*1.2-.3, life:1, type:'bubble', color:cfg.accent, size:Math.random()*4+2});
+                break;
+            case 'petal':
+                if (Math.random() < 0.25) trailParticles.push({x, y, vx:(Math.random()-.5)*1.5, vy:Math.random()*.8+.3, life:1, type:'petal', color:Math.random()<.5?cfg.accent:cfg.accent2, rot:Math.random()*6.28, rotV:(Math.random()-.5)*.15, size:Math.random()*3+2});
+                break;
+            case 'ribbon':
+                if (Math.random() < 0.15) trailParticles.push({x, y, vx:(Math.random()-.5)*1, vy:-Math.random()*1.2-.3, life:1, type:'heart', color:cfg.accent, size:Math.random()*4+3});
+                break;
+            case 'leaf':
+                if (Math.random() < 0.22) trailParticles.push({x, y, vx:(Math.random()-.5)*1.5, vy:Math.random()*.8+.3, life:1, type:'leaf', color:Math.random()<.5?cfg.accent:cfg.accent2, rot:Math.random()*6.28, rotV:(Math.random()-.5)*.12, size:Math.random()*3+2});
+                break;
+            case 'wave':
+                if (Math.random() < 0.25) trailParticles.push({x:x+(Math.random()-.5)*10, y:y+(Math.random()-.5)*10, vx:(Math.random()-.5)*.5, vy:-Math.random()*1.2-.2, life:1, type:'bubble', color:cfg.accent, size:Math.random()*4+2});
+                break;
+        }
+    }
+
+    // --- Smooth path drawing (from v5.2) ---
+    function drawSmoothPath(ctx, pts) {
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length - 1; i++) {
+            const xc = (pts[i].x + pts[i+1].x) / 2;
+            const yc = (pts[i].y + pts[i+1].y) / 2;
+            ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+        }
+        ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
+    }
+
+    // --- Main trail update & draw loop ---
+    function updateAndDrawTrail() {
+        if (!trailCtx || !fxCtx) { requestAnimationFrame(updateAndDrawTrail); return; }
+        const now = performance.now();
+        const cfg = getTrailConfig();
+
+        // Fade trail canvas (destination-out creates elegant fade)
+        fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+        trailCtx.globalCompositeOperation = 'destination-out';
+        trailCtx.fillStyle = 'rgba(0,0,0,0.12)';
+        trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+        trailCtx.globalCompositeOperation = 'source-over';
+
+        // Remove old points
+        trailPoints = trailPoints.filter(p => now - p.t < TRAIL_LIFETIME);
+        if (trailPoints.length >= 2 && mouseBunnyEnabled) {
+            switch (cfg.style) {
+                case 'lightsaber': drawLightsaberTrail(cfg); break;
+                case 'magic':      drawMagicWhipTrail(cfg); break;
+                case 'flame':      drawFlameTrail(cfg); break;
+                case 'mintBubble': drawMintBubbleTrail(cfg); break;
+                case 'petal':      drawPetalTrail(cfg); break;
+                case 'ribbon':     drawRibbonTrail(cfg); break;
+                case 'leaf':       drawLeafTrail(cfg); break;
+                case 'wave':      drawWaveTrail(cfg); break;
+                default:           drawRibbonTrail(cfg); break;
+            }
+        }
+
+        // Draw particles
+        drawTrailParticles(cfg);
+
+        // Draw pixel rabbit at the head
+        if (trailPoints.length > 0 && mouseBunnyEnabled) {
+            const head = trailPoints[trailPoints.length - 1];
+            drawPixelRabbit(fxCtx, head.x, head.y, cfg.accent, 18);
+        }
+
+        requestAnimationFrame(updateAndDrawTrail);
+    }
+
+    // --- Individual theme draw functions (gorgeous v5.2 style) ---
+    function drawLightsaberTrail(cfg) {
+        const pts = trailPoints;
+        trailCtx.shadowColor = cfg.accent;
+        trailCtx.shadowBlur = cfg.glow;
+        trailCtx.strokeStyle = cfg.accent;
+        trailCtx.lineWidth = cfg.width;
+        trailCtx.lineCap = 'round';
+        trailCtx.lineJoin = 'round';
+        drawSmoothPath(trailCtx, pts);
+        trailCtx.stroke();
+        // White core for lightsaber glow
+        trailCtx.shadowBlur = 0;
+        trailCtx.strokeStyle = '#ffffff';
+        trailCtx.lineWidth = Math.max(1, cfg.width * 0.35);
+        drawSmoothPath(trailCtx, pts);
+        trailCtx.stroke();
+    }
+
+    function drawMagicWhipTrail(cfg) {
+        const pts = trailPoints;
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            trailCtx.shadowColor = cfg.accent;
+            trailCtx.shadowBlur = cfg.glow * progress;
+            trailCtx.strokeStyle = i % 2 === 0 ? cfg.accent : cfg.accent2;
+            trailCtx.lineWidth = cfg.width * progress;
+            trailCtx.lineCap = 'round';
+            trailCtx.globalAlpha = progress;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[i-1].x, pts[i-1].y);
+            trailCtx.lineTo(pts[i].x, pts[i].y);
+            trailCtx.stroke();
+        }
+        trailCtx.globalAlpha = 1;
+        trailCtx.shadowBlur = 0;
+    }
+
+    function drawFlameTrail(cfg) {
+        const pts = trailPoints;
+        for (let i = 0; i < pts.length; i++) {
+            const progress = i / pts.length;
+            const size = Math.max(1, cfg.width * progress * 1.5);
+            const grad = trailCtx.createRadialGradient(pts[i].x, pts[i].y, 0, pts[i].x, pts[i].y, size);
+            grad.addColorStop(0, '#FFEB3B');
+            grad.addColorStop(0.5, '#FF6B35');
+            grad.addColorStop(1, 'rgba(255,107,53,0)');
+            trailCtx.fillStyle = grad;
+            trailCtx.globalAlpha = progress * 0.8;
+            trailCtx.beginPath();
+            trailCtx.arc(pts[i].x, pts[i].y, size, 0, Math.PI * 2);
+            trailCtx.fill();
+        }
+        trailCtx.globalAlpha = 1;
+    }
+
+    function drawMintBubbleTrail(cfg) {
+        const pts = trailPoints;
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            const size = Math.max(1, cfg.width * progress * (1 + Math.sin(i * 0.5 + Date.now() * 0.005) * 0.3));
+            trailCtx.strokeStyle = cfg.accent;
+            trailCtx.lineWidth = 1.5;
+            trailCtx.globalAlpha = progress * 0.6;
+            trailCtx.beginPath();
+            trailCtx.arc(pts[i].x, pts[i].y, size, 0, Math.PI * 2);
+            trailCtx.stroke();
+            trailCtx.fillStyle = 'rgba(255,255,255,0.3)';
+            trailCtx.beginPath();
+            trailCtx.arc(pts[i].x - size * 0.3, pts[i].y - size * 0.3, size * 0.3, 0, Math.PI * 2);
+            trailCtx.fill();
+        }
+        trailCtx.globalAlpha = 1;
+    }
+
+    function drawPetalTrail(cfg) {
+        const pts = trailPoints;
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            const size = Math.max(1, cfg.width * progress);
+            trailCtx.fillStyle = i % 2 === 0 ? cfg.accent : cfg.accent2;
+            trailCtx.globalAlpha = progress * 0.8;
+            trailCtx.save();
+            trailCtx.translate(pts[i].x, pts[i].y);
+            trailCtx.rotate(i * 0.3 + Date.now() * 0.002);
+            trailCtx.beginPath();
+            trailCtx.ellipse(0, 0, size * 1.2, size * 0.6, 0, 0, Math.PI * 2);
+            trailCtx.fill();
+            trailCtx.restore();
+        }
+        trailCtx.globalAlpha = 1;
+    }
+
+    function drawRibbonTrail(cfg) {
+        const pts = trailPoints;
+        trailCtx.shadowColor = cfg.accent;
+        trailCtx.shadowBlur = cfg.glow * 0.5;
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            trailCtx.strokeStyle = cfg.accent;
+            trailCtx.lineWidth = cfg.width * progress;
+            trailCtx.lineCap = 'round';
+            trailCtx.globalAlpha = progress * 0.8;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[i-1].x, pts[i-1].y);
+            const mx = (pts[i-1].x + pts[i].x) / 2 + (Math.random()-.5) * 2;
+            const my = (pts[i-1].y + pts[i].y) / 2 + (Math.random()-.5) * 2;
+            trailCtx.quadraticCurveTo(mx, my, pts[i].x, pts[i].y);
+            trailCtx.stroke();
+        }
+        trailCtx.globalAlpha = 1;
+        trailCtx.shadowBlur = 0;
+    }
+
+    function drawLeafTrail(cfg) {
+        const pts = trailPoints;
+        trailCtx.shadowColor = cfg.accent;
+        trailCtx.shadowBlur = cfg.glow * 0.5;
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            trailCtx.strokeStyle = i % 3 === 0 ? cfg.accent2 : cfg.accent;
+            trailCtx.lineWidth = cfg.width * progress * 0.8;
+            trailCtx.lineCap = 'round';
+            trailCtx.globalAlpha = progress * 0.7;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[i-1].x, pts[i-1].y);
+            const mx = (pts[i-1].x + pts[i].x) / 2 + (Math.random()-.5) * 3;
+            const my = (pts[i-1].y + pts[i].y) / 2 + (Math.random()-.5) * 3;
+            trailCtx.quadraticCurveTo(mx, my, pts[i].x, pts[i].y);
+            trailCtx.stroke();
+        }
+        trailCtx.globalAlpha = 1;
+        trailCtx.shadowBlur = 0;
+    }
+
+    function drawWaveTrail(cfg) {
+        const pts = trailPoints;
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            const wave = Math.sin(i * 0.5 + Date.now() * 0.01) * 4;
+            trailCtx.shadowColor = cfg.accent;
+            trailCtx.shadowBlur = cfg.glow * progress;
+            trailCtx.strokeStyle = cfg.accent;
+            trailCtx.lineWidth = cfg.width * progress;
+            trailCtx.lineCap = 'round';
+            trailCtx.globalAlpha = progress * 0.7;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[i-1].x, pts[i-1].y + wave);
+            trailCtx.lineTo(pts[i].x, pts[i].y - wave);
+            trailCtx.stroke();
+            // Twin line for ripple effect
+            trailCtx.strokeStyle = cfg.accent2;
+            trailCtx.lineWidth = cfg.width * progress * 0.5;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[i-1].x, pts[i-1].y - wave);
+            trailCtx.lineTo(pts[i].x, pts[i].y + wave);
+            trailCtx.stroke();
+        }
+        trailCtx.globalAlpha = 1;
+        trailCtx.shadowBlur = 0;
+    }
+
+    // --- Particle physics & rendering (gorgeous v5.2 style) ---
+    function drawTrailParticles(cfg) {
+        trailParticles = trailParticles.filter(p => {
+            p.life -= 0.02;
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.type === 'star')   { p.vy -= 0.02; p.vx *= 0.99; }
+            if (p.type === 'leaf')   { p.rot += p.rotV; p.vy += 0.02; }
+            if (p.type === 'petal')  { p.rot += p.rotV; p.vy += 0.015; }
+            if (p.type === 'bubble') { p.vy -= 0.01; }
+            if (p.type === 'spark')  { p.vy += 0.1; p.vx *= 0.95; }
+            if (p.type === 'flame')  { p.vy -= 0.03; p.vx *= 0.97; }
+            if (p.type === 'heart')  { p.vy -= 0.01; }
+            return p.life > 0;
+        });
+        trailParticles.forEach(p => {
+            fxCtx.globalAlpha = p.life;
+            if (p.type === 'star') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6;
+                const sz = p.size || 2;
+                fxCtx.beginPath();
+                for (let i = 0; i < 4; i++) {
+                    const a = (i * Math.PI) / 2;
+                    const x1 = p.x + Math.cos(a) * sz;
+                    const y1 = p.y + Math.sin(a) * sz;
+                    const x2 = p.x + Math.cos(a + 0.785) * sz * 0.3;
+                    const y2 = p.y + Math.sin(a + 0.785) * sz * 0.3;
+                    if (i === 0) fxCtx.moveTo(x1, y1); else fxCtx.lineTo(x1, y1);
+                    fxCtx.lineTo(x2, y2);
+                }
+                fxCtx.closePath();
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'heart') {
+                fxCtx.fillStyle = p.color;
+                const s = (p.size || 3) / 5;
+                fxCtx.beginPath();
+                fxCtx.moveTo(p.x, p.y + s);
+                fxCtx.bezierCurveTo(p.x, p.y, p.x - s*2, p.y, p.x - s*2, p.y - s*2);
+                fxCtx.bezierCurveTo(p.x - s*2, p.y - s*4, p.x, p.y - s*4, p.x, p.y - s*2);
+                fxCtx.bezierCurveTo(p.x, p.y - s*4, p.x + s*2, p.y - s*4, p.x + s*2, p.y - s*2);
+                fxCtx.bezierCurveTo(p.x + s*2, p.y, p.x, p.y, p.x, p.y + s);
+                fxCtx.fill();
+            } else if (p.type === 'leaf' || p.type === 'petal') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                fxCtx.rotate(p.rot || 0);
+                fxCtx.fillStyle = p.color;
+                fxCtx.beginPath();
+                fxCtx.ellipse(0, 0, (p.size || 2), (p.size || 2) * 0.5, 0, 0, Math.PI*2);
+                fxCtx.fill();
+                fxCtx.restore();
+            } else if (p.type === 'bubble') {
+                fxCtx.strokeStyle = p.color;
+                fxCtx.lineWidth = 1.5;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, (p.size || 2), 0, Math.PI*2);
+                fxCtx.stroke();
+            } else if (p.type === 'spark') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 8;
+                fxCtx.fillRect(p.x-1, p.y-1, 2, 2);
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'flame') {
+                const grad = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, (p.size || 2));
+                grad.addColorStop(0, '#FFEB3B');
+                grad.addColorStop(0.5, '#FF6B35');
+                grad.addColorStop(1, 'rgba(255,107,53,0)');
+                fxCtx.fillStyle = grad;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, (p.size || 2), 0, Math.PI*2);
+                fxCtx.fill();
+            }
+        });
+        fxCtx.globalAlpha = 1;
+    }
+
+    function drawPixelRabbit(ctx, x, y, color, size) {
+        const pxSize = size / 10;
+        const offsetX = x - size / 2;
+        const offsetY = y - size / 2 - size * 0.4;
+        ctx.save();
+        for (let row = 0; row < RABBIT_PIXELS.length; row++) {
+            for (let col = 0; col < RABBIT_PIXELS[row].length; col++) {
+                const val = RABBIT_PIXELS[row][col];
+                if (val === 0) continue;
+                ctx.fillStyle = val === 2 ? 'rgba(0,0,0,0.8)' : color;
+                ctx.fillRect(
+                    Math.floor(offsetX + col * pxSize),
+                    Math.floor(offsetY + row * pxSize),
+                    Math.ceil(pxSize + 0.5),
+                    Math.ceil(pxSize + 0.5)
+                );
+            }
+        }
+        ctx.restore();
+    }
+
+    /* ==================== PWA ==================== */
+    function initPWA() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+        }
+    }
+
+    /* ==================== Changelog ==================== */
+    function renderChangelog() {
+        const el = document.getElementById('changelog-content');
+        if (!el) return;
+        el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.0.0</strong> — 大富翁王国扩展版</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🎲 全新大富翁岛屿地图系统（6区域312格）</li>
+                <li>🗺️ 渐进式时代推进：草原→森林→湖畔→彩虹→水晶→天空</li>
+                <li>🃏 卡牌系统与首页抽卡整合，60秒冷却</li>
+                <li>🏦 银行贷款/还款机制与信用系统</li>
+                <li>🔨 拍卖、升级、股市、监狱等12种格子类型</li>
+                <li>🤖 4-8位玩家，3种AI性格（激进/保守/平衡）</li>
+                <li>❓ 15种随机事件</li>
+                <li>🎨 新增3个主题：日落橙、薄荷绿、玫瑰金（共8个）</li>
+                <li>🐰 鼠标轨迹头部恢复像素兔子</li>
+                <li>✨ 头像彩蛋华丽升级：彩虹环+烟花+文字特效</li>
+                <li>📅 里程碑和纪念日显示具体日期</li>
+                <li>📦 卡牌/道具描述标签可见</li>
+            </ul>
+            <div style="margin-top:.5rem;font-size:.7rem;color:var(--text2);">移除了城市模拟系统，全面升级为大富翁王国</div>`;
+    }
+
+    /* ==================== Main Loop ==================== */
+    function startLoop() {
+        function tick() {
+            const start = new Date(CONFIG.START_DATE);
+            const now = new Date();
+            const diff = now - start;
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+
+            // Home view: days and time
+            const hd = document.getElementById('home-days');
+            const ht = document.getElementById('home-time');
+            if (hd) hd.textContent = days;
+            if (ht) ht.textContent = `${hours}时 ${mins}分 ${secs}秒`;
+
+            // Home milestones summary
+            const hm = document.getElementById('home-milestones');
+            if (hm) {
+                const next = MILESTONES.find(m => days < m.days);
+                if (next) {
+                    const nextDate = new Date(start.getTime() + next.days * 86400000);
+                    hm.innerHTML = `<div style="font-size:.75rem;color:var(--text2);">下一个：${next.label}</div>
+                        <div style="font-size:.7rem;color:var(--text2);">📅 ${formatDate(nextDate)}（还有 ${next.days - days} 天）</div>`;
+                } else {
+                    hm.innerHTML = '<div style="font-size:.75rem;color:var(--good);">🏆 所有里程碑已达成！</div>';
+                }
+            }
+
+            // Anniversary view (if active, update time)
+            if (currentView === 'anniversary') {
+                const ad = document.getElementById('anni-days');
+                const at = document.getElementById('anni-time');
+                if (ad) ad.textContent = days;
+                if (at) at.textContent = `${hours} 时 ${mins} 分 ${secs} 秒`;
+            }
+        }
+        tick();
+        setInterval(tick, 1000);
+    }
     </script>
 </body>
 </html>

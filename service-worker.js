@@ -1,7 +1,8 @@
-// Service Worker - Bunny CC
-const CACHE_NAME = 'bunny-cc-v4.3.0-final';
-const RUNTIME_CACHE = 'bunny-cc-runtime-v4.3.0';
-const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/icon/192.png', '/favicon.ico'];
+// Service Worker - Bunny CC v6.0.0
+const CACHE_VERSION = 'v6.0.0';
+const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
+const CORE_ASSETS = ['/', '/index.html', '/manifest.json', '/icon/192.png', '/icon/128.png', '/favicon.ico'];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
@@ -29,6 +30,7 @@ self.addEventListener('fetch', (event) => {
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
     if (url.origin !== self.location.origin) return;
 
+    // Navigation requests: network-first with cache fallback
     if (req.mode === 'navigate') {
         event.respondWith(
             fetch(req).then(resp => {
@@ -40,6 +42,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Static assets: stale-while-revalidate
     event.respondWith(
         caches.match(req).then(cached => {
             if (cached) {
