@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- VERSION: v7.2.0 -->
+    <!-- VERSION: v7.3.0 -->
     <title>兔可可王国 🐰</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.2.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.2.0">
-    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.2.0">
-    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.2.0">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.2.0">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.2.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.3.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.3.0">
+    <link rel="icon" type="image/png" sizes="64x64" href="/icon/64.png?v=7.3.0">
+    <link rel="icon" type="image/png" sizes="128x128" href="/icon/128.png?v=7.3.0">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon/192.png?v=7.3.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=7.3.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -540,7 +540,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.2.0</div>
+                <div class="subtitle">v7.3.0</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -733,7 +733,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.2.0</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.3.0</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -786,8 +786,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.2.0',
-        SAVE_KEY: 'bunny_cc_v7.2.0',
+        VERSION: 'v7.3.0',
+        SAVE_KEY: 'bunny_cc_v7.3.0',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -1017,7 +1017,7 @@
     /* ==================== Save Migration ==================== */
     function migrateSaveKey() {
         // Migrate card inventory from previous version keys
-        const prevKeys = ['bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
+        const prevKeys = ['bunny_cc_v7.2.0', 'bunny_cc_v7.1.0', 'bunny_cc_v7.0.0', 'bunny_cc_v6.4.0', 'bunny_cc_v6.3.0', 'bunny_cc_v6.2.0', 'bunny_cc_v6.1.0', 'bunny_cc_v6.0.0'];
         for (const k of prevKeys) {
             try {
                 const oldData = localStorage.getItem(k);
@@ -1059,7 +1059,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.2.0 已启动', 'info');
+        logEvent('兔可可王国 v7.3.0 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1598,7 +1598,7 @@
             return;
         }
         el.innerHTML = cardInventory.map((c, i) =>
-            `<div class="mono-card-item" onclick="carryCard(${i})" title="${c.desc}">
+            `<div class="mono-card-item" onclick="showCardDetailPopup(${i})" title="${c.desc}">
                 <span>${c.ic}</span>
                 <span style="font-size:.5rem;font-weight:700;color:${RARITY_COLORS[c.rarity]};">${c.n}</span>
                 <span class="mc-desc">${c.desc}</span>
@@ -2081,9 +2081,16 @@
             loanListHtml = '<div style="margin-top:.5rem;padding:.5rem;background:var(--card2);border-radius:8px;">';
             p.loans.forEach((l, i) => {
                 const pay = Math.floor(l.amount * l.rate / 5) + Math.floor(l.amount / 5);
-                loanListHtml += `<div style="display:flex;justify-content:space-between;font-size:.75rem;padding:.2rem 0;${i < p.loans.length-1 ? 'border-bottom:1px solid var(--border);' : ''}">
-                    <span>${l.type === 'credit' ? '💳' : '🏠'} 💰${l.amount} @ ${(l.rate*100).toFixed(1)}% (${l.remaining}回合)</span>
-                    <button class="btn btn-sm btn-secondary" onclick="repaySingleLoan(${i})" ${p.money < l.amount ? 'disabled' : ''}>还💰${l.amount}</button>
+                const canFull = p.money >= l.amount;
+                const canPartial = p.money >= pay;
+                const extendFee = Math.floor(l.amount * 0.05);
+                loanListHtml += `<div style="padding:.3rem 0;${i < p.loans.length-1 ? 'border-bottom:1px solid var(--border);' : ''}">
+                    <div style="font-size:.75rem;">${l.type === 'credit' ? '💳' : '🏠'} 💰${l.amount} @ ${(l.rate*100).toFixed(1)}% (${l.remaining}回合)</div>
+                    <div style="display:flex;gap:.2rem;margin-top:.2rem;">
+                        <button class="btn btn-sm btn-secondary" style="flex:1;" onclick="showPartialRepay(${i})" ${!canPartial ? 'disabled' : ''}>部分还</button>
+                        <button class="btn btn-sm btn-primary" style="flex:1;" onclick="repaySingleLoan(${i})" ${!canFull ? 'disabled' : ''}>全还💰${l.amount}</button>
+                        <button class="btn btn-sm btn-secondary" style="flex:1;" onclick="extendLoan(${i})" ${p.money < extendFee ? 'disabled' : ''} title="延期2回合，费用💰${extendFee}">延期+2</button>
+                    </div>
                 </div>`;
             });
             loanListHtml += '</div>';
@@ -2134,7 +2141,7 @@
             ${mortgageHtml}
             <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;">
                 <button class="btn btn-primary" onclick="showBankMortgagePanel()" ${maxLoan<=0?'disabled':''}>🏠 批量抵押贷款 (可贷💰${maxLoan})</button>
-                <button class="btn btn-primary" onclick="takeCreditLoan()" ${p.credit<40?'disabled':''}>💳 信用贷 (💰${creditLoanMax}, 无需抵押, 3回合)</button>
+                <button class="btn btn-primary" onclick="showCreditLoanPanel()" ${p.credit<40?'disabled':''}>💳 信用贷 (最高💰${creditLoanMax}, 无需抵押)</button>
                 <button class="btn btn-secondary" onclick="repayLoan()" ${totalDebt<=0||p.money<totalDebt?'disabled':''}>💰 还清所有贷款 (需💰${totalDebt})</button>
                 <button class="btn btn-secondary" onclick="closeBankModal()">离开银行</button>
             </div>`;
@@ -2257,6 +2264,125 @@
         p.credit = Math.max(10, p.credit - 5);
         monoLog(`🏦 兔可可贷款 ${amount}💰，利率 ${(rate*100).toFixed(1)}%`, 'info');
         showBankModal(); // Refresh modal instead of closing
+        saveMonopoly();
+    }
+
+    /* Partial repayment panel: pay a custom amount to reduce loan principal */
+    function showPartialRepay(loanIdx) {
+        const p = mono.players[0];
+        const loan = p.loans[loanIdx];
+        if (!loan) return;
+        const minPay = Math.max(100, Math.floor(loan.amount * 0.1));
+        const maxPay = Math.min(loan.amount, p.money);
+        const suggested = Math.min(maxPay, Math.floor(loan.amount / 2));
+
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">💰 部分还款</div>
+            <div style="text-align:center;padding:.4rem 0;">
+                <div style="font-size:.9rem;">贷款余额：💰${loan.amount}</div>
+                <div style="font-size:.8rem;color:var(--text2);">利率 ${(loan.rate*100).toFixed(1)}% | 剩余 ${loan.remaining} 回合</div>
+                <div style="font-size:.8rem;color:var(--accent);">你的资金：💰${p.money}</div>
+            </div>
+            <div style="padding:.5rem;background:var(--card2);border-radius:8px;margin-top:.3rem;">
+                <div style="font-size:.75rem;color:var(--text2);margin-bottom:.3rem;">还款金额：💰<strong id="repay-amt-val" style="color:var(--accent);">${suggested}</strong></div>
+                <input type="range" id="repay-slider" min="${minPay}" max="${maxPay}" value="${suggested}" step="50" style="width:100%;accent-color:var(--accent);" oninput="document.getElementById('repay-amt-val').textContent=this.value">
+                <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--text2);">
+                    <span>最低 💰${minPay}</span><span>最高 💰${maxPay}</span>
+                </div>
+            </div>
+            <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+                <button class="btn btn-secondary" style="flex:1;" onclick="showBankModal()">取消</button>
+                <button class="btn btn-primary" style="flex:2;" onclick="confirmPartialRepay(${loanIdx})">确认部分还款</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function confirmPartialRepay(loanIdx) {
+        const p = mono.players[0];
+        const loan = p.loans[loanIdx];
+        if (!loan) return;
+        const slider = document.getElementById('repay-slider');
+        const amount = parseInt(slider ? slider.value : 0);
+        if (amount < 100 || amount > p.money || amount > loan.amount) {
+            monoLog('还款金额无效', 'error'); return;
+        }
+        p.money -= amount;
+        loan.amount -= amount;
+        // Credit recovery proportional to repayment
+        const creditGain = Math.floor(amount / 2000) + 2;
+        p.credit = Math.min(100 + Math.floor(amount / 1000), p.credit + creditGain);
+        monoLog(`💰 部分还款 💰${amount}，贷款余额降至 💰${loan.amount}，信用+${creditGain}`, 'success');
+        // Remove loan if fully repaid
+        if (loan.amount <= 0) {
+            p.loans.splice(loanIdx, 1);
+            monoLog(`✓ 该笔贷款已还清`, 'success');
+        }
+        showBankModal();
+        saveMonopoly();
+    }
+
+    /* Extend loan term by 2 rounds for a fee (5% of loan amount) */
+    function extendLoan(loanIdx) {
+        const p = mono.players[0];
+        const loan = p.loans[loanIdx];
+        if (!loan) return;
+        const fee = Math.floor(loan.amount * 0.05);
+        if (p.money < fee) { monoLog('资金不足以支付延期费', 'error'); return; }
+        p.money -= fee;
+        loan.remaining += 2;
+        p.credit = Math.max(10, p.credit - 5);
+        monoLog(`⏳ 贷款延期 2 回合，费用 💰${fee}，信用-5`, 'warn');
+        showBankModal();
+        saveMonopoly();
+    }
+
+    /* Credit loan panel: choose custom loan amount */
+    function showCreditLoanPanel() {
+        const p = mono.players[0];
+        const economy = mono.economy || calculateEconomyState();
+        const creditLoanMax = Math.floor(p.credit * economy.creditMultiplier);
+        if (creditLoanMax <= 0) { monoLog('信用评分不足，无法申请信用贷', 'error'); return; }
+        const rate = economy.loanRateBase + 0.04 + (100 - p.credit) * 0.002;
+        const minLoan = 500;
+
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">💳 信用贷款</div>
+            <div style="text-align:center;padding:.4rem 0;">
+                <div style="font-size:.8rem;color:var(--text2);">信用评分：${p.credit} | 当前资金：💰${p.money}</div>
+                <div style="font-size:.75rem;color:var(--text2);">利率 ${(rate*100).toFixed(1)}% | 3回合还清</div>
+                <div style="font-size:.7rem;color:var(--warn);">注意：信用贷利率高于抵押贷，请量力而行</div>
+            </div>
+            <div style="padding:.5rem;background:var(--card2);border-radius:8px;margin-top:.3rem;">
+                <div style="font-size:.75rem;color:var(--text2);margin-bottom:.3rem;">贷款金额：💰<strong id="credit-amt-val" style="color:var(--accent);">${creditLoanMax}</strong></div>
+                <input type="range" id="credit-slider" min="${minLoan}" max="${creditLoanMax}" value="${creditLoanMax}" step="100" style="width:100%;accent-color:var(--accent);" oninput="document.getElementById('credit-amt-val').textContent=this.value">
+                <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--text2);">
+                    <span>最低 💰${minLoan}</span><span>最高 💰${creditLoanMax}</span>
+                </div>
+            </div>
+            <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+                <button class="btn btn-secondary" style="flex:1;" onclick="showBankModal()">取消</button>
+                <button class="btn btn-primary" style="flex:2;" onclick="confirmCreditLoan()">确认贷款</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function confirmCreditLoan() {
+        const p = mono.players[0];
+        const economy = mono.economy || calculateEconomyState();
+        const creditLoanMax = Math.floor(p.credit * economy.creditMultiplier);
+        const slider = document.getElementById('credit-slider');
+        const amount = parseInt(slider ? slider.value : creditLoanMax);
+        if (amount < 500 || amount > creditLoanMax) {
+            monoLog('贷款金额无效', 'error'); return;
+        }
+        const rate = economy.loanRateBase + 0.04 + (100 - p.credit) * 0.002;
+        p.money += amount;
+        p.loans.push({amount, remaining: 3, rate, type: 'credit'});
+        p.credit = Math.max(10, p.credit - 15);
+        monoLog(`💳 信用贷款 💰${amount}，利率 ${(rate*100).toFixed(1)}%，3回合还清`, 'info');
+        showBankModal();
         saveMonopoly();
     }
 
@@ -3150,6 +3276,8 @@
         cardInventory.splice(invIdx, 1);
         p.cards.push({...card});
         monoLog(`🎒 携带 ${card.ic} ${card.n} 到游戏中`, 'success');
+        showToast(`✓ ${card.n} 已移至手牌`, 'success');
+        closeModal();
         saveInventory();
         saveMonopoly();
         renderMonopoly();
@@ -3935,16 +4063,46 @@
     function processLoans(p) {
         if (p.loans.length === 0) return;
         let totalPayment = 0;
+        let deferred = false;
         p.loans.forEach(l => {
             const payment = Math.floor(l.amount * l.rate / 5) + Math.floor(l.amount / 5);
             totalPayment += payment;
             l.remaining--;
         });
-        p.money -= totalPayment;
-        p.loans = p.loans.filter(l => l.remaining > 0);
-        if (totalPayment > 0) {
-            monoLog(`${p.ic} 偿还贷款 ${totalPayment}💰`, 'info');
-            checkBankruptcy(p);
+        // Grace period: if player can't afford the full payment, pay what's possible and extend
+        if (p.money < totalPayment) {
+            const affordable = Math.max(0, p.money);
+            const shortfall = totalPayment - affordable;
+            p.money -= affordable;
+            // Extend loans that couldn't be fully paid: add 1 round, reduce principal by affordable portion
+            if (shortfall > 0 && p.loans.length > 0) {
+                let remainingShortfall = shortfall;
+                p.loans.forEach(l => {
+                    if (remainingShortfall <= 0) return;
+                    const payment = Math.floor(l.amount * l.rate / 5) + Math.floor(l.amount / 5);
+                    // Restore remaining and extend
+                    l.remaining = Math.max(l.remaining, 1) + 1; // Add grace round
+                    remainingShortfall -= payment;
+                });
+                deferred = true;
+            }
+            if (affordable > 0) {
+                monoLog(`${p.ic} 部分还款 ${affordable}💰（宽限延期）`, 'warn');
+            }
+            if (deferred) {
+                monoLog(`⏳ ${p.ic} 贷款还款不足，已延期（信用-10）`, 'warn');
+                p.credit = Math.max(10, p.credit - 10);
+            }
+            // Only bankrupt if money is deeply negative (beyond grace)
+            if (p.money < -500) {
+                checkBankruptcy(p);
+            }
+        } else {
+            p.money -= totalPayment;
+            p.loans = p.loans.filter(l => l.remaining > 0);
+            if (totalPayment > 0) {
+                monoLog(`${p.ic} 偿还贷款 ${totalPayment}💰`, 'info');
+            }
         }
     }
 
@@ -4269,7 +4427,7 @@
             const gridHtml = filtered.length > 0
                 ? '<div class="inventory-grid">' + filtered.map(c => {
                     const idx = cardInventory.indexOf(c);
-                    return `<div class="inventory-card" title="${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};">
+                    return `<div class="inventory-card" onclick="showCardDetailPopup(${idx})" style="border-color:${RARITY_COLORS[c.rarity]};">
                         <div class="ic-icon">${c.ic}</div>
                         <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
                         <div class="ic-desc">${c.desc}</div>
@@ -4297,6 +4455,85 @@
         renderFiltered();
     }
 
+    /* Card detail popup: show description with "move to hand" / "use immediately" options */
+    function showCardDetailPopup(invIdx) {
+        const card = cardInventory[invIdx];
+        if (!card) return;
+        const inGame = mono && mono.started;
+        const isMyTurn = inGame && mono.currentPlayer === 0 && !mono.rolling;
+        const p = inGame ? mono.players[0] : null;
+        const handFull = p ? p.cards.length >= 8 : false;
+
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `
+            <div class="modal-title">🃏 卡牌详情</div>
+            <div style="text-align:center;padding:.8rem 0;">
+                <div style="font-size:3rem;margin-bottom:.4rem;">${card.ic}</div>
+                <div style="font-weight:800;font-size:1.2rem;color:${RARITY_COLORS[card.rarity]};">${card.n}</div>
+                <div style="font-size:.7rem;font-weight:700;color:${RARITY_COLORS[card.rarity]};margin-bottom:.5rem;">${card.rarity ? card.rarity.toUpperCase() : 'COMMON'}</div>
+                <div style="color:var(--text2);font-size:.85rem;line-height:1.6;padding:0 .5rem;">${card.desc}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem;">
+                <button class="btn btn-primary" onclick="carryCard(${invIdx})" ${!inGame || handFull ? 'disabled' : ''}>
+                    ${handFull ? '✋ 手牌已满（8/8）' : '📋 移到手牌'}
+                </button>
+                <button class="btn btn-primary" onclick="useCardFromInventory(${invIdx})" ${!isMyTurn ? 'disabled' : ''}>
+                    ${card.isCurse ? '🔥 立即施咒' : '⚡ 立即使用'}
+                </button>
+                <button class="btn btn-secondary" onclick="showFullInventory()">返回背包</button>
+            </div>`;
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    /* Use card directly from inventory (without carrying to hand first) */
+    function useCardFromInventory(invIdx) {
+        const card = cardInventory[invIdx];
+        if (!card) return;
+        if (mono.currentPlayer !== 0 || mono.rolling) { monoLog('当前无法使用卡牌', 'error'); return; }
+        const p = mono.players[0];
+
+        // Curse cards need target selection
+        if (card.isCurse) {
+            const targets = mono.players.filter((pl, i) => i !== 0 && !pl.bankrupt);
+            if (targets.length === 0) { monoLog('没有可施咒的对手', 'error'); return; }
+            // Show target selection, store invIdx for use
+            const targetHtml = targets.map(t => {
+                const tIdx = mono.players.indexOf(t);
+                return `<button class="btn btn-secondary btn-sm" style="width:100%;margin-top:.3rem;" onclick="executeCurseFromInventory(${invIdx}, ${tIdx})">${t.ic} ${t.nm} (💰${t.money})</button>`;
+            }).join('');
+            showModal(`<div class="modal-title">${card.ic} ${card.n}</div>
+                <div style="text-align:center;font-size:.8rem;color:var(--text2);padding:.5rem 0;">${card.desc}</div>
+                <div style="font-size:.75rem;color:var(--accent);margin-bottom:.3rem;">选择施咒目标：</div>
+                ${targetHtml}
+                <button class="btn btn-secondary" style="width:100%;margin-top:.5rem;" onclick="showCardDetailPopup(${invIdx})">取消</button>`);
+            return;
+        }
+
+        // Normal card: remove from inventory and use immediately
+        cardInventory.splice(invIdx, 1);
+        let effResult = '';
+        if (card.monoEff) effResult = card.monoEff(p, mono) || '';
+        monoLog(`🃏 兔可可 直接使用背包 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : card.desc ? ' — ' + card.desc : ''}`, 'success');
+        showCardUseModal(card, effResult);
+        saveInventory();
+        saveMonopoly();
+    }
+
+    /* Execute curse from inventory (after target selection) */
+    function executeCurseFromInventory(invIdx, targetIdx) {
+        const card = cardInventory[invIdx];
+        const p = mono.players[0];
+        const target = mono.players[targetIdx];
+        if (!card || !target || target.bankrupt) return;
+        cardInventory.splice(invIdx, 1);
+        let effResult = '';
+        if (card.monoEff) effResult = card.monoEff(p, mono, target) || '';
+        monoLog(`🔥 兔可可 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
+        showCurseHitEffect(target, card);
+        saveInventory();
+        saveMonopoly();
+    }
+
     function renderCardInventory() {
         const el = document.getElementById('card-inventory-area');
         if (!el) return;
@@ -4304,9 +4541,9 @@
             el.innerHTML = '<div style="font-size:.75rem;color:var(--text2);text-align:center;">背包空空如也，抽点卡牌吧！</div>';
             return;
         }
-        el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">🎒 卡牌背包（点击可携带至大富翁）</div>' +
+        el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">🎒 卡牌背包（点击查看详情）</div>' +
             '<div class="inventory-grid">' + cardInventory.map((c, i) =>
-                `<div class="inventory-card" title="${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};">
+                `<div class="inventory-card" onclick="showCardDetailPopup(${i})" style="border-color:${RARITY_COLORS[c.rarity]};">
                     <div class="ic-icon">${c.ic}</div>
                     <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
                     <div class="ic-desc">${c.desc}</div>
@@ -5465,7 +5702,19 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.2.0</strong> — DPI 自适应字体 & AI 卡死修复</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.3.0</strong> — 卡牌详情弹窗 & 银行灵活还款</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🃏 卡牌背包点击弹出详情框：显示卡牌说明、稀有度，可选「移到手牌」或「立即使用」</li>
+                <li>⚡ 背包直接使用：无需先携带到手牌，点击「立即使用」直接发动效果</li>
+                <li>🔥 诅咒卡直接施放：从背包选择目标和立即施咒</li>
+                <li>💰 银行部分还款：滑块选择还款金额，按比例降低贷款本金并恢复信用</li>
+                <li>💳 信用贷自定义金额：滑块选择贷款额度（500~最高额度），避免过度借贷</li>
+                <li>⏳ 贷款延期：支付 5% 手续费延长 2 回合还款期，缓解资金压力</li>
+                <li>🛡️ 还款宽限期：资金不足时自动部分还款+延期，防止立刻破产</li>
+                <li>📱 DPI 自适应缩放 & AI 卡死修复（上版本遗留优化）</li>
+            </ul>
+            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.2.0</strong> — DPI 自适应字体 & AI 卡死修复</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>📱 DPI 自适应缩放：根据 devicePixelRatio 自动放大字体，HiDPI/Retina 屏字体更清晰</li>
                 <li>🔤 字体基准范围扩大（14-21px），字体缩放滑块上限提升至 200%</li>
