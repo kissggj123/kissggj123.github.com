@@ -2076,7 +2076,7 @@
                 ${news.icon} ${news.title} <span style="font-size:.6rem;color:var(--text2);">(${a.turnsLeft}回合)</span>
             </span>`;
         }).join('');
-        ticker.innerHTML = `<span style="color:var(--accent);font-weight:700;padding-right:.3rem;cursor:pointer;" onclick="showNewsModal()">📺</span><div style="overflow:hidden;white-space:nowrap;flex:1;cursor:pointer;" onclick="showNewsModal()">${items}</div>`;
+        ticker.innerHTML = `<span style="color:var(--accent);font-weight:700;padding-right:.3rem;">📺</span><div style="overflow:hidden;white-space:nowrap;flex:1;">${items}</div>`;
     }
 
     // Full news modal with active, spread, and history
@@ -2132,7 +2132,7 @@
             <div style="max-height:150px;overflow-y:auto;">${historyHtml}</div>
             <button class="btn" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
         `;
-        showModal();
+        document.getElementById('modal-overlay').classList.add('show');
     }
 
     /* Dynamic rent calculation using economy state */
@@ -4111,11 +4111,15 @@
         const p = mono.players[0];
         const currentVehicle = p.vehicle;
         const ownedIds = (p.vehicles || []).map(v => v.id);
+        // Apply news vehicle price modifier
+        const economy = mono.economy || calculateEconomyState();
+        const vehiclePriceMod = economy.newsVehiclePriceMod || 1;
 
         let vehicleListHtml = VEHICLE_POOL.map(v => {
             const isOwned = ownedIds.includes(v.id);
             const isEquipped = currentVehicle && currentVehicle.id === v.id;
-            const affordable = p.money >= v.price;
+            const displayPrice = Math.floor(v.price * vehiclePriceMod);
+            const affordable = p.money >= displayPrice;
             return `<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--card2);border-radius:8px;margin-bottom:.4rem;${isEquipped?'border:1px solid var(--accent);':''}">
                 <div style="font-size:1.5rem;">${v.ic}</div>
                 <div style="flex:1;">
@@ -4126,7 +4130,7 @@
                 <div style="text-align:right;">
                     ${isEquipped ? '<span style="font-size:.6rem;color:var(--good);font-weight:700;">当前装备</span>' :
                       isOwned ? `<button class="btn btn-sm btn-primary" style="font-size:.65rem;" onclick="switchVehicle('${v.id}')">装备</button>` :
-                      `<div style="font-size:.75rem;font-weight:700;color:${affordable?'var(--accent)':'var(--bad)'};margin-bottom:.2rem;">💰${v.price}</div>
+                      `<div style="font-size:.75rem;font-weight:700;color:${affordable?'var(--accent)':'var(--bad)'};margin-bottom:.2rem;">💰${displayPrice}${vehiclePriceMod !== 1 ? ` <span style="font-size:.6rem;color:var(--warn);">(${(vehiclePriceMod*100).toFixed(0)}%)</span>` : ''}</div>
                        <button class="btn btn-sm btn-primary" style="font-size:.65rem;" onclick="buyVehicle('${v.id}')" ${!affordable?'disabled':''}>购买</button>`}
                 </div>
             </div>`;
@@ -4155,11 +4159,14 @@
         const p = mono.players[0];
         const v = VEHICLE_POOL.find(x => x.id === vehicleId);
         if (!v) { monoLog('载具不存在', 'error'); return; }
-        if (p.money < v.price) { monoLog('资金不足', 'error'); return; }
+        // Apply news vehicle price modifier
+        const economy = mono.economy || calculateEconomyState();
+        const actualPrice = Math.floor(v.price * (economy.newsVehiclePriceMod || 1));
+        if (p.money < actualPrice) { monoLog('资金不足', 'error'); return; }
         if (!p.vehicles) p.vehicles = [];
         // Check if already owned
         if (p.vehicles.some(ov => ov.id === vehicleId)) { monoLog('已拥有该载具', 'info'); return; }
-        p.money -= v.price;
+        p.money -= actualPrice;
         p.vehicles.push({...v});
         // Auto-equip if player has no current vehicle
         if (!p.vehicle) {
@@ -4232,12 +4239,15 @@
         if (!p.vehicles) p.vehicles = [];
         const ownedIds = p.vehicles.map(v => v.id);
         const personality = AI_PERSONALITIES[p.personality];
+        // Apply news vehicle price modifier
+        const economy = mono.economy || calculateEconomyState();
+        const vehiclePriceMod = economy.newsVehiclePriceMod || 1;
         // AI may buy a new vehicle (not already owned)
         if (p.money > 15000 && Math.random() < (personality.buyChance * 0.3)) {
-            const affordable = VEHICLE_POOL.filter(v => v.price <= p.money * 0.4 && !ownedIds.includes(v.id));
+            const affordable = VEHICLE_POOL.filter(v => Math.floor(v.price * vehiclePriceMod) <= p.money * 0.4 && !ownedIds.includes(v.id));
             if (affordable.length > 0) {
                 const pick = affordable[Math.floor(Math.random() * Math.min(3, affordable.length))];
-                p.money -= pick.price;
+                p.money -= Math.floor(pick.price * vehiclePriceMod);
                 p.vehicles.push({...pick});
                 // Equip if none equipped, or if it's better
                 if (!p.vehicle || pick.price > (p.vehicle.price || 0)) {
