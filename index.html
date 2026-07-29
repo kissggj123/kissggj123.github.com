@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9306 -->
+    <!-- VERSION: v7.7.2.9307 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -180,12 +180,15 @@
             font-size: clamp(.85rem, .85rem + .1vw, 1rem); font-weight: 600;
             background: var(--bg); color: var(--text);
             line-height: 1.6; overflow: hidden;
-            /* Unified text selection: disabled globally, opt-in via .selectable */
-            user-select: none; -webkit-user-select: none; -moz-user-select: none;
-            -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent;
         }
-        /* Allowlist: elements where text selection is permitted */
-        .selectable, input, textarea, .mono-log, #changelog-content, #about-version .selectable {
+        /* Unified text selection: disabled when .no-select is on body, opt-in via .selectable */
+        body.no-select {
+            user-select: none; -webkit-user-select: none; -moz-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        /* Allowlist: elements where text selection is always permitted */
+        .selectable, input, textarea, .mono-log, #changelog-content {
             user-select: text; -webkit-user-select: text; -moz-user-select: text;
             -webkit-touch-callout: default;
         }
@@ -880,7 +883,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9306</div>
+                <div class="subtitle">v7.7.2.9307</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1104,6 +1107,10 @@
                         <span>鼠标光效跟随</span>
                         <div class="toggle on" id="mouse-toggle" onclick="toggleMouseBunny()"></div>
                     </div>
+                    <div class="setting-row">
+                        <span>禁用文本选中</span>
+                        <div class="toggle on" id="text-select-toggle" onclick="toggleTextSelect()"></div>
+                    </div>
                     <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
                         <span style="font-size:.85rem;">🎮 连点触发彩蛋</span>
                         <div class="toggle" id="egg-click-toggle" onclick="toggleEggClickTrigger()"></div>
@@ -1158,7 +1165,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9306</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9307</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1224,7 +1231,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9306',
+        VERSION: 'v7.7.2.9307',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1925,6 +1932,7 @@
         const safe = (fn) => { try { fn(); } catch(e) { console.error(e); } };
         safe(loadFontScale);
         safe(loadTheme);
+        safe(loadTextSelectPref);
         safe(initMonopoly);
         safe(initCardSystem);
         safe(initPWA);
@@ -1987,7 +1995,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9306 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9307 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -7806,7 +7814,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9306 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9307 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -8340,6 +8348,24 @@
         }
     }
 
+    /* ---- Text selection toggle ---- */
+    let textSelectDisabled = true;
+    function loadTextSelectPref() {
+        textSelectDisabled = localStorage.getItem('textSelectDisabled') !== '0';
+        applyTextSelect();
+    }
+    function applyTextSelect() {
+        document.body.classList.toggle('no-select', textSelectDisabled);
+        const t = document.getElementById('text-select-toggle');
+        if (t) t.classList.toggle('on', textSelectDisabled);
+    }
+    function toggleTextSelect() {
+        textSelectDisabled = !textSelectDisabled;
+        localStorage.setItem('textSelectDisabled', textSelectDisabled ? '1' : '0');
+        applyTextSelect();
+        logEvent(textSelectDisabled ? '📝 已禁用文本选中' : '📝 已启用文本选中', 'info');
+    }
+
     function toggleFullscreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen?.();
@@ -8603,6 +8629,7 @@
         if (view === 'logs') renderEvents();
         if (view === 'settings' && godModeActive) renderGodPanel();
         if (view === 'settings') renderSaveSlots();
+        if (view === 'settings' && typeof updateNotifyBtn === 'function') updateNotifyBtn();
     }
 
     function handleLogoClick() {
@@ -9403,42 +9430,11 @@
         recordEggClick(Date.now());
     }, { passive: true });
 
-    // Non-passive pointerdown on avatar/sidebar-logo to prevent text selection of emoji
-    document.addEventListener('pointerdown', function(e) {
-        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
-            // Prevent default to stop browser from starting text selection on rapid clicks
-            e.preventDefault();
-            // Clear any existing selection
-            if (window.getSelection) {
-                window.getSelection().removeAllRanges();
-            }
-        }
-    }, { passive: false });
-
-    // Also prevent selectstart on sidebar-logo area
-    document.addEventListener('selectstart', function(e) {
-        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
-            e.preventDefault();
-        }
-    });
-
-    // Prevent mousedown from starting selection on avatar area (catches dblclick selection)
-    document.addEventListener('mousedown', function(e) {
-        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
-            e.preventDefault();
-            if (window.getSelection) window.getSelection().removeAllRanges();
-        }
-    }, { passive: false });
-
-    // Prevent dblclick from selecting text on avatar
-    document.addEventListener('dblclick', function(e) {
-        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
-            e.preventDefault();
-            if (window.getSelection) window.getSelection().removeAllRanges();
-        }
-    }, { passive: false });
-
-    // Prevent context menu on avatar (right-click selection)
+    // Text selection on sidebar avatar is now handled by global body.no-select CSS class.
+    // The previous non-passive pointerdown/mousedown/selectstart/dblclick handlers that called
+    // e.preventDefault() were REMOVED because they blocked click events on rapid taps,
+    // preventing handleLogoClick() and the avatar particle burst effect from firing.
+    // Only keep contextmenu prevention for the avatar image (long-press on mobile)
     document.addEventListener('contextmenu', function(e) {
         if (e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
             e.preventDefault();
@@ -10330,19 +10326,14 @@
                 </div>`;
         }
 
-        const modal = document.getElementById('modal-content');
-        if (modal) {
-            modal.innerHTML = `
-                <div class="modal-drag-handle" style="margin:0 auto .8rem;"></div>
-                <h3 style="margin:0 0 1rem;text-align:center;">📲 安装兔可可王国</h3>
-                ${instructions}
-                <div style="display:flex;gap:.5rem;margin-top:1rem;">
-                    <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">关闭</button>
-                </div>`;
-            document.getElementById('modal-overlay').classList.add('show');
-        } else {
-            monoLog('请使用浏览器菜单"添加到主屏幕"手动安装', 'info');
-        }
+        const modalHtml = `
+            <div class="modal-drag-handle" style="margin:0 auto .8rem;"></div>
+            <h3 style="margin:0 0 1rem;text-align:center;">📲 安装兔可可王国</h3>
+            ${instructions}
+            <div style="display:flex;gap:.5rem;margin-top:1rem;">
+                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">关闭</button>
+            </div>`;
+        showModalContent(modalHtml);
 
         // Also dismiss the banner
         const banner = document.getElementById('pwa-install-banner');
@@ -10361,6 +10352,27 @@
         // Permission will be requested when user opts in via settings
     }
 
+    function updateNotifyBtn() {
+        const btn = document.getElementById('notify-toggle-btn');
+        if (!btn) return;
+        if (!('Notification' in window)) {
+            btn.textContent = '不支持';
+            btn.disabled = true;
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            btn.textContent = '✅ 已开启';
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-primary');
+        } else if (Notification.permission === 'denied') {
+            btn.textContent = '❌ 已屏蔽';
+            btn.disabled = true;
+        } else {
+            btn.textContent = '开启';
+            btn.disabled = false;
+        }
+    }
+
     async function subscribePushNotifications() {
         if (!('Notification' in window)) {
             monoLog('当前浏览器不支持通知', 'error');
@@ -10368,6 +10380,7 @@
         }
         if (Notification.permission === 'granted') {
             monoLog('通知已开启', 'success');
+            updateNotifyBtn();
             return;
         }
         if (Notification.permission === 'denied') {
@@ -10377,6 +10390,7 @@
         const perm = await Notification.requestPermission();
         if (perm === 'granted') {
             monoLog('✅ 通知已开启，将在重要事件时提醒你', 'success');
+            updateNotifyBtn();
             // Send a test notification
             try {
                 const reg = await navigator.serviceWorker.ready;
@@ -10420,6 +10434,13 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.7.2.9307', title:'文本选中开关 & 头像特效修复 & 通知按钮状态 & PWA弹窗修复', items:[
+            '📝 文本选中开关：设置面板新增「禁用文本选中」开关，支持动态切换body.no-select CSS类',
+            '✨ 头像特效修复：移除阻塞click事件的pointerdown/mousedown/selectstart/dblclick preventDefault处理器，连点头像华丽特效恢复正常',
+            '🔔 通知按钮状态：回合通知按钮根据权限状态显示「开启/已开启/已屏蔽/不支持」，进入设置页自动刷新',
+            '📲 PWA弹窗修复：installPWA改用showModalContent()统一弹窗，防止弹窗叠加竞态问题',
+            '🔒 防选中保留：仅保留contextmenu防护（移动端长按），CSS user-select:none由body.no-select统一控制',
+        ]},
         { ver:'v7.7.2.9306', title:'性能优化 & 4新光轨主题 & 骇客防火墙一致性 & 统一文本选中', items:[
             '⚡ 性能优化：dirty flags条件渲染系统，跳过未变更的子组件；renderMonoMap预构建位置→玩家Map避免O(tiles×players)遍历；trailConfig缓存避免每帧getComputedStyle',
             '🎨 4新光轨主题：极光绿(aurora)、银河紫(galaxy)、糖果粉(candy)、矩阵绿(matrix)，各有独特粒子效果和绘制风格',
