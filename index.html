@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9294 -->
+    <!-- VERSION: v7.7.2.9295 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -748,7 +748,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9294</div>
+                <div class="subtitle">v7.7.2.9295</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -993,7 +993,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9294</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9295</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1059,7 +1059,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9294',
+        VERSION: 'v7.7.2.9295',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1565,7 +1565,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9294 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9295 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2721,6 +2721,8 @@
     var _fsMapState = { scale: 1, offsetX: 0, offsetY: 0 };
 
     function openFsMap() {
+        // Close modal first to prevent overlap
+        closeModal();
         var overlay = document.getElementById('fs-map-overlay');
         if (!overlay) return;
         overlay.style.display = 'block';
@@ -4176,10 +4178,9 @@
             monoLog(`🚗 购买 ${v.ic} ${v.nm}！已存入车库（可在商店切换装备）`, 'success');
         }
         recordHumanAction('buyVehicle', {vehicleId: vehicleId});
-        showVehicleModal(v);
-        showVehicleShop();
         saveMonopoly();
         renderMonopoly();
+        showVehicleModal(v);
     }
 
     function switchVehicle(vehicleId) {
@@ -4226,7 +4227,7 @@
             <div style="background:var(--card2);padding:.5rem;border-radius:8px;margin:.5rem 0;">
                 <div style="font-size:.8rem;color:var(--accent);">✨ ${v.bonus.label}</div>
             </div>
-            <button class="btn btn-primary" style="width:100%;" onclick="closeModal()">开始驾驶！</button>
+            <button class="btn btn-primary" style="width:100%;" onclick="closeModal(); showVehicleShop();">开始驾驶！</button>
         </div>`);
     }
 
@@ -6524,9 +6525,68 @@
     }
 
     /* ==================== Modal Helpers ==================== */
+    // Global modal lock: prevents overlapping modals from touch+click double-fire
+    let _modalLockUntil = 0;
+    const MODAL_LOCK_MS = 350; // Debounce window to prevent double-open on mobile
+
+    function _isModalLocked() { return performance.now() < _modalLockUntil; }
+    function _lockModal() { _modalLockUntil = performance.now() + MODAL_LOCK_MS; }
+
+    // Unified modal show: closes any existing overlay first, then opens
+    function showModalContent(htmlContent) {
+        // Close any existing overlays to prevent stacking
+        closeModal();
+        // Close fullscreen map if open
+        const fsOverlay = document.getElementById('fs-map-overlay');
+        if (fsOverlay) fsOverlay.style.display = 'none';
+        // Set content and show
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = htmlContent;
+        document.getElementById('modal-overlay').classList.add('show');
+        _lockModal();
+    }
+
+    // Global click guard: suppresses synthetic click events after touch during modal lock
+    // This prevents the mobile touch+click double-fire that causes overlapping panels
+    (function initModalClickGuard() {
+        let _lastTouchEnd = 0;
+        document.addEventListener('touchend', function() { _lastTouchEnd = performance.now(); }, { passive: true, capture: true });
+        // Intercept clicks that happen within 400ms of a touchend AND while modal is locked
+        document.addEventListener('click', function(e) {
+            // If modal is locked and this click is a synthetic follow-up from a touch event, suppress it
+            if (_isModalLocked() && _lastTouchEnd > 0 && performance.now() - _lastTouchEnd < 400) {
+                // Only suppress clicks on modal-opening buttons (those with onclick containing 'show' or 'open')
+                const target = e.target.closest('[onclick]');
+                if (target) {
+                    const handler = target.getAttribute('onclick') || '';
+                    if (/show|open|spread|buy|sell|switch|confirm|repay|draw|useCard|carryCard|locateTile|equip|roll/i.test(handler)) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                }
+            }
+        }, { capture: true });
+
+        // Auto-lock whenever modal becomes visible (catches all modal-opening paths)
+        const modalOverlay = document.getElementById('modal-overlay');
+        if (modalOverlay) {
+            new MutationObserver(function(mutations) {
+                for (const m of mutations) {
+                    if (m.attributeName === 'class' && modalOverlay.classList.contains('show')) {
+                        _lockModal();
+                        break;
+                    }
+                }
+            }).observe(modalOverlay, { attributes: true, attributeFilter: ['class'] });
+        }
+    })();
+
     function closeModal(e) {
         if (e && e.target !== e.currentTarget) return;
         document.getElementById('modal-overlay').classList.remove('show');
+        // Reset modal transform (from bottom-sheet swipe)
+        const modal = document.getElementById('modal-content');
+        if (modal) modal.style.transform = '';
         if (_stockRefreshTimer) {
             clearInterval(_stockRefreshTimer);
             _stockRefreshTimer = null;
@@ -8937,6 +8997,14 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9295</strong> — 移动端窗体重叠修复 & 载具购买流程修复</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📱 移动端点击防重叠：全局modal锁(350ms防抖)+touch/click双触发拦截，防止touch+click导致同一按钮连开两个面板</li>
+                <li>📱 MutationObserver自动锁：任何路径打开modal均触发锁，无需逐个修改</li>
+                <li>🗺️ 全景地图修复：打开前先关闭已有modal，防止两个overlay叠加</li>
+                <li>🚗 载具购买流程修复：购买后先显示庆祝弹窗，关闭后返回商店（原先showVehicleModal被showVehicleShop立即覆盖）</li>
+                <li>🔧 closeModal清理：关闭时重置bottom-sheet的transform样式</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9294</strong> — 新闻电视台系统 & 侧边栏折叠修复 & FAB光轨修复</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>📺 新闻电视台系统：18种新闻事件（牛市/熊市/通胀/加息/科技突破/贸易战等），被动随机播报+主动散播，影响通胀/股市/租金/利率/波动率</li>
