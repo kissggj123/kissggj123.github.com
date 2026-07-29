@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9299 -->
+    <!-- VERSION: v7.7.2.9301 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -148,7 +148,7 @@
             background: var(--bg); color: var(--text);
             line-height: 1.6; overflow: hidden;
         }
-        body.font-pixel { font-family: 'Press Start 2P', monospace; font-size: clamp(.7rem, .7rem + .1vw, .85rem); }
+        html.font-pixel, html.font-pixel body { font-family: 'Press Start 2P', monospace; font-size: clamp(.7rem, .7rem + .1vw, .85rem); }
         @keyframes fadeIn { to { opacity: 1; } }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -232,6 +232,16 @@
         }
         .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; }
         .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; }
+        .sidebar-logo .bunny-icon.avatar-photo {
+            width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden;
+            margin: 0 auto .25rem; display: block; border: 2px solid var(--accent);
+        }
+        .sidebar-logo .bunny-icon.avatar-photo img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .sidebar.collapsed .sidebar-logo .bunny-icon.avatar-photo {
+            width: 1.8rem; height: 1.8rem; margin: 0 auto;
+        }
         .sidebar-logo .title { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
         .sidebar-logo .subtitle { font-size: .7rem; color: var(--text2); }
         .nav-item {
@@ -808,9 +818,9 @@
         <!-- Sidebar (Desktop) -->
         <nav class="sidebar">
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
-                <span class="bunny-icon">🐰</span>
+                <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9299</div>
+                <div class="subtitle">v7.7.2.9301</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1022,6 +1032,13 @@
                         <span>像素字体模式</span>
                         <div class="toggle" id="font-toggle" onclick="togglePixelFont()"></div>
                     </div>
+                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:.85rem;">🐰 侧边栏头像</span>
+                        <div style="display:flex;gap:.3rem;">
+                            <button class="btn btn-sm" id="avatar-emoji-btn" style="font-size:.7rem;padding:.2rem .5rem;" onclick="setSidebarAvatar('emoji')">🐰 Emoji</button>
+                            <button class="btn btn-sm" id="avatar-photo-btn" style="font-size:.7rem;padding:.2rem .5rem;" onclick="setSidebarAvatar('photo')">📷 照片</button>
+                        </div>
+                    </div>
                     <div class="setting-row">
                         <span>鼠标光效跟随</span>
                         <div class="toggle on" id="mouse-toggle" onclick="toggleMouseBunny()"></div>
@@ -1146,7 +1163,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9299',
+        VERSION: 'v7.7.2.9301',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1720,7 +1737,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9299 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9301 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2048,18 +2065,18 @@
         const newsEffects = getActiveNewsEffects();
 
         return {
-            inflation: 0.03 + (avgMoney / 50000) * 0.05 + (Math.random() - 0.5) * 0.02 + ts.inflationDelta + newsEffects.inflation,
-            loanRateBase: 0.06 + (mono.turn / 100) * 0.04 + (Math.random() - 0.5) * 0.03 + newsEffects.loanRateDelta,
+            inflation: Math.max(0, 0.03 + (avgMoney / 50000) * 0.05 + (Math.random() - 0.5) * 0.02 + ts.inflationDelta + newsEffects.inflation),
+            loanRateBase: Math.max(0.02, 0.06 + (mono.turn / 100) * 0.04 + (Math.random() - 0.5) * 0.03 + newsEffects.loanRateDelta),
             mortgageRatio: 0.5 + (Math.random() - 0.5) * 0.15,
-            creditMultiplier: 100 + (progressFactor * 100) + (Math.random() - 0.5) * 30,
-            maxDebtRatio: 0.6 + (Math.random() - 0.5) * 0.2,
-            rentMultiplier: (0.9 + (mono.turn / 200) + (Math.random() - 0.5) * 0.3) * ts.rentMultiplier * newsEffects.rentMultiplier,
-            propertyPriceMultiplier: 1 + (progressFactor * 0.5) + (0.03 + (avgMoney / 50000) * 0.05),
-            blackSwanChance: 0.02 + bankruptCount * 0.01 + ts.blackSwanBonus,
+            creditMultiplier: Math.max(50, 100 + (progressFactor * 100) + (Math.random() - 0.5) * 30),
+            maxDebtRatio: Math.max(0.3, 0.6 + (Math.random() - 0.5) * 0.2),
+            rentMultiplier: Math.max(0.1, (0.9 + (mono.turn / 200) + (Math.random() - 0.5) * 0.3) * ts.rentMultiplier * newsEffects.rentMultiplier),
+            propertyPriceMultiplier: Math.max(0.5, 1 + (progressFactor * 0.5) + (0.03 + (avgMoney / 50000) * 0.05)),
+            blackSwanChance: Math.min(0.15, 0.02 + bankruptCount * 0.01 + ts.blackSwanBonus),
             timePhase: ts.phase,
             timePhaseIcon: ts.phaseIcon,
             isWeekend: ts.isWeekend,
-            stockVolatilityMult: ts.stockVolatilityMult * newsEffects.volatility,
+            stockVolatilityMult: Math.max(0.1, Math.min(3, ts.stockVolatilityMult * newsEffects.volatility)),
             eventChanceMult: ts.eventChanceMult,
             newsStockTrend: newsEffects.stockTrend,
             newsSectorBoosts: newsEffects.sectorBoosts,
@@ -2157,6 +2174,8 @@
     function generatePassiveNews() {
         if (newsState.passiveCooldown > 0) return null;
         if (!mono.started) return null;
+        // Limit maximum active news to prevent unbounded stacking
+        if (newsState.active.length >= 5) return null;
         const ts = getTimeSystemState();
         const baseChance = 0.12 * ts.eventChanceMult;
         if (Math.random() > baseChance) return null;
@@ -2168,6 +2187,8 @@
             r -= n.weight;
             if (r <= 0) { selected = n; break; }
         }
+        // Prevent duplicate: skip if same news already active
+        if (newsState.active.some(a => a.newsId === selected.id)) return null;
         newsState.active.push({
             newsId: selected.id,
             turnsLeft: selected.duration,
@@ -2197,6 +2218,15 @@
         }
         const news = NEWS_EVENTS[newsIndex];
         if (!news) return;
+        // Prevent duplicate active news and enforce max limit
+        if (newsState.active.some(a => a.newsId === news.id)) {
+            monoLog(`📰 ${news.title} 已在传播中，无法重复散播`, 'error');
+            return;
+        }
+        if (newsState.active.length >= 5) {
+            monoLog(`📰 当前新闻过多，等待部分新闻过期后再散播`, 'error');
+            return;
+        }
         p.money -= cost;
         newsState.active.push({
             newsId: news.id,
@@ -2297,8 +2327,8 @@
         const inflationMultiplier = 1 + economy.inflation;
         const randomFactor = 0.9 + Math.random() * 0.2;
         const ownerProps = mono.tiles.filter((t, i) => t.type === 'property' && mono.properties[i].owner === prop.owner).length;
-        const monopolyDiscount = 1 - ownerProps * 0.01;
-        return Math.floor(base * inflationMultiplier * randomFactor * monopolyDiscount * economy.rentMultiplier);
+        const monopolyDiscount = Math.max(0.5, 1 - Math.min(ownerProps, 50) * 0.01); // Clamp: max 50% discount, never negative
+        return Math.max(0, Math.floor(base * inflationMultiplier * randomFactor * monopolyDiscount * economy.rentMultiplier));
     }
 
     function generateAllTiles() {
@@ -2618,6 +2648,8 @@
         renderMonoStats();
         renderStockPortfolio();
         renderMonoOverview();
+        // Clear any stale player card tooltip after re-render (DOM elements replaced, mouseleave lost)
+        hidePlayerCardTooltip();
     }
 
     function renderMonoPlayers() {
@@ -2650,6 +2682,7 @@
         const p = mono.players[playerIdx];
         if (!p || p.bankrupt) return;
         hidePlayerCardTooltip(); // Remove any existing tooltip
+        _scheduleTooltipAutoDismiss(); // Safety: auto-dismiss after 8s
         const tooltip = document.createElement('div');
         tooltip.id = 'player-card-tooltip';
         tooltip.style.cssText = 'position:fixed;z-index:10000;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.6rem;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:280px;max-height:320px;overflow-y:auto;font-size:.75rem;pointer-events:none;';
@@ -2693,6 +2726,24 @@
     function hidePlayerCardTooltip() {
         const tooltip = document.getElementById('player-card-tooltip');
         if (tooltip) tooltip.remove();
+    }
+
+    // Global safety: dismiss tooltip on any click outside player cards
+    document.addEventListener('click', function(e) {
+        const tooltip = document.getElementById('player-card-tooltip');
+        if (!tooltip) return;
+        // If click is not on a player card, remove tooltip
+        const playerCard = e.target.closest('.mono-player');
+        if (!playerCard) hidePlayerCardTooltip();
+    }, true);
+
+    // Safety timeout: auto-dismiss tooltip after 8 seconds if it somehow persists
+    let _tooltipSafetyTimer = null;
+    function _scheduleTooltipAutoDismiss() {
+        if (_tooltipSafetyTimer) clearTimeout(_tooltipSafetyTimer);
+        _tooltipSafetyTimer = setTimeout(function() {
+            hidePlayerCardTooltip();
+        }, 8000);
     }
 
     function locatePlayer(idx) {
@@ -3383,8 +3434,9 @@
             el.innerHTML = '<div style="font-size:.7rem;color:var(--text2);">背包为空，去首页抽卡吧！</div>';
             return;
         }
-        el.innerHTML = cardInventory.map((c, i) =>
-            `<div class="mono-card-item" onclick="showCardDetailPopup(${i})" title="${c.desc}">
+        el.innerHTML = '<div style="font-size:.65rem;color:var(--text2);margin-bottom:.2rem;">单击查看 · 双击快速移到手牌</div>' +
+            cardInventory.map((c, i) =>
+            `<div class="mono-card-item" onclick="handleCardInventoryClick(${i})" title="${c.desc}">
                 <span>${c.ic}</span>
                 <span style="font-size:.5rem;font-weight:700;color:${RARITY_COLORS[c.rarity]};">${c.n}</span>
                 <span class="mc-desc">${c.desc}</span>
@@ -3584,6 +3636,7 @@
 
     function movePlayer(playerIdx, steps) {
         const p = mono.players[playerIdx];
+        if (!p || p.bankrupt) { nextTurn(); return; }
         const oldPos = p.pos;
         const total = getUnlockedTileCount();
         // Handle backward movement (confused effect) — wrap around correctly
@@ -3613,7 +3666,9 @@
 
     function triggerTile(playerIdx) {
         const p = mono.players[playerIdx];
+        if (!p || p.bankrupt) { nextTurn(); return; }
         const tile = mono.tiles[p.pos];
+        if (!tile) { nextTurn(); return; }
         // Clear pending action — tile trigger has started
         mono.pendingAction = null;
         saveMonopoly();
@@ -6124,7 +6179,7 @@
     /* Resume AI turn after trade response */
     function continueAiTurn(idx) {
         const p = mono.players[idx];
-        if (p.bankrupt) { nextTurn(); return; }
+        if (!p || p.bankrupt) { nextTurn(); return; }
         const personality = AI_PERSONALITIES[p.personality];
 
         // Use card?
@@ -6514,6 +6569,7 @@
                 if (p && !p.bankrupt) {
                     mono.pendingAction = null;
                     mono.rolling = false;
+                    mono.pendingTrade = false; // Clear trade state to prevent stuck
                     // Close any stuck modals
                     closeModal();
                     saveMonopoly();
@@ -6688,7 +6744,7 @@
     function aiTurn() {
         const idx = mono.currentPlayer;
         const p = mono.players[idx];
-        if (p.bankrupt) { nextTurn(); return; }
+        if (!p || p.bankrupt) { nextTurn(); return; }
         // Clear pending action — AI turn has started
         mono.pendingAction = null;
         saveMonopoly();
@@ -7084,7 +7140,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9299 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9301 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -7454,6 +7510,35 @@
         if (mt) { if (mouseBunnyEnabled) mt.classList.add('on'); else mt.classList.remove('on'); }
         const ect = document.getElementById('egg-click-toggle');
         if (ect) { if (localStorage.getItem('eggClickTrigger') !== '0') ect.classList.add('on'); else ect.classList.remove('on'); }
+        // Load sidebar avatar preference
+        loadSidebarAvatar();
+    }
+
+    // Sidebar avatar: switch between emoji and photo
+    function loadSidebarAvatar() {
+        const mode = localStorage.getItem('sidebarAvatar') || 'emoji';
+        applySidebarAvatar(mode);
+    }
+    function applySidebarAvatar(mode) {
+        const container = document.getElementById('sidebar-avatar-container');
+        const emojiBtn = document.getElementById('avatar-emoji-btn');
+        const photoBtn = document.getElementById('avatar-photo-btn');
+        if (!container) return;
+        if (mode === 'photo') {
+            container.className = 'bunny-icon avatar-photo';
+            container.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" onerror="this.parentElement.className=\'bunny-icon\';this.parentElement.textContent=\'🐰\'">';
+            if (emojiBtn) emojiBtn.classList.remove('btn-primary');
+            if (photoBtn) photoBtn.classList.add('btn-primary');
+        } else {
+            container.className = 'bunny-icon';
+            container.textContent = '🐰';
+            if (emojiBtn) emojiBtn.classList.add('btn-primary');
+            if (photoBtn) photoBtn.classList.remove('btn-primary');
+        }
+    }
+    function setSidebarAvatar(mode) {
+        localStorage.setItem('sidebarAvatar', mode);
+        applySidebarAvatar(mode);
     }
 
     function initThemeGrid() {
@@ -9387,6 +9472,18 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9301</strong> — 像素字体修复 & 卡牌双击 & 头像名片 & 侧边栏照片 & 机制缺陷修复</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🎨 像素字体修复：CSS选择器从body.font-pixel改为html.font-pixel，与JS的document.documentElement匹配</li>
+                <li>🃏 大富翁背包双击：tab页卡牌背包也支持双击快速移到手牌，与首页统一交互</li>
+                <li>👤 头像名片修复：renderMonopoly后自动清理tooltip，添加全局click监听和8秒安全超时</li>
+                <li>🐰 侧边栏头像选项：新增设置切换emoji/兔可可照片，照片加载失败自动回退emoji</li>
+                <li>🏠 租金折扣修复：垄断折扣clamp到0.5-1.0范围，防止房产过多导致负租金</li>
+                <li>📰 新闻叠加修复：限制最多5条活跃新闻，防止重复散播，防止效果无限叠加</li>
+                <li>⏰ 看门狗修复：AI超时强制恢复时清除pendingTrade状态，防止交易卡死</li>
+                <li>🛡️ 空指针安全：aiTurn/continueAiTurn/movePlayer/triggerTile添加null检查</li>
+                <li>📊 经济参数clamp：通胀/租金/波动率/黑天鹅等参数添加上下限，防止极端值</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9299</strong> — UI修复 & GPU检测 & 卡牌双击 & 移动端FPS</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🎯 行动按钮布局修复：改用CSS Grid自适应布局，解决高分辨率下按钮错位/拥挤问题</li>
