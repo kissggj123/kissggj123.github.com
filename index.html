@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9309 -->
+    <!-- VERSION: v7.7.2.9310 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -440,6 +440,12 @@
         .mono-ring-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 10; }
         .mono-ring-dot.current { animation: ringPulse 1s ease infinite; }
         @keyframes ringPulse { 50% { transform: translate(-50%, -50%) scale(1.4); box-shadow: 0 0 8px currentColor; } }
+        /* Mobile: replace infinite pulse with steady glow to prevent flickering */
+        html.touch-device .mono-ring-dot.current {
+            animation: none;
+            transform: translate(-50%, -50%) scale(1.3);
+            box-shadow: 0 0 10px currentColor, 0 0 4px #fff;
+        }
         .mono-ring-region {
             position: absolute; border-radius: 50%; opacity: 0.15;
         }
@@ -459,6 +465,16 @@
         .mono-tile-cell:hover { border-color: var(--accent); box-shadow: 0 2px 8px var(--shadow); transform: translateY(-2px); z-index: 10; }
         .mono-tile-cell.current { border-color: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb),.4); animation: tilePulse 1s ease infinite; }
         @keyframes tilePulse { 50% { box-shadow: 0 0 14px rgba(var(--accent-rgb),.5); } }
+        /* Mobile: replace infinite tile pulse with steady glow to prevent flickering */
+        html.touch-device .mono-tile-cell.current {
+            animation: none;
+            box-shadow: 0 0 12px rgba(var(--accent-rgb),.45);
+            border-width: 2px;
+        }
+        html.touch-device .mono-tile-cell.highlighted {
+            animation: none;
+            box-shadow: 0 0 12px rgba(255,152,0,.5);
+        }
         .mono-tile-cell.owned { border-color: var(--good); }
         .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
         .mono-tile-cell.highlighted { border-color: var(--warn); box-shadow: 0 0 12px rgba(255,152,0,.5); animation: tilePulse 0.8s ease 3; }
@@ -927,6 +943,42 @@
                 scroll-behavior: auto !important;
             }
         }
+
+        /* ==================== Mobile-Exclusive Touch Bloom Effect ==================== */
+        /* Independent from PC trail system — lightweight CSS-only bloom at touch points */
+        html.touch-device .touch-bloom {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            border-radius: 50%;
+            opacity: 0;
+            animation: touchBloom 0.6s ease-out forwards;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+        @keyframes touchBloom {
+            0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0.5; }
+            40%  { opacity: 0.35; }
+            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+        }
+        /* Mobile: softer trail canvas opacity for gentler visual */
+        html.touch-device #trail-canvas { opacity: 0.7; }
+        /* Mobile: add subtle glow to active buttons instead of relying on trail */
+        html.touch-device .btn:active {
+            filter: brightness(1.15);
+            transform: scale(0.96);
+        }
+        /* Mobile: gentle bounce for tab switches */
+        html.touch-device .tab-item:active {
+            transform: scale(0.88);
+            transition: transform .08s;
+        }
+        /* Mobile: card tap feedback — subtle lift without trail dependency */
+        html.touch-device .game-card:active,
+        html.touch-device .mono-tile-cell:active {
+            transform: scale(0.97);
+            transition: transform .08s;
+        }
     </style>
     <script>
         // Apply theme immediately before paint to prevent flash/black screen
@@ -988,7 +1040,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9309</div>
+                <div class="subtitle">v7.7.2.9310</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1270,7 +1322,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9309</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9310</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1336,7 +1388,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9309',
+        VERSION: 'v7.7.2.9310',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1953,6 +2005,7 @@
 
     // === Platform detection + Performance adaptive config ===
     const _isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    if (_isMobile) document.documentElement.classList.add('touch-device');
     const _isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const _perfConfig = {
         modalLockMs: _isMobile ? 200 : 80,
@@ -2045,6 +2098,7 @@
         safe(renderChangelog);
         safe(initMouseTrail);
         safe(initAvatarEffect);
+        safe(initMobileTouchBloom);
         safe(startLoop);
     };
 
@@ -2070,9 +2124,85 @@
         try { if (localStorage.getItem('bunny_mono_v1')) localStorage.removeItem('bunny_mono_v1'); } catch(e){}
     }
 
+    /* ==================== Settings Migration ==================== */
+    // Migrates old/legacy preference keys to current key names and normalizes values
+    function migrateSettings() {
+        const migrations = [
+            // Old tab bar keys → tabBarMode
+            { oldKeys: ['bunny_tab_bar_hidden', 'tabBarHidden', 'hideTabBar'], newKey: 'tabBarMode',
+              transform: (v) => v === '1' || v === 'true' || v === 'yes' ? 'hidden' : 'always' },
+            { oldKeys: ['bunny_tab_bar_mode'], newKey: 'tabBarMode', transform: (v) => v },
+            // Old sidebar keys → sidebarCollapsed
+            { oldKeys: ['bunny_sidebar_collapsed', 'sidebarHidden'], newKey: 'sidebarCollapsed',
+              transform: (v) => v === '1' || v === 'true' ? 'locked-collapsed' : 'auto' },
+            // Old theme key
+            { oldKeys: ['bunny_theme', 'bunny_cc_theme'], newKey: 'theme', transform: (v) => v },
+            // Old mouse trail toggle
+            { oldKeys: ['bunny_mouse_trail', 'mouseTrail'], newKey: 'mouseBunny',
+              transform: (v) => v === '0' || v === 'false' ? '0' : '1' },
+            // Old font scale key
+            { oldKeys: ['bunny_font_scale', 'fontScaleVal'], newKey: 'fontScale', transform: (v) => v },
+            // Old map size key
+            { oldKeys: ['bunny_map_size'], newKey: 'mapSizePref', transform: (v) => v },
+            // Old text select key
+            { oldKeys: ['bunny_text_select'], newKey: 'textSelectDisabled',
+              transform: (v) => v === '0' || v === 'false' ? '0' : '1' },
+            // Old pixel font key
+            { oldKeys: ['bunny_pixel_font'], newKey: 'pixelFont', transform: (v) => v },
+            // Old dice multiplier key
+            { oldKeys: ['bunny_dice_mult'], newKey: 'diceMultiplierPref', transform: (v) => v },
+            // Old egg click trigger key
+            { oldKeys: ['bunny_egg_click'], newKey: 'eggClickTrigger', transform: (v) => v },
+            // Old sidebar avatar key
+            { oldKeys: ['bunny_sidebar_avatar'], newKey: 'sidebarAvatar', transform: (v) => v },
+            // Old player count key
+            { oldKeys: ['bunny_player_count'], newKey: 'playerCountPref', transform: (v) => v },
+        ];
+        let migrated = 0;
+        for (const m of migrations) {
+            try {
+                // Skip if new key already exists
+                if (localStorage.getItem(m.newKey) !== null) continue;
+                for (const oldKey of m.oldKeys) {
+                    const oldVal = localStorage.getItem(oldKey);
+                    if (oldVal !== null) {
+                        const newVal = m.transform(oldVal);
+                        localStorage.setItem(m.newKey, newVal);
+                        localStorage.removeItem(oldKey);
+                        console.log(`[Settings Migration] ${oldKey}="${oldVal}" → ${m.newKey}="${newVal}"`);
+                        migrated++;
+                        break;
+                    }
+                }
+            } catch(e) {}
+        }
+        // Also normalize tabBarMode values: old 'hide' → 'hidden'
+        try {
+            const tbm = localStorage.getItem('tabBarMode');
+            if (tbm === 'hide' || tbm === 'collapsed') {
+                localStorage.setItem('tabBarMode', 'hidden');
+                migrated++;
+            }
+        } catch(e) {}
+        // Normalize sidebarCollapsed: old 'collapsed' → 'locked-collapsed'
+        try {
+            const sbc = localStorage.getItem('sidebarCollapsed');
+            if (sbc === 'collapsed' || sbc === 'hidden') {
+                localStorage.setItem('sidebarCollapsed', 'locked-collapsed');
+                migrated++;
+            }
+            if (sbc === 'expanded' || sbc === 'open') {
+                localStorage.setItem('sidebarCollapsed', 'locked-open');
+                migrated++;
+            }
+        } catch(e) {}
+        if (migrated > 0) console.log(`[Settings Migration] ${migrated} setting(s) migrated`);
+    }
+
     /* ==================== Monopoly: Initialization ==================== */
     function initMonopoly() {
         migrateSaveKey();
+        migrateSettings();
         const saved = safeGetItem(CONFIG.MONO_SAVE_KEY, '');
         if (saved) {
             try { mono = JSON.parse(saved); validateMono(); }
@@ -2100,7 +2230,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9309 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9310 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -7963,7 +8093,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9309 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9310 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -8468,6 +8598,7 @@
         document.documentElement.setAttribute('data-theme', id);
         initThemeGrid();
         if (typeof _invalidateTrailCache === 'function') _invalidateTrailCache();
+        if (typeof _invalidateBloomCache === 'function') _invalidateBloomCache();
         logEvent(`🎨 切换主题：${CONFIG.THEMES.find(t => t.id === id)?.name || id}`, 'info');
     }
 
@@ -9197,12 +9328,30 @@
                 if (!raw) { hideLoading(); showToast('该存档为空', 'error'); return; }
                 const data = JSON.parse(raw);
                 if (!data.tiles || !data.players) { hideLoading(); showToast('存档损坏', 'error'); return; }
-                // Validate tile count
+                // Attempt tile count migration instead of refusing
                 const expected = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
                 if (data.tiles.length !== expected) {
-                    hideLoading();
-                    showToast('存档与当前地图不兼容', 'error');
-                    return;
+                    console.warn(`[loadSaveSlot] Tile count mismatch: save=${data.tiles.length}, expected=${expected}. Migrating...`);
+                    const oldTiles = data.tiles;
+                    const oldProps = data.properties;
+                    // Rebuild tiles with current map configuration
+                    data.tiles = generateAllTiles();
+                    // Rebuild properties array, preserving old ownership where positions overlap
+                    data.properties = data.tiles.map(t => t.type === 'property' ? {owner:-1, level:0, mortgaged:false} : null);
+                    if (oldProps) {
+                        for (let i = 0; i < Math.min(oldProps.length, data.properties.length); i++) {
+                            if (oldProps[i] && data.properties[i]) {
+                                data.properties[i].owner = oldProps[i].owner ?? -1;
+                                data.properties[i].level = oldProps[i].level ?? 0;
+                                data.properties[i].mortgaged = oldProps[i].mortgaged ?? false;
+                            }
+                        }
+                    }
+                    // Reset player positions to valid range
+                    data.players.forEach(p => {
+                        if (p.pos >= data.tiles.length) p.pos = 0;
+                    });
+                    logEvent(`📂 存档迁移：地图从${oldTiles.length}格→${data.tiles.length}格，玩家数据已保留`, 'info');
                 }
                 delete data._savedAt;
                 mono = data;
@@ -9216,7 +9365,6 @@
                 hideLoading();
                 showToast(`✓ 已读取存档 ${slot+1} — 全岛 第${mono.turn}回合`, 'success');
                 logEvent(`✓ 已读取存档 ${slot+1} — 全岛 第${mono.turn}回合`, 'success');
-                // Switch to game view
                 navigateTo('monopoly');
             } catch(e) {
                 hideLoading();
@@ -9742,6 +9890,61 @@
             setTimeout(() => { isDragging = false; }, 50);
         });
     })();
+
+    /* ==================== Mobile Touch Bloom — Independent from PC Trail ==================== */
+    // Lightweight CSS-only bloom effect at touch points, no Canvas/RAF overhead
+    let _bloomColorCache = null;
+    let _bloomColorTheme = null;
+    function _getBloomColor() {
+        const theme = document.documentElement.getAttribute('data-theme') || '';
+        if (_bloomColorCache && _bloomColorTheme === theme) return _bloomColorCache;
+        _bloomColorTheme = theme;
+        const cs = getComputedStyle(document.documentElement);
+        _bloomColorCache = (cs.getPropertyValue('--accent') || '').trim() || '#FF6B9D';
+        return _bloomColorCache;
+    }
+    function _invalidateBloomCache() { _bloomColorCache = null; _bloomColorTheme = null; }
+
+    function initMobileTouchBloom() {
+        if (!_isMobile) return; // Only on touch devices
+        let _lastBloomTime = 0;
+        const BLOOM_THROTTLE_MS = 80; // Throttle to prevent too many blooms
+        const BLOOM_SIZE = 40;
+
+        function spawnBloom(x, y) {
+            const now = performance.now();
+            if (now - _lastBloomTime < BLOOM_THROTTLE_MS) return;
+            _lastBloomTime = now;
+            const color = _getBloomColor();
+            const bloom = document.createElement('div');
+            bloom.className = 'touch-bloom';
+            bloom.style.left = x + 'px';
+            bloom.style.top = y + 'px';
+            bloom.style.width = BLOOM_SIZE + 'px';
+            bloom.style.height = BLOOM_SIZE + 'px';
+            bloom.style.background = `radial-gradient(circle, ${color}40 0%, ${color}10 50%, transparent 70%)`;
+            bloom.style.border = `1.5px solid ${color}60`;
+            document.body.appendChild(bloom);
+            // Auto-remove after animation
+            setTimeout(() => { if (bloom.parentNode) bloom.parentNode.removeChild(bloom); }, 650);
+        }
+
+        // Listen to touchstart for bloom at touch point
+        document.addEventListener('touchstart', (e) => {
+            if (!e.touches[0]) return;
+            // Don't spawn bloom on FAB or egg controls
+            const t = e.target;
+            if (t.closest('#egg-fab') || t.closest('#egg-whiteout') || t.closest('.egg-painting')) return;
+            spawnBloom(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+
+        // Also bloom on pointerdown for hybrid devices
+        document.addEventListener('pointerdown', (e) => {
+            if (e.pointerType !== 'touch') return;
+            if (e.target.closest('#egg-fab') || e.target.closest('#egg-whiteout')) return;
+            spawnBloom(e.clientX, e.clientY);
+        }, { passive: true });
+    }
 
     /* ==================== Mouse Trail — Gorgeous Edition (v5.2华丽版 + v6.0像素兔子) ==================== */
     // Combines the smooth-curve + particle-system algorithm from v5.2
@@ -10992,6 +11195,13 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.7.2.9310', title:'读档迁移 & 移动端闪烁修复 & 触控Bloom特效 & 设置迁移', items:[
+            '📂 读档兼容修复：存档tile数与当前地图不匹配时自动迁移重建地图，保留玩家数据/地产所有权，不再直接拒绝读取',
+            '✨ 移动端闪烁修复：触摸设备用稳定高亮替代无限脉冲动画——玩家圆点用scale(1.3)+steady glow、格子用固定box-shadow，消除地图闪烁',
+            '🌸 移动端触控Bloom特效：独立于PC光轨系统的轻量CSS-only触摸绽放效果，touchstart时在触点生成径向渐变bloom圆圈，80ms节流，主题色自适应',
+            '🔧 设置迁移系统：新增migrateSettings()函数，支持14组旧key→新key迁移（bunny_tab_bar_hidden→tabBarMode等），normalize旧值（hide→hidden, collapsed→locked-collapsed）',
+            '📱 移动端交互优化：按钮brightness(1.15)+scale反馈、tab项弹性按压(0.88)、卡片/tile轻触缩放(0.97)、trail-canvas透明度降至0.7',
+        ]},
         { ver:'v7.7.2.9309', title:'12主题独特可爱签名粒子 & 移动端光轨残留修复', items:[
             '🐾 12主题签名粒子：每套主题新增独一无二可爱特效——兔子脚印(bunny)、像素方块(cyber)、月牙(starlight)、小鱼(ocean)、蝴蝶(rose)、雪花(aurora)、流星(galaxy)、棒棒糖(candy)、橡果(forest)、小太阳(sunset)、薄荷叶(mint)、二进制(matrix)',
             '🔧 移动端光轨残留修复：添加try-catch防止RAF循环因渲染异常停止、时间感知fade替代固定帧fade(移动端更强0.02/frame)、touchend/pointerup后确保RAF继续渐隐、visibilitychange返回页面时清除残留、2s/3.5s双重failsafe强制清除',
