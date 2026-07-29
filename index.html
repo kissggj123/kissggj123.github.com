@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9296 -->
+    <!-- VERSION: v7.7.2.9297 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -748,7 +748,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9296</div>
+                <div class="subtitle">v7.7.2.9297</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -968,6 +968,31 @@
                         <span style="font-size:.85rem;">🎮 连点触发彩蛋</span>
                         <div class="toggle" id="egg-click-toggle" onclick="toggleEggClickTrigger()" style="width:44px;height:24px;background:var(--card2);border-radius:12px;position:relative;cursor:pointer;transition:background var(--transition);"></div>
                     </div>
+                    <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:.85rem;">🗺️ 地图大小</span>
+                            <span id="map-size-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">标准(1248)</span>
+                        </div>
+                        <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('small')">小型(312)</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('medium')">中型(624)</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('standard')">标准(1248)</button>
+                        </div>
+                        <div style="font-size:.6rem;color:var(--text2);">下局新游戏生效</div>
+                    </div>
+                    <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:.85rem;">👥 玩家数量</span>
+                            <span id="player-count-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">随机(4-8)</span>
+                        </div>
+                        <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount('random')">随机</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount(4)">4人</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount(6)">6人</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount(8)">8人</button>
+                        </div>
+                        <div style="font-size:.6rem;color:var(--text2);">下局新游戏生效</div>
+                    </div>
                     <div class="setting-row">
                         <span>全屏模式</span>
                         <button class="btn btn-secondary btn-sm" onclick="toggleFullscreen()">🖥️ 切换</button>
@@ -993,7 +1018,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9296</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9297</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1059,7 +1084,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9296',
+        VERSION: 'v7.7.2.9297',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1565,7 +1590,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9296 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9297 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2149,10 +2174,14 @@
     function generateAllTiles() {
         const tiles = [];
         let tileId = 0;
+        // Get map size preference and calculate region tile counts
+        const mapSizePref = localStorage.getItem('mapSizePref') || 'standard';
+        const targetTotal = MAP_SIZE_PRESETS[mapSizePref]?.total || 1248;
+        const scaleRatio = targetTotal / 1248;
         for (let r = 0; r < MONO_REGIONS.length; r++) {
             const region = MONO_REGIONS[r];
             const names = REGION_PROPERTY_NAMES[r];
-            const count = region.tileCount;
+            const count = Math.max(10, Math.floor(region.tileCount * scaleRatio));
             for (let i = 0; i < count; i++) {
                 const isVeryFirst = tileId === 0;
                 let type;
@@ -2187,9 +2216,12 @@
                 tiles.push(tile);
             }
         }
-        // Add shortcut tiles at regular intervals (every ~208 tiles, like flight chess shortcuts)
-        // Shortcuts teleport players forward by a significant amount
-        const shortcutPositions = [52, 260, 468, 676, 884, 1092]; // 6 shortcuts across the map
+        // Add shortcut tiles at proportional intervals based on map size
+        const shortcutCount = 6;
+        const shortcutPositions = [];
+        for (let s = 0; s < shortcutCount; s++) {
+            shortcutPositions.push(Math.floor((s + 0.5) * tiles.length / shortcutCount));
+        }
         for (const pos of shortcutPositions) {
             if (pos < tiles.length && tiles[pos].type !== 'start') {
                 const targetPos = (pos + 30 + Math.floor(Math.random() * 40)) % tiles.length;
@@ -2241,8 +2273,12 @@
             delete tile.shortcutTarget;
             randomized++;
         }
-        // Re-add shortcut tiles after randomization
-        const shortcutPositions = [52, 260, 468, 676, 884, 1092];
+        // Re-add shortcut tiles after randomization (proportional to map size)
+        const shortcutCount = 6;
+        const shortcutPositions = [];
+        for (let s = 0; s < shortcutCount; s++) {
+            shortcutPositions.push(Math.floor((s + 0.5) * total / shortcutCount));
+        }
         for (const pos of shortcutPositions) {
             if (pos < total && mono.tiles[pos].type !== 'start') {
                 const prop = mono.properties[pos];
@@ -2266,8 +2302,14 @@
         const totalTiles = tiles.length;
         // All players start on the same tile (position 0 — the start tile)
         const startPos = 0;
-        // Random player count: 4-8 players (1 human + 3-7 AI)
-        const aiCount = 3 + Math.floor(Math.random() * 5); // 3 to 7 AI players
+        // Player count: use setting or random (4-8)
+        const playerCountPref = localStorage.getItem('playerCountPref') || 'random';
+        let aiCount;
+        if (playerCountPref === 'random') {
+            aiCount = 3 + Math.floor(Math.random() * 5); // 3 to 7 AI players
+        } else {
+            aiCount = Math.max(2, Math.min(11, parseInt(playerCountPref) - 1)); // -1 for human player
+        }
         // Shuffle EXTRA_PLAYERS and pick aiCount
         const shuffledAi = [...EXTRA_PLAYERS].sort(() => Math.random() - 0.5);
         const selectedAi = shuffledAi.slice(0, aiCount);
@@ -2333,7 +2375,27 @@
         saveMonopoly();
     }
 
+    // Debounced save: prevents excessive localStorage writes during rapid state changes
+    let _saveMonoRafId = null;
+    let _saveMonoPending = false;
     function saveMonopoly() {
+        // If already scheduled, just mark that there's more data to save
+        if (_saveMonoRafId) { _saveMonoPending = true; return; }
+        _saveMonoPending = true;
+        _saveMonoRafId = requestAnimationFrame(() => {
+            _saveMonoRafId = null;
+            if (!_saveMonoPending) return;
+            _saveMonoPending = false;
+            try {
+                localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono));
+                localStorage.setItem('bunny_news_state', JSON.stringify(newsState));
+            } catch(e){}
+        });
+    }
+    // Force immediate save (for critical moments like game start/end)
+    function saveMonopolyNow() {
+        if (_saveMonoRafId) { cancelAnimationFrame(_saveMonoRafId); _saveMonoRafId = null; }
+        _saveMonoPending = false;
         try {
             localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono));
             localStorage.setItem('bunny_news_state', JSON.stringify(newsState));
@@ -2581,28 +2643,49 @@
         const cx = rect.width / 2;
         const cy = rect.height / 2;
         const radius = Math.min(cx, cy) - 10;
-        // Remove old dots and region labels
-        ring.querySelectorAll('.mono-ring-dot, .mono-ring-label').forEach(d => d.remove());
-        // Draw all tile positions as small dots
+
+        // Use a single canvas for tile dots instead of 1248+ DOM elements
+        let ringCanvas = ring.querySelector('#mono-ring-canvas');
+        if (!ringCanvas) {
+            ringCanvas = document.createElement('canvas');
+            ringCanvas.id = 'mono-ring-canvas';
+            ringCanvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
+            ring.insertBefore(ringCanvas, ring.firstChild);
+        }
+        const dpr = window.devicePixelRatio || 1;
+        ringCanvas.width = rect.width * dpr;
+        ringCanvas.height = rect.height * dpr;
+        ringCanvas.style.width = rect.width + 'px';
+        ringCanvas.style.height = rect.height + 'px';
+        const ctx = ringCanvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        // Draw all tile positions as small dots on canvas
+        const typeColors = {start:'#FFD700', property:'#FF6B9D', bank:'#4CAF50', stock:'#2196F3', bonus:'#34D399', penalty:'#F87171', card:'#A78BFA', teleport:'#00BCD4', shortcut:'#FF9800', jail:'#9E9E9E', hospital:'#E91E63', casino:'#FF6B35'};
         for (let i = 0; i < total; i++) {
             const tile = mono.tiles[i];
             if (!tile) continue;
             const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
             const x = cx + radius * Math.cos(angle);
             const y = cy + radius * Math.sin(angle);
-            const dot = document.createElement('div');
-            const typeColors = {start:'#FFD700', property:'#FF6B9D', bank:'#4CAF50', stock:'#2196F3', bonus:'#34D399', penalty:'#F87171', card:'#A78BFA', teleport:'#00BCD4', shortcut:'#FF9800', jail:'#9E9E9E', hospital:'#E91E63', casino:'#FF6B35'};
-            dot.style.cssText = 'position:absolute;width:2px;height:2px;border-radius:50%;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-50%);opacity:.3;background:' + (typeColors[tile.type] || 'var(--text2)');
+            const color = typeColors[tile.type] || '#888';
             if (tile.type === 'shortcut') {
-                dot.style.width = '4px';
-                dot.style.height = '4px';
-                dot.style.opacity = '.8';
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+                ctx.fill();
+            } else {
+                ctx.fillStyle = color + '4D'; // 30% opacity
+                ctx.fillRect(x - 1, y - 1, 2, 2);
             }
-            ring.appendChild(dot);
         }
 
-        // Draw shortcut indicators
-        var shortcutPositions = [52, 260, 468, 676, 884, 1092];
+        // Draw shortcut arcs on canvas
+        var shortcutPositions = [];
+        for (var sc = 0; sc < 6; sc++) { shortcutPositions.push(Math.floor((sc + 0.5) * total / 6)); }
+        ctx.strokeStyle = 'rgba(255,152,0,.3)';
+        ctx.setLineDash([3, 3]);
         for (var si = 0; si < shortcutPositions.length; si++) {
             var spos = shortcutPositions[si];
             if (spos >= total) continue;
@@ -2615,11 +2698,14 @@
             var y1 = cy + radius * Math.sin(startAngle);
             var x2 = cx + radius * Math.cos(endAngle);
             var y2 = cy + radius * Math.sin(endAngle);
-            var arc = document.createElement('div');
-            arc.style.cssText = 'position:absolute;left:' + Math.min(x1,x2) + 'px;top:' + Math.min(y1,y2) + 'px;width:' + Math.abs(x2-x1) + 'px;height:' + Math.abs(y2-y1) + 'px;border:1px dashed rgba(255,152,0,.4);border-radius:50%;pointer-events:none;';
-            ring.appendChild(arc);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
         }
-        // Draw region boundary markers on the ring
+        ctx.setLineDash([]);
+
+        // Draw region boundary markers on canvas
         let tileAcc = 0;
         for (let r = 0; r < MONO_REGIONS.length; r++) {
             const region = MONO_REGIONS[r];
@@ -2627,12 +2713,14 @@
             const angle = (tileAcc / total) * 2 * Math.PI - Math.PI / 2;
             const x = cx + radius * Math.cos(angle);
             const y = cy + radius * Math.sin(angle);
-            const marker = document.createElement('div');
-            marker.className = 'mono-ring-label';
-            marker.style.cssText = `position:absolute;width:3px;height:3px;border-radius:50%;background:${region.color};left:${x}px;top:${y}px;transform:translate(-50%,-50%);opacity:.7;`;
-            ring.appendChild(marker);
+            ctx.fillStyle = region.color;
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, 2 * Math.PI);
+            ctx.fill();
         }
-        // Draw player dots on the ring
+
+        // Draw player dots — use DOM for interactivity (only ~8 elements)
+        ring.querySelectorAll('.mono-ring-dot').forEach(d => d.remove());
         mono.players.forEach((p, i) => {
             if (p.bankrupt) return;
             const angle = (p.pos / total) * 2 * Math.PI - Math.PI / 2;
@@ -2648,6 +2736,7 @@
             dot.onclick = () => locatePlayer(i);
             ring.appendChild(dot);
         });
+
         // Update center text
         if (center) {
             const cp = mono.players[mono.currentPlayer];
@@ -2677,7 +2766,8 @@
             ctx.fillStyle = typeColors[tile.type] || '#888';
             ctx.fillRect(i * tileW, 0, Math.max(1, tileW), rect.height);
         }
-        var shortcutPositions = [52, 260, 468, 676, 884, 1092];
+        var shortcutPositions = [];
+        for (var sc2 = 0; sc2 < 6; sc2++) { shortcutPositions.push(Math.floor((sc2 + 0.5) * total / 6)); }
         for (var pi = 0; pi < shortcutPositions.length; pi++) {
             if (shortcutPositions[pi] < total) {
                 ctx.fillStyle = '#FF9800';
@@ -2783,7 +2873,8 @@
             ctx.fillText(region.name, lx, ly);
         }
         // Shortcut arcs
-        var shortcutPositions = [52, 260, 468, 676, 884, 1092];
+        var shortcutPositions = [];
+        for (var sc3 = 0; sc3 < 6; sc3++) { shortcutPositions.push(Math.floor((sc3 + 0.5) * total / 6)); }
         for (var si2 = 0; si2 < shortcutPositions.length; si2++) {
             var spos2 = shortcutPositions[si2];
             if (spos2 >= total) continue;
@@ -3564,7 +3655,7 @@
     }
 
     function checkBankruptcy(p) {
-        if (p.money < 0) {
+        if (p.money < 0 || (p.money === 0 && getPlayerPropertyValue(p) === 0 && (!p.vehicle) && (!p.vehicles || p.vehicles.length === 0) && (!p.stockHoldings || p.stockHoldings.every(h => h.shares === 0)) && p.loans.length === 0)) {
             // Try to take emergency loan
             const propValue = getPlayerPropertyValue(p);
             const economy = mono.economy || calculateEconomyState();
@@ -6223,6 +6314,30 @@
         if (_aiWatchdog) { clearTimeout(_aiWatchdog); _aiWatchdog = null; }
     }
 
+    // Passive rent: each turn, property owners have a chance to collect small rent from NPC visitors
+    // This addresses the issue where properties are rarely landed on with large maps
+    function processPassiveRent() {
+        if (!mono.started) return;
+        const economy = mono.economy || calculateEconomyState();
+        const rentMultiplier = economy.rentMultiplier || 1;
+        for (let i = 0; i < mono.tiles.length; i++) {
+            const tile = mono.tiles[i];
+            const prop = mono.properties[i];
+            if (!tile || !prop || tile.type !== 'property' || prop.owner < 0 || prop.mortgaged) continue;
+            const owner = mono.players[prop.owner];
+            if (!owner || owner.bankrupt) continue;
+            // 8% chance per property per turn to collect passive rent
+            if (Math.random() < 0.08) {
+                const baseRent = Math.floor(tile.price * (0.12 + (prop.level || 0) * 0.02));
+                const passiveRent = Math.floor(baseRent * 0.3 * rentMultiplier * (0.8 + Math.random() * 0.4));
+                if (passiveRent > 0) {
+                    owner.money += passiveRent;
+                    owner.stats.rentIncomeTotal += passiveRent;
+                }
+            }
+        }
+    }
+
     function nextTurn() {
         _clearWatchdog(); // Previous turn completed successfully
         // Check for extra turn from doubles
@@ -6258,6 +6373,7 @@
         generatePassiveNews();
         // Recalculate dynamic economy state each turn (includes news effects)
         mono.economy = calculateEconomyState();
+        processPassiveRent();
         // Random stock market fluctuation each turn (influenced by economy)
         const economyInfluence = (mono.economy.inflation - 0.03) * 50;
         const fluct = (Math.random() - 0.45) * 15 + economyInfluence;
@@ -6748,7 +6864,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9296 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9297 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -7161,6 +7277,33 @@
         const valEl = document.getElementById('font-scale-val');
         if (valEl) valEl.textContent = pct + '%';
     }
+
+    /* ---- Map size & player count settings ---- */
+    const MAP_SIZE_PRESETS = {
+        small: { name: '小型', total: 312, label: '小型(312)' },
+        medium: { name: '中型', total: 624, label: '中型(624)' },
+        standard: { name: '标准', total: 1248, label: '标准(1248)' },
+    };
+    function setMapSize(size) {
+        localStorage.setItem('mapSizePref', size);
+        const preset = MAP_SIZE_PRESETS[size] || MAP_SIZE_PRESETS.standard;
+        const valEl = document.getElementById('map-size-val');
+        if (valEl) valEl.textContent = preset.label;
+    }
+    function setPlayerCount(count) {
+        if (count !== 'random') count = parseInt(count);
+        localStorage.setItem('playerCountPref', String(count));
+        const valEl = document.getElementById('player-count-val');
+        if (valEl) valEl.textContent = count === 'random' ? '随机(4-8)' : count + '人';
+    }
+    function loadGameSettings() {
+        const mapSize = localStorage.getItem('mapSizePref') || 'standard';
+        const playerCount = localStorage.getItem('playerCountPref') || 'random';
+        const mapEl = document.getElementById('map-size-val');
+        if (mapEl) { const p = MAP_SIZE_PRESETS[mapSize] || MAP_SIZE_PRESETS.standard; mapEl.textContent = p.label; }
+        const pcEl = document.getElementById('player-count-val');
+        if (pcEl) { const pc = playerCount === 'random' ? '随机(4-8)' : playerCount + '人'; pcEl.textContent = pc; }
+    }
     function loadFontScale() {
         const saved = parseInt(localStorage.getItem('fontScale')) || 100;
         setFontScale(saved);
@@ -7170,6 +7313,7 @@
         if (tbSelect) tbSelect.value = localStorage.getItem('tabBarMode') || 'always';
         const sbSelect = document.getElementById('sidebar-mode-select');
         if (sbSelect) sbSelect.value = localStorage.getItem('sidebarCollapsed') || 'auto';
+        loadGameSettings();
     }
 
     function toggleMouseBunny() {
@@ -9003,6 +9147,16 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9297</strong> — 破产修复 & 地图设置 & 被动租金 & 性能优化</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>💀 破产逻辑修复：金钱恰好为0且无任何资产时也触发破产，防止卡牌偷取导致玩家负值后不破产</li>
+                <li>🗺️ 地图大小设置：新增小型(312)/中型(624)/标准(1248)三档选择，下局新游戏生效</li>
+                <li>👥 玩家数量设置：支持随机/4人/6人/8人选择，下局新游戏生效</li>
+                <li>🏠 被动租金机制：每个房产每回合8%概率收取NPC被动租金(基础租金×30%)，解决大地图房产无人经过的问题</li>
+                <li>⚡ 环形地图渲染优化：1248个DOM元素改为单个Canvas渲染，玩家点保留DOM交互</li>
+                <li>⚡ 存档防抖优化：saveMonopoly使用requestAnimationFrame批量合并，减少localStorage写入</li>
+                <li>🗺️ 捷径位置动态化：根据地图大小按比例分布，不再硬编码固定位置</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9296</strong> — 最终bug修复 & 一致性优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🔢 版本号一致性：修复关于面板footer显示旧版本号v9293的问题</li>
