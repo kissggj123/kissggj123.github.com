@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9302 -->
+    <!-- VERSION: v7.7.2.9303 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -446,6 +446,9 @@
             display:flex; align-items:center; justify-content:center;
             line-height:1; padding:0 3px;
         }
+        .buff-vehicle { border-color:var(--accent); background:rgba(99,102,241,.12); }
+        .buff-debuff { border-color:var(--bad); background:rgba(239,68,68,.12); }
+        .buff-badge-debuff { background:var(--bad); }
         @keyframes buffPop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
         .mono-dice { font-size: 1.4rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
         .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
@@ -459,7 +462,7 @@
         .mono-player .mp-status { font-size: .5rem; display: flex; gap: 1px; }
         .mono-player .mp-personality { font-size: .45rem; color: var(--text2); }
         .mono-cards { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; }
-        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .mono-card-item:hover { border-color: var(--accent); transform: translateY(-2px); }
         .mono-card-item .mc-desc { font-size: .4rem; color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .mono-log { font-size: .65rem; color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
@@ -554,7 +557,7 @@
         .cooldown-btn { position: relative; overflow: hidden; }
         .cooldown-btn .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.1); pointer-events: none; }
         .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; }
-        .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; }
+        .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .inventory-card:hover { transform: translateY(-2px); border-color: var(--accent); }
         .inventory-card .ic-icon { font-size: 1.2rem; }
         .inventory-card .ic-name { font-size: .42rem; font-weight: 700; text-align: center; line-height: 1.1; margin-top: 1px; }
@@ -838,7 +841,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9302</div>
+                <div class="subtitle">v7.7.2.9303</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1116,7 +1119,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9302</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9303</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1182,7 +1185,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9302',
+        VERSION: 'v7.7.2.9303',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1247,7 +1250,7 @@
     const CARD_POOL = [
         // Common
         {id:'funds_boost', ic:'💰', n:'财富祝福', desc:'获得 2000💰', rarity:'common', monoEff:(p)=>{p.money+=2000;return '+2000💰'}},
-        {id:'speed_boost', ic:'🚀', n:'加速冲刺', desc:'下回合多走3步', rarity:'common', monoEff:(p)=>{p.speed=3;return '下回合 +3 步'}},
+        {id:'speed_boost', ic:'🚀', n:'加速冲刺', desc:'下回合多走3步', rarity:'common', monoEff:(p)=>{p.speed=(p.speed||0)+3;return '下回合 +3 步（叠加）'}},
         {id:'shield', ic:'🛡️', n:'护盾', desc:'免疫下次负面效果', rarity:'common', monoEff:(p)=>{p.shield=true;return '护盾已激活'}},
         {id:'lucky', ic:'🍀', n:'幸运', desc:'下次正面效果翻倍', rarity:'common', monoEff:(p)=>{p.lucky=true;return '幸运已激活'}},
         {id:'heal', ic:'💊', n:'治疗', desc:'恢复 1500💰', rarity:'common', monoEff:(p)=>{p.money+=1500;return '+1500💰'}},
@@ -1280,17 +1283,17 @@
         {id:'curse_jail', ic:'⛓️', n:'禁锢咒', desc:'将对手送进监狱', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了禁锢咒`;}
             if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了禁锢咒！`;}
-            target.jailTurns=2;return `将 ${target.nm} 送入监狱 2 回合`;
+            target.jailTurns=(target.jailTurns||0)+2;return `将 ${target.nm} 送入监狱 2 回合（共 ${target.jailTurns} 回合）`;
         }},
         {id:'curse_ban', ic:'🚫', n:'封印咒', desc:'禁止对手下回合交易', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了封印咒`;}
             if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了封印咒！`;}
-            target.banned=1;return `封印了 ${target.nm} 的交易能力 1 回合`;
+            target.banned=(target.banned||0)+1;return `封印了 ${target.nm} 的交易能力（共 ${target.banned} 回合）`;
         }},
         {id:'curse_hospital', ic:'🏥', n:'重病咒', desc:'对手进入医院暂停1回合', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了重病咒`;}
             if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了重病咒！`;}
-            target.hospital=1;return `${target.nm} 被送进医院暂停 1 回合`;
+            target.hospital=(target.hospital||0)+1;return `${target.nm} 被送进医院暂停（共 ${target.hospital} 回合）`;
         }},
         {id:'curse_drain', ic:'🧛', n:'吸血咒', desc:'吸取对手2000💰', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了吸血咒`;}
@@ -1315,7 +1318,7 @@
         {id:'freeze', ic:'❄️', n:'冰冻咒', desc:'指定对手跳过下回合', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了冰冻咒`;}
             if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了冰冻咒！`;}
-            target.hospital=Math.max(target.hospital||0,1);return `${target.nm} 被冰冻，跳过下回合`;
+            target.hospital=(target.hospital||0)+1;return `${target.nm} 被冰冻，跳过下回合（共 ${target.hospital} 回合）`;
         }},
         {id:'mirror', ic:'🪞', n:'镜像反射', desc:'下回合反弹所有负面效果', rarity:'legendary', monoEff:(p)=>{p.mirror=true;return '镜像反射已激活'}},
         {id:'teleport_random', ic:'🌀', n:'随机传送', desc:'传送到地图随机位置', rarity:'uncommon', monoEff:(p,mono)=>{
@@ -1413,7 +1416,16 @@
         {nm:'地产大亨', ic:'👑', desc:'当前玩家随机地产升 2 级', rarity:'rare', eff:(mono,p)=>{const pi=mono.players.indexOf(p);const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<4);if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.min(5,mono.properties[t.id].level+2);}}},
         {nm:'慈善晚宴', ic:'🤝', desc:'最富有玩家向最穷玩家捐赠 2000💰', rarity:'uncommon', eff:(mono,p)=>{const sorted=[...mono.players].filter(pl=>!pl.bankrupt).sort((a,b)=>b.money-a.money);if(sorted.length>=2){sorted[0].money-=2000;sorted[sorted.length-1].money+=2000}}},
         {nm:'黄金时代', ic:'🌟', desc:'所有玩家获得 5% 资金加成', rarity:'legendary', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=Math.floor(pl.money*0.05)})}},
-        {nm:'载具展览', ic:'🏎️', desc:'当前玩家获得 1500💰或随机载具折扣', rarity:'uncommon', eff:(mono,p)=>{if(Math.random()<0.4){p.vehicleDiscount=1000;p.money+=500;}else{p.money+=1500;}}},
+        {nm:'载具展览', ic:'🏎️', desc:'当前玩家获得 1500💰或随机载具折扣', rarity:'uncommon', eff:(mono,p)=>{
+            if(Math.random()<0.4){
+                const discount = 800 + Math.floor(Math.random()*1200);
+                p.vehicleDiscount = (p.vehicleDiscount || 0) + discount;
+                return `获得载具折扣 💰${discount}！下次购车可减免`;
+            } else {
+                p.money += 1500;
+                return `获得 💰1500！`;
+            }
+        }},
         {nm:'遗产继承', ic:'📜', desc:'当前玩家获得 4000💰', rarity:'legendary', eff:(mono,p)=>{p.money+=4000}},
     ];
     const EVENT_RARITY_WEIGHTS = { common: 3, uncommon: 2, rare: 1, legendary: 0.3 };
@@ -1496,12 +1508,20 @@
     // Records game events (all players) for event log display
     function recordGameEvent(type, player, action, result) {
         if (!mono.eventLog) mono.eventLog = [];
+        // Sanitize all fields to prevent [object Object] and undefined display
+        const sanitize = (v) => {
+            if (v === null || v === undefined) return '';
+            if (typeof v === 'object') {
+                try { return JSON.stringify(v); } catch(e) { return String(v); }
+            }
+            return String(v);
+        };
         mono.eventLog.push({
-            type: type,
-            player: player,
-            action: action,
-            result: result || '',
-            turn: mono.turn,
+            type: sanitize(type) || 'unknown',
+            player: sanitize(player) || '未知',
+            action: sanitize(action) || '',
+            result: sanitize(result),
+            turn: (typeof mono?.turn === 'number') ? mono.turn : 0,
             time: Date.now(),
         });
         // Keep last 200 events to avoid memory bloat
@@ -1791,7 +1811,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9302 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9303 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1824,6 +1844,8 @@
 
     function validateMono() {
         if (!mono || !mono.tiles || !mono.players) { newMonopolyGame(); return; }
+        if (mono.turn === undefined) mono.turn = 1;
+        if (mono.currentPlayer === undefined) mono.currentPlayer = 0;
         // Validate tile count matches current map configuration (1248 tiles)
         const expectedTiles = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
         if (mono.tiles.length !== expectedTiles) {
@@ -2260,7 +2282,7 @@
         });
         newsState.passiveCooldown = 2 + Math.floor(Math.random() * 3);
         monoLog(`📺 ${selected.icon} ${selected.title}：${selected.desc}`, 'info');
-        recordGameEvent('news_passive', { title: selected.title });
+        recordGameEvent('news_passive', '📺 电视台', selected.title, selected.desc);
         renderNewsTicker();
         return selected;
     }
@@ -2298,7 +2320,7 @@
             spreadBy: '📢 你散播',
         });
         monoLog(`📢 你散播了新闻：${news.icon} ${news.title}，花费 💰${cost}`, 'success');
-        recordGameEvent('news_spread', { title: news.title, cost });
+        recordGameEvent('news_spread', '📢 兔可可', `散播 ${news.title}`, `花费 ${cost}💰`);
         closeModal();
         renderMonopoly();
     }
@@ -2650,7 +2672,7 @@
     // RAF-based render throttling — coalesce multiple render calls into one frame
     let _renderRAFId = null;
     let _renderPending = false;
-    // === ACT-style Buff Bar — shows active card effects on human player ===
+    // === ACT-style Buff Bar — shows active card effects for all players ===
     const BUFF_DEFS = [
         { field:'shield', type:'bool', icon:'🛡️', name:'护盾' },
         { field:'lucky', type:'bool', icon:'🍀', name:'幸运' },
@@ -2665,12 +2687,28 @@
         { field:'confused', type:'num_gt0', icon:'😵', name:'混乱' },
         { field:'taxFree', type:'num_gt0', icon:'🧾', name:'免税' },
     ];
+    // Debuff fields that should be shown for ALL players (not just current)
+    const DEBUFF_FIELDS = ['jailTurns','banned','hospital','confused'];
 
-    function renderBuffBar() {
-        const bar = document.getElementById('buff-bar');
-        if (!bar || !mono || !mono.players || !mono.players[0]) return;
-        const p = mono.players[0];
+    function getPlayerBuffs(p) {
         const buffs = [];
+        // Vehicle bonus
+        if (p.vehicle) {
+            const vdef = VEHICLE_POOL.find(v => v.id === p.vehicle.id);
+            if (vdef && vdef.bonus) {
+                const b = vdef.bonus;
+                let vIcon = '🚗', vLabel = vdef.ic;
+                if (b.type === 'speed') { vIcon = '🚀'; vLabel = `移动+${b.val}`; }
+                else if (b.type === 'rentDiscount') { vIcon = '🛡️'; vLabel = `租金-${Math.round(b.val*100)}%`; }
+                else if (b.type === 'rentImmune') { vIcon = '🎯'; vLabel = `${Math.round(b.val*100)}%免租`; }
+                buffs.push({ icon: vdef.ic, name: `${vdef.nm} (${vLabel})`, badge: null, isVehicle: true });
+            }
+        }
+        // Vehicle discount buff
+        if (p.vehicleDiscount && p.vehicleDiscount > 0) {
+            buffs.push({ icon: '🏷️', name: `载具折扣 💰${p.vehicleDiscount}`, badge: null });
+        }
+        // Card effect buffs
         for (const def of BUFF_DEFS) {
             const val = p[def.field];
             if (def.type === 'bool' && val) {
@@ -2681,14 +2719,46 @@
                 buffs.push({ icon: def.icon, name: def.name, badge: val });
             }
         }
-        if (buffs.length === 0) {
+        return buffs;
+    }
+
+    function renderBuffBar() {
+        const bar = document.getElementById('buff-bar');
+        if (!bar || !mono || !mono.players || !mono.players[0]) return;
+        const humanP = mono.players[0];
+        const parts = [];
+        // 1. Human player's own buffs (green border)
+        const humanBuffs = getPlayerBuffs(humanP);
+        if (humanBuffs.length > 0) {
+            parts.push(humanBuffs.map(b =>
+                `<div class="buff-icon ${b.isVehicle ? 'buff-vehicle' : ''}" title="${b.nm}">${b.icon}${b.badge !== null ? `<span class="buff-badge">${b.badge}</span>` : ''}</div>`
+            ).join(''));
+        }
+        // 2. Other players' debuffs (red border) — show when AI is affected by card effects
+        for (let i = 1; i < mono.players.length; i++) {
+            const ap = mono.players[i];
+            if (!ap || ap.bankrupt) continue;
+            // Show actual debuffs from BUFF_DEFS for other players
+            const otherDebuffs = [];
+            for (const def of BUFF_DEFS) {
+                if (!DEBUFF_FIELDS.includes(def.field)) continue;
+                const val = ap[def.field];
+                if (def.type === 'num_gt0' && val && val > 0) {
+                    otherDebuffs.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic });
+                }
+            }
+            if (otherDebuffs.length > 0) {
+                parts.push(otherDebuffs.map(b =>
+                    `<div class="buff-icon buff-debuff" title="${b.name}">${b.playerIcon}<span class="buff-badge buff-badge-debuff">${b.badge}</span></div>`
+                ).join(''));
+            }
+        }
+        if (parts.length === 0) {
             bar.innerHTML = '';
             bar.style.minHeight = '0';
         } else {
             bar.style.minHeight = '28px';
-            bar.innerHTML = buffs.map(b =>
-                `<div class="buff-icon" title="${b.name}">${b.icon}${b.badge !== null ? `<span class="buff-badge">${b.badge}</span>` : ''}</div>`
-            ).join('');
+            bar.innerHTML = parts.join('');
         }
     }
 
@@ -3808,13 +3878,13 @@
             }
             case 'event': {
                 const ev = pickRandomEvent();
-                ev.eff(mono, p);
+                const effResult = ev.eff(mono, p) || '';
                 checkBankruptcy(p);
                 const rarityTag = ev.rarity === 'legendary' ? '✨传说' : ev.rarity === 'rare' ? '💎稀有' : ev.rarity === 'uncommon' ? '🔵不凡' : '';
-                recordGameEvent('event', `${p.ic} ${p.nm}`, `${rarityTag} ${ev.ic} ${ev.nm}`, ev.desc);
-                monoLog(`🎲 随机事件: ${rarityTag} ${ev.ic} ${ev.nm} — ${ev.desc}`, 'info');
+                recordGameEvent('event', `${p.ic} ${p.nm}`, `${rarityTag} ${ev.ic} ${ev.nm}`, effResult || ev.desc);
+                monoLog(`🎲 随机事件: ${rarityTag} ${ev.ic} ${ev.nm} — ${effResult || ev.desc}`, 'info');
                 if (playerIdx === 0) {
-                    showEventModal(ev, p);
+                    showEventModal(ev, p, effResult);
                     return;
                 } else {
                     // Show brief toast for AI events
@@ -7291,7 +7361,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9302 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9303 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -7312,7 +7382,7 @@
             return;
         }
         // Group events by type for stats
-        const typeLabels = { card_draw: '🎴 抽卡', card_use: '🃏 使用卡牌', card_curse: '🔥 诅咒攻击', event: '🎲 随机事件', penalty: '💸 惩罚', bonus: '💎 奖励', jail: '🔒 监狱', trade: '🤝 交易' };
+        const typeLabels = { card_draw: '🎴 抽卡', card_use: '🃏 使用卡牌', card_curse: '🔥 诅咒攻击', event: '🎲 随机事件', penalty: '💸 惩罚', bonus: '💎 奖励', jail: '🔒 监狱', trade: '🤝 交易', news_passive: '📺 被动新闻', news_spread: '📢 散播新闻' };
         const typeCounts = {};
         events.forEach(e => { typeCounts[e.type] = (typeCounts[e.type] || 0) + 1; });
         const statsHtml = Object.entries(typeCounts).map(([t, c]) =>
@@ -7321,7 +7391,7 @@
         // Show last 50 events (most recent first)
         const recentEvents = events.slice(-50).reverse();
         const eventsHtml = recentEvents.map(e => {
-            const timeStr = `第${e.turn}回合`;
+            const timeStr = `第${e.turn || '?'}回合`;
             return `<div style="padding:.4rem;border-left:3px solid var(--accent);background:var(--card2);border-radius:0 6px 6px 0;margin-bottom:.3rem;font-size:.75rem;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <span style="font-weight:700;">${e.player}</span>
@@ -7366,7 +7436,7 @@
     }
 
     // Event modal (random event triggers — ends turn after closing)
-    function showEventModal(ev, p) {
+    function showEventModal(ev, p, effResult) {
         const rarityLabels = { common: '普通', uncommon: '不凡', rare: '稀有', legendary: '传说' };
         const rarityColors = { common: 'var(--text2)', uncommon: '#3b82f6', rare: '#a855f7', legendary: '#f59e0b' };
         const rarityLabel = rarityLabels[ev.rarity] || '普通';
@@ -7380,6 +7450,7 @@
                 <div style="font-size:.65rem;font-weight:700;color:${rarityColor};margin-bottom:.3rem;">${rarityLabel.toUpperCase()}</div>
                 <h3 style="margin-bottom:.5rem;color:var(--accent);">${ev.nm}</h3>
                 <p style="color:var(--text2);font-size:.9rem;line-height:1.6;">${ev.desc}</p>
+                ${effResult ? `<div style="margin-top:.6rem;padding:.5rem .8rem;background:var(--card2);border-radius:8px;border:1px solid var(--border);font-size:.85rem;color:var(--good);font-weight:600;">✨ ${effResult}</div>` : ''}
             </div>
             <button class="btn btn-primary" style="width:100%;" onclick="closeEventModal()">确定</button>`;
         document.getElementById('modal-overlay').classList.add('show');
@@ -8817,6 +8888,17 @@
         if (e.target.closest('#egg-fab')) return;
         // Exclude avatar clicks (avatar has its own 7-click trigger path)
         if (e.target.closest('#avatar-img')) return;
+        // Exclude game UI elements that are commonly clicked rapidly
+        if (e.target.closest('.mono-card-item')) return;
+        if (e.target.closest('.inventory-card')) return;
+        if (e.target.closest('.card-grid')) return;
+        if (e.target.closest('.modal-overlay')) return;
+        if (e.target.closest('.btn')) return;
+        if (e.target.closest('.mono-tile-cell')) return;
+        if (e.target.closest('.stock-row')) return;
+        if (e.target.closest('input')) return;
+        if (e.target.closest('select')) return;
+        if (e.target.closest('textarea')) return;
         // Clear any text selection that might interfere with rapid clicks
         if (e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
             window.getSelection().removeAllRanges();
@@ -9631,300 +9713,75 @@
     }
 
     /* ==================== Changelog ==================== */
+    const CHANGELOG = [
+        { ver:'v7.7.2.9303', title:'Buff栏增强 & 卡牌叠加 & 连点修复', items:[
+            '⚔️ Buff栏增强：显示所有玩家debuff（监禁/封印/医院/混乱），AI被施加效果也能看到图标',
+            '🚗 Buff栏载具加成：装备载具时显示对应加成图标（移动+X/租金-X%/免租X%），载具折扣也显示',
+            '🃏 卡牌效果叠加修复：加速/监禁/封印/医院/冰冻等效果改用+=叠加，不再覆盖已有效果',
+            '📜 事件日志修复：news_passive/news_spread不再显示[object Object]，回合数显示undefined改为?',
+            '🏎️ 载具展览修复：显示获得金钱或折扣的具体结果，不再无反馈',
+            '📝 事件弹窗增强：显示实际效果结果而非静态描述',
+            '🖱️ 卡牌背包双击修复：添加user-select:none防止双击选中文本',
+            '🎮 连点触发修复：排除卡牌背包/按钮/弹窗/输入框等UI元素的连点计数',
+        ]},
+        { ver:'v7.7.2.9303', title:'UI响应优化 & Buff栏 & 彩蛋修复 & 机制缺陷修复', items:[
+            '⚡ UI响应延迟优化：平台检测(PC/移动端) + FPS自适应，动态调整modal锁、click guard、动画速度',
+            '⚡ 低性能模式：FPS<30时自动降级（禁用粒子、缩短动画、隐藏装饰背景），FPS>50恢复',
+            '⚔️ ACT风格Buff栏：骰子区域上方显示活跃卡牌效果图标和剩余回合数',
+            '🎨 像素字体修复：CSS选择器从body.font-pixel改为html.font-pixel',
+            '🃏 大富翁背包双击：tab页卡牌背包也支持双击快速移到手牌',
+            '👤 头像名片修复：renderMonopoly后自动清理tooltip，添加全局click监听和8秒安全超时',
+            '🐰 侧边栏头像选项：新增设置切换emoji/兔可可照片',
+            '✨ 白屏持续修复：白屏改为500ms淡入后持续到绘画结束，不再3秒后消失',
+            '⏱️ 倒计时同步：延长绘画时间不再重启白屏动画，白屏与计时器完全同步',
+            '🔘 FAB拖拽修复：mouseup/touchend重置dragStartX/Y，onMove增加eggInkPersistMode守卫',
+            '🪞 镜像反弹修复：所有8张诅咒卡现在正确检查mirror状态并反弹负面效果',
+            '💀 破产状态清除：破产时清除所有状态效果（shield/lucky/speed/mirror/confused等）',
+            '🏠 租金折扣修复：垄断折扣clamp到0.5-1.0范围，防止房产过多导致负租金',
+            '📰 新闻叠加修复：限制最多5条活跃新闻，防止重复散播，防止效果无限叠加',
+            '🛡️ 空指针安全：aiTurn/continueAiTurn/movePlayer/triggerTile添加null检查',
+            '📊 经济参数clamp：通胀/租金/波动率/黑天鹅等参数添加上下限，防止极端值',
+        ]},
+        { ver:'v7.7.2.9299', title:'UI修复 & GPU检测 & 卡牌双击 & 移动端FPS', items:[
+            '🎯 行动按钮布局修复：改用CSS Grid自适应布局，解决高分辨率下按钮错位/拥挤问题',
+            '🃏 卡牌双击快捷移牌：背包卡牌支持双击直接移到手牌，单击仍显示详情',
+            '🃏 手牌渲染修复：carryCard强制同步渲染，修复RAF节流导致手牌不出现的问题',
+            '🖥️ GPU信息面板：关于面板新增GPU厂商、型号、Apple芯片检测、GPU加速状态',
+            '📊 FPS监控修复：改用requestAnimationFrame测量真实帧率',
+        ]},
+        { ver:'v7.7.2.9298', title:'GPU硬件加速 & 虚拟滚动 & 地图修复', items:[
+            '🚀 GPU硬件加速：为Canvas、动画元素、弹窗等添加will-change和translateZ(0)提升至GPU合成层',
+            '⚡ renderMonopoly RAF节流：多次渲染调用合并为单帧，避免同步阻塞',
+            '🗺️ 地图条虚拟滚动：仅渲染可见区域±缓冲区的格子(约20个DOM)，156格从156个DOM节点降至~20个',
+            '🗺️ 地图默认156格：预设改为小型(78)/中型(156)/标准(312)，默认中型',
+            '🏠 房产位置固定：房产按40%比例均匀分布，其他格子类型从11种池中随机刷新',
+        ]},
+        { ver:'v7.7.2.9297', title:'破产修复 & 地图设置 & 被动租金 & 性能优化', items:[
+            '💀 破产逻辑修复：金钱恰好为0且无任何资产时也触发破产，防止卡牌偷取导致不破产',
+            '🗺️ 地图大小设置：新增小型(312)/中型(624)/标准(1248)三档选择',
+            '👥 玩家数量设置：支持随机/4人/6人/8人选择',
+            '🏠 被动租金机制：每个房产每回合8%概率收取NPC被动租金(基础租金×30%)',
+            '⚡ 环形地图渲染优化：DOM元素改为单个Canvas渲染，玩家点保留DOM交互',
+        ]},
+        { ver:'v7.7.2.9296', title:'最终bug修复 & 一致性优化', items:[
+            '🔢 版本号一致性：修复关于面板footer显示旧版本号v9293的问题',
+            '💀 破产载具清理：玩家破产时清空p.vehicles数组，防止残留车库数据',
+            '📊 浮点精度修复：破产清算时股票PnL使用Math.round()，防止无限小数',
+            '🔒 showModal一致性：通用弹窗函数立即设置modal锁，不再仅依赖MutationObserver异步回调',
+        ]},
+    ];
     function renderChangelog() {
         const el = document.getElementById('changelog-content');
         if (!el) return;
-        el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9302</strong> — UI响应优化 & Buff栏 & 彩蛋修复 & 机制缺陷修复</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>⚡ UI响应延迟优化：平台检测(PC/移动端) + FPS自适应，动态调整modal锁、click guard、动画速度</li>
-                <li>⚡ 性能监视器修复：移除setInterval重复计数，RAF独占FPS计算，移除死变量delta</li>
-                <li>⚡ 低性能模式：FPS<30时自动降级（禁用粒子、缩短动画、隐藏装饰背景），FPS>50恢复</li>
-                <li>⚡ closeModal即时解锁：关闭弹窗后不再等待锁过期即可操作</li>
-                <li>⚔️ ACT风格Buff栏：骰子区域上方显示活跃卡牌效果图标和剩余回合数</li>
-                <li>🎨 像素字体修复：CSS选择器从body.font-pixel改为html.font-pixel，与JS的document.documentElement匹配</li>
-                <li>🃏 大富翁背包双击：tab页卡牌背包也支持双击快速移到手牌，与首页统一交互</li>
-                <li>👤 头像名片修复：renderMonopoly后自动清理tooltip，添加全局click监听和8秒安全超时</li>
-                <li>🐰 侧边栏头像选项：新增设置切换emoji/兔可可照片，照片加载失败自动回退emoji</li>
-                <li>🐰 emoji头像连点修复：添加user-select:none防止选中，pointerdown排除FAB和头像区域</li>
-                <li>🎮 彩蛋开关修复：移除inline样式覆盖，toggle.on CSS规则正确生效</li>
-                <li>✨ 白屏持续修复：白屏改为500ms淡入后持续到绘画结束，不再3秒后消失</li>
-                <li>⏱️ 倒计时同步：延长绘画时间不再重启白屏动画，白屏与计时器完全同步</li>
-                <li>🔘 FAB拖拽修复：mouseup/touchend重置dragStartX/Y，onMove增加eggInkPersistMode守卫</li>
-                <li>🔘 FAB位置重置：endEggPainting重置FAB位置到默认，_eggPanelOpen全局同步</li>
-                <li>🪞 镜像反弹修复：所有8张诅咒卡现在正确检查mirror状态并反弹负面效果</li>
-                <li>💀 破产状态清除：破产时清除所有状态效果（shield/lucky/speed/mirror/confused等）</li>
-                <li>🤖 AI交易后confused修复：continueAiTurn添加confused处理和连续双数追踪</li>
-                <li>🏠 租金折扣修复：垄断折扣clamp到0.5-1.0范围，防止房产过多导致负租金</li>
-                <li>📰 新闻叠加修复：限制最多5条活跃新闻，防止重复散播，防止效果无限叠加</li>
-                <li>⏰ 看门狗修复：AI超时强制恢复时清除pendingTrade状态，防止交易卡死</li>
-                <li>🛡️ 空指针安全：aiTurn/continueAiTurn/movePlayer/triggerTile添加null检查</li>
-                <li>📊 经济参数clamp：通胀/租金/波动率/黑天鹅等参数添加上下限，防止极端值</li>
-                <li>📈 股票刷新修复：定时刷新改为局部更新价格DOM，不再销毁输入框内容</li>
-                <li>🔄 新游戏字段补全：初始化添加mirror/confused/rentDouble/interestFree字段</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9299</strong> — UI修复 & GPU检测 & 卡牌双击 & 移动端FPS</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🎯 行动按钮布局修复：改用CSS Grid自适应布局，解决高分辨率下按钮错位/拥挤问题</li>
-                <li>🃏 卡牌双击快捷移牌：背包卡牌支持双击直接移到手牌，单击仍显示详情</li>
-                <li>🃏 手牌渲染修复：carryCard强制同步渲染，修复RAF节流导致手牌不出现的问题</li>
-                <li>📋 侧边栏悬停修复：auto模式下hover展开不再被fontScale检测覆盖，添加hover保护</li>
-                <li>🖥️ GPU信息面板：关于面板新增GPU厂商、型号、Apple芯片检测、GPU加速状态</li>
-                <li>📊 FPS监控修复：改用requestAnimationFrame测量真实帧率，修复移动端setInterval节流导致N/A</li>
-                <li>📊 内存显示优化：移动端不支持performance.memory时显示"不可用"而非"N/A"</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9298</strong> — GPU硬件加速 & 虚拟滚动 & 地图修复</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🚀 GPU硬件加速：为Canvas、动画元素、弹窗、滚动条等添加will-change和translateZ(0)提升至GPU合成层，目标60fps</li>
-                <li>⚡ renderMonopoly RAF节流：多次渲染调用合并为单帧，避免同步阻塞</li>
-                <li>🗺️ 地图条虚拟滚动：仅渲染可见区域±缓冲区的格子(约20个DOM)，156格地图从156个DOM节点降至~20个</li>
-                <li>🗺️ 地图默认156格：预设改为小型(78)/中型(156)/标准(312)，默认中型</li>
-                <li>🏠 房产位置固定：房产按40%比例均匀分布，其他格子类型从11种池中随机刷新</li>
-                <li>🗺️ 捷径渲染修复：扫描实际捷径格子绘制弧线，不再硬编码6个固定位置</li>
-                <li>🗺️ 区域边界修复：使用实际格子区域过渡绘制边界标记，不再使用原始1248格比例</li>
-                <li>🔄 循环刷新修复：捷径数量按地图大小动态计算(max(2, total/30))，不再固定6个</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9297</strong> — 破产修复 & 地图设置 & 被动租金 & 性能优化</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>💀 破产逻辑修复：金钱恰好为0且无任何资产时也触发破产，防止卡牌偷取导致玩家负值后不破产</li>
-                <li>🗺️ 地图大小设置：新增小型(312)/中型(624)/标准(1248)三档选择，下局新游戏生效</li>
-                <li>👥 玩家数量设置：支持随机/4人/6人/8人选择，下局新游戏生效</li>
-                <li>🏠 被动租金机制：每个房产每回合8%概率收取NPC被动租金(基础租金×30%)，解决大地图房产无人经过的问题</li>
-                <li>⚡ 环形地图渲染优化：1248个DOM元素改为单个Canvas渲染，玩家点保留DOM交互</li>
-                <li>⚡ 存档防抖优化：saveMonopoly使用requestAnimationFrame批量合并，减少localStorage写入</li>
-                <li>🗺️ 捷径位置动态化：根据地图大小按比例分布，不再硬编码固定位置</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9296</strong> — 最终bug修复 & 一致性优化</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🔢 版本号一致性：修复关于面板footer显示旧版本号v9293的问题</li>
-                <li>💀 破产载具清理：玩家破产时清空p.vehicles数组，防止残留车库数据</li>
-                <li>📊 浮点精度修复：破产清算时股票PnL使用Math.round()，防止无限小数</li>
-                <li>🔒 showModal一致性：通用弹窗函数立即设置modal锁，不再仅依赖MutationObserver异步回调</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9295</strong> — 移动端窗体重叠修复 & 载具购买流程修复</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📱 移动端点击防重叠：全局modal锁(350ms防抖)+touch/click双触发拦截，防止touch+click导致同一按钮连开两个面板</li>
-                <li>📱 MutationObserver自动锁：任何路径打开modal均触发锁，无需逐个修改</li>
-                <li>🗺️ 全景地图修复：打开前先关闭已有modal，防止两个overlay叠加</li>
-                <li>🚗 载具购买流程修复：购买后先显示庆祝弹窗，关闭后返回商店（原先showVehicleModal被showVehicleShop立即覆盖）</li>
-                <li>🔧 closeModal清理：关闭时重置bottom-sheet的transform样式</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9294</strong> — 新闻电视台系统 & 侧边栏折叠修复 & FAB光轨修复</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📺 新闻电视台系统：18种新闻事件（牛市/熊市/通胀/加息/科技突破/贸易战等），被动随机播报+主动散播，影响通胀/股市/租金/利率/波动率</li>
-                <li>📺 新闻ticker：大富翁页面顶部显示当前活跃新闻及剩余回合，点击打开新闻详情面板</li>
-                <li>📺 新闻散播：花费💰500主动散播新闻，影响持续回合+1，新闻历史记录</li>
-                <li>🖥️ 侧边栏折叠修复：字体缩放时头像居中不偏移、设置图标不覆盖选中方块、高亮效果优化</li>
-                <li>🎨 FAB光轨修复：拖拽FAB时清空轨迹点并暂停绘制，防止兔子光轨头跟随FAB移动</li>
-                <li>🎨 FAB悬停检测扩展：所有模式下鼠标经过FAB均暂停轨迹，不再仅限彩蛋模式</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9293</strong> — 现实时间系统 & 连点修复 & 彩蛋延长修复 & FAB光轨修复 & PC侧边栏选项 & 字体优化</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🕐 现实时间系统：6个时段(黎明/上午/午间/下午/傍晚/深夜)+工作日/周末，影响通胀、股市波动、租金、事件概率、黑天鹅</li>
-                <li>🕐 时间显示：大富翁页面顶部实时显示当前时段和各系数，关于面板新增时间系统详情</li>
-                <li>🎮 连点触发修复：改为安卓开发者模式风格7次快速连点，使用pointerdown提高响应速度，不分区域</li>
-                <li>🎨 彩蛋延长修复：延长功能现在同步延长白屏动画和墨迹持久模式，不再只延长计时器</li>
-                <li>🎨 FAB光轨修复：彩蛋模式下鼠标经过悬浮按钮时暂停轨迹绘制，防止按钮变成光轨头</li>
-                <li>🖥️ PC侧边栏新增auto-hide模式：空闲5秒后完全隐藏，仅点击恢复（不随悬停恢复）</li>
-                <li>🖥️ 设置页新增PC侧边栏模式下拉选择：自动折叠/自动隐藏/始终展开/始终折叠</li>
-                <li>📱 Tab栏折叠修复：折叠态图标垂直居中，侧边栏折叠态logo居中+图钉定位优化</li>
-                <li>🔤 字体缩放优化：使用requestAnimationFrame批量处理避免布局抖动，DPI检测改用matchMedia</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9292</strong> — PWA安装修复 & 骰子倍率记忆修复</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📲 PWA安装修复：iOS/Android/macOS/桌面平台自动检测，显示对应安装指引，不再只显示"不支持"提示</li>
-                <li>🎲 骰子倍率失败不再重置：风险触发仅影响本次移动（原地不动），玩家倍率选择保持不变</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9291</strong> — 导航折叠 & 全景地图 & 彩蛋FAB & 移动端Bottom Sheet & 连点触发 & 性能优化 & 参数平衡</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📌 PC侧边栏自动折叠：5秒空闲或字体≥110%时自动折叠为图标模式，悬停展开文字</li>
-                <li>📱 PWA/移动端Tab栏三模式：始终显示/自动折叠/隐藏，设置页可选</li>
-                <li>🗺️ 全屏全景地图：Canvas绘制完整环形岛屿，区域标签+捷径弧线+玩家位置，支持缩放平移</li>
-                <li>🗺️ 增强环形小地图：显示所有格子位置点和捷径路径</li>
-                <li>📊 总览进度条：条形地图上方全图缩略，可点击跳转，滚动同步</li>
-                <li>👤 点击玩家头像三联动跳转：水平地图+环形小地图脉冲+信息浮层</li>
-                <li>🎨 彩蛋控制栏改为浮动FAB：可拖拽位置，点击展开三个按钮面板，计时器徽章</li>
-                <li>📱 移动端弹窗改为Bottom Sheet：底部弹出+圆角+拖拽手柄+下滑关闭</li>
-                <li>🎲 骰子倍率记忆：持久化到localStorage，使用后不重置</li>
-                <li>📊 股票选择修复：持久化选中状态，自动刷新保持滚动位置，增强视觉反馈</li>
-                <li>🎮 连点触发彩蛋：10次连点/1.35秒触发，5分钟冷却，设置开关，PWA触摸支持</li>
-                <li>⚡ 性能优化：地图渲染防抖、DOM批量更新、股票timer清理、AI回合渲染合并、Canvas按需重绘</li>
-                <li>⚖️ 参数平衡：动态起始资金、股市波动率降低、佣金/滑点增加、捷径缩短、AI参数调整、租金等级递增、载具价格微调</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.1</strong> — 卡牌效果修复 & 彩蛋绘画控制 & 头像修复 & 事件记录系统 & AI攻击优化</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🃏 修复卡牌使用后无效果：JSON序列化丢失monoEff函数，页面刷新后卡牌失效，现已通过CARD_POOL自动恢复函数引用</li>
-                <li>🎒 修复背包使用卡牌缺少UI刷新：补充renderMonopoly/recordHumanAction/recordGameEvent调用</li>
-                <li>🎒 卡牌背包简化：移除"立即使用"按钮，仅允许"移到手牌"，移动后立即从背包消失并在手牌中出现</li>
-                <li>🎨 彩蛋绘画模式修复：三个控制按钮（延长/保存/结束）现在可正常点击交互</li>
-                <li>⏱️ 彩蛋绘画模式新增倒计时器：30秒倒计时，颜色动态变化（绿→黄→红），归零切换自由模式</li>
-                <li>⏱️ 延长按钮修复：真正增加10秒计时（上限99s），而非仅播放白色闪烁动画</li>
-                <li>🎨 墨迹持久化修复：移除8秒自动淡出逻辑，墨迹保持直到用户点击"结束绘画"</li>
-                <li>🔧 彩蛋控制栏z-index修复：从9996提升至10001，确保在绘画画布之上可交互</li>
-                <li>🃏 修复卡牌使用后不即时消失：先渲染UI再显示弹窗，确保卡牌立即从手牌移除</li>
-                <li>📜 新增事件记录系统：记录本局所有玩家触发的抽卡/惩罚/随机事件，可查看详情</li>
-                <li>🔥 AI攻击优化：AI优先使用诅咒卡攻击玩家，吸血咒锁定最富对手，40%概率优先攻击人类</li>
-                <li>🎴 抽卡概率优化：所有抽卡改用加权概率系统，可抽取全部卡牌种类</li>
-                <li>🗺️ 环形小地图：新增环形全景显示所有玩家位置，区域边界标记</li>
-                <li>📊 关于面板新增事件统计：抽卡/使用/事件/惩罚/奖励次数统计</li>
-                <li>🏥 修复hospital标志类型错误（布尔值改为数字）</li>
-                <li>🔧 修复triggerTile中重复checkGameOver调用</li>
-                <li>🖼️ 修复头像长按露出白角：clip-path:circle(50%)强制圆形裁剪，禁用上下文菜单</li>
-                <li>📱 PWA应用名修改为"兔可可王国"</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.0</strong> — 骰子倍率系统 & 载具无限拥有 & AI学习系统 & 地图捷径 & 关于面板</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🎲 骰子倍率系统：1x/2x/3x/4x倍率选择，2x=25%/3x=35%/4x=45%失败率，失败则原地不动</li>
-                <li>🎲 连续双数机制：掷出双数获得额外回合，连续3次双数直接进监狱</li>
-                <li>🚗 载具商店重构：支持无限载具拥有，可在游戏中随时切换已拥有载具</li>
-                <li>🤖 AI学习系统：统计模仿人类操作频率，20%概率复制人类最常购买的股票，根据人类近5回合资金动态调整难度(0.7x~1.4x)</li>
-                <li>✈️ 地图捷径：6个飞行棋式✈️捷径格，随机传送前进40-80格</li>
-                <li>🔄 每轮回随机化：玩家完成一圈后15%非拥有格子内容随机刷新</li>
-                <li>📊 关于面板：显示游戏统计、玩家行为分析、AI难度等级、性能数据(FPS/内存/渲染耗时/DOM节点)</li>
-                <li>👥 随机玩家数：每局4-8名玩家从角色池随机抽取</li>
-                <li>🗺️ 移除时代系统：全岛6大区域从游戏开始全部开放</li>
-                <li>🏦 动态经济引擎：通胀率/贷款利率/抵押比例每回合根据游戏进度和玩家资金动态计算</li>
-            </ul>
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.6.0</strong> — PWA终极优化 & 股市修复 & 内容扩充</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📱 PWA安装提示：beforeinstallprompt自定义安装横幅，可一键安装到主屏</li>
-                <li>📡 离线模式指示器：断网时顶部红色提示栏，联网自动隐藏</li>
-                <li>🔔 推送通知：设置中开启回合通知，轮到你时自动提醒</li>
-                <li>📲 SW增强：push/notificationclick事件，后台缓存刷新</li>
-                <li>💥 股市爆仓机制：亏损达保证金80%时强制平仓</li>
-                <li>🔧 修复AI平空仓价格影响bug（用closeShares替代已清零的h.shares）</li>
-                <li>🎴 新增8张卡牌：收租令/冰冻咒/镜像反射/随机传送/免息卡/内幕消息/混乱咒/淘金热</li>
-                <li>❓ 新增9个随机事件：经济危机/股市暴涨崩盘/免费抽卡日/慈善晚宴/黄金时代等</li>
-                <li>⚡ UI/UX优化：resize防抖、touch-action防双击缩放、移动端触摸适配</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.5.0</strong> — 交易谈判 & AI主动交易 & 事件稀有度</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🤝 交易系统重做：支持卡牌/载具/金币交换，3轮还价谈判</li>
-                <li>🔄 AI反报价：拒绝时自动生成还价，可接受/拒绝/修改重提</li>
-                <li>🤖 AI主动交易：AI 回合 15% 概率向你发起卡牌交换提议</li>
-                <li>🔄 玩家可还价AI交易：40% 概率AI接受还价，降价 40%</li>
-                <li>💎 随机事件稀有度：普通/不凡/稀有/传说四档权重抽取</li>
-                <li>📊 事件弹窗显示稀有度标签和颜色</li>
-                <li>📈 修复股市分红Bug：旧 p.stocks 字段 → 新多股持仓计算</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.4.0</strong> — 多股市场 & 杠杆交易 & 做空机制</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📊 10 种独立股票：农业、地产、能源、工业、医药、游戏、航天、零售、金融、宝石</li>
-                <li>📈 杠杆交易：1x / 2x / 3x / 5x 倍数选择，放大收益与风险（含手续费+滑点+黑天鹅事件）</li>
-                <li>🔻 做空机制：50% 保证金开空仓，价格下跌时获利</li>
-                <li>🔄 30 秒自动刷新股价，受通胀/繁荣度/趋势影响波动</li>
-                <li>💰 持仓管理：多空仓位自动转换，部分平仓/全部平仓</li>
-                <li>🤖 AI 交易智能化：根据性格和股价趋势决定买卖做空，高指数分红</li>
-                <li>📈 兔兔指数：10 股加权平均，反映整体市场走势</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.3.0</strong> — 卡牌详情弹窗 & 银行灵活还款</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🃏 卡牌背包点击弹出详情框：显示卡牌说明、稀有度，可选「移到手牌」或「立即使用」</li>
-                <li>⚡ 背包直接使用：无需先携带到手牌，点击「立即使用」直接发动效果</li>
-                <li>🔥 诅咒卡直接施放：从背包选择目标和立即施咒</li>
-                <li>💰 银行部分还款：滑块选择还款金额，按比例降低贷款本金并恢复信用</li>
-                <li>💳 信用贷自定义金额：滑块选择贷款额度（500~最高额度），避免过度借贷</li>
-                <li>⏳ 贷款延期：支付 5% 手续费延长 2 回合还款期，缓解资金压力</li>
-                <li>🛡️ 还款宽限期：资金不足时自动部分还款+延期，防止立刻破产</li>
-                <li>📱 DPI 自适应缩放 & AI 卡死修复（上版本遗留优化）</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.2.0</strong> — DPI 自适应字体 & AI 卡死修复</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>📱 DPI 自适应缩放：根据 devicePixelRatio 自动放大字体，HiDPI/Retina 屏字体更清晰</li>
-                <li>🔤 字体基准范围扩大（14-21px），字体缩放滑块上限提升至 200%</li>
-                <li>🔧 AI 思考卡死修复：handleAuction 返回值修正，避免无人竞拍时卡死</li>
-                <li>⏱️ AI 回合看门狗（Watchdog）：10 秒超时自动恢复，防止全局卡死</li>
-                <li>🛡️ AI 回合全链路 try-catch 保护：异常时自动跳到下一回合</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.1.0</strong> — P2 卡牌系统扩展 & 拍卖增强 & 赌场系统 & 交易市场</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🃏 卡牌背包 50 张上限，超过 15 张可滚动弹窗查看全部</li>
-                <li>🏪 卡牌商店：动态定价（通胀+随机），买卖手牌技能卡</li>
-                <li>🧙 巫师系统：占卜（揭示未来）、许愿（随机增益）、诅咒（施咒对手）</li>
-                <li>🏪 二手交易市场：挂卖卡牌/载具，AI 有概率购买</li>
-                <li>🤝 玩家间交易：卡牌/金币交换，AI 基于性格和性价比决定接受/拒绝</li>
-                <li>🔨 拍卖系统增强：10% 保证金，多轮竞价，违约没收保证金</li>
-                <li>🎰 赌场系统：轮盘赌(35:1)、老虎机(200:1)、骰子大小(豹子通杀)</li>
-                <li>🗺️ 新增赌场格(🎰)，地图上可遇到赌场</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.0.0</strong> — P0 阻塞性 Bug 修复 & SW 缓存强制更新</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🔄 Service Worker 缓存强制更新：SW 更新后自动重载页面，修复 switchView 未定义错误</li>
-                <li>💾 存档修复：手动存档槽现在正确保存/恢复卡牌背包 (cardInventory)</li>
-                <li>🚫 状态修复：监狱/封印/医院状态自动跳过回合（人类+AI 玩家均生效）</li>
-                <li>📈 股市修复：点击"交易"文字可正确打开交易所，非自己回合仅可查看</li>
-                <li>🏦 银行修复：抵押贷款扣除已有负债防止无限贷款，信用分可突破100</li>
-                <li>💰 还款修复：还清贷款后弹窗刷新而非关闭，信用分按贷款金额动态恢复</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.4.0</strong> — 载具系统 & 诅咒卡 & Toast通知 & 性能优化</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🚗 载具系统：7种载具（滑板车到巨龙），移动加成/租金减免/免租概率</li>
-                <li>🃏 诅咒技能卡：禁锢咒、封印咒、退步咒、住院咒等6种诅咒卡</li>
-                <li>🎯 击中特效：诅咒卡使用时有粒子动画和弹窗提示</li>
-                <li>🎲 更多随机事件：流星雨、宝藏猎人、幸运转盘、节日礼花等</li>
-                <li>🔔 Toast通知系统：右上角浮动提示，替代部分弹窗</li>
-                <li>💾 读档优化：加载动画+进度提示+自动切换到游戏视图</li>
-                <li>⚡ 上帝模式即时生效+随机恩赐系统</li>
-                <li>📱 响应式字体缩放跟随设置</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.3.0</strong> — 响应式缩放 & 统计系统 & 股市贷款 & 时代进阶</div>
+        const recent = CHANGELOG.slice(0, 6);
+        el.innerHTML = recent.map((v, i) => `
+            ${i > 0 ? '<div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">' : '<div>'}
+                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">${v.ver}</strong> — ${v.title}</div>
                 <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                    <li>📱 自适应缩放：clamp() 流式字体，多分辨率下字体不再过小</li>
-                    <li>🎯 点击玩家头像可定位到所在格子并高亮</li>
-                    <li>🏠 房产统计卡片：购买次数、升级次数、总花费明细</li>
-                    <li>💰 租金统计卡片：总收入记录、路过玩家详情日志</li>
-                    <li>📈 股市玩法：兔兔指数买卖、浮盈浮亏实时计算、AI交易</li>
-                    <li>🏦 贷款增强：部分还款、信用评分、多笔贷款管理</li>
-                    <li>🕰️ 时代进阶：仅新区域未拥有房产小幅通胀，不影响已有租金</li>
+                    ${v.items.map(item => `<li>${item}</li>`).join('')}
                 </ul>
-            </div>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.2.0</strong> — 卡牌效果修复 & 事件提示优化</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🃏 修复卡牌名称显示 undefined（card.nm → card.n）</li>
-                <li>🃏 使用卡牌时弹出效果提示弹窗</li>
-                <li>🎲 随机事件触发时显示事件详情弹窗</li>
-                <li>🃏 踩到卡牌格时显示抽卡结果弹窗</li>
-                <li>📝 日志信息增强：卡牌效果描述、事件前缀标识</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.1.0</strong> — 超大地图 & 胡萝卜图标更新</div>
-            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                <li>🗺️ 地图扩展至 1248 格（312×4 超大地图）</li>
-                <li>🐰 PWA 图标更新为胡萝卜版本（全尺寸 16~1024px）</li>
-                <li>💾 新增 3 槽位存档管理（保存/读取/覆盖/删除）</li>
-                <li>✨ 彩蛋白屏优化：6-12 秒随机白屏 + 墨迹停留 8 秒供截图</li>
-                <li>🎨 鼠标轨迹：v5.2 华丽曲线 + v6.0 像素兔头整合</li>
-                <li>🔒 彩蛋绘画模式：禁用头像拖动/文字选择等交互</li>
-                <li>🔐 上帝模式 UI 字体修复 & Python 工具适配 v6.0</li>
-                <li>📱 Service Worker 强制刷新图标缓存</li>
-            </ul>
-            <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v6.0.0</strong> — 大富翁王国扩展版</div>
-                <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                    <li>🎲 全新大富翁岛屿地图系统（6区域312格）</li>
-                    <li>🗺️ 渐进式时代推进：草原→森林→湖畔→彩虹→水晶→天空</li>
-                    <li>🃏 卡牌系统与首页抽卡整合，60秒冷却</li>
-                    <li>🏦 银行贷款/还款机制与信用系统</li>
-                    <li>🔨 拍卖、升级、股市、监狱、赌场等13种格子类型</li>
-                    <li>🤖 4-8位玩家，3种AI性格（激进/保守/平衡）</li>
-                    <li>❓ 15种随机事件</li>
-                    <li>🎨 新增3个主题：日落橙、薄荷绿、玫瑰金（共8个）</li>
-                    <li>🐰 鼠标轨迹头部恢复像素兔子</li>
-                    <li>✨ 头像彩蛋华丽升级：彩虹环+烟花+文字特效</li>
-                    <li>📅 里程碑和纪念日显示具体日期</li>
-                    <li>📦 卡牌/道具描述标签可见</li>
-                </ul>
-                <div style="margin-top:.5rem;font-size:.7rem;color:var(--text2);">移除了城市模拟系统，全面升级为大富翁王国</div>
-            </div>`;
+            </div>`
+        ).join('');
     }
 
     /* ==================== Main Loop ==================== */
