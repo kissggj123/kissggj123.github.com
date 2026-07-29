@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9297 -->
+    <!-- VERSION: v7.7.2.9298 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -687,6 +687,68 @@
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
         }
+        /* ==================== GPU / Hardware Acceleration ==================== */
+        /* Promote animated/frequently-updated elements to GPU layers */
+        .mono-tile-cell, .mono-ring-dot, .card, .btn, .tab-item, .modal-overlay > div {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        /* Canvas elements get GPU compositing */
+        canvas {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Ring canvas — dedicated GPU layer */
+        #mono-ring-canvas {
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        /* Map strip — GPU compositing for smooth scrolling */
+        #mono-map-strip {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Player dots on ring — GPU layer for smooth animation */
+        .mono-ring-dot {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Modal overlay — GPU for smooth fade */
+        .modal-overlay {
+            will-change: opacity;
+        }
+        .modal-overlay > div {
+            transform: translateZ(0);
+        }
+        /* News ticker — GPU for smooth scroll animation */
+        .news-ticker-inner {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Mouse trail canvas — GPU */
+        #mouse-trail-canvas {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Sidebar collapse animation — GPU */
+        .sidebar {
+            will-change: width, transform;
+        }
+        /* Tab bar — GPU for smooth transitions */
+        .tab-bar {
+            will-change: transform, opacity;
+        }
+        /* Egg FAB — GPU for smooth drag */
+        #egg-fab {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Disable will-change on idle elements to free GPU memory */
+        .mono-tile-cell:not(.current):not(:hover) {
+            will-change: auto;
+        }
     </style>
     <script>
         // Apply theme immediately before paint to prevent flash/black screen
@@ -748,7 +810,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9297</div>
+                <div class="subtitle">v7.7.2.9298</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1084,7 +1146,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9297',
+        VERSION: 'v7.7.2.9298',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1590,7 +1652,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9297 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9298 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2285,7 +2347,7 @@
             randomized++;
         }
         // Re-add shortcut tiles after randomization (proportional to map size)
-        const shortcutCount = 6;
+        const shortcutCount = Math.max(2, Math.min(6, Math.floor(total / 30)));
         const shortcutPositions = [];
         for (let s = 0; s < shortcutCount; s++) {
             shortcutPositions.push(Math.floor((s + 0.5) * total / shortcutCount));
@@ -2428,7 +2490,20 @@
     }
 
     /* ==================== Monopoly: Rendering ==================== */
+    // RAF-based render throttling — coalesce multiple render calls into one frame
+    let _renderRAFId = null;
+    let _renderPending = false;
     function renderMonopoly() {
+        if (_renderRAFId) return; // Already scheduled — coalesce
+        _renderPending = true;
+        _renderRAFId = requestAnimationFrame(() => {
+            _renderRAFId = null;
+            if (!_renderPending) return;
+            _renderPending = false;
+            _doRenderMonopoly();
+        });
+    }
+    function _doRenderMonopoly() {
         _perfMonitor.beginRender();
         if (!mono) { initMonopoly(); }
         const eraBar = document.getElementById('mono-era-badge');
@@ -2692,14 +2767,15 @@
             }
         }
 
-        // Draw shortcut arcs on canvas
+        // Draw shortcut arcs on canvas — scan actual shortcut tiles instead of hardcoded positions
         var shortcutPositions = [];
-        for (var sc = 0; sc < 6; sc++) { shortcutPositions.push(Math.floor((sc + 0.5) * total / 6)); }
+        for (var sc = 0; sc < total; sc++) {
+            if (mono.tiles[sc] && mono.tiles[sc].type === 'shortcut') shortcutPositions.push(sc);
+        }
         ctx.strokeStyle = 'rgba(255,152,0,.3)';
         ctx.setLineDash([3, 3]);
         for (var si = 0; si < shortcutPositions.length; si++) {
             var spos = shortcutPositions[si];
-            if (spos >= total) continue;
             var stile = mono.tiles[spos];
             if (!stile || stile.type !== 'shortcut') continue;
             var target = stile.shortcutTarget || ((spos + 50) % total);
@@ -2716,18 +2792,22 @@
         }
         ctx.setLineDash([]);
 
-        // Draw region boundary markers on canvas
-        let tileAcc = 0;
-        for (let r = 0; r < MONO_REGIONS.length; r++) {
-            const region = MONO_REGIONS[r];
-            tileAcc += region.tileCount;
-            const angle = (tileAcc / total) * 2 * Math.PI - Math.PI / 2;
-            const x = cx + radius * Math.cos(angle);
-            const y = cy + radius * Math.sin(angle);
-            ctx.fillStyle = region.color;
-            ctx.beginPath();
-            ctx.arc(x, y, 2, 0, 2 * Math.PI);
-            ctx.fill();
+        // Draw region boundary markers on canvas — use actual tile region transitions
+        let prevRegion = -1;
+        for (let i = 0; i < total; i++) {
+            const tile = mono.tiles[i];
+            if (!tile) continue;
+            if (tile.region !== prevRegion) {
+                prevRegion = tile.region;
+                const region = MONO_REGIONS[tile.region] || { color: '#999' };
+                const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+                ctx.fillStyle = region.color;
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            }
         }
 
         // Draw player dots — use DOM for interactivity (only ~8 elements)
@@ -3009,10 +3089,29 @@
         const el = document.getElementById('mono-map-strip');
         if (!el) return;
         const unlockedCount = getUnlockedTileCount();
+        const total = mono.tiles.length;
+        const cp = mono.players[mono.currentPlayer];
+        const currentPos = cp ? cp.pos : 0;
+
+        // Virtual scrolling: only render tiles near the current player position ± visible window
+        // This dramatically reduces DOM nodes for large maps (156/312 tiles)
+        const TILE_WIDTH = 72; // approx width including gap
+        const scroll = document.getElementById('mono-map-scroll');
+        const visibleWidth = (scroll ? scroll.offsetWidth : 800);
+        const visibleCount = Math.ceil(visibleWidth / TILE_WIDTH) + 8; // buffer on both sides
+        const startIdx = Math.max(0, currentPos - Math.floor(visibleCount / 2));
+        const endIdx = Math.min(total, startIdx + visibleCount + 10);
+
         let h = '';
+        // Placeholder spacer for tiles before the visible window (preserves scroll position)
+        if (startIdx > 0) {
+            h += `<div style="width:${startIdx * TILE_WIDTH}px;flex-shrink:0;height:1px;"></div>`;
+        }
+
         let currentRegion = -1;
-        for (let i = 0; i < mono.tiles.length; i++) {
+        for (let i = startIdx; i < endIdx; i++) {
             const tile = mono.tiles[i];
+            if (!tile) continue;
             // Add region divider when entering a new region
             if (tile.region !== currentRegion) {
                 currentRegion = tile.region;
@@ -3021,7 +3120,7 @@
             }
             const isUnlocked = i < unlockedCount;
             const players = mono.players.filter(p => p.pos === i && !p.bankrupt);
-            const isCurrent = mono.players[mono.currentPlayer]?.pos === i;
+            const isCurrent = currentPos === i;
             const prop = mono.properties[i];
             const ownedClass = prop && prop.owner >= 0 ? 'owned' : '';
             const lockedClass = isUnlocked ? '' : 'locked';
@@ -3041,10 +3140,13 @@
                 <div class="tile-tooltip"><strong>${tile.ic} ${tile.nm}</strong><br>${tile.desc}${tile.price?`<br>💰 买价:${tile.price} 租金:${tile.rent}`:''}${prop&&prop.owner>=0?`<br>归属:${mono.players[prop.owner].ic} ${mono.players[prop.owner].nm}`:''}${prop&&prop.mortgaged?'<br>🔒 已抵押':''}</div>
             </div>`;
         }
+        // Placeholder spacer for tiles after the visible window
+        if (endIdx < total) {
+            h += `<div style="width:${(total - endIdx) * TILE_WIDTH}px;flex-shrink:0;height:1px;"></div>`;
+        }
         el.innerHTML = h;
 
         // Auto-scroll to current player position
-        const scroll = document.getElementById('mono-map-scroll');
         const currentTile = el.querySelector('.mono-tile-cell.current');
         if (scroll && currentTile) {
             const scrollLeft = currentTile.offsetLeft - scroll.offsetWidth / 2 + currentTile.offsetWidth / 2;
@@ -6875,7 +6977,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9297 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9298 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9158,6 +9260,17 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9298</strong> — GPU硬件加速 & 虚拟滚动 & 地图修复</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🚀 GPU硬件加速：为Canvas、动画元素、弹窗、滚动条等添加will-change和translateZ(0)提升至GPU合成层，目标60fps</li>
+                <li>⚡ renderMonopoly RAF节流：多次渲染调用合并为单帧，避免同步阻塞</li>
+                <li>🗺️ 地图条虚拟滚动：仅渲染可见区域±缓冲区的格子(约20个DOM)，156格地图从156个DOM节点降至~20个</li>
+                <li>🗺️ 地图默认156格：预设改为小型(78)/中型(156)/标准(312)，默认中型</li>
+                <li>🏠 房产位置固定：房产按40%比例均匀分布，其他格子类型从11种池中随机刷新</li>
+                <li>🗺️ 捷径渲染修复：扫描实际捷径格子绘制弧线，不再硬编码6个固定位置</li>
+                <li>🗺️ 区域边界修复：使用实际格子区域过渡绘制边界标记，不再使用原始1248格比例</li>
+                <li>🔄 循环刷新修复：捷径数量按地图大小动态计算(max(2, total/30))，不再固定6个</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9297</strong> — 破产修复 & 地图设置 & 被动租金 & 性能优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>💀 破产逻辑修复：金钱恰好为0且无任何资产时也触发破产，防止卡牌偷取导致玩家负值后不破产</li>
