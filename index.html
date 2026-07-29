@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9308 -->
+    <!-- VERSION: v7.7.2.9309 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -988,7 +988,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9308</div>
+                <div class="subtitle">v7.7.2.9309</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1270,7 +1270,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9308</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9309</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1336,7 +1336,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9308',
+        VERSION: 'v7.7.2.9309',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2100,7 +2100,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9308 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9309 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -7963,7 +7963,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9308 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9309 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9759,6 +9759,7 @@
     let eggInkPersistMode = false;
     let eggInkPersistStart = 0;
     let lastMouseMoveTime = 0;
+    let _lastTrailFrameTime = 0;
     let inkPersistEndTimer = null;
 
     // 10x10 pixel rabbit head map: 1=accent fill, 2=eye/dark, 0=transparent
@@ -9867,6 +9868,48 @@
             }
         }, { passive: true });
 
+        // Mobile fix: ensure RAF loop continues to fade out trail after touch ends
+        window.addEventListener('touchend', () => {
+            if (mouseBunnyEnabled && !eggInkPersistMode) {
+                lastMouseMoveTime = performance.now(); // Mark last activity time
+                if (!_trailRAFRunning) restartTrailRAF();
+            }
+        }, { passive: true });
+        window.addEventListener('pointerup', () => {
+            if (mouseBunnyEnabled && !eggInkPersistMode) {
+                lastMouseMoveTime = performance.now();
+                if (!_trailRAFRunning) restartTrailRAF();
+            }
+        }, { passive: true });
+
+        // Visibility change: clear stale trail when returning from background
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) return;
+            // Page became visible — clear any stale trail content and restart RAF
+            if (mouseBunnyEnabled && !eggInkPersistMode) {
+                _lastTrailFrameTime = 0;
+                trailPoints = [];
+                trailParticles = [];
+                if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                if (fxCtx && fxCanvas) fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                if (!_trailRAFRunning) restartTrailRAF();
+            }
+        });
+
+        // Failsafe timer: periodically ensure stale trails are cleared on mobile
+        setInterval(() => {
+            if (!mouseBunnyEnabled || eggInkPersistMode) return;
+            if (trailPoints.length > 0) return;
+            const idle = performance.now() - lastMouseMoveTime;
+            if (lastMouseMoveTime > 0 && idle > 3000) {
+                // Trail should have faded by now — force clear if RAF stopped
+                if (!_trailRAFRunning) {
+                    if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                    if (fxCtx && fxCanvas) fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                }
+            }
+        }, 2000);
+
         if (!_trailRAFRunning) {
             _trailRAFRunning = true;
             requestAnimationFrame(updateAndDrawTrail);
@@ -9888,39 +9931,63 @@
         switch (cfg.style) {
             case 'lightsaber':
                 if (Math.random() < 0.35) trailParticles.push({x, y, vx:(Math.random()-.5)*4, vy:(Math.random()-.5)*4, life:1, type:'spark', color:cfg.accent});
+                // Signature: pixel cube — digital glitch aesthetic
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:(Math.random()-.5)*1.5, vy:(Math.random()-.5)*1.5, life:1, type:'pixelCube', color:cfg.accent, rot:0, rotV:(Math.random()-.5)*.2, size:Math.random()*3+3});
                 break;
             case 'magic':
                 trailParticles.push({x:x+(Math.random()-.5)*12, y:y+(Math.random()-.5)*12, vx:(Math.random()-.5)*1.2, vy:-Math.random()*2-.5, life:1, type:'star', color:Math.random()<.5?cfg.accent:cfg.accent2, size:Math.random()*3+1.5});
+                // Signature: crescent moon — dreamy night sky
+                if (Math.random() < 0.1) trailParticles.push({x, y, vx:(Math.random()-.5)*.8, vy:-Math.random()*1-.3, life:1, type:'crescent', color:cfg.accent2, size:Math.random()*3+3});
                 break;
             case 'flame':
                 trailParticles.push({x:x+(Math.random()-.5)*8, y:y+(Math.random()-.5)*4, vx:(Math.random()-.5)*1, vy:-Math.random()*2-.5, life:1, type:'flame', color:Math.random()<.5?'#FFEB3B':'#FF6B35', size:Math.random()*4+2});
+                // Signature: tiny sun — warm sunset glow
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:(Math.random()-.5)*.5, vy:-Math.random()*1.5-.5, life:1, type:'sun', color:'#FFD700', size:Math.random()*3+3});
                 break;
             case 'mintBubble':
                 if (Math.random() < 0.3) trailParticles.push({x:x+(Math.random()-.5)*10, y:y+(Math.random()-.5)*10, vx:(Math.random()-.5)*.5, vy:-Math.random()*1.2-.3, life:1, type:'bubble', color:cfg.accent, size:Math.random()*4+2});
+                // Signature: mint leaf — fresh and natural
+                if (Math.random() < 0.1) trailParticles.push({x, y, vx:(Math.random()-.5)*.8, vy:-Math.random()*1-.2, life:1, type:'mintLeaf', color:cfg.accent, size:Math.random()*3+2, rot:Math.random()*6.28, rotV:(Math.random()-.5)*.1});
                 break;
             case 'petal':
                 if (Math.random() < 0.25) trailParticles.push({x, y, vx:(Math.random()-.5)*1.5, vy:Math.random()*.8+.3, life:1, type:'petal', color:Math.random()<.5?cfg.accent:cfg.accent2, rot:Math.random()*6.28, rotV:(Math.random()-.5)*.15, size:Math.random()*3+2});
+                // Signature: butterfly — romantic fluttering
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:(Math.random()-.5)*1.5, vy:-Math.random()*.8-.2, life:1, type:'butterfly', color:Math.random()<.5?cfg.accent:cfg.accent2, size:Math.random()*3+3, wing:Math.random()*6.28, wingV:.25});
                 break;
             case 'ribbon':
                 if (Math.random() < 0.15) trailParticles.push({x, y, vx:(Math.random()-.5)*1, vy:-Math.random()*1.2-.3, life:1, type:'heart', color:cfg.accent, size:Math.random()*4+3});
+                // Signature: bunny footprint — cute bunny trail
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:(Math.random()-.5)*.8, vy:-Math.random()*1-.2, life:1, type:'bunnyPrint', color:cfg.accent, size:Math.random()*3+3});
                 break;
             case 'leaf':
                 if (Math.random() < 0.22) trailParticles.push({x, y, vx:(Math.random()-.5)*1.5, vy:Math.random()*.8+.3, life:1, type:'leaf', color:Math.random()<.5?cfg.accent:cfg.accent2, rot:Math.random()*6.28, rotV:(Math.random()-.5)*.12, size:Math.random()*3+2});
+                // Signature: acorn — forest treasure
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:0, vy:-Math.random()*.5-.1, life:1, type:'acorn', color:cfg.accent2, size:Math.random()*3+2});
                 break;
             case 'wave':
                 if (Math.random() < 0.25) trailParticles.push({x:x+(Math.random()-.5)*10, y:y+(Math.random()-.5)*10, vx:(Math.random()-.5)*.5, vy:-Math.random()*1.2-.2, life:1, type:'bubble', color:cfg.accent, size:Math.random()*4+2});
+                // Signature: tiny fish — ocean swimmer
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:(Math.random()-.5)*2, vy:(Math.random()-.5)*.5, life:1, type:'fish', color:Math.random()<.5?cfg.accent:cfg.accent2, size:Math.random()*3+3, facing:Math.random()<.5?1:-1});
                 break;
             case 'aurora':
                 if (Math.random() < 0.2) trailParticles.push({x:x+(Math.random()-.5)*15, y:y+(Math.random()-.5)*8, vx:(Math.random()-.5)*.3, vy:-Math.random()*.8-.2, life:1, type:'shimmer', color:`hsla(${(140+Math.random()*120)%360},80%,65%,1)`, size:Math.random()*3+1});
+                // Signature: snowflake — arctic sparkle
+                if (Math.random() < 0.1) trailParticles.push({x, y, vx:(Math.random()-.5)*.5, vy:Math.random()*.5+.1, life:1, type:'snowflake', color:'#E0F7FA', size:Math.random()*3+2, rot:0, rotV:(Math.random()-.5)*.05});
                 break;
             case 'galaxy':
                 if (Math.random() < 0.3) trailParticles.push({x:x+(Math.random()-.5)*12, y:y+(Math.random()-.5)*12, vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5, life:1, type:'twinkle', color:Math.random()<.5?cfg.accent:cfg.accent2, size:Math.random()*2+1, twinkle:Math.random()*6.28});
+                // Signature: shooting star — cosmic wish
+                if (Math.random() < 0.06) trailParticles.push({x, y, vx:Math.random()*3+1, vy:Math.random()*1+.5, life:1, type:'meteor', color:cfg.accent, size:Math.random()*2+1});
                 break;
             case 'candy':
                 if (Math.random() < 0.2) trailParticles.push({x:x+(Math.random()-.5)*8, y:y+(Math.random()-.5)*8, vx:(Math.random()-.5)*1, vy:-Math.random()*1-.3, life:1, type:'candy', color:[cfg.accent,cfg.accent2,'#FFD740','#FF80AB'][Math.floor(Math.random()*4)], size:Math.random()*3+2});
+                // Signature: lollipop — sweet swirl
+                if (Math.random() < 0.08) trailParticles.push({x, y, vx:(Math.random()-.5)*.5, vy:-Math.random()*.8-.2, life:1, type:'lollipop', color:[cfg.accent,cfg.accent2,'#FFD740'][Math.floor(Math.random()*3)], size:Math.random()*3+3, rot:0, rotV:(Math.random()-.5)*.15});
                 break;
             case 'matrix':
                 if (Math.random() < 0.15) trailParticles.push({x:x+(Math.random()-.5)*4, y:y, vx:0, vy:Math.random()*2+1, life:1, type:'code', color:cfg.accent, char:String.fromCharCode(0x30A0+Math.floor(Math.random()*96)), size:Math.random()*3+2});
+                // Signature: binary digit — digital core
+                if (Math.random() < 0.1) trailParticles.push({x, y, vx:0, vy:Math.random()*1.5+.5, life:1, type:'binary', color:cfg.accent, char:Math.random()<.5?'0':'1', size:Math.random()*3+2});
                 break;
         }
     }
@@ -9955,56 +10022,83 @@
         }
         const now = performance.now();
         const cfg = getTrailConfig();
-
-        // Fade trail canvas
-        fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-
-        if (eggInkPersistMode) {
-            // Ink persist mode: minimal fade, ink stays visible until user clicks "结束绘画"
+        // Time-based fade: calculate delta from last frame for consistent fade across variable FPS
+        const dt = _lastTrailFrameTime ? Math.min(50, now - _lastTrailFrameTime) : 16;
+        _lastTrailFrameTime = now;
+        // Failsafe: if no movement for 2s and not in egg mode, aggressively clear stale trail
+        if (!eggInkPersistMode && lastMouseMoveTime > 0 && now - lastMouseMoveTime > 2000 && trailPoints.length === 0) {
             trailCtx.globalCompositeOperation = 'destination-out';
-            trailCtx.fillStyle = 'rgba(0,0,0,0.005)';
+            trailCtx.fillStyle = 'rgba(0,0,0,0.3)';
             trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
             trailCtx.globalCompositeOperation = 'source-over';
-            // In ink-persist mode, keep trail points longer (don't filter by TRAIL_LIFETIME)
-            // Only filter very old points to prevent memory issues
-            trailPoints = trailPoints.filter(p => now - p.t < 30000);
-        } else {
-            // Normal mode: elegant fade
-            trailCtx.globalCompositeOperation = 'destination-out';
-            trailCtx.fillStyle = 'rgba(0,0,0,0.12)';
-            trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
-            trailCtx.globalCompositeOperation = 'source-over';
-            // Remove old points
-            trailPoints = trailPoints.filter(p => now - p.t < TRAIL_LIFETIME);
-        }
-
-        if (trailPoints.length >= 2 && mouseBunnyEnabled) {
-            switch (cfg.style) {
-                case 'lightsaber': drawLightsaberTrail(cfg); break;
-                case 'magic':      drawMagicWhipTrail(cfg); break;
-                case 'flame':      drawFlameTrail(cfg); break;
-                case 'mintBubble': drawMintBubbleTrail(cfg); break;
-                case 'petal':      drawPetalTrail(cfg); break;
-                case 'ribbon':     drawRibbonTrail(cfg); break;
-                case 'leaf':       drawLeafTrail(cfg); break;
-                case 'wave':      drawWaveTrail(cfg); break;
-                case 'aurora':    drawAuroraTrail(cfg); break;
-                case 'galaxy':    drawGalaxyTrail(cfg); break;
-                case 'candy':     drawCandyTrail(cfg); break;
-                case 'matrix':    drawMatrixTrail(cfg); break;
-                default:           drawRibbonTrail(cfg); break;
+            if (now - lastMouseMoveTime > 3500) {
+                trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                trailParticles = [];
             }
+            _trailRAFRunning = true;
+            requestAnimationFrame(updateAndDrawTrail);
+            return;
         }
+        try {
+            // Fade trail canvas
+            fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
-        // Draw particles
-        drawTrailParticles(cfg);
+            if (eggInkPersistMode) {
+                // Ink persist mode: minimal fade, ink stays visible until user clicks "结束绘画"
+                trailCtx.globalCompositeOperation = 'destination-out';
+                trailCtx.fillStyle = 'rgba(0,0,0,0.005)';
+                trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+                trailCtx.globalCompositeOperation = 'source-over';
+                // In ink-persist mode, keep trail points longer (don't filter by TRAIL_LIFETIME)
+                trailPoints = trailPoints.filter(p => now - p.t < 30000);
+            } else {
+                // Normal mode: time-based elegant fade (stronger on mobile for quicker cleanup)
+                const fadeRate = _isMobile ? 0.02 : 0.012;
+                const fadeAlpha = Math.min(0.5, fadeRate * (dt / 16));
+                trailCtx.globalCompositeOperation = 'destination-out';
+                trailCtx.fillStyle = `rgba(0,0,0,${fadeAlpha})`;
+                trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+                trailCtx.globalCompositeOperation = 'source-over';
+                // Remove old points
+                trailPoints = trailPoints.filter(p => now - p.t < TRAIL_LIFETIME);
+            }
 
-        // Draw pixel rabbit at the head (only in normal mode, not during ink persist or FAB drag)
-        if (trailPoints.length > 0 && mouseBunnyEnabled && !eggInkPersistMode && !_isDraggingEggFab) {
-            const head = trailPoints[trailPoints.length - 1];
-            drawPixelRabbit(fxCtx, head.x, head.y, cfg.accent, 18);
+            if (trailPoints.length >= 2 && mouseBunnyEnabled) {
+                switch (cfg.style) {
+                    case 'lightsaber': drawLightsaberTrail(cfg); break;
+                    case 'magic':      drawMagicWhipTrail(cfg); break;
+                    case 'flame':      drawFlameTrail(cfg); break;
+                    case 'mintBubble': drawMintBubbleTrail(cfg); break;
+                    case 'petal':      drawPetalTrail(cfg); break;
+                    case 'ribbon':     drawRibbonTrail(cfg); break;
+                    case 'leaf':       drawLeafTrail(cfg); break;
+                    case 'wave':      drawWaveTrail(cfg); break;
+                    case 'aurora':    drawAuroraTrail(cfg); break;
+                    case 'galaxy':    drawGalaxyTrail(cfg); break;
+                    case 'candy':     drawCandyTrail(cfg); break;
+                    case 'matrix':    drawMatrixTrail(cfg); break;
+                    default:           drawRibbonTrail(cfg); break;
+                }
+            }
+
+            // Draw particles
+            drawTrailParticles(cfg);
+
+            // Draw pixel rabbit at the head (only in normal mode, not during ink persist or FAB drag)
+            if (trailPoints.length > 0 && mouseBunnyEnabled && !eggInkPersistMode && !_isDraggingEggFab) {
+                const head = trailPoints[trailPoints.length - 1];
+                drawPixelRabbit(fxCtx, head.x, head.y, cfg.accent, 18);
+            }
+        } catch(e) {
+            console.warn('[Trail] Render error, recovering:', e);
+            trailPoints = [];
+            trailParticles = [];
+            try {
+                if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                if (fxCtx && fxCanvas) fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+            } catch(e2) {}
         }
-
         _trailRAFRunning = true;
         requestAnimationFrame(updateAndDrawTrail);
     }
@@ -10282,6 +10376,19 @@
             if (p.type === 'twinkle') { p.twinkle += 0.15; p.vx *= 0.97; p.vy *= 0.97; }
             if (p.type === 'candy')  { p.vy += 0.02; p.vx *= 0.98; }
             if (p.type === 'code')   { p.vy += 0.05; }
+            // Signature particle physics
+            if (p.type === 'pixelCube') { p.rot += p.rotV; p.vx *= 0.97; p.vy *= 0.97; }
+            if (p.type === 'crescent')  { p.vy -= 0.008; p.vx *= 0.99; }
+            if (p.type === 'sun')       { p.vy -= 0.01; p.vx *= 0.98; }
+            if (p.type === 'mintLeaf')  { p.rot += p.rotV; p.vy -= 0.005; p.vx *= 0.99; }
+            if (p.type === 'butterfly') { p.wing += p.wingV; p.vy += Math.sin(p.wing * 2) * 0.03; p.vx *= 0.98; }
+            if (p.type === 'bunnyPrint'){ p.vy += 0.02; p.vx *= 0.98; }
+            if (p.type === 'acorn')     { p.vy += 0.03; p.vx *= 0.98; }
+            if (p.type === 'fish')      { p.vx *= 0.99; }
+            if (p.type === 'snowflake') { p.rot += p.rotV; p.vy += 0.005; p.vx *= 0.99; }
+            if (p.type === 'meteor')    { p.vx *= 0.98; p.vy *= 0.98; }
+            if (p.type === 'lollipop')  { p.rot += p.rotV; p.vy += 0.01; p.vx *= 0.98; }
+            if (p.type === 'binary')    { p.vy += 0.03; }
             return p.life > 0;
         });
         trailParticles.forEach(p => {
@@ -10382,6 +10489,237 @@
                 fxCtx.fill();
                 fxCtx.shadowBlur = 0;
             } else if (p.type === 'code') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6;
+                fxCtx.font = `${(p.size || 2) * 3}px monospace`;
+                fxCtx.fillText(p.char || '0', p.x, p.y);
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'pixelCube') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                fxCtx.rotate(p.rot || 0);
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6;
+                const s = p.size || 3;
+                fxCtx.fillRect(-s, -s, s * 2, s * 2);
+                fxCtx.fillStyle = 'rgba(255,255,255,0.35)';
+                fxCtx.beginPath();
+                fxCtx.moveTo(-s, -s);
+                fxCtx.lineTo(-s + s * 0.5, -s - s * 0.5);
+                fxCtx.lineTo(s + s * 0.5, -s - s * 0.5);
+                fxCtx.lineTo(s, -s);
+                fxCtx.closePath();
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+                fxCtx.restore();
+            } else if (p.type === 'crescent') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 8;
+                const s = p.size || 3;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, s, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.globalCompositeOperation = 'destination-out';
+                fxCtx.beginPath();
+                fxCtx.arc(p.x + s * 0.4, p.y - s * 0.2, s * 0.8, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.globalCompositeOperation = 'source-over';
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'sun') {
+                const s = p.size || 3;
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 10;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, s, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.strokeStyle = p.color;
+                fxCtx.lineWidth = 1;
+                fxCtx.globalAlpha = p.life * 0.6;
+                for (let r = 0; r < 8; r++) {
+                    const a = (r * Math.PI) / 4;
+                    fxCtx.beginPath();
+                    fxCtx.moveTo(p.x + Math.cos(a) * s * 1.3, p.y + Math.sin(a) * s * 1.3);
+                    fxCtx.lineTo(p.x + Math.cos(a) * s * 1.8, p.y + Math.sin(a) * s * 1.8);
+                    fxCtx.stroke();
+                }
+                fxCtx.globalAlpha = p.life;
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'mintLeaf') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                fxCtx.rotate(p.rot || 0);
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                const s = p.size || 2;
+                fxCtx.beginPath();
+                fxCtx.ellipse(0, 0, s, s * 0.5, 0, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+                fxCtx.lineWidth = 0.5;
+                fxCtx.beginPath();
+                fxCtx.moveTo(-s, 0);
+                fxCtx.lineTo(s, 0);
+                fxCtx.stroke();
+                fxCtx.shadowBlur = 0;
+                fxCtx.restore();
+            } else if (p.type === 'butterfly') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                const s = p.size || 3;
+                const wingAngle = Math.sin(p.wing || 0) * 0.6;
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                fxCtx.save();
+                fxCtx.rotate(-wingAngle);
+                fxCtx.beginPath();
+                fxCtx.ellipse(-s * 0.6, -s * 0.2, s * 0.7, s * 0.5, -0.3, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.beginPath();
+                fxCtx.ellipse(-s * 0.5, s * 0.3, s * 0.5, s * 0.4, 0.3, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.restore();
+                fxCtx.save();
+                fxCtx.rotate(wingAngle);
+                fxCtx.beginPath();
+                fxCtx.ellipse(s * 0.6, -s * 0.2, s * 0.7, s * 0.5, 0.3, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.beginPath();
+                fxCtx.ellipse(s * 0.5, s * 0.3, s * 0.5, s * 0.4, -0.3, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.restore();
+                fxCtx.fillStyle = 'rgba(0,0,0,0.4)';
+                fxCtx.fillRect(-0.5, -s * 0.5, 1, s);
+                fxCtx.shadowBlur = 0;
+                fxCtx.restore();
+            } else if (p.type === 'bunnyPrint') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                const s = p.size || 3;
+                fxCtx.beginPath();
+                fxCtx.ellipse(p.x, p.y + s * 0.3, s * 0.5, s * 0.4, 0, 0, Math.PI * 2);
+                fxCtx.fill();
+                for (let t = -1; t <= 1; t++) {
+                    fxCtx.beginPath();
+                    fxCtx.ellipse(p.x + t * s * 0.35, p.y - s * 0.2, s * 0.18, s * 0.25, 0, 0, Math.PI * 2);
+                    fxCtx.fill();
+                }
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'acorn') {
+                const s = p.size || 2;
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, s, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.fillStyle = 'rgba(101,67,33,0.6)';
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y - s * 0.3, s * 0.8, Math.PI, 0);
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'fish') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                fxCtx.scale(p.facing || 1, 1);
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                const s = p.size || 3;
+                fxCtx.beginPath();
+                fxCtx.ellipse(0, 0, s, s * 0.5, 0, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.beginPath();
+                fxCtx.moveTo(-s, 0);
+                fxCtx.lineTo(-s * 1.5, -s * 0.4);
+                fxCtx.lineTo(-s * 1.5, s * 0.4);
+                fxCtx.closePath();
+                fxCtx.fill();
+                fxCtx.fillStyle = 'rgba(255,255,255,0.8)';
+                fxCtx.beginPath();
+                fxCtx.arc(s * 0.4, -s * 0.1, s * 0.15, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+                fxCtx.restore();
+            } else if (p.type === 'snowflake') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                fxCtx.rotate(p.rot || 0);
+                fxCtx.strokeStyle = p.color;
+                fxCtx.lineWidth = 1;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                const s = p.size || 2;
+                fxCtx.globalAlpha = p.life * 0.8;
+                for (let r = 0; r < 6; r++) {
+                    const a = (r * Math.PI) / 3;
+                    fxCtx.beginPath();
+                    fxCtx.moveTo(0, 0);
+                    fxCtx.lineTo(Math.cos(a) * s, Math.sin(a) * s);
+                    fxCtx.stroke();
+                    fxCtx.beginPath();
+                    fxCtx.moveTo(Math.cos(a) * s * 0.5, Math.sin(a) * s * 0.5);
+                    fxCtx.lineTo(Math.cos(a) * s * 0.5 + Math.cos(a + 0.5) * s * 0.3, Math.sin(a) * s * 0.5 + Math.sin(a + 0.5) * s * 0.3);
+                    fxCtx.stroke();
+                }
+                fxCtx.globalAlpha = p.life;
+                fxCtx.shadowBlur = 0;
+                fxCtx.restore();
+            } else if (p.type === 'meteor') {
+                const s = p.size || 1;
+                const tailLen = 8;
+                const grad = fxCtx.createLinearGradient(p.x - p.vx * tailLen, p.y - p.vy * tailLen, p.x, p.y);
+                grad.addColorStop(0, 'rgba(255,255,255,0)');
+                grad.addColorStop(1, p.color);
+                fxCtx.strokeStyle = grad;
+                fxCtx.lineWidth = s;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6;
+                fxCtx.beginPath();
+                fxCtx.moveTo(p.x - p.vx * tailLen, p.y - p.vy * tailLen);
+                fxCtx.lineTo(p.x, p.y);
+                fxCtx.stroke();
+                fxCtx.fillStyle = '#ffffff';
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, s, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'lollipop') {
+                fxCtx.save();
+                fxCtx.translate(p.x, p.y);
+                fxCtx.rotate(p.rot || 0);
+                const s = p.size || 3;
+                fxCtx.strokeStyle = 'rgba(255,255,255,0.6)';
+                fxCtx.lineWidth = 1;
+                fxCtx.beginPath();
+                fxCtx.moveTo(0, s);
+                fxCtx.lineTo(0, s * 2);
+                fxCtx.stroke();
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6;
+                fxCtx.beginPath();
+                fxCtx.arc(0, 0, s, 0, Math.PI * 2);
+                fxCtx.fill();
+                fxCtx.strokeStyle = 'rgba(255,255,255,0.5)';
+                fxCtx.lineWidth = 0.8;
+                fxCtx.beginPath();
+                for (let a = 0; a < Math.PI * 4; a += 0.2) {
+                    const r = (a / (Math.PI * 4)) * s * 0.8;
+                    const x = Math.cos(a) * r;
+                    const y = Math.sin(a) * r;
+                    if (a === 0) fxCtx.moveTo(x, y); else fxCtx.lineTo(x, y);
+                }
+                fxCtx.stroke();
+                fxCtx.shadowBlur = 0;
+                fxCtx.restore();
+            } else if (p.type === 'binary') {
                 fxCtx.fillStyle = p.color;
                 fxCtx.shadowColor = p.color;
                 fxCtx.shadowBlur = 6;
@@ -10654,6 +10992,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.7.2.9309', title:'12主题独特可爱签名粒子 & 移动端光轨残留修复', items:[
+            '🐾 12主题签名粒子：每套主题新增独一无二可爱特效——兔子脚印(bunny)、像素方块(cyber)、月牙(starlight)、小鱼(ocean)、蝴蝶(rose)、雪花(aurora)、流星(galaxy)、棒棒糖(candy)、橡果(forest)、小太阳(sunset)、薄荷叶(mint)、二进制(matrix)',
+            '🔧 移动端光轨残留修复：添加try-catch防止RAF循环因渲染异常停止、时间感知fade替代固定帧fade(移动端更强0.02/frame)、touchend/pointerup后确保RAF继续渐隐、visibilitychange返回页面时清除残留、2s/3.5s双重failsafe强制清除',
+            '⚡ 性能优化：签名粒子概率仅6-10%，不影响帧率；time-based fade适配可变帧率设备',
+        ]},
         { ver:'v7.7.2.9308', title:'设置持久化全面修复 & 抽卡动画3D化 & 地图进度条校准 & GPU渲染优化', items:[
             '💾 设置持久化修复：所有localStorage读写统一使用safeSetItem/safeGetItem包装，防止配额溢出或隐私模式导致设置丢失',
             '🎨 抽卡动画3D化：添加perspective 800px容器、5阶段rotateY翻转动画、传说卡金色shimmer流光效果+粒子爆裂特效',
