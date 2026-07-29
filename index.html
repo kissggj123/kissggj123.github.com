@@ -971,14 +971,14 @@
                     <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <span style="font-size:.85rem;">🗺️ 地图大小</span>
-                            <span id="map-size-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">标准(1248)</span>
+                            <span id="map-size-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">中型(156)</span>
                         </div>
                         <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('small')">小型(312)</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('medium')">中型(624)</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('standard')">标准(1248)</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('small')">小型(78)</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('medium')">中型(156)</button>
+                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('standard')">标准(312)</button>
                         </div>
-                        <div style="font-size:.6rem;color:var(--text2);">下局新游戏生效</div>
+                        <div style="font-size:.6rem;color:var(--text2);">下局新游戏生效 · 房产固定，其他随机刷新</div>
                     </div>
                     <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -2175,29 +2175,38 @@
         const tiles = [];
         let tileId = 0;
         // Get map size preference and calculate region tile counts
-        const mapSizePref = localStorage.getItem('mapSizePref') || 'standard';
-        const targetTotal = MAP_SIZE_PRESETS[mapSizePref]?.total || 1248;
+        const mapSizePref = localStorage.getItem('mapSizePref') || 'medium';
+        const targetTotal = MAP_SIZE_PRESETS[mapSizePref]?.total || 156;
         const scaleRatio = targetTotal / 1248;
+        // Calculate region counts proportional to target total
+        const regionCounts = MONO_REGIONS.map(r => Math.max(8, Math.floor(r.tileCount * scaleRatio)));
+        const totalTiles = regionCounts.reduce((s, c) => s + c, 0);
+        // Property tiles are placed at fixed intervals; remaining slots filled with random non-property types
+        // Property ratio: ~40% of total tiles are properties
+        const propertyCount = Math.floor(totalTiles * 0.4);
+        // Generate fixed property positions evenly distributed
+        const propertyPositions = new Set();
+        for (let p = 0; p < propertyCount; p++) {
+            propertyPositions.add(Math.floor((p + 0.5) * totalTiles / propertyCount));
+        }
+        // Pool of non-property tile types for random fill
+        const nonPropertyTypes = ['card', 'bonus', 'penalty', 'event', 'bank', 'stock', 'teleport', 'auction', 'upgrade', 'jail', 'casino'];
+
         for (let r = 0; r < MONO_REGIONS.length; r++) {
             const region = MONO_REGIONS[r];
             const names = REGION_PROPERTY_NAMES[r];
-            const count = Math.max(10, Math.floor(region.tileCount * scaleRatio));
+            const count = regionCounts[r];
             for (let i = 0; i < count; i++) {
                 const isVeryFirst = tileId === 0;
                 let type;
                 if (isVeryFirst) {
                     type = 'start';
+                } else if (propertyPositions.has(tileId)) {
+                    // Fixed property slot
+                    type = 'property';
                 } else {
-                    // Distribute special tiles at intervals, rest are properties
-                    const mod = i % 13;
-                    if (mod === 0) type = 'card';
-                    else if (mod === 3) type = i % 2 === 0 ? 'bonus' : 'penalty';
-                    else if (mod === 5) type = 'event';
-                    else if (mod === 7) type = i % 3 === 0 ? 'bank' : (i % 3 === 1 ? 'stock' : 'teleport');
-                    else if (mod === 9) type = i % 2 === 0 ? 'auction' : 'upgrade';
-                    else if (mod === 11) type = i % 4 === 0 ? 'jail' : 'card';
-                    else if (mod === 12) type = i % 3 === 0 ? 'casino' : 'property';
-                    else type = 'property';
+                    // Random non-property type from the pool
+                    type = nonPropertyTypes[Math.floor(Math.random() * nonPropertyTypes.length)];
                 }
                 const tile = {
                     id: tileId++,
@@ -2216,15 +2225,17 @@
                 tiles.push(tile);
             }
         }
-        // Add shortcut tiles at proportional intervals based on map size
-        const shortcutCount = 6;
+        // Add shortcut tiles at proportional intervals based on map size (2-6 shortcuts depending on map size)
+        const shortcutCount = Math.max(2, Math.min(6, Math.floor(tiles.length / 30)));
         const shortcutPositions = [];
         for (let s = 0; s < shortcutCount; s++) {
             shortcutPositions.push(Math.floor((s + 0.5) * tiles.length / shortcutCount));
         }
         for (const pos of shortcutPositions) {
             if (pos < tiles.length && tiles[pos].type !== 'start') {
-                const targetPos = (pos + 30 + Math.floor(Math.random() * 40)) % tiles.length;
+                // Only replace non-property tiles with shortcuts; if it's a property, skip
+                if (tiles[pos].type === 'property') continue;
+                const targetPos = (pos + Math.floor(tiles.length * 0.15) + Math.floor(Math.random() * 20)) % tiles.length;
                 tiles[pos] = {
                     ...tiles[pos],
                     type: 'shortcut',
@@ -7280,13 +7291,13 @@
 
     /* ---- Map size & player count settings ---- */
     const MAP_SIZE_PRESETS = {
-        small: { name: '小型', total: 312, label: '小型(312)' },
-        medium: { name: '中型', total: 624, label: '中型(624)' },
-        standard: { name: '标准', total: 1248, label: '标准(1248)' },
+        small: { name: '小型', total: 78, label: '小型(78)' },
+        medium: { name: '中型', total: 156, label: '中型(156)' },
+        standard: { name: '标准', total: 312, label: '标准(312)' },
     };
     function setMapSize(size) {
         localStorage.setItem('mapSizePref', size);
-        const preset = MAP_SIZE_PRESETS[size] || MAP_SIZE_PRESETS.standard;
+        const preset = MAP_SIZE_PRESETS[size] || MAP_SIZE_PRESETS.medium;
         const valEl = document.getElementById('map-size-val');
         if (valEl) valEl.textContent = preset.label;
     }
@@ -7297,10 +7308,10 @@
         if (valEl) valEl.textContent = count === 'random' ? '随机(4-8)' : count + '人';
     }
     function loadGameSettings() {
-        const mapSize = localStorage.getItem('mapSizePref') || 'standard';
+        const mapSize = localStorage.getItem('mapSizePref') || 'medium';
         const playerCount = localStorage.getItem('playerCountPref') || 'random';
         const mapEl = document.getElementById('map-size-val');
-        if (mapEl) { const p = MAP_SIZE_PRESETS[mapSize] || MAP_SIZE_PRESETS.standard; mapEl.textContent = p.label; }
+        if (mapEl) { const p = MAP_SIZE_PRESETS[mapSize] || MAP_SIZE_PRESETS.medium; mapEl.textContent = p.label; }
         const pcEl = document.getElementById('player-count-val');
         if (pcEl) { const pc = playerCount === 'random' ? '随机(4-8)' : playerCount + '人'; pcEl.textContent = pc; }
     }
