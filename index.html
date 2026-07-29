@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9301 -->
+    <!-- VERSION: v7.7.2.9302 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -136,6 +136,10 @@
             --trail-style: 'petal'; --trail-width: 5; --trail-glow: 14px;
         }
 
+        /* Low performance mode — activated by _perfConfig when FPS < 30 */
+        .low-perf * { animation-duration: 0.01s !important; transition-duration: 0.05s !important; }
+        .low-perf .bg-pattern, .low-perf #bg-grid { display: none; }
+
         /* ==================== Base ==================== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         /* Fluid root font-size: scales from 14px (320px viewport) to 21px (1920px+) */
@@ -231,10 +235,11 @@
             overflow-y: auto; overflow-x: hidden; min-height: 0;
         }
         .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; }
-        .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; }
+        .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; pointer-events: auto; }
         .sidebar-logo .bunny-icon.avatar-photo {
             width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden;
             margin: 0 auto .25rem; display: block; border: 2px solid var(--accent);
+            user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
         }
         .sidebar-logo .bunny-icon.avatar-photo img {
             width: 100%; height: 100%; object-fit: cover;
@@ -427,6 +432,21 @@
         .mono-tile-cell:hover .tile-tooltip { display: block; }
 
         .mono-dice-area { text-align: center; padding: .5rem 0; }
+        #buff-bar { display:flex;flex-wrap:wrap;gap:4px;justify-content:center;transition:min-height .2s; }
+        .buff-icon {
+            position:relative; display:inline-flex; align-items:center; justify-content:center;
+            width:28px; height:28px; border-radius:6px;
+            background:var(--card2); border:1px solid var(--border);
+            font-size:1rem; animation:buffPop .3s ease; cursor:default;
+        }
+        .buff-badge {
+            position:absolute; top:-4px; right:-4px;
+            min-width:16px; height:16px; border-radius:8px;
+            background:var(--accent); color:#fff; font-size:.6rem; font-weight:800;
+            display:flex; align-items:center; justify-content:center;
+            line-height:1; padding:0 3px;
+        }
+        @keyframes buffPop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
         .mono-dice { font-size: 1.4rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
         .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
         .mono-players { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
@@ -484,7 +504,7 @@
         .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left var(--transition); }
         .toggle.on::after { left: 22px; }
 
-        #avatar-img { cursor: pointer; transition: transform .3s cubic-bezier(.4,0,.2,1); -webkit-user-drag: none; user-drag: none; -webkit-touch-callout: none; display: block; touch-action: none; -webkit-tap-highlight-color: transparent; }
+        #avatar-img { cursor: pointer; transition: transform .3s cubic-bezier(.4,0,.2,1); -webkit-user-drag: none; user-drag: none; -webkit-touch-callout: none; display: block; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         #avatar-img:hover { transform: scale(1.05); }
         #avatar-img:active { transform: scale(0.95); }
         /* Avatar container: ensure circular clipping on all screen sizes — clip-path is more robust than overflow:hidden */
@@ -520,9 +540,7 @@
         }
         @keyframes eggWhiteout {
             0% { opacity: 0; }
-            8% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
+            100% { opacity: 1; }
         }
         @keyframes epicFirework {
             0% { transform: translate(0,0) scale(1); opacity: 1; }
@@ -820,7 +838,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9301</div>
+                <div class="subtitle">v7.7.2.9302</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -917,6 +935,7 @@
                 <div class="card-grid grid-2">
                     <div class="card">
                         <div class="mono-section-title">🎲 行动</div>
+                        <div id="buff-bar" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:0;padding:2px 0;transition:min-height .2s;"></div>
                         <div class="mono-dice-area" id="mono-dice-area"></div>
                         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:.3rem;margin-top:.5rem;">
                             <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="openStockExchange()" title="随时交易股票">📈 交易所</button>
@@ -1045,7 +1064,7 @@
                     </div>
                     <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
                         <span style="font-size:.85rem;">🎮 连点触发彩蛋</span>
-                        <div class="toggle" id="egg-click-toggle" onclick="toggleEggClickTrigger()" style="width:44px;height:24px;background:var(--card2);border-radius:12px;position:relative;cursor:pointer;transition:background var(--transition);"></div>
+                        <div class="toggle" id="egg-click-toggle" onclick="toggleEggClickTrigger()"></div>
                     </div>
                     <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1097,7 +1116,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9297</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9302</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1163,7 +1182,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9301',
+        VERSION: 'v7.7.2.9302',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1260,26 +1279,32 @@
         // Curse cards (target other players)
         {id:'curse_jail', ic:'⛓️', n:'禁锢咒', desc:'将对手送进监狱', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了禁锢咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了禁锢咒！`;}
             target.jailTurns=2;return `将 ${target.nm} 送入监狱 2 回合`;
         }},
         {id:'curse_ban', ic:'🚫', n:'封印咒', desc:'禁止对手下回合交易', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了封印咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了封印咒！`;}
             target.banned=1;return `封印了 ${target.nm} 的交易能力 1 回合`;
         }},
         {id:'curse_hospital', ic:'🏥', n:'重病咒', desc:'对手进入医院暂停1回合', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了重病咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了重病咒！`;}
             target.hospital=1;return `${target.nm} 被送进医院暂停 1 回合`;
         }},
         {id:'curse_drain', ic:'🧛', n:'吸血咒', desc:'吸取对手2000💰', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了吸血咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了吸血咒！`;}
             const drain=Math.min(2000,target.money);target.money-=drain;p.money+=drain;return `从 ${target.nm} 吸取了 ${drain}💰`;
         }},
         {id:'curse_backtrack', ic:'⏪', n:'回退咒', desc:'对手后退5格', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了回退咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了回退咒！`;}
             const total=getUnlockedTileCount();target.pos=(target.pos-5+total)%total;return `${target.nm} 被回退了 5 格`;
         }},
         {id:'curse_downgrade', ic:'📉', n:'贬值咒', desc:'对手随机房产降级', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了贬值咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了贬值咒！`;}
             const ti=mono.players.indexOf(target);
             const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===ti&&mono.properties[t.id].level>0);
             if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;return `${target.nm} 的 ${t.nm} 降级了`;}
@@ -1289,6 +1314,7 @@
         {id:'rent_double', ic:'🏘️', n:'收租令', desc:'下回合经过你的地产的玩家租金翻倍', rarity:'rare', monoEff:(p)=>{p.rentDouble=1;return '收租令已激活，租金翻倍 1 回合'}},
         {id:'freeze', ic:'❄️', n:'冰冻咒', desc:'指定对手跳过下回合', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了冰冻咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了冰冻咒！`;}
             target.hospital=Math.max(target.hospital||0,1);return `${target.nm} 被冰冻，跳过下回合`;
         }},
         {id:'mirror', ic:'🪞', n:'镜像反射', desc:'下回合反弹所有负面效果', rarity:'legendary', monoEff:(p)=>{p.mirror=true;return '镜像反射已激活'}},
@@ -1306,6 +1332,7 @@
         }},
         {id:'curse_confuse', ic:'😵', n:'混乱咒', desc:'对手下回合随机移动方向', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
             if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了混乱咒`;}
+            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了混乱咒！`;}
             target.confused=1;return `${target.nm} 陷入混乱，下回随机移动`;
         }},
         {id:'gold_rush', ic:'🪙', n:'淘金热', desc:'获得当前回合数 × 100💰', rarity:'legendary', monoEff:(p,mono)=>{const amt=mono.turn*100;p.money+=amt;return `淘金热 +${amt}💰`}},
@@ -1592,19 +1619,9 @@
         _activeRAF: false,
         beginRender() { this._renderStart = performance.now(); },
         endRender() { this.renderMs = Math.round((performance.now() - this._renderStart) * 10) / 10; },
-        tick() {
-            this._frames++;
-            const now = performance.now();
-            if (now - this._lastTime >= 1000) {
-                this.fps = Math.round(this._frames * 1000 / (now - this._lastTime));
-                this._frames = 0;
-                this._lastTime = now;
-            }
-        },
         // RAF-based FPS loop — more accurate than setInterval, works on mobile
         rafLoop() {
             const now = performance.now();
-            const delta = now - this._rafLast;
             this._rafLast = now;
             this._frames++;
             if (now - this._lastTime >= 500) {
@@ -1625,8 +1642,45 @@
     };
     // Start RAF-based FPS monitoring immediately
     _perfMonitor.startRAF();
-    // Keep setInterval as fallback (also works when tab is inactive)
-    setInterval(() => _perfMonitor.tick(), 200);
+
+    // === Platform detection + Performance adaptive config ===
+    const _isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const _isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const _perfConfig = {
+        modalLockMs: _isMobile ? 200 : 80,
+        clickGuardMs: _isMobile ? 250 : 0,
+        transitionMs: _isMobile ? 0.25 : 0.15,
+        trailEnabled: true,
+        trailParticleCount: _isMobile ? 3 : 8,
+        trailMaxPoints: _isMobile ? 30 : 50,
+        renderThrottleMs: _isMobile ? 16 : 8,
+        _fpsHistory: [],
+        _lowPerfMode: false,
+        adapt() {
+            const fps = _perfMonitor.fps;
+            this._fpsHistory.push(fps);
+            if (this._fpsHistory.length > 10) this._fpsHistory.shift();
+            const avgFps = this._fpsHistory.reduce((a,b)=>a+b,0) / this._fpsHistory.length;
+            if (avgFps < 30) {
+                this._lowPerfMode = true;
+                this.trailParticleCount = 0;
+                this.trailMaxPoints = 15;
+                this.transitionMs = 0.1;
+                document.documentElement.classList.add('low-perf');
+            } else if (avgFps > 50 && this._lowPerfMode) {
+                this._lowPerfMode = false;
+                this.trailParticleCount = _isMobile ? 3 : 8;
+                this.trailMaxPoints = _isMobile ? 30 : 50;
+                this.transitionMs = _isMobile ? 0.25 : 0.15;
+                document.documentElement.classList.remove('low-perf');
+            }
+            document.documentElement.style.setProperty('--transition',
+                this.transitionMs + 's cubic-bezier(.4,0,.2,1)');
+        }
+    };
+    setInterval(() => _perfConfig.adapt(), 3000);
+    document.documentElement.style.setProperty('--transition',
+        _perfConfig.transitionMs + 's cubic-bezier(.4,0,.2,1)');
 
     // GPU info detection — uses WEBGL_debug_renderer_info to get GPU vendor and renderer
     const _gpuInfo = { vendor: '检测中...', renderer: '检测中...', isAppleSilicon: false, gpuAccelerated: false };
@@ -1737,7 +1791,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9301 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9302 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1789,6 +1843,10 @@
             if (p.banned === undefined) p.banned = 0;
             if (p.hospital === undefined) p.hospital = 0;
             if (p.taxFree === undefined) p.taxFree = 0;
+            if (p.mirror === undefined) p.mirror = false;
+            if (p.confused === undefined) p.confused = 0;
+            if (p.rentDouble === undefined) p.rentDouble = 0;
+            if (p.interestFree === undefined) p.interestFree = 0;
             if (p.cards === undefined) p.cards = [];
             if (p.loans === undefined) p.loans = [];
             if (p.credit === undefined) p.credit = 100;
@@ -2496,6 +2554,7 @@
                 personality: p.isHuman ? undefined : personalityKeys[Math.floor(Math.random() * personalityKeys.length)],
                 money: Math.floor(14000 - allPlayers.length * 750), pos: startPos, cards: [],
                 shield: false, lucky: false, speed: 0, doubleDice: false,
+                mirror: false, confused: 0, rentDouble: 0, interestFree: 0,
                 consecutiveDoubles: 0, // Track consecutive doubles for jail mechanic
                 diceMultiplier: parseInt(localStorage.getItem('diceMultiplierPref')) || 1, // Dice multiplier (1x/2x/3x/4x) with risk
                 jailFree: false, jailTurns: 0, banned: 0, hospital: 0,
@@ -2591,6 +2650,48 @@
     // RAF-based render throttling — coalesce multiple render calls into one frame
     let _renderRAFId = null;
     let _renderPending = false;
+    // === ACT-style Buff Bar — shows active card effects on human player ===
+    const BUFF_DEFS = [
+        { field:'shield', type:'bool', icon:'🛡️', name:'护盾' },
+        { field:'lucky', type:'bool', icon:'🍀', name:'幸运' },
+        { field:'mirror', type:'bool', icon:'🪞', name:'镜像' },
+        { field:'doubleDice', type:'bool', icon:'🎲', name:'双倍骰' },
+        { field:'speed', type:'num', icon:'🚀', name:'加速' },
+        { field:'jailTurns', type:'num_gt0', icon:'⛓️', name:'监禁' },
+        { field:'banned', type:'num_gt0', icon:'🚫', name:'封印' },
+        { field:'hospital', type:'num_gt0', icon:'🏥', name:'医院' },
+        { field:'rentDouble', type:'num_gt0', icon:'🏘️', name:'收租令' },
+        { field:'interestFree', type:'num_gt0', icon:'💳', name:'免息' },
+        { field:'confused', type:'num_gt0', icon:'😵', name:'混乱' },
+        { field:'taxFree', type:'num_gt0', icon:'🧾', name:'免税' },
+    ];
+
+    function renderBuffBar() {
+        const bar = document.getElementById('buff-bar');
+        if (!bar || !mono || !mono.players || !mono.players[0]) return;
+        const p = mono.players[0];
+        const buffs = [];
+        for (const def of BUFF_DEFS) {
+            const val = p[def.field];
+            if (def.type === 'bool' && val) {
+                buffs.push({ icon: def.icon, name: def.name, badge: null });
+            } else if (def.type === 'num' && val && val > 0) {
+                buffs.push({ icon: def.icon, name: def.name, badge: val });
+            } else if (def.type === 'num_gt0' && val && val > 0) {
+                buffs.push({ icon: def.icon, name: def.name, badge: val });
+            }
+        }
+        if (buffs.length === 0) {
+            bar.innerHTML = '';
+            bar.style.minHeight = '0';
+        } else {
+            bar.style.minHeight = '28px';
+            bar.innerHTML = buffs.map(b =>
+                `<div class="buff-icon" title="${b.name}">${b.icon}${b.badge !== null ? `<span class="buff-badge">${b.badge}</span>` : ''}</div>`
+            ).join('');
+        }
+    }
+
     function renderMonopoly() {
         if (_renderRAFId) return; // Already scheduled — coalesce
         _renderPending = true;
@@ -2648,6 +2749,7 @@
         renderMonoStats();
         renderStockPortfolio();
         renderMonoOverview();
+        renderBuffBar();
         // Clear any stale player card tooltip after re-render (DOM elements replaced, mouseleave lost)
         hidePlayerCardTooltip();
     }
@@ -3942,6 +4044,10 @@
                 }
                 // Clear all debts
                 p.loans = [];
+                // Clear all status effects
+                p.shield = false; p.lucky = false; p.speed = 0; p.mirror = false;
+                p.confused = 0; p.banned = 0; p.hospital = 0; p.jailTurns = 0;
+                p.rentDouble = 0; p.interestFree = 0; p.taxFree = 0; p.doubleDice = false;
                 monoLog(`💀 ${p.ic} ${p.nm} 破产离场！释放所有资产`, 'error');
                 if (typeof showToast === 'function') showToast(`${p.ic} ${p.nm} 已破产离场`, 'error');
             }
@@ -4666,8 +4772,8 @@
                         <span style="font-size:.6rem;color:var(--text2);">${trendIcon}</span>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-weight:700;font-size:.85rem;">💰${price}</div>
-                        <div style="font-size:.6rem;color:${isUp ? 'var(--good)' : 'var(--bad)'};">${isUp ? '+' : ''}${changePct}%</div>
+                        <div style="font-weight:700;font-size:.85rem;" data-stock-idx="${i}" data-stock-field="price">💰${price}</div>
+                        <div style="font-size:.6rem;color:${isUp ? 'var(--good)' : 'var(--bad)'};" data-stock-idx="${i}" data-stock-field="change">${isUp ? '+' : ''}${changePct}%</div>
                     </div>
                 </div>
                 ${hasPosition ? `<div style="font-size:.65rem;color:var(--text2);margin-top:.15rem;padding-left:.2rem;">
@@ -4733,13 +4839,29 @@
         if (!_stockRefreshTimer && mono.started) {
             _stockRefreshTimer = setInterval(() => {
                 if (mono.started && document.getElementById('modal-overlay').classList.contains('show')) {
+                    // Only refresh prices if the stock modal is currently visible
                     const stockListContainer = document.querySelector('#modal-content > div[style*="max-height"]');
-                    const savedScrollTop = stockListContainer ? stockListContainer.scrollTop : 0;
+                    if (!stockListContainer) return;
+                    // Check if user is typing in an input field — don't rebuild if so
+                    const activeEl = document.activeElement;
+                    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) return;
+                    // Lightweight update: refresh prices and update only price DOM, don't rebuild modal
                     refreshStockPrices();
-                    showStockModal();
-                    requestAnimationFrame(() => {
-                        const newContainer = document.querySelector('#modal-content > div[style*="max-height"]');
-                        if (newContainer) newContainer.scrollTop = savedScrollTop;
+                    // Update each stock price element in-place
+                    STOCK_TYPES.forEach((s, i) => {
+                        const price = mono.stockPrices[i];
+                        const changePct = ((price - s.basePrice) / s.basePrice * 100).toFixed(1);
+                        const isUp = price >= s.basePrice;
+                        // Find price elements by data attribute
+                        const priceEls = stockListContainer.querySelectorAll(`[data-stock-idx="${i}"]`);
+                        priceEls.forEach(el => {
+                            if (el.dataset.stockField === 'price') {
+                                el.textContent = '💰' + price;
+                            } else if (el.dataset.stockField === 'change') {
+                                el.textContent = (isUp ? '+' : '') + changePct + '%';
+                                el.style.color = isUp ? 'var(--good)' : 'var(--bad)';
+                            }
+                        });
                     });
                 }
             }, STOCK_REFRESH_INTERVAL);
@@ -6209,11 +6331,39 @@
 
         mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
         let total = mono.dice[0] + mono.dice[1];
+        const isAiDouble = mono.dice[0] === mono.dice[1];
         const extra = p.speed || 0;
         if (extra) p.speed = 0;
         if (p.doubleDice) { total *= 2; p.doubleDice = false; }
         const aiVehicleSpeed = getVehicleBonus(p, 'speed');
         if (aiVehicleSpeed) total += aiVehicleSpeed;
+
+        // AI consecutive doubles tracking (same as aiTurn)
+        if (isAiDouble) {
+            p.consecutiveDoubles = (p.consecutiveDoubles || 0) + 1;
+            if (p.consecutiveDoubles >= 3) {
+                monoLog(`🚔 ${p.nm} 连续3次双数！进监狱！`, 'error');
+                p.jailTurns = 2;
+                p.consecutiveDoubles = 0;
+                p.pos = mono.tiles.findIndex(t => t.type === 'jail');
+                if (p.pos < 0) p.pos = 0;
+                saveMonopoly();
+                renderMonopoly();
+                setTimeout(() => nextTurn(), 600);
+                return;
+            }
+            p._extraTurn = true;
+            monoLog(`🎲 ${p.ic} 双数！获得额外回合`, 'success');
+        } else {
+            p.consecutiveDoubles = 0;
+        }
+
+        // Confused effect — random direction (same as aiTurn)
+        if (p.confused > 0) {
+            p.confused--;
+            if (Math.random() < 0.5) { total = -total; monoLog(`😵 ${p.nm} 混乱效果触发！反向移动`, 'error'); }
+        }
+
         renderMonopoly();
         monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
 
@@ -6913,10 +7063,9 @@
     /* ==================== Modal Helpers ==================== */
     // Global modal lock: prevents overlapping modals from touch+click double-fire
     let _modalLockUntil = 0;
-    const MODAL_LOCK_MS = 350; // Debounce window to prevent double-open on mobile
 
     function _isModalLocked() { return performance.now() < _modalLockUntil; }
-    function _lockModal() { _modalLockUntil = performance.now() + MODAL_LOCK_MS; }
+    function _lockModal() { _modalLockUntil = performance.now() + _perfConfig.modalLockMs; }
 
     // Unified modal show: closes any existing overlay first, then opens
     function showModalContent(htmlContent) {
@@ -6937,10 +7086,11 @@
     (function initModalClickGuard() {
         let _lastTouchEnd = 0;
         document.addEventListener('touchend', function() { _lastTouchEnd = performance.now(); }, { passive: true, capture: true });
-        // Intercept clicks that happen within 400ms of a touchend AND while modal is locked
+        // Intercept clicks that happen within the dynamic window of a touchend AND while modal is locked (mobile only)
         document.addEventListener('click', function(e) {
+            if (!_isMobile) return; // PC doesn't need click guard
             // If modal is locked and this click is a synthetic follow-up from a touch event, suppress it
-            if (_isModalLocked() && _lastTouchEnd > 0 && performance.now() - _lastTouchEnd < 400) {
+            if (_isModalLocked() && _lastTouchEnd > 0 && performance.now() - _lastTouchEnd < _perfConfig.clickGuardMs) {
                 // Only suppress clicks OUTSIDE the modal content (ghost clicks hitting underlying buttons)
                 // Allow clicks inside the modal so users can interact with buttons (close, confirm, etc.)
                 const modalOverlay = document.getElementById('modal-overlay');
@@ -6963,7 +7113,7 @@
             new MutationObserver(function(mutations) {
                 for (const m of mutations) {
                     if (m.attributeName === 'class' && modalOverlay.classList.contains('show')) {
-                        _lockModal();
+                        if (!_isModalLocked()) _lockModal();
                         break;
                     }
                 }
@@ -6974,6 +7124,7 @@
     function closeModal(e) {
         if (e && e.target !== e.currentTarget) return;
         document.getElementById('modal-overlay').classList.remove('show');
+        _modalLockUntil = 0; // Clear lock immediately so next modal can open without delay
         // Reset modal transform (from bottom-sheet swipe)
         const modal = document.getElementById('modal-content');
         if (modal) modal.style.transform = '';
@@ -7140,7 +7291,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9301 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9302 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -8412,8 +8563,7 @@
         }, 2500);
 
         // 7. === Egg Whiteout Mode ===
-        // Random duration between 6-12 seconds (no less than 6s)
-        const whiteoutDuration = 6000 + Math.random() * 6000;
+        // Whiteout: fade in 500ms then persist until painting ends
         // Activate ink-persistence mode for mouse trail
         eggInkPersistMode = true;
         eggInkPersistStart = performance.now();
@@ -8437,20 +8587,13 @@
         if (whiteout) {
             whiteout.style.display = 'block';
             whiteout.style.opacity = '0';
-            whiteout.style.animation = `eggWhiteout ${whiteoutDuration}ms ease forwards`;
+            whiteout.style.animation = 'eggWhiteout 500ms ease forwards';
             // Force reflow to start animation
             void whiteout.offsetWidth;
         }
 
-        // After whiteout ends, keep ink persist active — user controls via control bar
-        if (eggWhiteoutTimer) clearTimeout(eggWhiteoutTimer);
-        eggWhiteoutTimer = setTimeout(() => {
-            if (whiteout) {
-                whiteout.style.display = 'none';
-                whiteout.style.animation = '';
-            }
-            // Ink stays active — no auto-end. User clicks "结束绘画" to end.
-        }, whiteoutDuration);
+        // Whiteout persists until endEggPainting() — no auto-hide timer
+        _eggPanelOpen = false; // Reset FAB panel state
 
         logEvent('✨ 兔可可的祝福降临！华丽彩蛋触发！', 'god');
     }
@@ -8473,8 +8616,8 @@
                 // Timer reached 0 — switch to free mode (ink persists)
                 clearInterval(eggCountdownTimer);
                 eggCountdownTimer = null;
-                const timerEl = document.getElementById('egg-timer');
-                if (timerEl) { timerEl.textContent = '🎨 自由模式'; timerEl.style.color = '#00FF88'; }
+                const timerEl = document.getElementById('egg-fab-timer');
+                if (timerEl) { timerEl.textContent = '🎨'; timerEl.style.color = '#00FF88'; }
             }
         }, 1000);
     }
@@ -8502,20 +8645,7 @@
         } else {
             updateEggTimerDisplay();
         }
-        // Extend the whiteout visual animation if it's still showing
-        const whiteout = document.getElementById('egg-whiteout');
-        if (whiteout && whiteout.style.display !== 'none') {
-            // Restart the whiteout animation with extended duration
-            const extendMs = 10000;
-            whiteout.style.animation = 'none';
-            void whiteout.offsetWidth; // Force reflow
-            whiteout.style.animation = `eggWhiteout ${extendMs}ms ease forwards`;
-            // Extend the whiteout hide timer
-            if (eggWhiteoutTimer) clearTimeout(eggWhiteoutTimer);
-            eggWhiteoutTimer = setTimeout(() => {
-                if (whiteout) { whiteout.style.display = 'none'; whiteout.style.animation = ''; }
-            }, extendMs);
-        }
+        // Whiteout already persists — no need to extend animation
         // Refresh ink persist mode — keep ink active
         eggInkPersistMode = true;
         lastMouseMoveTime = performance.now();
@@ -8577,7 +8707,17 @@
         const eggControls = document.getElementById('egg-controls');
         if (eggControls) eggControls.style.display = 'none';
         const eggFab = document.getElementById('egg-fab');
-        if (eggFab) eggFab.style.display = 'none';
+        if (eggFab) {
+            eggFab.style.display = 'none';
+            // Reset FAB position to default
+            eggFab.style.left = '';
+            eggFab.style.top = '';
+            eggFab.style.right = '20px';
+            eggFab.style.bottom = 'calc(var(--tab-h,0px) + var(--safe-bottom,0px) + 20px)';
+        }
+        // Reset FAB panel and drag state
+        _eggPanelOpen = false;
+        _isDraggingEggFab = false;
         const whiteout = document.getElementById('egg-whiteout');
         if (whiteout) { whiteout.style.display = 'none'; whiteout.style.animation = ''; }
         // Clear trail canvas gradually
@@ -8673,11 +8813,18 @@
     // Use pointerdown for instant response (works for both mouse and touch)
     document.addEventListener('pointerdown', function(e) {
         if (!isEggClickTriggerEnabled()) return;
+        // Exclude FAB clicks (FAB has its own interaction)
+        if (e.target.closest('#egg-fab')) return;
+        // Exclude avatar clicks (avatar has its own 7-click trigger path)
+        if (e.target.closest('#avatar-img')) return;
+        // Clear any text selection that might interfere with rapid clicks
+        if (e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
+            window.getSelection().removeAllRanges();
+        }
         recordEggClick(Date.now());
     }, { passive: true });
 
     function triggerEggWhiteout() {
-        const whiteoutDuration = 3000;
         eggInkPersistMode = true;
         eggInkPersistStart = performance.now();
         lastMouseMoveTime = performance.now();
@@ -8693,13 +8840,11 @@
         if (whiteout) {
             whiteout.style.display = 'block';
             whiteout.style.opacity = '0';
-            whiteout.style.animation = 'eggWhiteout ' + whiteoutDuration + 'ms ease forwards';
+            whiteout.style.animation = 'eggWhiteout 500ms ease forwards';
             void whiteout.offsetWidth;
         }
-        if (eggWhiteoutTimer) clearTimeout(eggWhiteoutTimer);
-        eggWhiteoutTimer = setTimeout(() => {
-            if (whiteout) { whiteout.style.display = 'none'; whiteout.style.animation = ''; }
-        }, whiteoutDuration);
+        // Whiteout persists until endEggPainting() — no auto-hide timer
+        _eggPanelOpen = false; // Reset FAB panel state
         logEvent('✨ 连点触发彩蛋！华丽白屏降临！', 'god');
     }
 
@@ -8710,6 +8855,9 @@
         if (toggle) toggle.classList.toggle('on', !enabled);
     }
 
+    // Global FAB panel state — must be accessible from endEggPainting
+    let _eggPanelOpen = false;
+
     // FAB toggle panel and drag
     (function setupEggFab() {
         const fabBtn = document.getElementById('egg-fab-btn');
@@ -8718,13 +8866,12 @@
         let isDragging = false;
         let dragStartX = 0, dragStartY = 0;
         let fabStartX = 0, fabStartY = 0;
-        let panelOpen = false;
 
         fabBtn.addEventListener('click', function() {
             if (!isDragging) {
-                panelOpen = !panelOpen;
-                fabPanel.style.display = panelOpen ? 'flex' : 'none';
-                if (panelOpen) fabPanel.style.animation = 'fadeIn .2s ease';
+                _eggPanelOpen = !_eggPanelOpen;
+                fabPanel.style.display = _eggPanelOpen ? 'flex' : 'none';
+                if (_eggPanelOpen) fabPanel.style.animation = 'fadeIn .2s ease';
             }
             isDragging = false;
         });
@@ -8744,6 +8891,8 @@
 
         function onMove(e) {
             if (!dragStartX) return;
+            // Only allow FAB drag during egg painting mode
+            if (!eggInkPersistMode) { dragStartX = 0; return; }
             const touch = e.touches ? e.touches[0] : e;
             const dx = touch.clientX - dragStartX;
             const dy = touch.clientY - dragStartY;
@@ -8763,10 +8912,20 @@
 
         fabBtn.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', function() { _isDraggingEggFab = false; setTimeout(() => { isDragging = false; }, 50); });
+        document.addEventListener('mouseup', function() {
+            _isDraggingEggFab = false;
+            dragStartX = 0; // Reset drag start coordinates
+            dragStartY = 0;
+            setTimeout(() => { isDragging = false; }, 50);
+        });
         fabBtn.addEventListener('touchstart', onStart, { passive: true });
         document.addEventListener('touchmove', onMove, { passive: true });
-        document.addEventListener('touchend', function() { _isDraggingEggFab = false; setTimeout(() => { isDragging = false; }, 50); });
+        document.addEventListener('touchend', function() {
+            _isDraggingEggFab = false;
+            dragStartX = 0; // Reset drag start coordinates
+            dragStartY = 0;
+            setTimeout(() => { isDragging = false; }, 50);
+        });
     })();
 
     /* ==================== Mouse Trail — Gorgeous Edition (v5.2华丽版 + v6.0像素兔子) ==================== */
@@ -8855,7 +9014,7 @@
             }
             if (mouseBunnyEnabled && !_isOverEggFab && !_isDraggingEggFab) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
-                if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
+                if (trailPoints.length > _perfConfig.trailMaxPoints) trailPoints.shift();
                 spawnTrailParticles(mouseX, mouseY);
             }
             document.documentElement.style.setProperty('--mx', mouseX + 'px');
@@ -8879,7 +9038,7 @@
             }
             if (mouseBunnyEnabled && !_isOverEggFab && !_isDraggingEggFab) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
-                if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
+                if (trailPoints.length > _perfConfig.trailMaxPoints) trailPoints.shift();
                 spawnTrailParticles(mouseX, mouseY);
             }
         }, { passive: true });
@@ -8889,6 +9048,10 @@
 
     // --- Particle spawning per theme ---
     function spawnTrailParticles(x, y) {
+        // Skip particle generation entirely in low-perf mode or if disabled
+        if (_perfConfig.trailParticleCount === 0) return;
+        // Limit total particle count
+        if (trailParticles.length > _perfConfig.trailParticleCount * 2) return;
         const cfg = getTrailConfig();
         switch (cfg.style) {
             case 'lightsaber':
@@ -9472,17 +9635,33 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
-            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9301</strong> — 像素字体修复 & 卡牌双击 & 头像名片 & 侧边栏照片 & 机制缺陷修复</div>
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9302</strong> — UI响应优化 & Buff栏 & 彩蛋修复 & 机制缺陷修复</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>⚡ UI响应延迟优化：平台检测(PC/移动端) + FPS自适应，动态调整modal锁、click guard、动画速度</li>
+                <li>⚡ 性能监视器修复：移除setInterval重复计数，RAF独占FPS计算，移除死变量delta</li>
+                <li>⚡ 低性能模式：FPS<30时自动降级（禁用粒子、缩短动画、隐藏装饰背景），FPS>50恢复</li>
+                <li>⚡ closeModal即时解锁：关闭弹窗后不再等待锁过期即可操作</li>
+                <li>⚔️ ACT风格Buff栏：骰子区域上方显示活跃卡牌效果图标和剩余回合数</li>
                 <li>🎨 像素字体修复：CSS选择器从body.font-pixel改为html.font-pixel，与JS的document.documentElement匹配</li>
                 <li>🃏 大富翁背包双击：tab页卡牌背包也支持双击快速移到手牌，与首页统一交互</li>
                 <li>👤 头像名片修复：renderMonopoly后自动清理tooltip，添加全局click监听和8秒安全超时</li>
                 <li>🐰 侧边栏头像选项：新增设置切换emoji/兔可可照片，照片加载失败自动回退emoji</li>
+                <li>🐰 emoji头像连点修复：添加user-select:none防止选中，pointerdown排除FAB和头像区域</li>
+                <li>🎮 彩蛋开关修复：移除inline样式覆盖，toggle.on CSS规则正确生效</li>
+                <li>✨ 白屏持续修复：白屏改为500ms淡入后持续到绘画结束，不再3秒后消失</li>
+                <li>⏱️ 倒计时同步：延长绘画时间不再重启白屏动画，白屏与计时器完全同步</li>
+                <li>🔘 FAB拖拽修复：mouseup/touchend重置dragStartX/Y，onMove增加eggInkPersistMode守卫</li>
+                <li>🔘 FAB位置重置：endEggPainting重置FAB位置到默认，_eggPanelOpen全局同步</li>
+                <li>🪞 镜像反弹修复：所有8张诅咒卡现在正确检查mirror状态并反弹负面效果</li>
+                <li>💀 破产状态清除：破产时清除所有状态效果（shield/lucky/speed/mirror/confused等）</li>
+                <li>🤖 AI交易后confused修复：continueAiTurn添加confused处理和连续双数追踪</li>
                 <li>🏠 租金折扣修复：垄断折扣clamp到0.5-1.0范围，防止房产过多导致负租金</li>
                 <li>📰 新闻叠加修复：限制最多5条活跃新闻，防止重复散播，防止效果无限叠加</li>
                 <li>⏰ 看门狗修复：AI超时强制恢复时清除pendingTrade状态，防止交易卡死</li>
                 <li>🛡️ 空指针安全：aiTurn/continueAiTurn/movePlayer/triggerTile添加null检查</li>
                 <li>📊 经济参数clamp：通胀/租金/波动率/黑天鹅等参数添加上下限，防止极端值</li>
+                <li>📈 股票刷新修复：定时刷新改为局部更新价格DOM，不再销毁输入框内容</li>
+                <li>🔄 新游戏字段补全：初始化添加mirror/confused/rentDouble/interestFree字段</li>
             </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9299</strong> — UI修复 & GPU检测 & 卡牌双击 & 移动端FPS</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
