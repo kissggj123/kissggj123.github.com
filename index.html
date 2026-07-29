@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9303 -->
+    <!-- VERSION: v7.7.2.9305 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -234,8 +234,9 @@
             display: flex; flex-direction: column; gap: .5rem; transition: background var(--transition);
             overflow-y: auto; overflow-x: hidden; min-height: 0;
         }
-        .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-        .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; pointer-events: auto; }
+        .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+        .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; pointer-events: auto; }
+        .sidebar-logo * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .sidebar-logo .bunny-icon.avatar-photo {
             width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden;
             margin: 0 auto .25rem; display: block; border: 2px solid var(--accent);
@@ -556,12 +557,13 @@
         .game-card .gc-desc { font-size: .4rem; color: var(--text2); text-align: center; margin-top: 1px; line-height: 1.1; padding: 0 2px; max-height: 2.2em; overflow: hidden; }
         .cooldown-btn { position: relative; overflow: hidden; }
         .cooldown-btn .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.1); pointer-events: none; }
-        .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; }
+        .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .inventory-card:hover { transform: translateY(-2px); border-color: var(--accent); }
         .inventory-card .ic-icon { font-size: 1.2rem; }
         .inventory-card .ic-name { font-size: .42rem; font-weight: 700; text-align: center; line-height: 1.1; margin-top: 1px; }
-        .inventory-card .ic-desc { font-size: .35rem; color: var(--text2); text-align: center; line-height: 1.1; padding: 0 2px; overflow: hidden; max-height: 2.4em; }
+        .inventory-card .ic-desc { font-size: .35rem; color: var(--text2); text-align: center; line-height: 1.1; padding: 0 2px; overflow: hidden; max-height: 2.4em; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+        .inventory-card .ic-hacker-badge { position: absolute; top: 1px; right: 1px; font-size: .4rem; }
 
         .god-challenge-box { background: var(--card2); border: 2px dashed var(--accent); border-radius: var(--radius); padding: 1rem; text-align: center; margin-bottom: 1rem; }
         .god-code-display { font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace; font-size: .8rem; font-weight: 600; word-break: break-all; color: var(--accent); margin: .5rem 0; line-height: 2; letter-spacing: .5px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
@@ -841,7 +843,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9303</div>
+                <div class="subtitle">v7.7.2.9305</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1119,7 +1121,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9303</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9305</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1185,7 +1187,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9303',
+        VERSION: 'v7.7.2.9305',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1251,8 +1253,8 @@
         // Common
         {id:'funds_boost', ic:'💰', n:'财富祝福', desc:'获得 2000💰', rarity:'common', monoEff:(p)=>{p.money+=2000;return '+2000💰'}},
         {id:'speed_boost', ic:'🚀', n:'加速冲刺', desc:'下回合多走3步', rarity:'common', monoEff:(p)=>{p.speed=(p.speed||0)+3;return '下回合 +3 步（叠加）'}},
-        {id:'shield', ic:'🛡️', n:'护盾', desc:'免疫下次负面效果', rarity:'common', monoEff:(p)=>{p.shield=true;return '护盾已激活'}},
-        {id:'lucky', ic:'🍀', n:'幸运', desc:'下次正面效果翻倍', rarity:'common', monoEff:(p)=>{p.lucky=true;return '幸运已激活'}},
+        {id:'shield', ic:'🛡️', n:'护盾', desc:'免疫下次负面效果（可叠加）', rarity:'common', monoEff:(p)=>{p.shield=(p.shield||0)+1;return `护盾已激活（${p.shield}层）`}},
+        {id:'lucky', ic:'🍀', n:'幸运', desc:'下次正面效果翻倍（可叠加）', rarity:'common', monoEff:(p)=>{p.lucky=(p.lucky||0)+1;return `幸运已激活（${p.lucky}层）`}},
         {id:'heal', ic:'💊', n:'治疗', desc:'恢复 1500💰', rarity:'common', monoEff:(p)=>{p.money+=1500;return '+1500💰'}},
         // Uncommon
         {id:'swap', ic:'🔄', n:'交换', desc:'与随机玩家交换位置', rarity:'uncommon', monoEff:(p,mono)=>{
@@ -1266,7 +1268,7 @@
             if(targets.length){targets[0].p.money=Math.max(0,targets[0].p.money-800);p.money+=800;return `从 ${targets[0].p.nm} 偷取了 800💰`;}
             return '没有可偷取的对手';
         }},
-        {id:'double_dice', ic:'🎲', n:'双倍骰子', desc:'下回合掷骰点数翻倍', rarity:'uncommon', monoEff:(p)=>{p.doubleDice=true;return '下回合骰子翻倍'}},
+        {id:'double_dice', ic:'🎲', n:'双倍骰子', desc:'下回合掷骰点数翻倍（可叠加）', rarity:'uncommon', monoEff:(p)=>{p.doubleDice=(p.doubleDice||0)+1;return `下回合骰子翻倍（${p.doubleDice}层）`}},
         {id:'jail_free', ic:'🔑', n:'出狱卡', desc:'免于监狱惩罚', rarity:'uncommon', monoEff:(p)=>{p.jailFree=true;return '出狱卡已准备好'}},
         // Rare
         {id:'mega_funds', ic:'💎', n:'天降横财', desc:'获得 5000💰', rarity:'rare', monoEff:(p)=>{p.money+=5000;return '+5000💰'}},
@@ -1277,37 +1279,37 @@
             return '没有可升级的地产';
         }},
         // Legendary
-        {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=true;p.lucky=true;return '+3000💰, 护盾+幸运'}},
+        {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=(p.shield||0)+1;p.lucky=(p.lucky||0)+1;return '+3000💰, 护盾+幸运'}},
         {id:'teleport_home', ic:'🎯', n:'回归起点', desc:'传送回起点并获奖金', rarity:'legendary', monoEff:(p,mono)=>{p.pos=0;p.money+=2000;return '回到起点 +2000💰'}},
         // Curse cards (target other players)
         {id:'curse_jail', ic:'⛓️', n:'禁锢咒', desc:'将对手送进监狱', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了禁锢咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了禁锢咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了禁锢咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了禁锢咒！`;}
             target.jailTurns=(target.jailTurns||0)+2;return `将 ${target.nm} 送入监狱 2 回合（共 ${target.jailTurns} 回合）`;
         }},
         {id:'curse_ban', ic:'🚫', n:'封印咒', desc:'禁止对手下回合交易', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了封印咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了封印咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了封印咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了封印咒！`;}
             target.banned=(target.banned||0)+1;return `封印了 ${target.nm} 的交易能力（共 ${target.banned} 回合）`;
         }},
         {id:'curse_hospital', ic:'🏥', n:'重病咒', desc:'对手进入医院暂停1回合', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了重病咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了重病咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了重病咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了重病咒！`;}
             target.hospital=(target.hospital||0)+1;return `${target.nm} 被送进医院暂停（共 ${target.hospital} 回合）`;
         }},
         {id:'curse_drain', ic:'🧛', n:'吸血咒', desc:'吸取对手2000💰', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了吸血咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了吸血咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了吸血咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了吸血咒！`;}
             const drain=Math.min(2000,target.money);target.money-=drain;p.money+=drain;return `从 ${target.nm} 吸取了 ${drain}💰`;
         }},
         {id:'curse_backtrack', ic:'⏪', n:'回退咒', desc:'对手后退5格', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了回退咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了回退咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了回退咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了回退咒！`;}
             const total=getUnlockedTileCount();target.pos=(target.pos-5+total)%total;return `${target.nm} 被回退了 5 格`;
         }},
         {id:'curse_downgrade', ic:'📉', n:'贬值咒', desc:'对手随机房产降级', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了贬值咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了贬值咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了贬值咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了贬值咒！`;}
             const ti=mono.players.indexOf(target);
             const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===ti&&mono.properties[t.id].level>0);
             if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;return `${target.nm} 的 ${t.nm} 降级了`;}
@@ -1316,11 +1318,11 @@
         // === New cards: tactical & strategic ===
         {id:'rent_double', ic:'🏘️', n:'收租令', desc:'下回合经过你的地产的玩家租金翻倍', rarity:'rare', monoEff:(p)=>{p.rentDouble=1;return '收租令已激活，租金翻倍 1 回合'}},
         {id:'freeze', ic:'❄️', n:'冰冻咒', desc:'指定对手跳过下回合', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了冰冻咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了冰冻咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了冰冻咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了冰冻咒！`;}
             target.hospital=(target.hospital||0)+1;return `${target.nm} 被冰冻，跳过下回合（共 ${target.hospital} 回合）`;
         }},
-        {id:'mirror', ic:'🪞', n:'镜像反射', desc:'下回合反弹所有负面效果', rarity:'legendary', monoEff:(p)=>{p.mirror=true;return '镜像反射已激活'}},
+        {id:'mirror', ic:'🪞', n:'镜像反射', desc:'下回合反弹所有负面效果（可叠加）', rarity:'legendary', monoEff:(p)=>{p.mirror=(p.mirror||0)+1;return `镜像反射已激活（${p.mirror}层）`}},
         {id:'teleport_random', ic:'🌀', n:'随机传送', desc:'传送到地图随机位置', rarity:'uncommon', monoEff:(p,mono)=>{
             const total=getUnlockedTileCount();p.pos=Math.floor(Math.random()*total);return `传送到了第 ${p.pos} 格`;
         }},
@@ -1334,11 +1336,55 @@
             return `获得 5 股 ${STOCK_TYPES[si].nm}`;
         }},
         {id:'curse_confuse', ic:'😵', n:'混乱咒', desc:'对手下回合随机移动方向', rarity:'uncommon', isCurse:true, monoEff:(p,mono,target)=>{
-            if(target.shield){target.shield=false;return `${target.nm} 的护盾抵消了混乱咒`;}
-            if(target.mirror){target.mirror=false;return `${target.nm} 的镜像反射了混乱咒！`;}
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了混乱咒`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了混乱咒！`;}
             target.confused=1;return `${target.nm} 陷入混乱，下回随机移动`;
         }},
         {id:'gold_rush', ic:'🪙', n:'淘金热', desc:'获得当前回合数 × 100💰', rarity:'legendary', monoEff:(p,mono)=>{const amt=mono.turn*100;p.money+=amt;return `淘金热 +${amt}💰`}},
+        // === Hacker / Item Race cards (global effects, inspired by Cyberpunk 2077 / Watch Dogs / Mario Kart) ===
+        {id:'blackout', ic:'⚡', n:'停电', desc:'所有对手下回合载具失效', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){o.blackoutTurns=1;count++;}});
+            return `⚡ 停电！${count}名对手下回合载具失效`;
+        }},
+        {id:'data_hack', ic:'💾', n:'数据劫持', desc:'从所有对手各偷500💰', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
+            let total=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){const amt=Math.min(500,o.money);o.money-=amt;total+=amt;}});
+            p.money+=total;
+            return `💾 数据劫持成功！从所有对手共偷取 ${total}💰`;
+        }},
+        {id:'emp_blast', ic:'💥', n:'EMP脉冲', desc:'对手下回合掷骰减半', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){o.empTurns=1;count++;}});
+            return `💥 EMP脉冲释放！${count}名对手下回合骰子减半`;
+        }},
+        {id:'hologram', ic:'🎭', n:'全息伪装', desc:'3回合租金+50%', rarity:'rare', isHacker:true, monoEff:(p)=>{
+            p.hologramTurns=3;return `🎭 全息伪装激活！3回合内租金+50%`;
+        }},
+        {id:'signal_jam', ic:'📡', n:'信号干扰', desc:'对手2回合禁炒股', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){o.signalJamTurns=2;count++;}});
+            return `📡 信号干扰！${count}名对手2回合内无法交易股票`;
+        }},
+        {id:'banana_peel', ic:'🍌', n:'香蕉皮', desc:'对手20%概率多走3格', rarity:'uncommon', isHacker:true, monoEff:(p,mono)=>{
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){if(Math.random()<0.2){o.slipTurns=1;count++;}}});
+            return count>0?`🍌 ${count}名对手踩到香蕉皮！`:`🍌 香蕉皮已放置（无人踩中）`;
+        }},
+        {id:'blue_shell', ic:'🐢', n:'蓝龟壳', desc:'攻击最富对手2000💰', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
+            const targets=mono.players.filter(o=>o!==p&&!o.bankrupt).sort((a,b)=>b.money-a.money);
+            if(targets.length){const t=targets[0];const loss=Math.min(2000,t.money);t.money-=loss;
+            if(t.shield>0){t.shield--;t.money+=loss;return `🐢 蓝龟壳被 ${t.nm} 的护盾抵消！`;}
+            return `🐢 蓝龟壳命中最富有的 ${t.nm}！造成 ${loss}💰 损伤`;}
+            return '🐢 没有可攻击的对手';
+        }},
+        {id:'system_crash', ic:'🖥️', n:'系统崩溃', desc:'对手混乱+封印', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.shield>0){o.shield--;}else{o.confused=(o.confused||0)+1;o.banned=(o.banned||0)+1;count++;}
+            }});
+            return `🖥️ 系统崩溃！${count}名对手陷入混乱+封印`;
+        }},
     ];
     const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
     const RARITY_WEIGHTS = {common:40, uncommon:30, rare:20, legendary:10};
@@ -1416,14 +1462,18 @@
         {nm:'地产大亨', ic:'👑', desc:'当前玩家随机地产升 2 级', rarity:'rare', eff:(mono,p)=>{const pi=mono.players.indexOf(p);const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<4);if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.min(5,mono.properties[t.id].level+2);}}},
         {nm:'慈善晚宴', ic:'🤝', desc:'最富有玩家向最穷玩家捐赠 2000💰', rarity:'uncommon', eff:(mono,p)=>{const sorted=[...mono.players].filter(pl=>!pl.bankrupt).sort((a,b)=>b.money-a.money);if(sorted.length>=2){sorted[0].money-=2000;sorted[sorted.length-1].money+=2000}}},
         {nm:'黄金时代', ic:'🌟', desc:'所有玩家获得 5% 资金加成', rarity:'legendary', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=Math.floor(pl.money*0.05)})}},
-        {nm:'载具展览', ic:'🏎️', desc:'当前玩家获得 1500💰或随机载具折扣', rarity:'uncommon', eff:(mono,p)=>{
-            if(Math.random()<0.4){
+        {nm:'载具展览', ic:'🏎️', desc:'获得1500💰或载具折扣（可叠加，5回合过期）', rarity:'uncommon', eff:(mono,p)=>{
+            // Dynamic probability: base 40% discount / 60% coins, varies ±15% based on economy
+            const economy = mono.economy || {};
+            const discountChance = Math.max(0.25, Math.min(0.55, 0.4 + (Math.random() - 0.5) * 0.3 + (economy.inflation || 0.03) * 0.5));
+            if(Math.random() < discountChance){
                 const discount = 800 + Math.floor(Math.random()*1200);
                 p.vehicleDiscount = (p.vehicleDiscount || 0) + discount;
-                return `获得载具折扣 💰${discount}！下次购车可减免`;
+                p.vehicleDiscountTurns = 5; // Expires in 5 turns, refreshable
+                return `🏎️ 载具折扣 💰${discount}！（累计 💰${p.vehicleDiscount}，${p.vehicleDiscountTurns}回合内有效）`;
             } else {
                 p.money += 1500;
-                return `获得 💰1500！`;
+                return `🏎️ 获得 💰1500！`;
             }
         }},
         {nm:'遗产继承', ic:'📜', desc:'当前玩家获得 4000💰', rarity:'legendary', eff:(mono,p)=>{p.money+=4000}},
@@ -1811,7 +1861,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9303 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9305 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1846,18 +1896,35 @@
         if (!mono || !mono.tiles || !mono.players) { newMonopolyGame(); return; }
         if (mono.turn === undefined) mono.turn = 1;
         if (mono.currentPlayer === undefined) mono.currentPlayer = 0;
-        // Validate tile count matches current map configuration (1248 tiles)
+        // Validate tile count matches current map configuration
         const expectedTiles = MONO_REGIONS.reduce((sum, r) => sum + r.tileCount, 0);
         if (mono.tiles.length !== expectedTiles) {
-            // Map configuration changed (e.g., 312 -> 1248), start new game
-            newMonopolyGame();
-            return;
+            // Map configuration changed — try to preserve player data but rebuild tiles
+            console.warn(`[validateMono] Tile count mismatch: save has ${mono.tiles.length}, expected ${expectedTiles}. Rebuilding tiles.`);
+            const oldTiles = mono.tiles;
+            mono.tiles = generateAllTiles();
+            // Recalculate properties array for new tiles
+            if (mono.properties) {
+                const newProps = mono.tiles.map(t => t.type === 'property' ? {owner:-1, level:0, mortgaged:false} : null);
+                for (let i = 0; i < Math.min(oldTiles.length, mono.tiles.length); i++) {
+                    if (mono.properties[i] && newProps[i]) {
+                        newProps[i].owner = mono.properties[i].owner ?? -1;
+                        newProps[i].level = mono.properties[i].level ?? 0;
+                        newProps[i].mortgaged = mono.properties[i].mortgaged ?? false;
+                    }
+                }
+                mono.properties = newProps;
+            }
+            // Reset player positions to valid range
+            mono.players.forEach(p => {
+                if (p.pos >= mono.tiles.length) p.pos = 0;
+            });
         }
         mono.players.forEach(p => {
-            if (p.shield === undefined) p.shield = false;
-            if (p.lucky === undefined) p.lucky = false;
+            if (p.shield === undefined || p.shield === true) p.shield = p.shield === true ? 1 : 0; if (p.shield === false) p.shield = 0;
+            if (p.lucky === undefined || p.lucky === true) p.lucky = p.lucky === true ? 1 : 0; if (p.lucky === false) p.lucky = 0;
             if (p.speed === undefined) p.speed = 0;
-            if (p.doubleDice === undefined) p.doubleDice = false;
+            if (p.doubleDice === undefined || p.doubleDice === true) p.doubleDice = p.doubleDice === true ? 1 : 0; if (p.doubleDice === false) p.doubleDice = 0;
             if (p.consecutiveDoubles === undefined) p.consecutiveDoubles = 0;
             if (p.diceMultiplier === undefined) p.diceMultiplier = parseInt(localStorage.getItem('diceMultiplierPref')) || 1;
             if (p.jailFree === undefined) p.jailFree = false;
@@ -1865,10 +1932,18 @@
             if (p.banned === undefined) p.banned = 0;
             if (p.hospital === undefined) p.hospital = 0;
             if (p.taxFree === undefined) p.taxFree = 0;
-            if (p.mirror === undefined) p.mirror = false;
+            if (p.mirror === undefined || p.mirror === true) p.mirror = p.mirror === true ? 1 : 0; if (p.mirror === false) p.mirror = 0;
             if (p.confused === undefined) p.confused = 0;
             if (p.rentDouble === undefined) p.rentDouble = 0;
             if (p.interestFree === undefined) p.interestFree = 0;
+            // Hacker/item race effect fields
+            if (p.blackoutTurns === undefined) p.blackoutTurns = 0;
+            if (p.empTurns === undefined) p.empTurns = 0;
+            if (p.hologramTurns === undefined) p.hologramTurns = 0;
+            if (p.signalJamTurns === undefined) p.signalJamTurns = 0;
+            if (p.slipTurns === undefined) p.slipTurns = 0;
+            if (p.vehicleDiscount === undefined) p.vehicleDiscount = 0;
+            if (p.vehicleDiscountTurns === undefined) p.vehicleDiscountTurns = 0;
             if (p.cards === undefined) p.cards = [];
             if (p.loans === undefined) p.loans = [];
             if (p.credit === undefined) p.credit = 100;
@@ -1917,6 +1992,23 @@
             };
         }
         if (!mono.eventLog) mono.eventLog = [];
+        // Sanitize existing eventLog entries from old saves (fix [object Object] / undefined)
+        mono.eventLog = mono.eventLog.map(e => {
+            if (typeof e !== 'object' || e === null) return { type:'unknown', player:'未知', action:'', result:'', turn:0, time:0 };
+            const sFn = (v) => {
+                if (v === null || v === undefined) return '';
+                if (typeof v === 'object') { try { return JSON.stringify(v); } catch(_) { return String(v); } }
+                return String(v);
+            };
+            return {
+                type: sFn(e.type) || 'unknown',
+                player: sFn(e.player) || '未知',
+                action: sFn(e.action) || '',
+                result: sFn(e.result),
+                turn: (typeof e.turn === 'number') ? e.turn : 0,
+                time: e.time || 0,
+            };
+        });
         // Initialize multi-stock system (10 stocks)
         if (!mono.stockPrices || mono.stockPrices.length < STOCK_TYPES.length) {
             mono.stockPrices = STOCK_TYPES.map(s => s.basePrice);
@@ -2575,12 +2667,14 @@
                 // Randomize personality for AI players each game
                 personality: p.isHuman ? undefined : personalityKeys[Math.floor(Math.random() * personalityKeys.length)],
                 money: Math.floor(14000 - allPlayers.length * 750), pos: startPos, cards: [],
-                shield: false, lucky: false, speed: 0, doubleDice: false,
-                mirror: false, confused: 0, rentDouble: 0, interestFree: 0,
+                shield: 0, lucky: 0, speed: 0, doubleDice: 0,
+                mirror: 0, confused: 0, rentDouble: 0, interestFree: 0,
                 consecutiveDoubles: 0, // Track consecutive doubles for jail mechanic
                 diceMultiplier: parseInt(localStorage.getItem('diceMultiplierPref')) || 1, // Dice multiplier (1x/2x/3x/4x) with risk
                 jailFree: false, jailTurns: 0, banned: 0, hospital: 0,
                 taxFree: 0, bankrupt: false,
+                blackoutTurns: 0, empTurns: 0, hologramTurns: 0, signalJamTurns: 0, slipTurns: 0,
+                vehicleDiscount: 0, vehicleDiscountTurns: 0,
                 loans: [], credit: 100, vehicle: null, vehicles: [],
                 stocks: 0, stockAvgCost: 0,
                 stockHoldings: STOCK_TYPES.map(s => ({shares: 0, avgCost: 0, leverage: 1, isShort: false})),
@@ -2639,9 +2733,17 @@
             if (!_saveMonoPending) return;
             _saveMonoPending = false;
             try {
-                localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono));
+                const data = JSON.stringify(mono);
+                localStorage.setItem(CONFIG.MONO_SAVE_KEY, data);
                 localStorage.setItem('bunny_news_state', JSON.stringify(newsState));
-            } catch(e){}
+            } catch(e) {
+                console.error('[saveMonopoly] Save failed:', e);
+                // Try to free up space by removing old event log entries
+                if (mono.eventLog && mono.eventLog.length > 50) {
+                    mono.eventLog = mono.eventLog.slice(-50);
+                    try { localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono)); } catch(e2) {}
+                }
+            }
         });
     }
     // Force immediate save (for critical moments like game start/end)
@@ -2651,12 +2753,40 @@
         try {
             localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono));
             localStorage.setItem('bunny_news_state', JSON.stringify(newsState));
-        } catch(e){}
+        } catch(e) {
+            console.error('[saveMonopolyNow] Save failed:', e);
+        }
     }
 
     function saveInventory() {
-        try { localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(cardInventory)); } catch(e){}
+        try {
+            localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(cardInventory));
+        } catch(e) {
+            console.error('[saveInventory] Save failed:', e);
+            // If quota exceeded, try trimming inventory
+            if (cardInventory.length > 30) {
+                cardInventory = cardInventory.slice(-30);
+                try { localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(cardInventory)); } catch(e2) {}
+            }
+        }
     }
+
+    // Flush pending saves when page is about to close/refresh
+    function _flushPendingSaves() {
+        if (_saveMonoPending) {
+            if (_saveMonoRafId) { cancelAnimationFrame(_saveMonoRafId); _saveMonoRafId = null; }
+            _saveMonoPending = false;
+            try {
+                localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono));
+                localStorage.setItem('bunny_news_state', JSON.stringify(newsState));
+            } catch(e) {}
+        }
+    }
+    window.addEventListener('beforeunload', _flushPendingSaves);
+    window.addEventListener('pagehide', _flushPendingSaves);
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') _flushPendingSaves();
+    });
 
     function getUnlockedTileCount() {
         // All tiles are always unlocked (era system removed)
@@ -2674,10 +2804,10 @@
     let _renderPending = false;
     // === ACT-style Buff Bar — shows active card effects for all players ===
     const BUFF_DEFS = [
-        { field:'shield', type:'bool', icon:'🛡️', name:'护盾' },
-        { field:'lucky', type:'bool', icon:'🍀', name:'幸运' },
-        { field:'mirror', type:'bool', icon:'🪞', name:'镜像' },
-        { field:'doubleDice', type:'bool', icon:'🎲', name:'双倍骰' },
+        { field:'shield', type:'num', icon:'🛡️', name:'护盾' },
+        { field:'lucky', type:'num', icon:'🍀', name:'幸运' },
+        { field:'mirror', type:'num', icon:'🪞', name:'镜像' },
+        { field:'doubleDice', type:'num', icon:'🎲', name:'双倍骰' },
         { field:'speed', type:'num', icon:'🚀', name:'加速' },
         { field:'jailTurns', type:'num_gt0', icon:'⛓️', name:'监禁' },
         { field:'banned', type:'num_gt0', icon:'🚫', name:'封印' },
@@ -2686,6 +2816,12 @@
         { field:'interestFree', type:'num_gt0', icon:'💳', name:'免息' },
         { field:'confused', type:'num_gt0', icon:'😵', name:'混乱' },
         { field:'taxFree', type:'num_gt0', icon:'🧾', name:'免税' },
+        // Hacker/item race effects
+        { field:'blackoutTurns', type:'num_gt0', icon:'⚡', name:'停电' },
+        { field:'empTurns', type:'num_gt0', icon:'💥', name:'EMP' },
+        { field:'hologramTurns', type:'num_gt0', icon:'🎭', name:'伪装' },
+        { field:'signalJamTurns', type:'num_gt0', icon:'📡', name:'干扰' },
+        { field:'slipTurns', type:'num_gt0', icon:'🍌', name:'香蕉皮' },
     ];
     // Debuff fields that should be shown for ALL players (not just current)
     const DEBUFF_FIELDS = ['jailTurns','banned','hospital','confused'];
@@ -2697,16 +2833,17 @@
             const vdef = VEHICLE_POOL.find(v => v.id === p.vehicle.id);
             if (vdef && vdef.bonus) {
                 const b = vdef.bonus;
-                let vIcon = '🚗', vLabel = vdef.ic;
-                if (b.type === 'speed') { vIcon = '🚀'; vLabel = `移动+${b.val}`; }
-                else if (b.type === 'rentDiscount') { vIcon = '🛡️'; vLabel = `租金-${Math.round(b.val*100)}%`; }
-                else if (b.type === 'rentImmune') { vIcon = '🎯'; vLabel = `${Math.round(b.val*100)}%免租`; }
+                let vIcon = vdef.ic, vLabel = vdef.nm;
+                if (b.type === 'speed') { vLabel = `移动+${b.val}`; }
+                else if (b.type === 'rentDiscount') { vLabel = `租金-${Math.round(b.val*100)}%`; }
+                else if (b.type === 'rentImmune') { vLabel = `${Math.round(b.val*100)}%免租`; }
+                else if (b.type === 'allInOne') { vLabel = `全能+${b.val}`; }
                 buffs.push({ icon: vdef.ic, name: `${vdef.nm} (${vLabel})`, badge: null, isVehicle: true });
             }
         }
         // Vehicle discount buff
         if (p.vehicleDiscount && p.vehicleDiscount > 0) {
-            buffs.push({ icon: '🏷️', name: `载具折扣 💰${p.vehicleDiscount}`, badge: null });
+            buffs.push({ icon: '🏷️', name: `载具折扣 💰${p.vehicleDiscount}（${p.vehicleDiscountTurns || 0}回合）`, badge: p.vehicleDiscountTurns || null, isVehicle: true });
         }
         // Card effect buffs
         for (const def of BUFF_DEFS) {
@@ -2734,22 +2871,23 @@
                 `<div class="buff-icon ${b.isVehicle ? 'buff-vehicle' : ''}" title="${b.nm}">${b.icon}${b.badge !== null ? `<span class="buff-badge">${b.badge}</span>` : ''}</div>`
             ).join(''));
         }
-        // 2. Other players' debuffs (red border) — show when AI is affected by card effects
+        // 2. Other players' buffs and debuffs — show ALL active effects for AI players
+        const POSITIVE_FIELDS = ['shield','lucky','mirror','doubleDice','speed','rentDouble','interestFree','taxFree','hologramTurns'];
         for (let i = 1; i < mono.players.length; i++) {
             const ap = mono.players[i];
             if (!ap || ap.bankrupt) continue;
-            // Show actual debuffs from BUFF_DEFS for other players
-            const otherDebuffs = [];
+            const otherEffects = [];
             for (const def of BUFF_DEFS) {
-                if (!DEBUFF_FIELDS.includes(def.field)) continue;
                 const val = ap[def.field];
-                if (def.type === 'num_gt0' && val && val > 0) {
-                    otherDebuffs.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic });
+                if (def.type === 'num' && val && val > 0) {
+                    otherEffects.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic, isDebuff: !POSITIVE_FIELDS.includes(def.field) });
+                } else if (def.type === 'num_gt0' && val && val > 0) {
+                    otherEffects.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic, isDebuff: true });
                 }
             }
-            if (otherDebuffs.length > 0) {
-                parts.push(otherDebuffs.map(b =>
-                    `<div class="buff-icon buff-debuff" title="${b.name}">${b.playerIcon}<span class="buff-badge buff-badge-debuff">${b.badge}</span></div>`
+            if (otherEffects.length > 0) {
+                parts.push(otherEffects.map(b =>
+                    `<div class="buff-icon ${b.isDebuff ? 'buff-debuff' : 'buff-vehicle'}" title="${b.name}">${b.playerIcon}<span class="buff-badge ${b.isDebuff ? 'buff-badge-debuff' : ''}">${b.badge}</span></div>`
                 ).join(''));
             }
         }
@@ -2832,8 +2970,8 @@
             const active = i === mono.currentPlayer && !gameOver;
             const personalityNm = p.isHuman ? '玩家' : (AI_PERSONALITIES[p.personality]?.nm || 'AI');
             const statusIcons = [];
-            if (p.shield) statusIcons.push('🛡️');
-            if (p.lucky) statusIcons.push('🍀');
+            if (p.shield > 0) statusIcons.push(`🛡️${p.shield>1?p.shield:''}`);
+            if (p.lucky > 0) statusIcons.push(`🍀${p.lucky>1?p.lucky:''}`);
             if (p.speed) statusIcons.push(`🚀${p.speed}`);
             if (p.jailTurns > 0) statusIcons.push('🔒');
             if (p.taxFree > 0) statusIcons.push('🧾');
@@ -2987,8 +3125,8 @@
 
         const personalityNm = p.isHuman ? '玩家' : (AI_PERSONALITIES[p.personality]?.nm || 'AI');
         const statusIcons = [];
-        if (p.shield) statusIcons.push('🛡️');
-        if (p.lucky) statusIcons.push('🍀');
+        if (p.shield > 0) statusIcons.push(`🛡️${p.shield>1?p.shield:''}`);
+        if (p.lucky > 0) statusIcons.push(`🍀${p.lucky>1?p.lucky:''}`);
         if (p.jailTurns > 0) statusIcons.push('🔒');
         if (p.vehicle) statusIcons.push(p.vehicle.ic);
 
@@ -3752,10 +3890,15 @@
                 let total = mono.dice[0] + mono.dice[1];
                 const extra = p.speed || 0;
                 if (extra) p.speed = 0;
-                if (p.doubleDice) { total *= 2; p.doubleDice = false; monoLog('🎲 双倍骰子卡激活！', 'success'); }
-                // Vehicle speed bonus
-                const vehicleSpeed = getVehicleBonus(p, 'speed');
+                if (p.doubleDice > 0) { total *= 2; p.doubleDice--; monoLog('🎲 双倍骰子卡激活！', 'success'); }
+                // EMP effect: halve dice total
+                if (p.empTurns > 0) { total = Math.ceil(total / 2); monoLog('💥 EMP脉冲效果！骰子减半', 'error'); }
+                // Slip (banana peel): add 3 extra steps
+                if (p.slipTurns > 0) { total += 3; p.slipTurns = 0; monoLog('🍌 踩到香蕉皮！多走3步', 'event'); }
+                // Vehicle speed bonus (disabled by blackout)
+                const vehicleSpeed = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'speed');
                 if (vehicleSpeed) { total += vehicleSpeed; monoLog(`${p.vehicle.ic} 载具加速 +${vehicleSpeed}`, 'success'); }
+                if (p.blackoutTurns > 0 && p.vehicle) { monoLog('⚡ 停电！载具加成失效', 'error'); }
 
                 // Dice multiplier with risk
                 const mult = p.diceMultiplier || 1;
@@ -3852,14 +3995,14 @@
                 break;
             case 'bonus': {
                 let bonus = tile.val || 1000;
-                if (p.lucky) { bonus *= 2; p.lucky = false; monoLog(`🍀 幸运翻倍！`, 'success'); }
+                if (p.lucky > 0) { bonus *= 2; p.lucky--; monoLog(`🍀 幸运翻倍！`, 'success'); }
                 p.money += bonus;
                 recordGameEvent('bonus', `${p.ic} ${p.nm}`, '奖励格', `获得 ${bonus}💰`);
                 monoLog(`${p.ic} 获得 ${bonus}💰`, 'success');
                 break;
             }
             case 'penalty':
-                if (p.shield) { p.shield = false; monoLog(`🛡️ ${p.nm} 护盾抵消伤害！`, 'success'); recordGameEvent('penalty', `${p.ic} ${p.nm}`, '惩罚格', '护盾抵消'); break; }
+                if (p.shield > 0) { p.shield--; monoLog(`🛡️ ${p.nm} 护盾抵消伤害！`, 'success'); recordGameEvent('penalty', `${p.ic} ${p.nm}`, '惩罚格', '护盾抵消'); break; }
                 p.money -= (tile.val || 800);
                 recordGameEvent('penalty', `${p.ic} ${p.nm}`, '惩罚格', `失去 ${tile.val||800}💰`);
                 monoLog(`${p.ic} 失去 ${tile.val||800}💰`, 'error');
@@ -4015,22 +4158,27 @@
                             rent *= 2;
                             monoLog(`🏘️ ${owner.nm} 的收租令生效！租金翻倍`, 'event');
                         }
-                        // Vehicle rent discount
-                        const rentDiscount = getVehicleBonus(p, 'rentDiscount');
+                        // Hologram: +50% rent for owner
+                        if (owner.hologramTurns > 0) {
+                            rent = Math.floor(rent * 1.5);
+                            monoLog(`🎭 ${owner.nm} 的全息伪装生效！租金+50%`, 'event');
+                        }
+                        // Blackout: vehicle bonuses disabled
+                        const rentDiscount = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'rentDiscount');
                         if (rentDiscount) {
                             rent = Math.floor(rent * (1 - rentDiscount));
                             monoLog(`${p.vehicle.ic} 载具减免租金 ${Math.round(rentDiscount*100)}%`, 'success');
                         }
-                        // Vehicle rent immunity chance
-                        const immuneChance = getVehicleBonus(p, 'rentImmune');
+                        // Vehicle rent immunity chance (disabled by blackout)
+                        const immuneChance = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'rentImmune');
                         if (immuneChance && Math.random() < immuneChance) {
                             monoLog(`${p.vehicle.ic} 载具免疫本次租金！`, 'success');
                             break;
                         }
-                        if (p.shield) { p.shield = false; monoLog(`🛡️ 护盾抵消租金！`, 'success'); break; }
+                        if (p.shield > 0) { p.shield--; monoLog(`🛡️ 护盾抵消租金！`, 'success'); break; }
                         // Mirror reflection — bounce negative effect back
-                        if (p.mirror) {
-                            p.mirror = false;
+                        if (p.mirror > 0) {
+                            p.mirror--;
                             owner.money -= rent;
                             p.money += rent;
                             monoLog(`🪞 ${p.nm} 镜像反射！租金反弹给 ${owner.nm}`, 'event');
@@ -4115,9 +4263,10 @@
                 // Clear all debts
                 p.loans = [];
                 // Clear all status effects
-                p.shield = false; p.lucky = false; p.speed = 0; p.mirror = false;
+                p.shield = 0; p.lucky = 0; p.speed = 0; p.mirror = 0;
                 p.confused = 0; p.banned = 0; p.hospital = 0; p.jailTurns = 0;
-                p.rentDouble = 0; p.interestFree = 0; p.taxFree = 0; p.doubleDice = false;
+                p.rentDouble = 0; p.interestFree = 0; p.taxFree = 0; p.doubleDice = 0;
+                p.blackoutTurns = 0; p.empTurns = 0; p.hologramTurns = 0; p.signalJamTurns = 0; p.slipTurns = 0; p.vehicleDiscount = 0; p.vehicleDiscountTurns = 0;
                 monoLog(`💀 ${p.ic} ${p.nm} 破产离场！释放所有资产`, 'error');
                 if (typeof showToast === 'function') showToast(`${p.ic} ${p.nm} 已破产离场`, 'error');
             }
@@ -4649,6 +4798,7 @@
             <div class="modal-title">🚗 载具商店</div>
             <div style="text-align:center;padding:.5rem 0;">
                 <div style="font-size:.9rem;">你的资金：💰${p.money}</div>
+                ${p.vehicleDiscount > 0 ? `<div style="font-size:.75rem;color:var(--good);margin-top:.2rem;">🏷️ 载具折扣：💰${p.vehicleDiscount}（购买时抵扣，${p.vehicleDiscountTurns || 0}回合后过期）</div>` : ''}
                 <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem;">车库：${ownedCount} 辆载具 ${ownedCount > 0 ? '（可随时切换装备）' : ''}</div>
                 ${currentVehicle ? `<div style="font-size:.8rem;color:var(--accent);margin-top:.2rem;">当前装备：${currentVehicle.ic} ${currentVehicle.nm}</div>
                 <div style="font-size:.7rem;color:var(--text2);">加成：${currentVehicle.bonus.label}</div>` : '<div style="font-size:.8rem;color:var(--text2);">暂未装备载具</div>'}
@@ -4665,13 +4815,23 @@
         const p = mono.players[0];
         const v = VEHICLE_POOL.find(x => x.id === vehicleId);
         if (!v) { monoLog('载具不存在', 'error'); return; }
-        // Apply news vehicle price modifier
-        const economy = mono.economy || calculateEconomyState();
-        const actualPrice = Math.floor(v.price * (economy.newsVehiclePriceMod || 1));
-        if (p.money < actualPrice) { monoLog('资金不足', 'error'); return; }
         if (!p.vehicles) p.vehicles = [];
-        // Check if already owned
+        // Check if already owned (before any price calculation)
         if (p.vehicles.some(ov => ov.id === vehicleId)) { monoLog('已拥有该载具', 'info'); return; }
+        // Apply news vehicle price modifier and player vehicle discount
+        const economy = mono.economy || calculateEconomyState();
+        let actualPrice = Math.floor(v.price * (economy.newsVehiclePriceMod || 1));
+        let discountApplied = 0;
+        if (p.vehicleDiscount && p.vehicleDiscount > 0) {
+            discountApplied = Math.min(p.vehicleDiscount, actualPrice);
+            actualPrice -= discountApplied;
+        }
+        if (p.money < actualPrice) { monoLog('资金不足', 'error'); return; }
+        // Only consume discount after purchase is confirmed
+        if (discountApplied > 0) {
+            p.vehicleDiscount -= discountApplied;
+            monoLog(`🏷️ 载具折扣抵扣 💰${discountApplied}，剩余折扣 💰${p.vehicleDiscount}`, 'info');
+        }
         p.money -= actualPrice;
         p.vehicles.push({...v});
         // Auto-equip if player has no current vehicle
@@ -4951,6 +5111,7 @@
 
     function buyStockMulti(stockIdx, leverage) {
         const p = mono.players[0];
+        if (p.signalJamTurns > 0) { monoLog('📡 信号干扰中！无法交易股票', 'error'); return; }
         const price = mono.stockPrices[stockIdx];
         const amount = parseInt(document.getElementById('stock-amount')?.value) || 1;
         // Leverage: player pays margin = price * amount / leverage, but P/L is amplified by leverage
@@ -5065,6 +5226,7 @@
 
     function sellStockMulti(stockIdx) {
         const p = mono.players[0];
+        if (p.signalJamTurns > 0) { monoLog('📡 信号干扰中！无法交易股票', 'error'); return; }
         const h = p.stockHoldings[stockIdx];
         if (h.shares <= 0) return;
         const price = mono.stockPrices[stockIdx];
@@ -5120,85 +5282,162 @@
 
     function aiStockDecision(p) {
         if (!p.stockHoldings || p.stockHoldings.length === 0) return;
+        if (p.signalJamTurns > 0) return; // Signal jam prevents stock trading
         const personality = AI_PERSONALITIES[p.personality];
-        const difficulty = getAIDifficulty(); // AI learning: difficulty adaptation
-        // Strategy replication: 20% chance to follow human's favorite stock
-        const humanFavStock = getHumanFavoriteStock();
-        let stockIdx;
-        if (humanFavStock >= 0 && Math.random() < 0.2) {
-            stockIdx = humanFavStock; // Copy human's stock pick
-        } else {
-            stockIdx = Math.floor(Math.random() * STOCK_TYPES.length);
-        }
-        const stock = STOCK_TYPES[stockIdx];
-        const price = mono.stockPrices[stockIdx];
-        const h = p.stockHoldings[stockIdx];
+        const difficulty = getAIDifficulty();
 
-        // AI closes short position when price falls below avgCost (profit taking)
-        if (h.isShort && h.shares > 0 && price < h.avgCost * 0.9 && Math.random() < 0.5) {
-            const closeShares = h.shares;
-            const profit = Math.round((h.avgCost - price) * closeShares * (h.leverage || 1));
-            const marginReturn = Math.ceil(h.avgCost * closeShares / (h.leverage || 1));
-            p.money += marginReturn + profit;
-            p.stats.stockProfit += profit;
-            p.stats.stockTrades++;
-            monoLog(`${p.ic} 📉 平仓做空 ${closeShares} 股 ${stock.ic}，盈利 💰${Math.abs(profit)}`, 'success');
-            h.shares = 0; h.avgCost = 0; h.leverage = 1; h.isShort = false;
-            // Use closeShares (not h.shares which is now 0) for price impact — closing short pushes price up
-            mono.stockPrices[stockIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + closeShares * 0.005)));
-            mono.stockMarket = getStockIndex();
-            return;
-        }
-        // AI closes long position when price rises above avgCost (profit taking)
-        if (!h.isShort && h.shares > 0 && price > h.avgCost * 1.15 && Math.random() < 0.5) {
-            const soldShares = h.shares;
-            const profit = Math.round((price - h.avgCost) * soldShares * (h.leverage || 1));
-            const marginReturn = Math.ceil(h.avgCost * soldShares / (h.leverage || 1));
-            p.money += marginReturn + profit;
-            p.stats.stockProfit += profit;
-            p.stats.stockTrades++;
-            monoLog(`${p.ic} 📉 卖出 ${soldShares} 股 ${stock.ic}，盈利 💰${Math.abs(profit)}`, 'success');
-            h.shares = 0; h.avgCost = 0; h.leverage = 1;
-            // Use soldShares (not h.shares which is now 0) for price impact
-            mono.stockPrices[stockIdx] = Math.max(stock.basePrice * 0.2, Math.floor(price * (1 - soldShares * 0.005)));
-            mono.stockMarket = getStockIndex();
-            return;
-        }
-        // AI buys when price is below base and has cash (difficulty-scaled)
-        if (price < stock.basePrice * 0.85 && p.money > price * 5 && Math.random() < personality.buyChance * 0.4 * difficulty) {
-            const amount = Math.floor(Math.min(p.money * 0.15, p.money) / price);
-            if (amount > 0) {
-                const margin = Math.ceil(price * amount); // AI uses 1x leverage
-                if (p.money >= margin) {
-                    h.avgCost = h.shares > 0 ? Math.round((h.avgCost * h.shares + price * amount) / (h.shares + amount)) : price;
-                    h.shares += amount;
-                    h.isShort = false;
-                    h.leverage = 1;
-                    p.money -= margin;
+        // === Phase 1: Auto-sell — scan all holdings for take-profit / stop-loss ===
+        const takeProfitThreshold = p.personality === 'aggressive' ? 1.25 : p.personality === 'conservative' ? 1.10 : 1.15;
+        const stopLossThreshold = p.personality === 'aggressive' ? 0.75 : p.personality === 'conservative' ? 0.88 : 0.82;
+        for (let i = 0; i < p.stockHoldings.length; i++) {
+            const h = p.stockHoldings[i];
+            if (!h || h.shares <= 0) continue;
+            if (!h.avgCost || h.avgCost <= 0) continue; // Guard against division by zero
+            const stock = STOCK_TYPES[i];
+            const price = mono.stockPrices[i];
+
+            if (h.isShort) {
+                // Short position: profit when price drops, loss when price rises
+                const profitRatio = (h.avgCost - price) / h.avgCost;
+                const lossRatio = (price - h.avgCost) / h.avgCost;
+                if (profitRatio >= (takeProfitThreshold - 1) || lossRatio >= (1 - stopLossThreshold)) {
+                    const closeShares = h.shares;
+                    const profit = Math.round((h.avgCost - price) * closeShares * (h.leverage || 1));
+                    const marginReturn = Math.ceil(h.avgCost * closeShares / (h.leverage || 1));
+                    p.money += marginReturn + profit;
+                    p.stats.stockProfit += profit;
                     p.stats.stockTrades++;
-                    mono.stockPrices[stockIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + amount * 0.005)));
+                    const action = profit >= 0 ? '止盈' : '止损';
+                    monoLog(`${p.ic} 📉 ${action}平仓做空 ${closeShares} 股 ${stock.ic}，${profit>=0?'盈利':'亏损'} 💰${Math.abs(profit)}`, profit>=0?'success':'error');
+                    h.shares = 0; h.avgCost = 0; h.leverage = 1; h.isShort = false;
+                    mono.stockPrices[i] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + closeShares * 0.005)));
                     mono.stockMarket = getStockIndex();
-                    monoLog(`${p.ic} 📈 买入 ${amount} 股 ${stock.ic}`, 'info');
                 }
-            }
-        }
-        // Aggressive AI may short sell
-        else if (price > stock.basePrice * 1.3 && p.money > price * 3 && p.personality === 'aggressive' && Math.random() < 0.3) {
-            const amount = Math.floor(Math.min(p.money * 0.1, p.money) / price);
-            if (amount > 0) {
-                const margin = Math.ceil(price * amount);
-                if (p.money >= margin) {
-                    h.avgCost = h.shares > 0 ? Math.round((h.avgCost * h.shares + price * amount) / (h.shares + amount)) : price;
-                    h.shares += amount;
-                    h.isShort = true;
-                    h.leverage = 1;
-                    p.money -= margin;
+            } else {
+                // Long position: profit when price rises, loss when price drops
+                const profitRatio = (price - h.avgCost) / h.avgCost;
+                const lossRatio = (h.avgCost - price) / h.avgCost;
+                if (profitRatio >= (takeProfitThreshold - 1) || lossRatio >= (1 - stopLossThreshold)) {
+                    const soldShares = h.shares;
+                    const profit = Math.round((price - h.avgCost) * soldShares * (h.leverage || 1));
+                    const marginReturn = Math.ceil(h.avgCost * soldShares / (h.leverage || 1));
+                    p.money += marginReturn + profit;
+                    p.stats.stockProfit += profit;
                     p.stats.stockTrades++;
-                    monoLog(`${p.ic} 🔻 做空 ${amount} 股 ${stock.ic}`, 'info');
+                    const action = profit >= 0 ? '止盈' : '止损';
+                    monoLog(`${p.ic} 📉 ${action}卖出 ${soldShares} 股 ${stock.ic}，${profit>=0?'盈利':'亏损'} 💰${Math.abs(profit)}`, profit>=0?'success':'error');
+                    h.shares = 0; h.avgCost = 0; h.leverage = 1;
+                    mono.stockPrices[i] = Math.max(stock.basePrice * 0.2, Math.floor(price * (1 - soldShares * 0.005)));
+                    mono.stockMarket = getStockIndex();
                 }
             }
         }
-        // NOTE: Dividend is now only paid via triggerTile stock tile, not here (fixes double dividend)
+
+        // === Phase 2: Smart buy — find the best stock opportunity ===
+        const humanFavStock = getHumanFavoriteStock();
+        // Strategy replication: 20% chance to follow human's favorite stock
+        if (humanFavStock >= 0 && Math.random() < 0.2) {
+            const si = humanFavStock;
+            const stock = STOCK_TYPES[si];
+            const price = mono.stockPrices[si];
+            const h = p.stockHoldings[si];
+            if (price < stock.basePrice * 0.9 && p.money > price * 5 && !h.isShort) {
+                const amount = Math.floor(Math.min(p.money * 0.12, p.money) / price);
+                if (amount > 0) {
+                    const margin = Math.ceil(price * amount);
+                    if (p.money >= margin) {
+                        h.avgCost = h.shares > 0 ? Math.round((h.avgCost * h.shares + price * amount) / (h.shares + amount)) : price;
+                        h.shares += amount;
+                        h.isShort = false;
+                        h.leverage = 1;
+                        p.money -= margin;
+                        p.stats.stockTrades++;
+                        mono.stockPrices[si] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + amount * 0.005)));
+                        mono.stockMarket = getStockIndex();
+                        monoLog(`${p.ic} 📈 跟随买入 ${amount} 股 ${stock.ic}`, 'info');
+                    }
+                }
+            }
+            return;
+        }
+
+        // Scan all stocks to find the best buy opportunity (lowest price/basePrice ratio)
+        let bestBuyIdx = -1;
+        let bestBuyRatio = Infinity;
+        for (let i = 0; i < STOCK_TYPES.length; i++) {
+            const stock = STOCK_TYPES[i];
+            const price = mono.stockPrices[i];
+            const h = p.stockHoldings[i];
+            const ratio = price / stock.basePrice;
+            // Skip if already holding long, or if price is above base
+            if (h.isShort || h.shares > 0) continue;
+            if (ratio < bestBuyRatio && ratio < 0.85) {
+                bestBuyRatio = ratio;
+                bestBuyIdx = i;
+            }
+        }
+
+        if (bestBuyIdx >= 0 && p.money > mono.stockPrices[bestBuyIdx] * 5) {
+            const stock = STOCK_TYPES[bestBuyIdx];
+            const price = mono.stockPrices[bestBuyIdx];
+            const h = p.stockHoldings[bestBuyIdx];
+            const buyChance = personality.buyChance * 0.5 * difficulty;
+            if (Math.random() < buyChance) {
+                // Invest more aggressively when discount is deeper
+                const investRatio = Math.min(0.2, 0.1 + (1 - bestBuyRatio) * 0.5);
+                const amount = Math.floor(Math.min(p.money * investRatio, p.money) / price);
+                if (amount > 0) {
+                    const margin = Math.ceil(price * amount);
+                    if (p.money >= margin) {
+                        h.avgCost = h.shares > 0 ? Math.round((h.avgCost * h.shares + price * amount) / (h.shares + amount)) : price;
+                        h.shares += amount;
+                        h.isShort = false;
+                        h.leverage = 1;
+                        p.money -= margin;
+                        p.stats.stockTrades++;
+                        mono.stockPrices[bestBuyIdx] = Math.min(stock.basePrice * 3, Math.floor(price * (1 + amount * 0.005)));
+                        mono.stockMarket = getStockIndex();
+                        monoLog(`${p.ic} 📈 智能买入 ${amount} 股 ${stock.ic}（折扣${Math.round((1-bestBuyRatio)*100)}%）`, 'info');
+                    }
+                }
+            }
+            return;
+        }
+
+        // === Phase 3: Aggressive AI may short sell overvalued stocks ===
+        if (p.personality === 'aggressive' && Math.random() < 0.3) {
+            let bestShortIdx = -1;
+            let bestShortRatio = 0;
+            for (let i = 0; i < STOCK_TYPES.length; i++) {
+                const stock = STOCK_TYPES[i];
+                const price = mono.stockPrices[i];
+                const h = p.stockHoldings[i];
+                const ratio = price / stock.basePrice;
+                if (h.shares > 0 && !h.isShort) continue;
+                if (ratio > bestShortRatio && ratio > 1.3) {
+                    bestShortRatio = ratio;
+                    bestShortIdx = i;
+                }
+            }
+            if (bestShortIdx >= 0 && p.money > mono.stockPrices[bestShortIdx] * 3) {
+                const stock = STOCK_TYPES[bestShortIdx];
+                const price = mono.stockPrices[bestShortIdx];
+                const h = p.stockHoldings[bestShortIdx];
+                const amount = Math.floor(Math.min(p.money * 0.1, p.money) / price);
+                if (amount > 0) {
+                    const margin = Math.ceil(price * amount);
+                    if (p.money >= margin) {
+                        h.avgCost = h.shares > 0 ? Math.round((h.avgCost * h.shares + price * amount) / (h.shares + amount)) : price;
+                        h.shares += amount;
+                        h.isShort = true;
+                        h.leverage = 1;
+                        p.money -= margin;
+                        p.stats.stockTrades++;
+                        monoLog(`${p.ic} 🔻 智能做空 ${amount} 股 ${stock.ic}（溢价${Math.round((bestShortRatio-1)*100)}%）`, 'info');
+                    }
+                }
+            }
+        }
     }
 
     /* ==================== Monopoly: Enhanced Auction ==================== */
@@ -5914,7 +6153,7 @@
                 break;
             }
             case 3: { // Double rent next turn
-                p.doubleDice = true;
+                p.doubleDice = (p.doubleDice||0)+1;
                 result = `🎲 下回合骰子翻倍`;
                 break;
             }
@@ -5925,7 +6164,7 @@
                 break;
             }
             case 5: { // Lucky + shield
-                p.lucky = true; p.shield = true;
+                p.lucky = (p.lucky||0)+1; p.shield = (p.shield||0)+1;
                 result = `🍀 获得幸运+护盾`;
                 break;
             }
@@ -6404,8 +6643,10 @@
         const isAiDouble = mono.dice[0] === mono.dice[1];
         const extra = p.speed || 0;
         if (extra) p.speed = 0;
-        if (p.doubleDice) { total *= 2; p.doubleDice = false; }
-        const aiVehicleSpeed = getVehicleBonus(p, 'speed');
+        if (p.doubleDice > 0) { total *= 2; p.doubleDice--; }
+        if (p.empTurns > 0) { total = Math.ceil(total / 2); }
+        if (p.slipTurns > 0) { total += 3; p.slipTurns = 0; }
+        const aiVehicleSpeed = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'speed');
         if (aiVehicleSpeed) total += aiVehicleSpeed;
 
         // AI consecutive doubles tracking (same as aiTurn)
@@ -6876,6 +7117,19 @@
         // Decrement active status effects for the new player (they expire at start of their turn)
         const newP = mono.players[next];
         if (newP.rentDouble > 0) newP.rentDouble--;
+        if (newP.blackoutTurns > 0) newP.blackoutTurns--;
+        if (newP.empTurns > 0) newP.empTurns--;
+        if (newP.hologramTurns > 0) newP.hologramTurns--;
+        if (newP.signalJamTurns > 0) newP.signalJamTurns--;
+        if (newP.slipTurns > 0) newP.slipTurns--;
+        // Vehicle discount expiration
+        if (newP.vehicleDiscountTurns > 0) {
+            newP.vehicleDiscountTurns--;
+            if (newP.vehicleDiscountTurns === 0 && newP.vehicleDiscount > 0) {
+                monoLog(`🏷️ ${newP.ic} 载具折扣已过期（💰${newP.vehicleDiscount}）`, 'info');
+                newP.vehicleDiscount = 0;
+            }
+        }
         // Auto-save each turn
         mono.pendingAction = null;
         mono.autoSaveTurn = mono.turn;
@@ -7066,9 +7320,11 @@
         const isAiDouble = mono.dice[0] === mono.dice[1];
         const extra = p.speed || 0;
         if (extra) p.speed = 0;
-        if (p.doubleDice) { total *= 2; p.doubleDice = false; }
+        if (p.doubleDice > 0) { total *= 2; p.doubleDice--; }
+        if (p.empTurns > 0) { total = Math.ceil(total / 2); }
+        if (p.slipTurns > 0) { total += 3; p.slipTurns = 0; }
         // AI vehicle speed bonus
-        const aiVehicleSpeed = getVehicleBonus(p, 'speed');
+        const aiVehicleSpeed = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'speed');
         if (aiVehicleSpeed) total += aiVehicleSpeed;
 
         // AI dice multiplier (aggressive AI may use 2x occasionally)
@@ -7361,7 +7617,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9303 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9305 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -7391,14 +7647,18 @@
         // Show last 50 events (most recent first)
         const recentEvents = events.slice(-50).reverse();
         const eventsHtml = recentEvents.map(e => {
-            const timeStr = `第${e.turn || '?'}回合`;
+            const turn = (typeof e.turn === 'number' && e.turn > 0) ? e.turn : '?';
+            const timeStr = `第${turn}回合`;
+            const playerName = e.player || '未知';
+            const actionText = e.action || '';
+            const resultText = (typeof e.result === 'string') ? e.result : (e.result ? JSON.stringify(e.result) : '');
             return `<div style="padding:.4rem;border-left:3px solid var(--accent);background:var(--card2);border-radius:0 6px 6px 0;margin-bottom:.3rem;font-size:.75rem;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-weight:700;">${e.player}</span>
+                    <span style="font-weight:700;">${playerName}</span>
                     <span style="font-size:.6rem;color:var(--text2);">${timeStr}</span>
                 </div>
-                <div style="color:var(--text);margin-top:.15rem;">${e.action}</div>
-                ${e.result ? `<div style="font-size:.65rem;color:var(--text2);margin-top:.1rem;">${e.result}</div>` : ''}
+                <div style="color:var(--text);margin-top:.15rem;">${actionText}</div>
+                ${resultText ? `<div style="font-size:.65rem;color:var(--text2);margin-top:.1rem;">${resultText}</div>` : ''}
             </div>`;
         }).join('');
         modal.innerHTML = `<div class="modal-drag-handle"></div><div class="modal-title">📜 本局事件记录 (${events.length})</div>
@@ -7441,6 +7701,7 @@
         const rarityColors = { common: 'var(--text2)', uncommon: '#3b82f6', rare: '#a855f7', legendary: '#f59e0b' };
         const rarityLabel = rarityLabels[ev.rarity] || '普通';
         const rarityColor = rarityColors[ev.rarity] || 'var(--text2)';
+        const resultText = effResult || '事件已触发';
         const modal = document.getElementById('modal-content');
         modal.innerHTML = `
             <div class="modal-drag-handle"></div>
@@ -7450,7 +7711,7 @@
                 <div style="font-size:.65rem;font-weight:700;color:${rarityColor};margin-bottom:.3rem;">${rarityLabel.toUpperCase()}</div>
                 <h3 style="margin-bottom:.5rem;color:var(--accent);">${ev.nm}</h3>
                 <p style="color:var(--text2);font-size:.9rem;line-height:1.6;">${ev.desc}</p>
-                ${effResult ? `<div style="margin-top:.6rem;padding:.5rem .8rem;background:var(--card2);border-radius:8px;border:1px solid var(--border);font-size:.85rem;color:var(--good);font-weight:600;">✨ ${effResult}</div>` : ''}
+                <div style="margin-top:.8rem;padding:.6rem 1rem;background:rgba(34,197,94,.12);border-radius:10px;border:2px solid rgba(34,197,94,.4);font-size:.95rem;color:#22c55e;font-weight:700;">✨ ${resultText}</div>
             </div>
             <button class="btn btn-primary" style="width:100%;" onclick="closeEventModal()">确定</button>`;
         document.getElementById('modal-overlay').classList.add('show');
@@ -7532,7 +7793,10 @@
             roll -= w;
         }
         const pool = CARD_POOL.filter(c => c.rarity === rarity);
-        const card = pool[Math.floor(Math.random() * pool.length)];
+        // Fallback: if pool is empty for some reason, use all cards
+        const actualPool = pool.length > 0 ? pool : CARD_POOL;
+        const card = actualPool[Math.floor(Math.random() * actualPool.length)];
+        if (!card) return { ...CARD_POOL[0] }; // Ultimate fallback
         return { ...card };
     }
 
@@ -7540,26 +7804,55 @@
         if (!canDrawCard()) return;
         localStorage.setItem('lastCardDraw', Date.now().toString());
         const drawn = [];
-        for (let i = 0; i < 10; i++) drawn.push(drawWeightedCard());
-        // Add to inventory (cap at 50, keep most recent)
+        for (let i = 0; i < 10; i++) {
+            const card = drawWeightedCard();
+            if (card) drawn.push(card);
+        }
+        if (drawn.length === 0) {
+            logEvent('🃏 抽卡失败，请重试', 'error');
+            return;
+        }
+        // Add to inventory with smart capacity management
+        const wasFull = cardInventory.length >= 50;
         cardInventory.push(...drawn);
-        if (cardInventory.length > 50) cardInventory = cardInventory.slice(-50);
+        if (cardInventory.length > 50) {
+            // When inventory is full, randomly replace some old cards (30% chance per replacement)
+            if (wasFull && Math.random() < 0.5) {
+                // Random replacement mode: keep new cards, randomly replace some old ones
+                const newCards = drawn.slice();
+                const overflow = cardInventory.length - 50;
+                // Randomly remove overflow old cards (from the first 50-originalCount cards)
+                const oldCardIndices = [];
+                for (let i = 0; i < cardInventory.length - drawn.length && i < overflow + 5; i++) {
+                    oldCardIndices.push(i);
+                }
+                // Shuffle and remove overflow count
+                oldCardIndices.sort(() => Math.random() - 0.5);
+                const toRemove = oldCardIndices.slice(0, overflow).sort((a, b) => b - a);
+                toRemove.forEach(idx => cardInventory.splice(idx, 1));
+                logEvent(`🎒 背包已满！${overflow} 张旧卡牌被随机替换`, 'event');
+            } else {
+                // Default: keep most recent 50
+                cardInventory = cardInventory.slice(-50);
+            }
+        }
         saveInventory();
         // Show drawn cards with visible descriptions
         const el = document.getElementById('card-draw-area');
         if (el) {
             el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">✨ 本次抽卡结果</div>' +
                 '<div class="inventory-grid">' + drawn.map(c =>
-                    `<div class="inventory-card" style="border-color:${RARITY_COLORS[c.rarity]};animation:slideUp .4s ease;">
+                    `<div class="inventory-card" title="${c.n}：${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};animation:slideUp .4s ease;">
                         <div class="ic-icon">${c.ic}</div>
                         <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
                         <div class="ic-desc">${c.desc}</div>
+                        ${c.isHacker ? '<div class="ic-hacker-badge">⚔️</div>' : ''}
                     </div>`
                 ).join('') + '</div>';
         }
         renderCardInventory();
         const legendaryCount = drawn.filter(c => c.rarity === 'legendary').length;
-        logEvent(`🃏 抽到 10 张卡牌${legendaryCount > 0 ? `（含 ${legendaryCount} 张传说卡！）` : ''}`, 'info');
+        logEvent(`🃏 抽到 ${drawn.length} 张卡牌${legendaryCount > 0 ? `（含 ${legendaryCount} 张传说卡！）` : ''}`, 'info');
         startCooldownTimer();
     }
 
@@ -7585,10 +7878,11 @@
             const gridHtml = filtered.length > 0
                 ? '<div class="inventory-grid">' + filtered.map(c => {
                     const idx = cardInventory.indexOf(c);
-                    return `<div class="inventory-card" onclick="handleCardInventoryClick(${idx})" style="border-color:${RARITY_COLORS[c.rarity]};">
+                    return `<div class="inventory-card" onclick="handleCardInventoryClick(${idx})" title="${c.n}：${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};">
                         <div class="ic-icon">${c.ic}</div>
                         <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
                         <div class="ic-desc">${c.desc}</div>
+                        ${c.isHacker ? '<div class="ic-hacker-badge">⚔️</div>' : ''}
                     </div>`;
                 }).join('') + '</div>'
                 : '<div style="text-align:center;color:var(--text2);padding:1rem;">没有该稀有度的卡牌</div>';
@@ -7711,10 +8005,11 @@
         }
         el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">🎒 卡牌背包（单击查看详情 · 双击快速移到手牌）</div>' +
             '<div class="inventory-grid">' + cardInventory.map((c, i) =>
-                `<div class="inventory-card" onclick="handleCardInventoryClick(${i})" style="border-color:${RARITY_COLORS[c.rarity]};">
+                `<div class="inventory-card" onclick="handleCardInventoryClick(${i})" title="${c.n}：${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};">
                     <div class="ic-icon">${c.ic}</div>
                     <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
                     <div class="ic-desc">${c.desc}</div>
+                    ${c.isHacker ? '<div class="ic-hacker-badge">⚔️</div>' : ''}
                 </div>`
             ).join('') + '</div>';
     }
@@ -8272,13 +8567,11 @@
                 <div class="god-status success show">✨ 上帝模式已激活！</div>
                 <div style="font-size:.8rem;color:var(--text2);text-align:center;line-height:1.8;margin:.5rem 0;">
                     🎁 大富翁初始资金翻倍（20000💰）<br>
-                    ⬆️ 每次推进时代额外获得 5000💰<br>
                     💰 首次激活赠送 10000💰
                 </div>
                 <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.75rem;">
                     <button class="btn btn-primary btn-sm" onclick="godRandomBonus()">🎲 随机加成</button>
                     <button class="btn btn-secondary btn-sm" onclick="godBlessAll()">💖 全员祝福</button>
-                    <button class="btn btn-secondary btn-sm" onclick="godTimeAccelerate()">⏩ 加速时代</button>
                     <button class="btn btn-danger btn-sm" onclick="deactivateGodMode()">❌ 关闭上帝模式</button>
                 </div>`;
             return;
@@ -8371,9 +8664,9 @@
         const bonuses = [
             () => { const amt = 3000 + Math.floor(Math.random() * 7000); p.money += amt; return `💰 获得 ${amt} 金币`; },
             () => { const amt = 5 + Math.floor(Math.random() * 20); const si = Math.floor(Math.random() * STOCK_TYPES.length); const h = p.stockHoldings[si]; h.avgCost = h.shares > 0 ? (h.avgCost * h.shares + mono.stockPrices[si] * amt) / (h.shares + amt) : mono.stockPrices[si]; h.shares += amt; return `📈 获赠 ${amt} 股 ${STOCK_TYPES[si].nm}`; },
-            () => { p.shield = true; return `🛡️ 获得护盾保护`; },
-            () => { p.lucky = true; return `🍀 获得幸运加成`; },
-            () => { p.doubleDice = true; return `🎲 下次掷骰双倍`; },
+            () => { p.shield = (p.shield||0)+1; return `🛡️ 获得护盾保护`; },
+            () => { p.lucky = (p.lucky||0)+1; return `🍀 获得幸运加成`; },
+            () => { p.doubleDice = (p.doubleDice||0)+1; return `🎲 下次掷骰双倍`; },
             () => { p.jailFree = true; return `🔑 获得出狱卡`; },
             () => { p.taxFree = 3; return `🧾 获得 3 回合免税`; },
             () => { const amt = 20 + Math.floor(Math.random() * 30); p.stats.stockProfit += amt; p.money += amt; return `💎 神秘宝藏 ${amt} 金币`; },
@@ -8891,20 +9184,76 @@
         // Exclude game UI elements that are commonly clicked rapidly
         if (e.target.closest('.mono-card-item')) return;
         if (e.target.closest('.inventory-card')) return;
+        if (e.target.closest('.inventory-grid')) return;
+        if (e.target.closest('#card-inventory-area')) return;
+        if (e.target.closest('#card-draw-area')) return;
         if (e.target.closest('.card-grid')) return;
         if (e.target.closest('.modal-overlay')) return;
+        if (e.target.closest('.modal-content')) return;
         if (e.target.closest('.btn')) return;
         if (e.target.closest('.mono-tile-cell')) return;
         if (e.target.closest('.stock-row')) return;
+        if (e.target.closest('.buff-icon')) return;
+        if (e.target.closest('.mono-player')) return;
+        if (e.target.closest('.mono-log')) return;
+        if (e.target.closest('.game-card')) return;
         if (e.target.closest('input')) return;
         if (e.target.closest('select')) return;
         if (e.target.closest('textarea')) return;
+        if (e.target.closest('a')) return;
+        if (e.target.closest('button')) return;
+        if (e.target.closest('label')) return;
+        if (e.target.closest('.tab-btn')) return;
+        if (e.target.closest('.toggle')) return;
         // Clear any text selection that might interfere with rapid clicks
         if (e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
             window.getSelection().removeAllRanges();
+            return; // Don't count avatar clicks toward easter egg
         }
         recordEggClick(Date.now());
     }, { passive: true });
+
+    // Non-passive pointerdown on avatar/sidebar-logo to prevent text selection of emoji
+    document.addEventListener('pointerdown', function(e) {
+        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
+            // Prevent default to stop browser from starting text selection on rapid clicks
+            e.preventDefault();
+            // Clear any existing selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+        }
+    }, { passive: false });
+
+    // Also prevent selectstart on sidebar-logo area
+    document.addEventListener('selectstart', function(e) {
+        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
+            e.preventDefault();
+        }
+    });
+
+    // Prevent mousedown from starting selection on avatar area (catches dblclick selection)
+    document.addEventListener('mousedown', function(e) {
+        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
+            e.preventDefault();
+            if (window.getSelection) window.getSelection().removeAllRanges();
+        }
+    }, { passive: false });
+
+    // Prevent dblclick from selecting text on avatar
+    document.addEventListener('dblclick', function(e) {
+        if (e.target.closest('.sidebar-logo') || e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
+            e.preventDefault();
+            if (window.getSelection) window.getSelection().removeAllRanges();
+        }
+    }, { passive: false });
+
+    // Prevent context menu on avatar (right-click selection)
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.closest('.bunny-icon') || e.target.closest('#sidebar-avatar-container')) {
+            e.preventDefault();
+        }
+    });
 
     function triggerEggWhiteout() {
         eggInkPersistMode = true;
@@ -9714,15 +10063,31 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.7.2.9303', title:'Buff栏增强 & 卡牌叠加 & 连点修复', items:[
-            '⚔️ Buff栏增强：显示所有玩家debuff（监禁/封印/医院/混乱），AI被施加效果也能看到图标',
-            '🚗 Buff栏载具加成：装备载具时显示对应加成图标（移动+X/租金-X%/免租X%），载具折扣也显示',
-            '🃏 卡牌效果叠加修复：加速/监禁/封印/医院/冰冻等效果改用+=叠加，不再覆盖已有效果',
-            '📜 事件日志修复：news_passive/news_spread不再显示[object Object]，回合数显示undefined改为?',
-            '🏎️ 载具展览修复：显示获得金钱或折扣的具体结果，不再无反馈',
-            '📝 事件弹窗增强：显示实际效果结果而非静态描述',
-            '🖱️ 卡牌背包双击修复：添加user-select:none防止双击选中文本',
-            '🎮 连点触发修复：排除卡牌背包/按钮/弹窗/输入框等UI元素的连点计数',
+        { ver:'v7.7.2.9305', title:'卡牌文本修复 & 载具折扣过期 & AI智能炒股 & emoji选中修复', items:[
+            '⚡ 骇客卡牌文本修复：缩短desc文案，ic改为emoji，添加title悬停提示和⚔️标识',
+            '🏎️ 载具展览重构：概率动态变化（25%-55%），折扣可叠加且5回合过期',
+            '🏷️ 折扣过期机制：每回合递减，过期自动清零并提示，商店/buff栏显示剩余回合',
+            '🤖 AI智能炒股：扫描全部股票找最佳买入机会，自动止盈止损卖出',
+            '🐰 emoji选中修复：添加mousedown/dblclick/contextmenu事件阻止，彻底防止选中文本',
+            '📝 更新日志去重：renderChangelog自动过滤重复版本号',
+            '🔧 代码重构：清理上帝模式残留时代按钮，移除canAdvanceEra死代码调用',
+        ]},
+        { ver:'v7.7.2.9304', title:'卡牌叠加 & 骇客系统 & 存档修复 & 连点修复', items:[
+            '🃏 卡牌效果叠加：shield/lucky/mirror/doubleDice改为数值计数，多张使用可叠加层数',
+            '🛡️ AI buff显示：给AI施加卡牌效果时buff栏显示所有活跃效果，不再只显示4种debuff',
+            '🚗 载具加成图标：buff栏显示载具加成（移动+X/租金-X%/免租X%/全能），allInOne类型也显示',
+            '📜 事件记录修复：[object Object]和undefined彻底修复，存档加载时清洗旧数据',
+            '🏎️ 载具展览修复：事件结果始终显示（绿色高亮框），不再无反馈',
+            '💾 自动存档修复：添加beforeunload/pagehide/visibilitychange刷新挂起保存，错误不再静默吞掉',
+            '💾 地图变更保护：地图大小改变时保留玩家数据，不再直接重置游戏',
+            '🃏 抽卡修复：drawWeightedCard添加空池fallback，抽卡失败有错误提示',
+            '🎒 背包满时替换：抽卡10张在背包满时有50%概率随机替换旧卡而非直接丢弃',
+            '🖱️ 双击选中文本修复：.inventory-grid添加user-select:none',
+            '🐰 emoji头像修复：非被动pointerdown+selectstart事件彻底阻止emoji选中',
+            '🎮 连点彩蛋修复：排除背包容器/弹窗/玩家面板/标签按钮等UI元素',
+            '⚔️ 骇客道具赛系统：新增停电/数据劫持/EMP脉冲/全息伪装等全局技能卡',
+            '🏷️ 载具折扣修复：购买载具时自动抵扣折扣，商店界面显示可用折扣',
+            '📡 AI信号干扰修复：AI玩家受信号干扰时无法交易股票',
         ]},
         { ver:'v7.7.2.9303', title:'UI响应优化 & Buff栏 & 彩蛋修复 & 机制缺陷修复', items:[
             '⚡ UI响应延迟优化：平台检测(PC/移动端) + FPS自适应，动态调整modal锁、click guard、动画速度',
@@ -9773,7 +10138,14 @@
     function renderChangelog() {
         const el = document.getElementById('changelog-content');
         if (!el) return;
-        const recent = CHANGELOG.slice(0, 6);
+        // Deduplicate by version number, keeping the first (most recent) entry
+        const seen = new Set();
+        const deduped = CHANGELOG.filter(v => {
+            if (seen.has(v.ver)) return false;
+            seen.add(v.ver);
+            return true;
+        });
+        const recent = deduped.slice(0, 6);
         el.innerHTML = recent.map((v, i) => `
             ${i > 0 ? '<div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">' : '<div>'}
                 <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">${v.ver}</strong> — ${v.title}</div>
