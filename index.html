@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9293 -->
+    <!-- VERSION: v7.7.2.9294 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -245,17 +245,38 @@
         .nav-item .icon { font-size: 1.3rem; flex-shrink: 0; }
         .nav-item .label { font-size: .9rem; }
         .sidebar-footer { margin-top: auto; text-align: center; font-size: .7rem; color: var(--text2); }
-        /* Sidebar collapse */
-        .sidebar { transition: width var(--transition); }
-        .sidebar.collapsed { width: 64px; }
+        /* Sidebar collapse — robust centering at any font scale */
+        .sidebar { transition: width var(--transition); position: relative; }
+        .sidebar.collapsed { width: 64px; padding: .75rem .25rem; }
         .sidebar.collapsed .nav-item .label,
         .sidebar.collapsed .sidebar-logo .title,
         .sidebar.collapsed .sidebar-logo .subtitle,
         .sidebar.collapsed .god-indicator { display: none; }
-        .sidebar.collapsed .nav-item { justify-content: center; padding: .75rem 0; }
-        .sidebar.collapsed .sidebar-logo { margin-bottom: 1rem; text-align: center; }
-        .sidebar.collapsed .sidebar-logo .bunny-icon { font-size: 1.8rem; }
-        .sidebar.collapsed .sidebar-pin { position: absolute; top: .5rem; right: .25rem; font-size: .7rem; }
+        .sidebar.collapsed .nav-item {
+            justify-content: center; align-items: center;
+            padding: .5rem 0; width: 100%; overflow: hidden;
+            border-radius: var(--radius-sm);
+        }
+        .sidebar.collapsed .nav-item .icon {
+            font-size: 1.3rem; flex-shrink: 0; text-align: center; line-height: 1;
+        }
+        .sidebar.collapsed .nav-item.active {
+            background: var(--accent); color: #fff;
+            box-shadow: 0 2px 8px var(--shadow);
+            overflow: hidden; border-radius: var(--radius-sm);
+        }
+        .sidebar.collapsed .sidebar-logo {
+            margin-bottom: 1rem; position: relative;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .sidebar.collapsed .sidebar-logo .bunny-icon {
+            font-size: 1.8rem; display: block; text-align: center; line-height: 1;
+            margin: 0 auto;
+        }
+        .sidebar.collapsed .sidebar-pin {
+            position: absolute; top: -2px; right: -2px; font-size: .65rem;
+            z-index: 10; line-height: 1;
+        }
         .sidebar.collapsed .sidebar-footer { font-size: 0; }
         .sidebar.collapsed .nav-item:hover .label {
             display: block; position: fixed; left: 64px;
@@ -727,7 +748,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9293</div>
+                <div class="subtitle">v7.7.2.9294</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -791,6 +812,8 @@
                         <span id="mono-time-phase">🕐 加载中...</span>
                         <span id="mono-time-weather" style="color:var(--text2);">--</span>
                     </div>
+                    <!-- News ticker bar -->
+                    <div id="news-ticker" style="display:none;align-items:center;padding:.25rem .5rem;background:linear-gradient(90deg,var(--card2),var(--card));border-radius:6px;margin-bottom:.5rem;font-size:.7rem;overflow:hidden;cursor:pointer;" onclick="showNewsModal()"></div>
                     <div class="mono-era-bar">
                         <div class="mono-era-info">
                             <span class="mono-era-badge" id="mono-era-badge">草原时代</span>
@@ -830,6 +853,7 @@
                             <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="showCardShop()" title="买卖技能卡">🃏 卡牌店</button>
                             <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="showWizard()" title="占卜、许愿、诅咒">🧙 巫师</button>
                             <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="showMarketModal()" title="二手交易市场">🏪 市场</button>
+                            <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="showNewsModal()" title="查看/散播新闻">📺 新闻台</button>
                             <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="openAuctionHouse()" title="拍卖行（自由参与）">🔨 拍卖行</button>
                             <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="showCasino()" title="赌场（自由进入）">🎰 赌场</button>
                             <button class="btn btn-secondary btn-sm" style="flex:1;min-width:60px;" onclick="showEventLogModal()" title="查看本局所有事件">📜 事件记录</button>
@@ -969,7 +993,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9293</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9294</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1035,7 +1059,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9293',
+        VERSION: 'v7.7.2.9294',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1526,6 +1550,11 @@
         if (invSaved) {
             try { cardInventory = JSON.parse(invSaved) || []; } catch(e) { cardInventory = []; }
         }
+        // Load news state
+        const savedNews = localStorage.getItem('bunny_news_state');
+        if (savedNews) {
+            try { newsState = JSON.parse(savedNews); } catch(e) {}
+        }
         // Restore monoEff functions lost during JSON serialization
         restoreAllCardFunctions();
         godModeActive = localStorage.getItem('godModeActive') === 'true';
@@ -1536,7 +1565,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9293 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9294 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1700,6 +1729,12 @@
             else if (stock.trend === 'volatile') change += (Math.random() - 0.5) * 0.05;
             // Inflation drift
             change += inflation * 0.2;
+            // News system: general stock trend
+            if (economy.newsStockTrend) change += economy.newsStockTrend;
+            // News system: sector-specific boost
+            if (economy.newsSectorBoosts && economy.newsSectorBoosts[i]) change += economy.newsSectorBoosts[i];
+            // News system: sector-specific drop
+            if (economy.newsSectorDrops && economy.newsSectorDrops[i]) change += economy.newsSectorDrops[i];
             // Black swan crash
             if (i === blackSwanStock) change -= blackSwanCrash;
             let newPrice = price * (1 + change);
@@ -1854,22 +1889,250 @@
         const progressFactor = Math.min(1, mono.turn / 100);
         // Real-time system modifiers
         const ts = getTimeSystemState();
+        // News system effects
+        const newsEffects = getActiveNewsEffects();
 
         return {
-            inflation: 0.03 + (avgMoney / 50000) * 0.05 + (Math.random() - 0.5) * 0.02 + ts.inflationDelta,
-            loanRateBase: 0.06 + (mono.turn / 100) * 0.04 + (Math.random() - 0.5) * 0.03,
+            inflation: 0.03 + (avgMoney / 50000) * 0.05 + (Math.random() - 0.5) * 0.02 + ts.inflationDelta + newsEffects.inflation,
+            loanRateBase: 0.06 + (mono.turn / 100) * 0.04 + (Math.random() - 0.5) * 0.03 + newsEffects.loanRateDelta,
             mortgageRatio: 0.5 + (Math.random() - 0.5) * 0.15,
             creditMultiplier: 100 + (progressFactor * 100) + (Math.random() - 0.5) * 30,
             maxDebtRatio: 0.6 + (Math.random() - 0.5) * 0.2,
-            rentMultiplier: (0.9 + (mono.turn / 200) + (Math.random() - 0.5) * 0.3) * ts.rentMultiplier,
+            rentMultiplier: (0.9 + (mono.turn / 200) + (Math.random() - 0.5) * 0.3) * ts.rentMultiplier * newsEffects.rentMultiplier,
             propertyPriceMultiplier: 1 + (progressFactor * 0.5) + (0.03 + (avgMoney / 50000) * 0.05),
             blackSwanChance: 0.02 + bankruptCount * 0.01 + ts.blackSwanBonus,
             timePhase: ts.phase,
             timePhaseIcon: ts.phaseIcon,
             isWeekend: ts.isWeekend,
-            stockVolatilityMult: ts.stockVolatilityMult,
+            stockVolatilityMult: ts.stockVolatilityMult * newsEffects.volatility,
             eventChanceMult: ts.eventChanceMult,
+            newsStockTrend: newsEffects.stockTrend,
+            newsSectorBoosts: newsEffects.sectorBoosts,
+            newsSectorDrops: newsEffects.sectorDrops,
+            newsVehiclePriceMod: newsEffects.vehiclePriceMod,
         };
+    }
+
+    /* ==================== News & TV System ==================== */
+    // News events that affect game world parameters (passive or player-spread)
+    const NEWS_EVENTS = [
+        { id: 'bull_market', icon: '🐂', title: '牛市来袭！', desc: '投资者信心高涨，股市全线上涨',
+          effects: { stockTrend: 0.08, inflation: 0.005 }, duration: 3, weight: 8, type: 'market' },
+        { id: 'bear_market', icon: '🐻', title: '熊市降临', desc: '市场恐慌蔓延，股市全面下跌',
+          effects: { stockTrend: -0.08, inflation: -0.005 }, duration: 3, weight: 8, type: 'market' },
+        { id: 'inflation_spike', icon: '📈', title: '通胀飙升', desc: '物价飞涨，货币购买力下降',
+          effects: { inflation: 0.02, rentMultiplier: 1.08 }, duration: 2, weight: 6, type: 'economy' },
+        { id: 'deflation', icon: '📉', title: '通缩压力', desc: '物价下跌，经济萎缩',
+          effects: { inflation: -0.015, rentMultiplier: 0.92 }, duration: 2, weight: 5, type: 'economy' },
+        { id: 'property_boom', icon: '🏠', title: '地产热潮', desc: '房地产市场火爆，租金上涨',
+          effects: { rentMultiplier: 1.15, inflation: 0.01 }, duration: 3, weight: 7, type: 'economy' },
+        { id: 'rate_hike', icon: '🏦', title: '央行加息', desc: '贷款利率上调，借贷成本增加',
+          effects: { loanRateDelta: 0.015, inflation: -0.008 }, duration: 3, weight: 6, type: 'economy' },
+        { id: 'rate_cut', icon: '💰', title: '央行降息', desc: '贷款利率下调，刺激经济',
+          effects: { loanRateDelta: -0.015, inflation: 0.008 }, duration: 3, weight: 6, type: 'economy' },
+        { id: 'tech_breakthrough', icon: '🚀', title: '航天科技突破', desc: '航天科技公司重大突破，股价暴涨',
+          effects: { stockSectorBoost: { id: 6, boost: 0.15 } }, duration: 2, weight: 5, type: 'sector' },
+        { id: 'pharma_boom', icon: '💊', title: '医药行业利好', desc: '新药获批，医药股大涨',
+          effects: { stockSectorBoost: { id: 4, boost: 0.12 } }, duration: 2, weight: 5, type: 'sector' },
+        { id: 'game_craze', icon: '🎮', title: '游戏产业爆发', desc: '全民游戏热潮，娱乐股飙升',
+          effects: { stockSectorBoost: { id: 5, boost: 0.15 } }, duration: 2, weight: 4, type: 'sector' },
+        { id: 'energy_crisis', icon: '⚡', title: '能源危机', desc: '能源价格飙升，电力股大涨',
+          effects: { stockSectorBoost: { id: 2, boost: 0.12 }, inflation: 0.015 }, duration: 3, weight: 5, type: 'sector' },
+        { id: 'trade_war', icon: '⚔️', title: '贸易战升级', desc: '全球贸易受阻，市场动荡',
+          effects: { stockTrend: -0.06, inflation: 0.015, volatility: 1.3 }, duration: 4, weight: 5, type: 'world' },
+        { id: 'peace_treaty', icon: '🕊️', title: '和平协议签署', desc: '市场信心恢复，股市上涨',
+          effects: { stockTrend: 0.06, inflation: -0.008, volatility: 0.8 }, duration: 3, weight: 4, type: 'world' },
+        { id: 'natural_disaster', icon: '🌪️', title: '自然灾害', desc: '工业区遭受灾害，生产受阻',
+          effects: { stockSectorDrop: { id: 3, drop: -0.1 }, inflation: 0.015 }, duration: 2, weight: 4, type: 'world' },
+        { id: 'gold_rush', icon: '⛏️', title: '淘金热', desc: '资源类股票暴涨，通胀微升',
+          effects: { stockTrend: 0.05, inflation: 0.008 }, duration: 2, weight: 5, type: 'world' },
+        { id: 'car_recall', icon: '🚗', title: '载具安全事件', desc: '载具安全大检查，市场价格波动',
+          effects: { vehiclePriceMod: 1.1, inflation: 0.005 }, duration: 2, weight: 3, type: 'world' },
+        { id: 'festival', icon: '🎉', title: '盛大节日', desc: '消费激增，经济繁荣',
+          effects: { inflation: 0.008, rentMultiplier: 1.05, stockTrend: 0.03 }, duration: 2, weight: 4, type: 'world' },
+        { id: 'epidemic', icon: '🦠', title: '流感季节', desc: '医药股受益，娱乐股受挫',
+          effects: { stockSectorBoost: { id: 4, boost: 0.1 }, stockSectorDrop: { id: 5, drop: -0.08 } }, duration: 3, weight: 4, type: 'world' },
+    ];
+
+    let newsState = {
+        active: [],       // [{ newsId, turnsLeft, effects }]
+        history: [],      // [{ newsId, turn, time, spreadBy }]
+        passiveCooldown: 0,
+        spreadCost: 500,
+    };
+
+    // Aggregate all active news effects into a single modifier object
+    function getActiveNewsEffects() {
+        const effects = {
+            stockTrend: 0,
+            inflation: 0,
+            rentMultiplier: 1,
+            loanRateDelta: 0,
+            volatility: 1,
+            vehiclePriceMod: 1,
+            sectorBoosts: {},
+            sectorDrops: {},
+        };
+        for (const active of newsState.active) {
+            const news = NEWS_EVENTS.find(n => n.id === active.newsId);
+            if (!news) continue;
+            const e = news.effects;
+            if (e.stockTrend) effects.stockTrend += e.stockTrend;
+            if (e.inflation) effects.inflation += e.inflation;
+            if (e.rentMultiplier) effects.rentMultiplier *= e.rentMultiplier;
+            if (e.loanRateDelta) effects.loanRateDelta += e.loanRateDelta;
+            if (e.volatility) effects.volatility *= e.volatility;
+            if (e.vehiclePriceMod) effects.vehiclePriceMod *= e.vehiclePriceMod;
+            if (e.stockSectorBoost) effects.sectorBoosts[e.stockSectorBoost.id] = (effects.sectorBoosts[e.stockSectorBoost.id] || 0) + e.stockSectorBoost.boost;
+            if (e.stockSectorDrop) effects.sectorDrops[e.stockSectorDrop.id] = (effects.sectorDrops[e.stockSectorDrop.id] || 0) + e.stockSectorDrop.drop;
+        }
+        return effects;
+    }
+
+    // Decrement active news timers, remove expired
+    function tickNews() {
+        newsState.active = newsState.active.filter(a => {
+            a.turnsLeft--;
+            return a.turnsLeft > 0;
+        });
+        if (newsState.passiveCooldown > 0) newsState.passiveCooldown--;
+    }
+
+    // Random passive news generation (called each turn)
+    function generatePassiveNews() {
+        if (newsState.passiveCooldown > 0) return null;
+        if (!mono.started) return null;
+        const ts = getTimeSystemState();
+        const baseChance = 0.12 * ts.eventChanceMult;
+        if (Math.random() > baseChance) return null;
+        // Weighted random selection
+        const totalWeight = NEWS_EVENTS.reduce((s, n) => s + n.weight, 0);
+        let r = Math.random() * totalWeight;
+        let selected = NEWS_EVENTS[0];
+        for (const n of NEWS_EVENTS) {
+            r -= n.weight;
+            if (r <= 0) { selected = n; break; }
+        }
+        newsState.active.push({
+            newsId: selected.id,
+            turnsLeft: selected.duration,
+            effects: selected.effects,
+        });
+        newsState.history.push({
+            newsId: selected.id,
+            turn: mono.turn,
+            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+            spreadBy: '📺 电视台',
+        });
+        newsState.passiveCooldown = 2 + Math.floor(Math.random() * 3);
+        monoLog(`📺 ${selected.icon} ${selected.title}：${selected.desc}`, 'info');
+        recordGameEvent('news_passive', { title: selected.title });
+        renderNewsTicker();
+        return selected;
+    }
+
+    // Player actively spreads news (costs coins)
+    function spreadNews(newsIndex) {
+        const p = mono.players[0];
+        if (!p || p.bankrupt) return;
+        const cost = newsState.spreadCost;
+        if (p.money < cost) {
+            monoLog(`散播新闻需要 💰${cost}，资金不足！`, 'error');
+            return;
+        }
+        const news = NEWS_EVENTS[newsIndex];
+        if (!news) return;
+        p.money -= cost;
+        newsState.active.push({
+            newsId: news.id,
+            turnsLeft: news.duration + 1,
+            effects: news.effects,
+        });
+        newsState.history.push({
+            newsId: news.id,
+            turn: mono.turn,
+            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+            spreadBy: '📢 你散播',
+        });
+        monoLog(`📢 你散播了新闻：${news.icon} ${news.title}，花费 💰${cost}`, 'success');
+        recordGameEvent('news_spread', { title: news.title, cost });
+        closeModal();
+        renderMonopoly();
+    }
+
+    // Render news ticker bar in monopoly view
+    function renderNewsTicker() {
+        const ticker = document.getElementById('news-ticker');
+        if (!ticker) return;
+        if (!mono.started || newsState.active.length === 0) {
+            ticker.style.display = 'none';
+            return;
+        }
+        ticker.style.display = 'flex';
+        const items = newsState.active.map(a => {
+            const news = NEWS_EVENTS.find(n => n.id === a.newsId);
+            if (!news) return '';
+            return `<span style="display:inline-flex;align-items:center;gap:.2rem;padding:0 .5rem;border-right:1px solid var(--border);">
+                ${news.icon} ${news.title} <span style="font-size:.6rem;color:var(--text2);">(${a.turnsLeft}回合)</span>
+            </span>`;
+        }).join('');
+        ticker.innerHTML = `<span style="color:var(--accent);font-weight:700;padding-right:.3rem;cursor:pointer;" onclick="showNewsModal()">📺</span><div style="overflow:hidden;white-space:nowrap;flex:1;cursor:pointer;" onclick="showNewsModal()">${items}</div>`;
+    }
+
+    // Full news modal with active, spread, and history
+    function showNewsModal() {
+        const modal = document.getElementById('modal-content');
+        if (!modal) return;
+        const activeHtml = newsState.active.length === 0
+            ? '<div style="text-align:center;color:var(--text2);padding:1rem;">当前无活跃新闻</div>'
+            : newsState.active.map(a => {
+                const news = NEWS_EVENTS.find(n => n.id === a.newsId);
+                if (!news) return '';
+                return `<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--card2);border-radius:8px;margin-bottom:.3rem;">
+                    <span style="font-size:1.5rem;">${news.icon}</span>
+                    <div style="flex:1;">
+                        <div style="font-weight:700;font-size:.85rem;color:var(--accent);">${news.title}</div>
+                        <div style="font-size:.7rem;color:var(--text2);">${news.desc}</div>
+                    </div>
+                    <span style="font-size:.7rem;color:var(--warn);">剩余 ${a.turnsLeft} 回合</span>
+                </div>`;
+            }).join('');
+        const spreadCost = newsState.spreadCost;
+        const spreadHtml = NEWS_EVENTS.map((n, i) =>
+            `<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem;background:var(--card2);border-radius:6px;margin-bottom:.2rem;cursor:pointer;" onclick="spreadNews(${i})">
+                <span style="font-size:1.2rem;">${n.icon}</span>
+                <div style="flex:1;">
+                    <div style="font-size:.8rem;font-weight:700;">${n.title}</div>
+                    <div style="font-size:.65rem;color:var(--text2);">${n.desc}</div>
+                </div>
+                <span style="font-size:.7rem;color:var(--accent);font-weight:700;">💰${spreadCost}</span>
+            </div>`
+        ).join('');
+        const historyHtml = newsState.history.length === 0
+            ? '<div style="text-align:center;color:var(--text2);padding:.5rem;">暂无新闻历史</div>'
+            : newsState.history.slice(-10).reverse().map(h => {
+                const news = NEWS_EVENTS.find(n => n.id === h.newsId);
+                if (!news) return '';
+                return `<div style="display:flex;align-items:center;gap:.4rem;padding:.3rem 0;border-bottom:1px solid var(--border);">
+                    <span>${news.icon}</span>
+                    <span style="flex:1;font-size:.75rem;">${news.title}</span>
+                    <span style="font-size:.65rem;color:var(--text2);">${h.spreadBy}</span>
+                    <span style="font-size:.65rem;color:var(--text2);">第${h.turn}回合</span>
+                </div>`;
+            }).join('');
+        modal.innerHTML = `
+            <div class="modal-drag-handle"></div>
+            <div class="modal-title">📺 新闻电视台</div>
+            <div style="font-size:.75rem;color:var(--text2);margin-bottom:.5rem;">新闻事件可影响整个世界的经济参数（通胀、股市、租金、利率等）。被动新闻由电视台随机播报，也可花费💰主动散播。</div>
+            <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem;">📡 当前活跃新闻</div>
+            <div style="margin-bottom:.75rem;">${activeHtml}</div>
+            <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem;">📢 散播新闻（花费💰${spreadCost}）</div>
+            <div style="max-height:200px;overflow-y:auto;margin-bottom:.75rem;">${spreadHtml}</div>
+            <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem;">📜 新闻历史</div>
+            <div style="max-height:150px;overflow-y:auto;">${historyHtml}</div>
+            <button class="btn" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
+        `;
+        showModal();
     }
 
     /* Dynamic rent calculation using economy state */
@@ -2062,6 +2325,8 @@
             },
             eventLog: [], // Track all game events for display
         };
+        // Reset news state for new game
+        newsState = { active: [], history: [], passiveCooldown: 0, spreadCost: 500 };
         mono.economy = calculateEconomyState();
         if (godModeActive) mono.players[0].money = 20000; // God mode bonus
         monoLog(`🎲 新游戏开始！${allPlayers.length}位玩家在起点就位`, 'info');
@@ -2069,7 +2334,10 @@
     }
 
     function saveMonopoly() {
-        try { localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono)); } catch(e){}
+        try {
+            localStorage.setItem(CONFIG.MONO_SAVE_KEY, JSON.stringify(mono));
+            localStorage.setItem('bunny_news_state', JSON.stringify(newsState));
+        } catch(e){}
     }
 
     function saveInventory() {
@@ -2120,6 +2388,9 @@
             const evChance = Math.round(ts.eventChanceMult * 100);
             timeWeatherEl.textContent = `📊 波动${vol}% · 🎲 事件${evChance}% · 🦢${(ts.blackSwanBonus*100).toFixed(0)}%`;
         }
+
+        // Update news ticker
+        renderNewsTicker();
 
         renderMonoPlayers();
         renderMonoRing();
@@ -5970,7 +6241,10 @@
         mono.turn++;
         // Record human money for AI difficulty adaptation
         recordHumanMoneyTurn();
-        // Recalculate dynamic economy state each turn
+        // News system: tick timers and possibly generate passive news
+        tickNews();
+        generatePassiveNews();
+        // Recalculate dynamic economy state each turn (includes news effects)
         mono.economy = calculateEconomyState();
         // Random stock market fluctuation each turn (influenced by economy)
         const economyInfluence = (mono.economy.inflation - 0.03) * 50;
@@ -7930,6 +8204,8 @@
             const dy = touch.clientY - dragStartY;
             if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                 isDragging = true;
+                _isDraggingEggFab = true;
+                trailPoints = []; // Clear trail to prevent rabbit head from following FAB
                 const fab = document.getElementById('egg-fab');
                 if (fab) {
                     fab.style.left = Math.max(0, Math.min(window.innerWidth - 56, fabStartX + dx)) + 'px';
@@ -7942,10 +8218,10 @@
 
         fabBtn.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', function() { setTimeout(() => { isDragging = false; }, 50); });
+        document.addEventListener('mouseup', function() { _isDraggingEggFab = false; setTimeout(() => { isDragging = false; }, 50); });
         fabBtn.addEventListener('touchstart', onStart, { passive: true });
         document.addEventListener('touchmove', onMove, { passive: true });
-        document.addEventListener('touchend', function() { setTimeout(() => { isDragging = false; }, 50); });
+        document.addEventListener('touchend', function() { _isDraggingEggFab = false; setTimeout(() => { isDragging = false; }, 50); });
     })();
 
     /* ==================== Mouse Trail — Gorgeous Edition (v5.2华丽版 + v6.0像素兔子) ==================== */
@@ -7955,6 +8231,7 @@
     let trailParticles = [];
     let mouseX = 0, mouseY = 0;
     let _isOverEggFab = false; // Pause trail when hovering FAB in egg mode
+    let _isDraggingEggFab = false; // Pause trail when dragging FAB to prevent trail head following
     let trailCtx = null, fxCtx = null;
     let trailCanvas = null, fxCanvas = null;
     const MAX_TRAIL_POINTS = 50;
@@ -8024,14 +8301,14 @@
             // Check if mouse is over the egg FAB — pause trail to prevent FAB becoming trail head
             const eggFab = document.getElementById('egg-fab');
             _isOverEggFab = false;
-            if (eggFab && eggFab.style.display !== 'none' && eggInkPersistMode) {
+            if (eggFab && eggFab.style.display !== 'none') {
                 const rect = eggFab.getBoundingClientRect();
                 if (mouseX >= rect.left - 10 && mouseX <= rect.right + 10 &&
                     mouseY >= rect.top - 10 && mouseY <= rect.bottom + 10) {
                     _isOverEggFab = true;
                 }
             }
-            if (mouseBunnyEnabled && !_isOverEggFab) {
+            if (mouseBunnyEnabled && !_isOverEggFab && !_isDraggingEggFab) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
                 if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
                 spawnTrailParticles(mouseX, mouseY);
@@ -8048,14 +8325,14 @@
             // Check if touch is over the egg FAB
             const eggFab = document.getElementById('egg-fab');
             _isOverEggFab = false;
-            if (eggFab && eggFab.style.display !== 'none' && eggInkPersistMode) {
+            if (eggFab && eggFab.style.display !== 'none') {
                 const rect = eggFab.getBoundingClientRect();
                 if (mouseX >= rect.left - 10 && mouseX <= rect.right + 10 &&
                     mouseY >= rect.top - 10 && mouseY <= rect.bottom + 10) {
                     _isOverEggFab = true;
                 }
             }
-            if (mouseBunnyEnabled && !_isOverEggFab) {
+            if (mouseBunnyEnabled && !_isOverEggFab && !_isDraggingEggFab) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
                 if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
                 spawnTrailParticles(mouseX, mouseY);
@@ -8153,8 +8430,8 @@
         // Draw particles
         drawTrailParticles(cfg);
 
-        // Draw pixel rabbit at the head (only in normal mode, not during ink persist)
-        if (trailPoints.length > 0 && mouseBunnyEnabled && !eggInkPersistMode) {
+        // Draw pixel rabbit at the head (only in normal mode, not during ink persist or FAB drag)
+        if (trailPoints.length > 0 && mouseBunnyEnabled && !eggInkPersistMode && !_isDraggingEggFab) {
             const head = trailPoints[trailPoints.length - 1];
             drawPixelRabbit(fxCtx, head.x, head.y, cfg.accent, 18);
         }
@@ -8650,6 +8927,15 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9294</strong> — 新闻电视台系统 & 侧边栏折叠修复 & FAB光轨修复</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📺 新闻电视台系统：18种新闻事件（牛市/熊市/通胀/加息/科技突破/贸易战等），被动随机播报+主动散播，影响通胀/股市/租金/利率/波动率</li>
+                <li>📺 新闻ticker：大富翁页面顶部显示当前活跃新闻及剩余回合，点击打开新闻详情面板</li>
+                <li>📺 新闻散播：花费💰500主动散播新闻，影响持续回合+1，新闻历史记录</li>
+                <li>🖥️ 侧边栏折叠修复：字体缩放时头像居中不偏移、设置图标不覆盖选中方块、高亮效果优化</li>
+                <li>🎨 FAB光轨修复：拖拽FAB时清空轨迹点并暂停绘制，防止兔子光轨头跟随FAB移动</li>
+                <li>🎨 FAB悬停检测扩展：所有模式下鼠标经过FAB均暂停轨迹，不再仅限彩蛋模式</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9293</strong> — 现实时间系统 & 连点修复 & 彩蛋延长修复 & FAB光轨修复 & PC侧边栏选项 & 字体优化</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>🕐 现实时间系统：6个时段(黎明/上午/午间/下午/傍晚/深夜)+工作日/周末，影响通胀、股市波动、租金、事件概率、黑天鹅</li>
