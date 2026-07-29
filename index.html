@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9307 -->
+    <!-- VERSION: v7.7.2.9308 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -281,9 +281,13 @@
             width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden;
             margin: 0 auto .25rem; display: block; border: 2px solid var(--accent);
             user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+            clip-path: circle(50%); -webkit-clip-path: circle(50%);
+            aspect-ratio: 1;
         }
         .sidebar-logo .bunny-icon.avatar-photo img {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            border-radius: 50%; -webkit-border-radius: 50%;
+            clip-path: circle(50%); -webkit-clip-path: circle(50%);
         }
         .sidebar.collapsed .sidebar-logo .bunny-icon.avatar-photo {
             width: 1.8rem; height: 1.8rem; margin: 0 auto;
@@ -293,7 +297,7 @@
         .nav-item {
             display: flex; align-items: center; gap: .75rem;
             padding: .75rem 1rem; border-radius: var(--radius-sm);
-            color: var(--text2); font-weight: 700; transition: all var(--transition);
+            color: var(--text2); font-weight: 700; transition: background-color var(--transition), color var(--transition);
             white-space: nowrap;
         }
         .nav-item:hover { background: rgba(var(--accent-rgb),.08); color: var(--text); }
@@ -371,7 +375,7 @@
         .card {
             background: var(--card); border: 1px solid var(--border);
             border-radius: var(--radius); padding: 1.5rem;
-            box-shadow: 0 2px 8px var(--shadow); transition: all var(--transition);
+            box-shadow: 0 2px 8px var(--shadow); transition: box-shadow var(--transition), transform var(--transition);
         }
         .card:hover { box-shadow: 0 8px 24px var(--shadow); transform: translateY(-2px); }
         .card-title { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
@@ -384,7 +388,7 @@
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
             padding: .6rem 1.2rem; border-radius: var(--radius-sm); font-weight: 700; font-size: .85rem;
-            transition: all var(--transition); white-space: nowrap;
+            transition: transform var(--transition), background-color var(--transition), filter var(--transition), box-shadow var(--transition), opacity var(--transition); white-space: nowrap;
         }
         .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--shadow); }
         .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
@@ -449,7 +453,7 @@
         .mono-tile-cell {
             width: clamp(52px, 4vw + 36px, 72px); min-height: clamp(66px, 4.5vw + 48px, 90px); background: var(--card); border: 1px solid var(--border);
             border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center;
-            justify-content: flex-start; text-align: center; position: relative; transition: all var(--transition);
+            justify-content: flex-start; text-align: center; position: relative; transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
             flex-shrink: 0; cursor: help;
         }
         .mono-tile-cell:hover { border-color: var(--accent); box-shadow: 0 2px 8px var(--shadow); transform: translateY(-2px); z-index: 10; }
@@ -494,7 +498,7 @@
         .mono-dice { font-size: 1.4rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
         .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
         .mono-players { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
-        .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: clamp(52px, 3vw + 44px, 64px); transition: all var(--transition); position: relative; cursor: pointer; }
+        .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: clamp(52px, 3vw + 44px, 64px); transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); position: relative; cursor: pointer; }
         .mono-player:hover { border-color: var(--accent); transform: translateY(-2px); }
         .mono-player.active { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow); }
         .mono-player .mp-ic { font-size: 1.1rem; }
@@ -503,7 +507,7 @@
         .mono-player .mp-status { font-size: .5rem; display: flex; gap: 1px; }
         .mono-player .mp-personality { font-size: .45rem; color: var(--text2); }
         .mono-cards { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; }
-        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: all var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .mono-card-item:hover { border-color: var(--accent); transform: translateY(-2px); }
         .mono-card-item .mc-desc { font-size: .4rem; color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .mono-log { font-size: .65rem; color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
@@ -536,7 +540,7 @@
 
         /* ==================== Settings ==================== */
         .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: .75rem; }
-        .theme-card { padding: 1rem; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: pointer; transition: all var(--transition); text-align: center; }
+        .theme-card { padding: 1rem; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: pointer; transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); text-align: center; }
         .theme-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
         .theme-card.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.2); }
         .theme-preview { width: 100%; height: 40px; border-radius: 6px; margin-bottom: .5rem; }
@@ -597,13 +601,72 @@
         .game-card .gc-desc { font-size: .4rem; color: var(--text2); text-align: center; margin-top: 1px; line-height: 1.1; padding: 0 2px; max-height: 2.2em; overflow: hidden; }
         .cooldown-btn { position: relative; overflow: hidden; }
         .cooldown-btn .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.1); pointer-events: none; }
-        .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-        .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; perspective: 800px; }
+        .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform .25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color .25s, box-shadow .25s; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .inventory-card:hover { transform: translateY(-2px); border-color: var(--accent); }
         .inventory-card .ic-icon { font-size: 1.2rem; }
         .inventory-card .ic-name { font-size: .42rem; font-weight: 700; text-align: center; line-height: 1.1; margin-top: 1px; }
         .inventory-card .ic-desc { font-size: .35rem; color: var(--text2); text-align: center; line-height: 1.1; padding: 0 2px; overflow: hidden; max-height: 2.4em; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
         .inventory-card .ic-hacker-badge { position: absolute; top: 1px; right: 1px; font-size: .4rem; }
+
+        /* ==================== Card Draw Animations ==================== */
+        @keyframes btnPulse {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(0.92); box-shadow: 0 0 16px 4px rgba(var(--accent-rgb, 255,107,157), 0.4); }
+            100% { transform: scale(1); }
+        }
+        @keyframes cardDeal {
+            0%   { opacity: 0; transform: translateY(-50px) translateX(20px) rotateY(180deg) rotateZ(-15deg) scale(0.5); }
+            30%  { opacity: 0.6; transform: translateY(-20px) translateX(10px) rotateY(90deg) rotateZ(-8deg) scale(0.7); }
+            60%  { opacity: 0.9; transform: translateY(4px) translateX(0) rotateY(0deg) rotateZ(2deg) scale(1.08); }
+            80%  { opacity: 1; transform: translateY(-2px) rotateY(0deg) rotateZ(-1deg) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) rotateY(0deg) rotateZ(0deg) scale(1); }
+        }
+        @keyframes cardGlow {
+            0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 255,107,157), 0); }
+            50%  { box-shadow: 0 0 16px 4px rgba(var(--accent-rgb, 255,107,157), 0.5); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 255,107,157), 0); }
+        }
+        @keyframes cardLegendaryGlow {
+            0%   { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+            30%  { box-shadow: 0 0 24px 6px rgba(255, 215, 0, 0.7); }
+            60%  { box-shadow: 0 0 16px 4px rgba(255, 215, 0, 0.5); }
+            100% { box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.3); }
+        }
+        @keyframes cardShimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .inventory-card.card-dealt {
+            animation: cardDeal .55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       cardGlow .9s ease .35s forwards;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transition: none !important; /* Prevent transition conflict during deal animation */
+        }
+        .inventory-card.card-legendary {
+            animation: cardDeal .65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       cardLegendaryGlow 1.5s ease .4s forwards;
+            border-color: #FFD700 !important;
+            box-shadow: 0 0 16px 4px rgba(255, 215, 0, 0.5);
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transition: none !important;
+            background: linear-gradient(135deg, var(--card2) 0%, rgba(255,215,0,0.08) 50%, var(--card2) 100%);
+            background-size: 200% auto;
+        }
+        .inventory-card.card-legendary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            background: linear-gradient(110deg, transparent 25%, rgba(255,215,0,0.15) 50%, transparent 75%);
+            background-size: 200% auto;
+            animation: cardShimmer 2s linear infinite;
+            pointer-events: none;
+        }
 
         .god-challenge-box { background: var(--card2); border: 2px dashed var(--accent); border-radius: var(--radius); padding: 1rem; text-align: center; margin-bottom: 1rem; }
         .god-code-display { font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace; font-size: .8rem; font-weight: 600; word-break: break-all; color: var(--accent); margin: .5rem 0; line-height: 2; letter-spacing: .5px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
@@ -801,7 +864,7 @@
             transform: translateZ(0);
         }
         /* Mouse trail canvas — GPU */
-        #mouse-trail-canvas {
+        #trail-canvas, #bunny-canvas {
             will-change: transform;
             transform: translateZ(0);
         }
@@ -821,6 +884,48 @@
         /* Disable will-change on idle elements to free GPU memory */
         .mono-tile-cell:not(.current):not(:hover) {
             will-change: auto;
+        }
+        /* ==================== Render Optimization ==================== */
+        /* Contain layout/paint for cards to reduce reflow cost */
+        .card, .modal-overlay > div, .mono-tile-cell {
+            contain: layout style paint;
+        }
+        /* Skip rendering for off-screen content in long views */
+        .view.active > .card:nth-child(n+3) {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 300px;
+        }
+        /* Button press ripple effect */
+        @keyframes rippleEffect {
+            0%   { transform: scale(0); opacity: 0.5; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            opacity: 0;
+        }
+        .btn:active::after {
+            animation: rippleEffect .4s ease-out;
+        }
+        .btn { position: relative; overflow: hidden; }
+        /* Tab item active press animation */
+        .tab-item:active { transform: scale(0.92); transition: transform .1s; }
+        .tab-item { transition: color var(--transition), transform .15s ease; }
+        /* Respect reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
     <script>
@@ -883,7 +988,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9307</div>
+                <div class="subtitle">v7.7.2.9308</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1165,7 +1270,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9307</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9308</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1231,7 +1336,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9307',
+        VERSION: 'v7.7.2.9308',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1968,7 +2073,7 @@
     /* ==================== Monopoly: Initialization ==================== */
     function initMonopoly() {
         migrateSaveKey();
-        const saved = localStorage.getItem(CONFIG.MONO_SAVE_KEY);
+        const saved = safeGetItem(CONFIG.MONO_SAVE_KEY, '');
         if (saved) {
             try { mono = JSON.parse(saved); validateMono(); }
             catch(e) { newMonopolyGame(); }
@@ -1976,18 +2081,18 @@
             newMonopolyGame();
         }
         // Load card inventory
-        const invSaved = localStorage.getItem(CONFIG.SAVE_KEY);
+        const invSaved = safeGetItem(CONFIG.SAVE_KEY, '');
         if (invSaved) {
             try { cardInventory = JSON.parse(invSaved) || []; } catch(e) { cardInventory = []; }
         }
         // Load news state
-        const savedNews = localStorage.getItem('bunny_news_state');
+        const savedNews = safeGetItem('bunny_news_state', '');
         if (savedNews) {
             try { newsState = JSON.parse(savedNews); } catch(e) {}
         }
         // Restore monoEff functions lost during JSON serialization
         restoreAllCardFunctions();
-        godModeActive = localStorage.getItem('godModeActive') === 'true';
+        godModeActive = safeGetItem('godModeActive', '') === 'true';
         if (godModeActive) {
             const gi = document.getElementById('god-indicator');
             if (gi) gi.classList.add('show');
@@ -1995,7 +2100,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9307 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9308 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2060,7 +2165,7 @@
             if (p.speed === undefined) p.speed = 0;
             if (p.doubleDice === undefined || p.doubleDice === true) p.doubleDice = p.doubleDice === true ? 1 : 0; if (p.doubleDice === false) p.doubleDice = 0;
             if (p.consecutiveDoubles === undefined) p.consecutiveDoubles = 0;
-            if (p.diceMultiplier === undefined) p.diceMultiplier = parseInt(localStorage.getItem('diceMultiplierPref')) || 1;
+            if (p.diceMultiplier === undefined) p.diceMultiplier = parseInt(safeGetItem('diceMultiplierPref', '1')) || 1;
             if (p.jailFree === undefined) p.jailFree = false;
             if (p.jailTurns === undefined) p.jailTurns = 0;
             if (p.banned === undefined) p.banned = 0;
@@ -2648,7 +2753,7 @@
         const tiles = [];
         let tileId = 0;
         // Get map size preference and calculate region tile counts
-        const mapSizePref = localStorage.getItem('mapSizePref') || 'medium';
+        const mapSizePref = safeGetItem('mapSizePref', 'medium');
         const targetTotal = MAP_SIZE_PRESETS[mapSizePref]?.total || 156;
         const scaleRatio = targetTotal / 1248;
         // Calculate region counts proportional to target total
@@ -2787,7 +2892,7 @@
         // All players start on the same tile (position 0 — the start tile)
         const startPos = 0;
         // Player count: use setting or random (4-8)
-        const playerCountPref = localStorage.getItem('playerCountPref') || 'random';
+        const playerCountPref = safeGetItem('playerCountPref', 'random');
         let aiCount;
         if (playerCountPref === 'random') {
             aiCount = 3 + Math.floor(Math.random() * 5); // 3 to 7 AI players
@@ -2811,7 +2916,7 @@
                 shield: 0, lucky: 0, speed: 0, doubleDice: 0,
                 mirror: 0, confused: 0, rentDouble: 0, interestFree: 0,
                 consecutiveDoubles: 0, // Track consecutive doubles for jail mechanic
-                diceMultiplier: parseInt(localStorage.getItem('diceMultiplierPref')) || 1, // Dice multiplier (1x/2x/3x/4x) with risk
+                diceMultiplier: parseInt(safeGetItem('diceMultiplierPref', '1')) || 1, // Dice multiplier (1x/2x/3x/4x) with risk
                 jailFree: false, jailTurns: 0, banned: 0, hospital: 0,
                 taxFree: 0, bankrupt: false,
                 blackoutTurns: 0, empTurns: 0, hologramTurns: 0, signalJamTurns: 0, slipTurns: 0,
@@ -2947,6 +3052,8 @@
     let _renderPending = false;
     // Dirty flags — skip sub-renderers when their data hasn't changed
     let _dirtyFlags = { players: true, map: true, ring: true, dice: true, cards: true, inventory: true, log: true, stats: true, stock: true, overview: true, buff: true, news: true };
+    // Measured actual tile width for accurate overview bar sync (updated after each map render)
+    let _actualTileWidth = 72;
     function markDirty(flags) { if (typeof flags === 'string') flags = [flags]; if (Array.isArray(flags)) flags.forEach(f => { if (f in _dirtyFlags) _dirtyFlags[f] = true; }); }
     // Pre-computed lookup sets for O(1) buff classification
     const POSITIVE_BUFF_FIELDS = new Set(['shield','lucky','mirror','doubleDice','speed','rentDouble','interestFree','taxFree','hologramTurns']);
@@ -3459,13 +3566,19 @@
         for (var pi = 0; pi < shortcutPositions.length; pi++) {
             if (shortcutPositions[pi] < total) {
                 ctx.fillStyle = '#FF9800';
-                ctx.fillRect(shortcutPositions[pi] * tileW - 1, 0, 3, rect.height);
+                ctx.fillRect(shortcutPositions[pi] * tileW + tileW/2 - 1, 0, 3, rect.height);
             }
         }
         mono.players.forEach(function(p) {
             if (p.bankrupt) return;
+            // Center marker on the tile, not left edge
+            var markerX = p.pos * tileW + tileW / 2;
             ctx.fillStyle = p.color;
-            ctx.fillRect(p.pos * tileW - 1, 0, 2, rect.height);
+            ctx.fillRect(markerX - 1, 0, 3, rect.height);
+            // Add a small dot at top for visibility
+            ctx.beginPath();
+            ctx.arc(markerX, rect.height / 2, 3, 0, 2 * Math.PI);
+            ctx.fill();
         });
         updateOverviewViewport();
     }
@@ -3474,10 +3587,25 @@
         var scroll = document.getElementById('mono-map-scroll');
         var viewport = document.getElementById('mono-overview-viewport');
         var bar = document.getElementById('mono-overview-bar');
-        if (!scroll || !viewport || !bar || !mono) return;
-        var scrollPct = scroll.scrollLeft / scroll.scrollWidth;
-        var viewPct = scroll.offsetWidth / scroll.scrollWidth;
-        viewport.style.left = (scrollPct * 100) + '%';
+        if (!scroll || !viewport || !bar || !mono || !mono.tiles) return;
+        // Use actual tile width for consistent proportional mapping
+        // This avoids mismatch when virtual scroll spacers don't perfectly match actual tile widths
+        var total = mono.tiles.length;
+        var tw = _actualTileWidth || 72;
+        var totalContentWidth = total * tw;
+        var visibleWidth = scroll.offsetWidth;
+        var maxScroll = totalContentWidth - visibleWidth;
+        if (maxScroll <= 0) {
+            viewport.style.left = '0%';
+            viewport.style.width = '100%';
+            return;
+        }
+        // Clamp scrollLeft to valid range (virtual scroll may cause slight overshoot)
+        var sLeft = Math.max(0, Math.min(scroll.scrollLeft, maxScroll));
+        // Viewport position = left edge of visible area as fraction of total
+        var leftPct = sLeft / totalContentWidth;
+        var viewPct = visibleWidth / totalContentWidth;
+        viewport.style.left = (leftPct * 100) + '%';
         viewport.style.width = (viewPct * 100) + '%';
     }
 
@@ -3489,9 +3617,22 @@
             var rect = bar.getBoundingClientRect();
             var x = e.clientX - rect.left;
             var pct = x / rect.width;
-            scroll.scrollTo({ left: pct * scroll.scrollWidth - scroll.offsetWidth / 2, behavior: 'smooth' });
+            // Use actual tile width for consistent scroll target calculation
+            var total = (mono && mono.tiles) ? mono.tiles.length : 156;
+            var tw = _actualTileWidth || 72;
+            var totalContentWidth = total * tw;
+            var targetScroll = pct * totalContentWidth - scroll.offsetWidth / 2;
+            scroll.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
         });
-        scroll.addEventListener('scroll', updateOverviewViewport);
+        // Update viewport on scroll with throttle
+        var _scrollRAF = null;
+        scroll.addEventListener('scroll', function() {
+            if (_scrollRAF) return;
+            _scrollRAF = requestAnimationFrame(function() {
+                updateOverviewViewport();
+                _scrollRAF = null;
+            });
+        });
     }
     document.addEventListener('DOMContentLoaded', initOverviewBar);
 
@@ -3692,7 +3833,7 @@
 
         // Virtual scrolling: only render tiles near the current player position ± visible window
         // This dramatically reduces DOM nodes for large maps (156/312 tiles)
-        const TILE_WIDTH = 72; // approx width including gap
+        var TILE_WIDTH = 72; // approx width including gap, will be measured after render
         const scroll = document.getElementById('mono-map-scroll');
         const visibleWidth = (scroll ? scroll.offsetWidth : 800);
         const visibleCount = Math.ceil(visibleWidth / TILE_WIDTH) + 8; // buffer on both sides
@@ -3750,12 +3891,20 @@
         }
         el.innerHTML = h;
 
+        // Measure actual tile width from rendered DOM for accurate overview sync
+        const firstTile = el.querySelector('.mono-tile-cell');
+        if (firstTile) {
+            _actualTileWidth = firstTile.offsetWidth + 3; // include gap (matches .mono-map-strip gap: 3px)
+        }
+
         // Auto-scroll to current player position
         const currentTile = el.querySelector('.mono-tile-cell.current');
         if (scroll && currentTile) {
             const scrollLeft = currentTile.offsetLeft - scroll.offsetWidth / 2 + currentTile.offsetWidth / 2;
             scroll.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
         }
+        // Update overview after map render
+        if (typeof renderMonoOverview === 'function') renderMonoOverview();
     }
 
     /* ---- Tile detail modal: click any tile to inspect & jump ---- */
@@ -3891,7 +4040,7 @@
         const p = mono.players[0];
         if (!p || mono.currentPlayer !== 0 || mono.rolling) return;
         p.diceMultiplier = v;
-        localStorage.setItem('diceMultiplierPref', String(v));
+        safeSetItem('diceMultiplierPref', String(v));
         renderMonopoly();
     }
 
@@ -5142,8 +5291,8 @@
 
     /* ==================== Monopoly: Stock Market (10 Stocks + Leverage + Short) ==================== */
     let _stockRefreshTimer = null;
-    let _selectedStockIdx = parseInt(localStorage.getItem('stockSelectedIdx')) || 0;
-    let _selectedLeverage = parseInt(localStorage.getItem('stockSelectedLeverage')) || 1;
+    let _selectedStockIdx = parseInt(safeGetItem('stockSelectedIdx', '0')) || 0;
+    let _selectedLeverage = parseInt(safeGetItem('stockSelectedLeverage', '1')) || 1;
 
     function showStockModal() {
         const p = mono.players[0];
@@ -5278,12 +5427,12 @@
 
     window.selectStock = function(idx) { 
         _selectedStockIdx = idx; 
-        localStorage.setItem('stockSelectedIdx', String(idx));
+        safeSetItem('stockSelectedIdx', String(idx));
         showStockModal(); 
     };
     window.selectLeverage = function(lev) { 
         _selectedLeverage = lev; 
-        localStorage.setItem('stockSelectedLeverage', String(lev));
+        safeSetItem('stockSelectedLeverage', String(lev));
         showStockModal(); 
     };
 
@@ -7814,7 +7963,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9307 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9308 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -7948,14 +8097,14 @@
     function initCardSystem() {
         renderCardDrawArea();
         // Resume cooldown if it was active before page refresh
-        const lastDraw = parseInt(localStorage.getItem('lastCardDraw') || '0');
+        const lastDraw = parseInt(safeGetItem('lastCardDraw', '0')) || 0;
         if (Date.now() - lastDraw < CONFIG.CARD_COOLDOWN_MS) {
             startCooldownTimer();
         }
     }
 
     function canDrawCard() {
-        const lastDraw = parseInt(localStorage.getItem('lastCardDraw') || '0');
+        const lastDraw = parseInt(safeGetItem('lastCardDraw', '0')) || 0;
         return Date.now() - lastDraw >= CONFIG.CARD_COOLDOWN_MS;
     }
 
@@ -7964,7 +8113,7 @@
         const tick = () => {
             const btn = document.getElementById('draw-btn');
             if (!btn) return;
-            const lastDraw = parseInt(localStorage.getItem('lastCardDraw') || '0');
+            const lastDraw = parseInt(safeGetItem('lastCardDraw', '0')) || 0;
             const remaining = CONFIG.CARD_COOLDOWN_MS - (Date.now() - lastDraw);
             if (remaining <= 0) {
                 clearInterval(cooldownInterval);
@@ -7999,7 +8148,7 @@
 
     function drawCards() {
         if (!canDrawCard()) return;
-        localStorage.setItem('lastCardDraw', Date.now().toString());
+        safeSetItem('lastCardDraw', Date.now().toString());
         const drawn = [];
         for (let i = 0; i < 10; i++) {
             const card = drawWeightedCard();
@@ -8034,23 +8183,55 @@
             }
         }
         saveInventory();
-        // Show drawn cards with visible descriptions
+        // Pre-draw shuffle effect on the draw button
+        const drawBtn = document.getElementById('draw-btn');
+        if (drawBtn) {
+            drawBtn.style.animation = 'none';
+            drawBtn.offsetHeight; // Force reflow
+            drawBtn.style.animation = 'btnPulse .3s ease';
+        }
+        // Show drawn cards with staggered deal animation
         const el = document.getElementById('card-draw-area');
         if (el) {
-            el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">✨ 本次抽卡结果</div>' +
-                '<div class="inventory-grid">' + drawn.map(c =>
-                    `<div class="inventory-card" title="${c.n}：${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};animation:slideUp .4s ease;">
+            const legendaryCount = drawn.filter(c => c.rarity === 'legendary').length;
+            const headerText = legendaryCount > 0 
+                ? `✨ 本次抽卡结果 — 🌟 ${legendaryCount} 张传说！`
+                : '✨ 本次抽卡结果';
+            el.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;' + (legendaryCount > 0 ? 'animation:cardGlow 1s ease;' : '') + '">' + headerText + '</div>' +
+                '<div class="inventory-grid">' + drawn.map((c, i) => {
+                    const isLegendary = c.rarity === 'legendary';
+                    const dealClass = isLegendary ? 'card-legendary' : 'card-dealt';
+                    const delay = (i * 50).toFixed(0);
+                    return `<div class="inventory-card ${dealClass}" title="${c.n}：${c.desc}" style="border-color:${RARITY_COLORS[c.rarity]};animation-delay:${delay}ms;">
                         <div class="ic-icon">${c.ic}</div>
                         <div class="ic-name" style="color:${RARITY_COLORS[c.rarity]};">${c.n}</div>
                         <div class="ic-desc">${c.desc}</div>
                         ${c.isHacker ? '<div class="ic-hacker-badge">⚔️</div>' : ''}
-                    </div>`
-                ).join('') + '</div>';
+                    </div>`;
+                }).join('') + '</div>';
+            // Trigger legendary particle burst
+            if (legendaryCount > 0) {
+                setTimeout(() => spawnLegendaryBurst(el), 300);
+            }
         }
         renderCardInventory();
-        const legendaryCount = drawn.filter(c => c.rarity === 'legendary').length;
-        logEvent(`🃏 抽到 ${drawn.length} 张卡牌${legendaryCount > 0 ? `（含 ${legendaryCount} 张传说卡！）` : ''}`, 'info');
+        const legendaryCount2 = drawn.filter(c => c.rarity === 'legendary').length;
+        logEvent(`🃏 抽到 ${drawn.length} 张卡牌${legendaryCount2 > 0 ? `（含 ${legendaryCount2} 张传说卡！）` : ''}`, 'info');
         startCooldownTimer();
+    }
+
+    // Particle burst for legendary card draws
+    function spawnLegendaryBurst(container) {
+        try {
+            const rect = container.getBoundingClientRect();
+            const burst = document.createElement('div');
+            burst.style.cssText = 'position:fixed;left:' + (rect.left + rect.width/2) + 'px;top:' + (rect.top + rect.height/2) + 'px;width:4px;height:4px;border-radius:50%;background:#FFD700;box-shadow:0 0 12px 4px rgba(255,215,0,0.6);pointer-events:none;z-index:9999;opacity:0;';
+            document.body.appendChild(burst);
+            burst.animate([
+                { opacity: 1, transform: 'scale(1)' },
+                { opacity: 0, transform: 'scale(20) translate(0, -60px)' }
+            ], { duration: 800, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).onfinish = () => burst.remove();
+        } catch(e) {}
     }
 
     function renderCardDrawArea() {
@@ -8213,24 +8394,24 @@
 
     /* ==================== Theme System ==================== */
     function loadTheme() {
-        const t = localStorage.getItem('theme') || 'bunny';
+        const t = safeGetItem('theme', 'bunny');
         document.documentElement.setAttribute('data-theme', t);
-        pixelFontEnabled = localStorage.getItem('pixelFont') === '1';
+        pixelFontEnabled = safeGetItem('pixelFont', '0') === '1';
         if (pixelFontEnabled) document.documentElement.classList.add('font-pixel');
         const ft = document.getElementById('font-toggle');
         if (ft && pixelFontEnabled) ft.classList.add('on');
-        mouseBunnyEnabled = localStorage.getItem('mouseBunny') !== '0';
+        mouseBunnyEnabled = safeGetItem('mouseBunny', '1') !== '0';
         const mt = document.getElementById('mouse-toggle');
         if (mt) { if (mouseBunnyEnabled) mt.classList.add('on'); else mt.classList.remove('on'); }
         const ect = document.getElementById('egg-click-toggle');
-        if (ect) { if (localStorage.getItem('eggClickTrigger') !== '0') ect.classList.add('on'); else ect.classList.remove('on'); }
+        if (ect) { if (safeGetItem('eggClickTrigger', '1') !== '0') ect.classList.add('on'); else ect.classList.remove('on'); }
         // Load sidebar avatar preference
         loadSidebarAvatar();
     }
 
     // Sidebar avatar: switch between emoji and photo
     function loadSidebarAvatar() {
-        const mode = localStorage.getItem('sidebarAvatar') || 'emoji';
+        const mode = safeGetItem('sidebarAvatar', 'emoji');
         applySidebarAvatar(mode);
     }
     function applySidebarAvatar(mode) {
@@ -8251,14 +8432,14 @@
         }
     }
     function setSidebarAvatar(mode) {
-        localStorage.setItem('sidebarAvatar', mode);
+        safeSetItem('sidebarAvatar', mode);
         applySidebarAvatar(mode);
     }
 
     function initThemeGrid() {
         const el = document.getElementById('theme-grid');
         if (!el) return;
-        const current = localStorage.getItem('theme') || 'bunny';
+        const current = safeGetItem('theme', 'bunny');
         el.innerHTML = CONFIG.THEMES.map(t =>
             `<div class="theme-card ${t.id === current ? 'active' : ''}" onclick="setTheme('${t.id}')">
                 <div class="theme-preview" style="background:linear-gradient(135deg, ${t.colors[0]}, ${t.colors[1]}, ${t.colors[2]});"></div>
@@ -8267,8 +8448,23 @@
         ).join('');
     }
 
+    /* ---- Safe localStorage wrapper (prevents silent quota/failure) ---- */
+    function safeSetItem(key, value) {
+        try { localStorage.setItem(key, value); return true; }
+        catch(e) { console.warn('[localStorage] Failed to save:', key, e); return false; }
+    }
+    function safeGetItem(key, fallback) {
+        try { const v = localStorage.getItem(key); return v === null ? fallback : v; }
+        catch(e) { return fallback; }
+    }
+    function safeRemoveItem(key) {
+        try { localStorage.removeItem(key); return true; }
+        catch(e) { console.warn('[localStorage] Failed to remove:', key, e); return false; }
+    }
+
     function setTheme(id) {
-        localStorage.setItem('theme', id);
+        if (!CONFIG.THEMES.find(t => t.id === id)) return;
+        safeSetItem('theme', id);
         document.documentElement.setAttribute('data-theme', id);
         initThemeGrid();
         if (typeof _invalidateTrailCache === 'function') _invalidateTrailCache();
@@ -8277,7 +8473,7 @@
 
     function togglePixelFont() {
         pixelFontEnabled = !pixelFontEnabled;
-        localStorage.setItem('pixelFont', pixelFontEnabled ? '1' : '0');
+        safeSetItem('pixelFont', pixelFontEnabled ? '1' : '0');
         document.documentElement.classList.toggle('font-pixel', pixelFontEnabled);
         const ft = document.getElementById('font-toggle');
         if (ft) ft.classList.toggle('on', pixelFontEnabled);
@@ -8293,7 +8489,7 @@
             document.documentElement.style.setProperty('--font-scale', scale);
             _fontScaleRafId = null;
         });
-        localStorage.setItem('fontScale', String(pct));
+        safeSetItem('fontScale', String(pct));
         const valEl = document.getElementById('font-scale-val');
         if (valEl) valEl.textContent = pct + '%';
     }
@@ -8305,53 +8501,55 @@
         standard: { name: '标准', total: 312, label: '标准(312)' },
     };
     function setMapSize(size) {
-        localStorage.setItem('mapSizePref', size);
+        safeSetItem('mapSizePref', size);
         const preset = MAP_SIZE_PRESETS[size] || MAP_SIZE_PRESETS.medium;
         const valEl = document.getElementById('map-size-val');
         if (valEl) valEl.textContent = preset.label;
     }
     function setPlayerCount(count) {
         if (count !== 'random') count = parseInt(count);
-        localStorage.setItem('playerCountPref', String(count));
+        safeSetItem('playerCountPref', String(count));
         const valEl = document.getElementById('player-count-val');
         if (valEl) valEl.textContent = count === 'random' ? '随机(4-8)' : count + '人';
     }
     function loadGameSettings() {
-        const mapSize = localStorage.getItem('mapSizePref') || 'medium';
-        const playerCount = localStorage.getItem('playerCountPref') || 'random';
+        const mapSize = safeGetItem('mapSizePref', 'medium');
+        const playerCount = safeGetItem('playerCountPref', 'random');
         const mapEl = document.getElementById('map-size-val');
         if (mapEl) { const p = MAP_SIZE_PRESETS[mapSize] || MAP_SIZE_PRESETS.medium; mapEl.textContent = p.label; }
         const pcEl = document.getElementById('player-count-val');
         if (pcEl) { const pc = playerCount === 'random' ? '随机(4-8)' : playerCount + '人'; pcEl.textContent = pc; }
     }
     function loadFontScale() {
-        const saved = parseInt(localStorage.getItem('fontScale')) || 100;
+        const saved = parseInt(safeGetItem('fontScale', '100')) || 100;
         setFontScale(saved);
         const slider = document.getElementById('font-scale-slider');
         if (slider) slider.value = saved;
         const tbSelect = document.getElementById('tabbar-mode-select');
-        if (tbSelect) tbSelect.value = localStorage.getItem('tabBarMode') || 'always';
+        if (tbSelect) tbSelect.value = safeGetItem('tabBarMode', 'always');
         const sbSelect = document.getElementById('sidebar-mode-select');
-        if (sbSelect) sbSelect.value = localStorage.getItem('sidebarCollapsed') || 'auto';
+        if (sbSelect) sbSelect.value = safeGetItem('sidebarCollapsed', 'auto');
         loadGameSettings();
     }
 
     function toggleMouseBunny() {
         mouseBunnyEnabled = !mouseBunnyEnabled;
-        localStorage.setItem('mouseBunny', mouseBunnyEnabled ? '1' : '0');
+        safeSetItem('mouseBunny', mouseBunnyEnabled ? '1' : '0');
         const mt = document.getElementById('mouse-toggle');
         if (mt) mt.classList.toggle('on', mouseBunnyEnabled);
         if (!mouseBunnyEnabled) {
             trailPoints = [];
             if (trailCtx && trailCanvas) trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
             if (fxCtx && fxCanvas) fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+        } else {
+            restartTrailRAF(); // Resume RAF loop when re-enabled
         }
     }
 
     /* ---- Text selection toggle ---- */
     let textSelectDisabled = true;
     function loadTextSelectPref() {
-        textSelectDisabled = localStorage.getItem('textSelectDisabled') !== '0';
+        textSelectDisabled = safeGetItem('textSelectDisabled', '1') !== '0';
         applyTextSelect();
     }
     function applyTextSelect() {
@@ -8361,7 +8559,7 @@
     }
     function toggleTextSelect() {
         textSelectDisabled = !textSelectDisabled;
-        localStorage.setItem('textSelectDisabled', textSelectDisabled ? '1' : '0');
+        safeSetItem('textSelectDisabled', textSelectDisabled ? '1' : '0');
         applyTextSelect();
         logEvent(textSelectDisabled ? '📝 已禁用文本选中' : '📝 已启用文本选中', 'info');
     }
@@ -8377,7 +8575,7 @@
     /* ==================== Navigation ==================== */
     // ===== Sidebar auto-collapse / auto-hide =====
     let _sidebarCollapseTimer = null;
-    let _sidebarMode = localStorage.getItem('sidebarCollapsed') || 'auto';
+    let _sidebarMode = safeGetItem('sidebarCollapsed', 'auto');
     // Modes: 'auto' (collapse to icons after 5s), 'auto-hide' (fully hide, click to restore),
     //        'locked-open', 'locked-collapsed'
 
@@ -8455,7 +8653,7 @@
             if (_sidebarMode !== 'auto') return;
             // Don't re-collapse if currently hovered (user is actively interacting)
             if (sidebar.matches(':hover')) return;
-            const scale = parseFloat(localStorage.getItem('fontScale')) || 100;
+            const scale = parseFloat(safeGetItem('fontScale', '100')) || 100;
             if (scale >= 110) sidebar.classList.add('collapsed');
             else sidebar.classList.remove('collapsed');
         }
@@ -8486,7 +8684,7 @@
         } else {
             _sidebarMode = 'auto';
         }
-        localStorage.setItem('sidebarCollapsed', _sidebarMode);
+        safeSetItem('sidebarCollapsed', _sidebarMode);
         if (_sidebarMode === 'locked-collapsed') {
             sidebar.classList.add('collapsed');
             if (pin) { pin.classList.add('locked'); pin.textContent = '📍'; }
@@ -8495,7 +8693,7 @@
             if (pin) { pin.classList.add('locked'); pin.textContent = '📍'; }
         } else {
             if (pin) { pin.classList.remove('locked'); pin.textContent = '📌'; }
-            const scale = parseFloat(localStorage.getItem('fontScale')) || 100;
+            const scale = parseFloat(safeGetItem('fontScale', '100')) || 100;
             if (scale >= 110) sidebar.classList.add('collapsed');
             else sidebar.classList.remove('collapsed');
         }
@@ -8505,7 +8703,7 @@
 
     function setSidebarMode(mode) {
         _sidebarMode = mode;
-        localStorage.setItem('sidebarCollapsed', mode);
+        safeSetItem('sidebarCollapsed', mode);
         const sidebar = document.querySelector('.sidebar');
         if (!sidebar) return;
         sidebar.classList.remove('collapsed', 'auto-hidden');
@@ -8523,7 +8721,7 @@
             }, 5000);
         } else {
             // 'auto'
-            const scale = parseFloat(localStorage.getItem('fontScale')) || 100;
+            const scale = parseFloat(safeGetItem('fontScale', '100')) || 100;
             if (scale >= 110) sidebar.classList.add('collapsed');
         }
         const select = document.getElementById('sidebar-mode-select');
@@ -8531,7 +8729,7 @@
     }
 
     // ===== Tab bar collapse/hide =====
-    let _tabBarMode = localStorage.getItem('tabBarMode') || 'always';
+    let _tabBarMode = safeGetItem('tabBarMode', 'always');
     let _tabBarCollapseTimer = null;
 
     function initTabBarMode() {
@@ -8605,7 +8803,7 @@
 
     function setTabBarMode(mode) {
         _tabBarMode = mode;
-        localStorage.setItem('tabBarMode', mode);
+        safeSetItem('tabBarMode', mode);
         if (window._applyTabBarMode) window._applyTabBarMode();
         const select = document.getElementById('tabbar-mode-select');
         if (select) select.value = mode;
@@ -8793,7 +8991,7 @@
                 </div>`;
             return;
         }
-        const challenge = localStorage.getItem('godChallenge') || generateChallenge();
+        const challenge = safeGetItem('godChallenge', '') || generateChallenge();
         el.innerHTML = `
             <div style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem;text-align:center;line-height:1.6;">
                 输入激活码以解锁上帝模式<br>使用私钥对挑战码进行 ECDSA-SHA256 签名
@@ -8811,12 +9009,12 @@
     function generateChallenge() {
         const bytes = crypto.getRandomValues(new Uint8Array(16));
         const challenge = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-        localStorage.setItem('godChallenge', challenge);
+        safeSetItem('godChallenge', challenge);
         return challenge;
     }
 
     async function verifyGodMode() {
-        const challenge = localStorage.getItem('godChallenge');
+        const challenge = safeGetItem('godChallenge', '');
         const input = document.getElementById('god-input');
         const status = document.getElementById('god-status');
         if (!challenge || !input || !status) return;
@@ -8837,7 +9035,7 @@
             const valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, sigBytes, enc);
             if (valid) {
                 godModeActive = true;
-                localStorage.setItem('godModeActive', 'true');
+                safeSetItem('godModeActive', 'true');
                 const gi = document.getElementById('god-indicator');
                 if (gi) gi.classList.add('show');
                 // Show god panel immediately (not hidden)
@@ -8866,7 +9064,7 @@
 
     function deactivateGodMode() {
         godModeActive = false;
-        localStorage.removeItem('godModeActive');
+        safeRemoveItem('godModeActive');
         const gi = document.getElementById('god-indicator');
         if (gi) gi.classList.remove('show');
         renderGodPanel();
@@ -8924,7 +9122,7 @@
     function getSaveSlotKey(slot) { return `bunny_mono_save_slot_${slot}`; }
     function getSaveSlotMeta(slot) {
         try {
-            const raw = localStorage.getItem(getSaveSlotKey(slot));
+            const raw = safeGetItem(getSaveSlotKey(slot), '');
             if (!raw) return null;
             const data = JSON.parse(raw);
             return {
@@ -8978,7 +9176,7 @@
                 const data = JSON.parse(JSON.stringify(mono));
                 data._savedAt = Date.now();
                 data._cardInventory = JSON.parse(JSON.stringify(cardInventory));
-                localStorage.setItem(getSaveSlotKey(slot), JSON.stringify(data));
+                safeSetItem(getSaveSlotKey(slot), JSON.stringify(data));
                 logEvent(`✓ 游戏已保存到存档 ${slot+1}`, 'success');
                 showToast(`✓ 已保存到存档 ${slot+1}`, 'success');
                 renderSaveSlots();
@@ -8995,7 +9193,7 @@
         showLoading('读取存档中...');
         setTimeout(() => {
             try {
-                const raw = localStorage.getItem(getSaveSlotKey(slot));
+                const raw = safeGetItem(getSaveSlotKey(slot), '');
                 if (!raw) { hideLoading(); showToast('该存档为空', 'error'); return; }
                 const data = JSON.parse(raw);
                 if (!data.tiles || !data.players) { hideLoading(); showToast('存档损坏', 'error'); return; }
@@ -9030,7 +9228,7 @@
 
     function deleteSaveSlot(slot) {
         if (!confirm(`确定删除存档 ${slot+1} 吗？`)) return;
-        localStorage.removeItem(getSaveSlotKey(slot));
+        safeRemoveItem(getSaveSlotKey(slot));
         showToast(`存档 ${slot+1} 已删除`, 'info');
         logEvent(`存档 ${slot+1} 已删除`, 'info');
         renderSaveSlots();
@@ -9356,12 +9554,12 @@
     const EGG_COOLDOWN_MS = 5 * 60 * 1000;
 
     function isEggClickTriggerEnabled() {
-        return localStorage.getItem('eggClickTrigger') !== '0';
+        return safeGetItem('eggClickTrigger', '1') !== '0';
     }
 
     function checkEggCooldown() {
         if (godModeActive) return false;
-        const cooldownEnd = parseInt(localStorage.getItem('eggCooldown')) || 0;
+        const cooldownEnd = parseInt(safeGetItem('eggCooldown', '0')) || 0;
         return Date.now() < cooldownEnd;
     }
 
@@ -9371,7 +9569,7 @@
             monoLog('🎮 连点触发彩蛋 — 冷却中', 'info');
             return;
         }
-        localStorage.setItem('eggCooldown', String(Date.now() + EGG_COOLDOWN_MS));
+        safeSetItem('eggCooldown', String(Date.now() + EGG_COOLDOWN_MS));
         logEvent('🎮 连点触发彩蛋！', 'god');
         triggerEggWhiteout();
     }
@@ -9466,8 +9664,8 @@
     }
 
     function toggleEggClickTrigger() {
-        const enabled = localStorage.getItem('eggClickTrigger') !== '0';
-        localStorage.setItem('eggClickTrigger', enabled ? '0' : '1');
+        const enabled = safeGetItem('eggClickTrigger', '1') !== '0';
+        safeSetItem('eggClickTrigger', enabled ? '0' : '1');
         const toggle = document.getElementById('egg-click-toggle');
         if (toggle) toggle.classList.toggle('on', !enabled);
     }
@@ -9669,6 +9867,14 @@
             }
         }, { passive: true });
 
+        if (!_trailRAFRunning) {
+            _trailRAFRunning = true;
+            requestAnimationFrame(updateAndDrawTrail);
+        }
+    }
+    function restartTrailRAF() {
+        if (_trailRAFRunning) return;
+        _trailRAFRunning = true;
         requestAnimationFrame(updateAndDrawTrail);
     }
 
@@ -9732,8 +9938,21 @@
     }
 
     // --- Main trail update & draw loop ---
+    let _trailRAFRunning = false;
     function updateAndDrawTrail() {
         if (!trailCtx || !fxCtx) { requestAnimationFrame(updateAndDrawTrail); return; }
+        // Skip all rendering when trail is disabled and no ink-persist mode — saves CPU/GPU
+        if (!mouseBunnyEnabled && !eggInkPersistMode) {
+            // Only clear once, then sleep until re-enabled
+            if (trailPoints.length > 0 || trailParticles.length > 0) {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                trailPoints = [];
+                trailParticles = [];
+            }
+            _trailRAFRunning = false;
+            return; // Stop the loop — restartTrailRAF() will resume when needed
+        }
         const now = performance.now();
         const cfg = getTrailConfig();
 
@@ -9786,6 +10005,7 @@
             drawPixelRabbit(fxCtx, head.x, head.y, cfg.accent, 18);
         }
 
+        _trailRAFRunning = true;
         requestAnimationFrame(updateAndDrawTrail);
     }
 
@@ -10219,7 +10439,7 @@
             e.preventDefault();
             _deferredPrompt = e;
             // Show banner only if not previously dismissed and not already installed
-            const dismissed = localStorage.getItem('pwa_install_dismissed');
+            const dismissed = safeGetItem('pwa_install_dismissed', '');
             const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
             if (!dismissed && !standalone) {
                 const banner = document.getElementById('pwa-install-banner');
@@ -10343,7 +10563,7 @@
     function dismissPWAInstall() {
         const banner = document.getElementById('pwa-install-banner');
         if (banner) banner.style.display = 'none';
-        localStorage.setItem('pwa_install_dismissed', Date.now().toString());
+        safeSetItem('pwa_install_dismissed', Date.now().toString());
     }
 
     async function initPushNotifications() {
@@ -10434,6 +10654,14 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.7.2.9308', title:'设置持久化全面修复 & 抽卡动画3D化 & 地图进度条校准 & GPU渲染优化', items:[
+            '💾 设置持久化修复：所有localStorage读写统一使用safeSetItem/safeGetItem包装，防止配额溢出或隐私模式导致设置丢失',
+            '🎨 抽卡动画3D化：添加perspective 800px容器、5阶段rotateY翻转动画、传说卡金色shimmer流光效果+粒子爆裂特效',
+            '🗺️ 地图进度条校准：动态测量实际tile宽度，统一canvas与viewport坐标系，修复虚拟滚动spacer宽度不匹配导致的进度条偏移',
+            '⚡ GPU渲染优化：新增contain布局隔离、content-visibility离屏跳过渲染、按钮ripple点击波纹、tab-item按压弹性动画',
+            '♿ prefers-reduced-motion：尊重系统减少动画偏好，自动禁用动画和过渡',
+            '🔧 transition冲突修复：抽卡动画期间禁用transition避免transform属性竞争',
+        ]},
         { ver:'v7.7.2.9307', title:'文本选中开关 & 头像特效修复 & 通知按钮状态 & PWA弹窗修复', items:[
             '📝 文本选中开关：设置面板新增「禁用文本选中」开关，支持动态切换body.no-select CSS类',
             '✨ 头像特效修复：移除阻塞click事件的pointerdown/mousedown/selectstart/dblclick preventDefault处理器，连点头像华丽特效恢复正常',
