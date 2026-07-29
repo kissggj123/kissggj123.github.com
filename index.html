@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9291 -->
+    <!-- VERSION: v7.7.2.9292 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -712,7 +712,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9291</div>
+                <div class="subtitle">v7.7.2.9292</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -940,7 +940,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9291</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9292</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1006,8 +1006,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9291',
-        SAVE_KEY: 'bunny_cc_v7.7.2.9291',
+        VERSION: 'v7.7.2.9292',
+        SAVE_KEY: 'bunny_cc_v7.7.2.9292',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -1507,7 +1507,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9291 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9292 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2874,7 +2874,7 @@
                     const failChance = mult === 2 ? 0.25 : mult === 3 ? 0.35 : 0.45;
                     if (Math.random() < failChance) {
                         monoLog(`💥 倍率掷骰失败！×${mult} 风险触发，原地不动`, 'error');
-                        p.diceMultiplier = 1;
+                        // Keep diceMultiplier — player's choice is remembered per design spec
                         mono.rolling = false;
                         saveMonopoly();
                         renderMonopoly();
@@ -6265,7 +6265,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9291 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9292 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -8270,16 +8270,90 @@
     }
 
     async function installPWA() {
-        if (!_deferredPrompt) {
-            monoLog('当前浏览器不支持安装提示，请使用浏览器菜单"添加到主屏幕"', 'info');
+        // Check if already in standalone mode (PWA already installed)
+        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (standalone) {
+            monoLog('🐰 应用已在 PWA 模式下运行', 'success');
             return;
         }
-        _deferredPrompt.prompt();
-        const { outcome } = await _deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            console.log('User accepted PWA install');
+
+        // If beforeinstallprompt is supported (Chrome/Edge on Android & Desktop)
+        if (_deferredPrompt) {
+            _deferredPrompt.prompt();
+            const { outcome } = await _deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User accepted PWA install');
+            }
+            _deferredPrompt = null;
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.style.display = 'none';
+            return;
         }
-        _deferredPrompt = null;
+
+        // Fallback: show platform-specific install instructions
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isMacSafari = /Macintosh/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+        let instructions = '';
+        if (isIOS) {
+            instructions = `
+                <div style="text-align:left;line-height:2;font-size:.85rem;">
+                    <p style="color:var(--text2,#888);margin-bottom:.8rem;">iOS Safari 不支持自动安装，请按以下步骤手动添加：</p>
+                    <div style="background:var(--bg,#f5f5f5);border-radius:8px;padding:1rem;margin-bottom:.8rem;">
+                        <p style="margin:0 0 .5rem;"><strong>步骤 1</strong> — 点击 Safari 底部的 <span style="display:inline-block;background:var(--accent,#FF6B9D);color:#fff;padding:.1rem .4rem;border-radius:4px;font-size:.8rem;">分享 ↗</span> 按钮</p>
+                        <p style="margin:0 0 .5rem;"><strong>步骤 2</strong> — 在弹出菜单中找到 <strong>「添加到主屏幕」</strong></p>
+                        <p style="margin:0;"><strong>步骤 3</strong> — 点击 <strong>「添加」</strong> 完成安装</p>
+                    </div>
+                    <p style="color:var(--text2,#888);font-size:.75rem;">💡 安装后从主屏幕图标启动即可获得全屏 PWA 体验</p>
+                </div>`;
+        } else if (isAndroid) {
+            instructions = `
+                <div style="text-align:left;line-height:2;font-size:.85rem;">
+                    <p style="color:var(--text2,#888);margin-bottom:.8rem;">Android 浏览器手动安装步骤：</p>
+                    <div style="background:var(--bg,#f5f5f5);border-radius:8px;padding:1rem;margin-bottom:.8rem;">
+                        <p style="margin:0 0 .5rem;"><strong>Chrome：</strong>点击右上角 <span style="font-size:1.1rem;">⋮</span> 菜单 → <strong>「添加到主屏幕」</strong> 或 <strong>「安装应用」</strong></p>
+                        <p style="margin:0;"><strong>其他浏览器：</strong>在菜单中找到「添加到主屏幕」选项</p>
+                    </div>
+                    <p style="color:var(--text2,#888);font-size:.75rem;">💡 建议使用 Chrome 浏览器以获得最佳 PWA 体验</p>
+                </div>`;
+        } else if (isMacSafari) {
+            instructions = `
+                <div style="text-align:left;line-height:2;font-size:.85rem;">
+                    <p style="color:var(--text2,#888);margin-bottom:.8rem;">macOS Safari 手动安装步骤：</p>
+                    <div style="background:var(--bg,#f5f5f5);border-radius:8px;padding:1rem;margin-bottom:.8rem;">
+                        <p style="margin:0 0 .5rem;"><strong>步骤 1</strong> — 点击菜单栏 <strong>「文件」</strong></p>
+                        <p style="margin:0 0 .5rem;"><strong>步骤 2</strong> — 选择 <strong>「添加到程序坞」</strong></p>
+                        <p style="margin:0;"><strong>步骤 3</strong> — 点击 <strong>「添加」</strong> 完成安装</p>
+                    </div>
+                    <p style="color:var(--text2,#888);font-size:.75rem;">💡 也可使用 Chrome/Edge 地址栏右侧的安装图标快速安装</p>
+                </div>`;
+        } else {
+            instructions = `
+                <div style="text-align:left;line-height:2;font-size:.85rem;">
+                    <p style="color:var(--text2,#888);margin-bottom:.8rem;">桌面浏览器手动安装步骤：</p>
+                    <div style="background:var(--bg,#f5f5f5);border-radius:8px;padding:1rem;margin-bottom:.8rem;">
+                        <p style="margin:0 0 .5rem;"><strong>Chrome/Edge：</strong>点击地址栏右侧的 <span style="font-size:1.1rem;">⊕</span> 安装图标</p>
+                        <p style="margin:0;"><strong>Firefox：</strong>不支持 PWA 安装，建议使用 Chrome 或 Edge</p>
+                    </div>
+                </div>`;
+        }
+
+        const modal = document.getElementById('modal-content');
+        if (modal) {
+            modal.innerHTML = `
+                <div class="modal-drag-handle" style="margin:0 auto .8rem;"></div>
+                <h3 style="margin:0 0 1rem;text-align:center;">📲 安装兔可可王国</h3>
+                ${instructions}
+                <div style="display:flex;gap:.5rem;margin-top:1rem;">
+                    <button class="btn btn-secondary" style="flex:1;" onclick="closeModal()">关闭</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.add('show');
+        } else {
+            monoLog('请使用浏览器菜单"添加到主屏幕"手动安装', 'info');
+        }
+
+        // Also dismiss the banner
         const banner = document.getElementById('pwa-install-banner');
         if (banner) banner.style.display = 'none';
     }
@@ -8358,6 +8432,11 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9292</strong> — PWA安装修复 & 骰子倍率记忆修复</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>📲 PWA安装修复：iOS/Android/macOS/桌面平台自动检测，显示对应安装指引，不再只显示"不支持"提示</li>
+                <li>🎲 骰子倍率失败不再重置：风险触发仅影响本次移动（原地不动），玩家倍率选择保持不变</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9291</strong> — 导航折叠 & 全景地图 & 彩蛋FAB & 移动端Bottom Sheet & 连点触发 & 性能优化 & 参数平衡</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>📌 PC侧边栏自动折叠：5秒空闲或字体≥110%时自动折叠为图标模式，悬停展开文字</li>
