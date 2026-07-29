@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9305 -->
+    <!-- VERSION: v7.7.2.9306 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -135,6 +135,35 @@
             --good: #4CAF50; --warn: #FF9800; --bad: #D32F2F; --glow: 0 0 10px rgba(233,30,99,.15);
             --trail-style: 'petal'; --trail-width: 5; --trail-glow: 14px;
         }
+        /* New v9306 themes: aurora, galaxy, candy, matrix */
+        [data-theme="aurora"] {
+            --bg: #0B1026; --bg2: #1A1B3A; --card: #141633; --card2: #1C1E42;
+            --text: #E0E7FF; --text2: #818CF8; --accent: #06FFA5; --accent-rgb:6,255,165;
+            --accent2: #5B21B6; --border: #312E81; --shadow: rgba(6,255,165,.15);
+            --good: #34D399; --warn: #FBBF24; --bad: #F87171; --glow: 0 0 12px rgba(6,255,165,.25);
+            --trail-style: 'aurora'; --trail-width: 6; --trail-glow: 20px;
+        }
+        [data-theme="galaxy"] {
+            --bg: #0F0C29; --bg2: #1a1547; --card: #1A1640; --card2: #221D52;
+            --text: #E2E8F0; --text2: #94A3B8; --accent: #C084FC; --accent-rgb:192,132,252;
+            --accent2: #60A5FA; --border: #4C1D95; --shadow: rgba(192,132,252,.18);
+            --good: #34D399; --warn: #FBBF24; --bad: #F87171; --glow: 0 0 14px rgba(192,132,252,.25);
+            --trail-style: 'galaxy'; --trail-width: 5; --trail-glow: 18px;
+        }
+        [data-theme="candy"] {
+            --bg: #FFF8E7; --bg2: #FFE8F0; --card: #FFFFFF; --card2: #FFF5FA;
+            --text: #6B3FA0; --text2: #B886CF; --accent: #FF4081; --accent-rgb:255,64,129;
+            --accent2: #FFD740; --border: #FFCDD2; --shadow: rgba(255,64,129,.12);
+            --good: #66BB6A; --warn: #FFA726; --bad: #EF5350; --glow: 0 0 10px rgba(255,64,129,.2);
+            --trail-style: 'candy'; --trail-width: 6; --trail-glow: 14px;
+        }
+        [data-theme="matrix"] {
+            --bg: #000000; --bg2: #001100; --card: #001A00; --card2: #002200;
+            --text: #00FF41; --text2: #008F11; --accent: #00FF41; --accent-rgb:0,255,65;
+            --accent2: #003B00; --border: #00FF4133; --shadow: rgba(0,255,65,.15);
+            --good: #00FF41; --warn: #FFD700; --bad: #FF3333; --glow: 0 0 8px rgba(0,255,65,.3);
+            --trail-style: 'matrix'; --trail-width: 4; --trail-glow: 15px;
+        }
 
         /* Low performance mode — activated by _perfConfig when FPS < 30 */
         .low-perf *:not(#egg-whiteout) { animation-duration: 0.01s !important; transition-duration: 0.05s !important; }
@@ -151,6 +180,14 @@
             font-size: clamp(.85rem, .85rem + .1vw, 1rem); font-weight: 600;
             background: var(--bg); color: var(--text);
             line-height: 1.6; overflow: hidden;
+            /* Unified text selection: disabled globally, opt-in via .selectable */
+            user-select: none; -webkit-user-select: none; -moz-user-select: none;
+            -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+        }
+        /* Allowlist: elements where text selection is permitted */
+        .selectable, input, textarea, .mono-log, #changelog-content, #about-version .selectable {
+            user-select: text; -webkit-user-select: text; -moz-user-select: text;
+            -webkit-touch-callout: default;
         }
         html.font-pixel, html.font-pixel body { font-family: 'Press Start 2P', monospace; font-size: clamp(.7rem, .7rem + .1vw, .85rem); }
         @keyframes fadeIn { to { opacity: 1; } }
@@ -843,7 +880,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9305</div>
+                <div class="subtitle">v7.7.2.9306</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1121,7 +1158,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9305</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9306</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1187,7 +1224,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9305',
+        VERSION: 'v7.7.2.9306',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1202,6 +1239,10 @@
             { id: 'sunset', name: '日落橙', colors: ['#FFF3E0','#FF6B35','#FFB74D'] },
             { id: 'mint', name: '薄荷绿', colors: ['#E8F5E9','#26A69A','#80CBC4'] },
             { id: 'rose', name: '玫瑰金', colors: ['#FCE4EC','#E91E63','#F48FB1'] },
+            { id: 'aurora', name: '极光绿', colors: ['#0B1026','#06FFA5','#5B21B6'] },
+            { id: 'galaxy', name: '银河紫', colors: ['#0F0C29','#C084FC','#60A5FA'] },
+            { id: 'candy', name: '糖果粉', colors: ['#FFF8E7','#FF4081','#FFD740'] },
+            { id: 'matrix', name: '矩阵绿', colors: ['#000000','#00FF41','#003B00'] },
         ],
         GOD_MODE_PUBLIC_KEY: {
             kty: 'EC', crv: 'P-256',
@@ -1344,46 +1385,131 @@
         // === Hacker / Item Race cards (global effects, inspired by Cyberpunk 2077 / Watch Dogs / Mario Kart) ===
         {id:'blackout', ic:'⚡', n:'停电', desc:'所有对手下回合载具失效', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
             let count=0;
-            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){o.blackoutTurns=1;count++;}});
-            return `⚡ 停电！${count}名对手下回合载具失效`;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                o.blackoutTurns=1;count++;
+            }});
+            return count>0 ? `⚡ 停电！${count}名对手下回合载具失效` : '⚡ 所有对手被防火墙抵消';
         }},
         {id:'data_hack', ic:'💾', n:'数据劫持', desc:'从所有对手各偷500💰', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
-            let total=0;
-            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){const amt=Math.min(500,o.money);o.money-=amt;total+=amt;}});
+            let total=0,count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                if(o.shield>0){o.shield--;return;}
+                const amt=Math.min(500,o.money);o.money-=amt;total+=amt;count++;
+            }});
             p.money+=total;
-            return `💾 数据劫持成功！从所有对手共偷取 ${total}💰`;
+            return count>0 ? `💾 数据劫持成功！从${count}名对手共偷取 ${total}💰` : '💾 所有对手被防火墙/护盾抵消';
         }},
         {id:'emp_blast', ic:'💥', n:'EMP脉冲', desc:'对手下回合掷骰减半', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
             let count=0;
-            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){o.empTurns=1;count++;}});
-            return `💥 EMP脉冲释放！${count}名对手下回合骰子减半`;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                o.empTurns=1;count++;
+            }});
+            return count>0 ? `💥 EMP脉冲释放！${count}名对手下回合骰子减半` : '💥 所有对手被防火墙抵消';
         }},
         {id:'hologram', ic:'🎭', n:'全息伪装', desc:'3回合租金+50%', rarity:'rare', isHacker:true, monoEff:(p)=>{
             p.hologramTurns=3;return `🎭 全息伪装激活！3回合内租金+50%`;
         }},
         {id:'signal_jam', ic:'📡', n:'信号干扰', desc:'对手2回合禁炒股', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
             let count=0;
-            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){o.signalJamTurns=2;count++;}});
-            return `📡 信号干扰！${count}名对手2回合内无法交易股票`;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                o.signalJamTurns=2;count++;
+            }});
+            return count>0 ? `📡 信号干扰！${count}名对手2回合内无法交易股票` : '📡 所有对手被防火墙抵消';
         }},
         {id:'banana_peel', ic:'🍌', n:'香蕉皮', desc:'对手20%概率多走3格', rarity:'uncommon', isHacker:true, monoEff:(p,mono)=>{
             let count=0;
-            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){if(Math.random()<0.2){o.slipTurns=1;count++;}}});
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                if(Math.random()<0.2){o.slipTurns=1;count++;}
+            }});
             return count>0?`🍌 ${count}名对手踩到香蕉皮！`:`🍌 香蕉皮已放置（无人踩中）`;
         }},
         {id:'blue_shell', ic:'🐢', n:'蓝龟壳', desc:'攻击最富对手2000💰', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
             const targets=mono.players.filter(o=>o!==p&&!o.bankrupt).sort((a,b)=>b.money-a.money);
-            if(targets.length){const t=targets[0];const loss=Math.min(2000,t.money);t.money-=loss;
-            if(t.shield>0){t.shield--;t.money+=loss;return `🐢 蓝龟壳被 ${t.nm} 的护盾抵消！`;}
+            if(targets.length){const t=targets[0];
+            if(t.firewallTurns>0){t.firewallTurns--;return `🧱 ${t.nm} 的防火墙抵消了蓝龟壳`;}
+            if(t.shield>0){t.shield--;return `🐢 蓝龟壳被 ${t.nm} 的护盾抵消！`;}
+            const loss=Math.min(2000,t.money);t.money-=loss;
             return `🐢 蓝龟壳命中最富有的 ${t.nm}！造成 ${loss}💰 损伤`;}
             return '🐢 没有可攻击的对手';
         }},
         {id:'system_crash', ic:'🖥️', n:'系统崩溃', desc:'对手混乱+封印', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
             let count=0;
             mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
                 if(o.shield>0){o.shield--;}else{o.confused=(o.confused||0)+1;o.banned=(o.banned||0)+1;count++;}
             }});
-            return `🖥️ 系统崩溃！${count}名对手陷入混乱+封印`;
+            return count>0 ? `🖥️ 系统崩溃！${count}名对手陷入混乱+封印` : '🖥️ 所有对手被防火墙抵消';
+        }},
+        // === New hacker/item cards (v9306) ===
+        {id:'gps_spoof', ic:'🛰️', n:'GPS欺骗', desc:'对手传送随机位置', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
+            let count=0; const total=getUnlockedTileCount();
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                if(o.cloneActive){o.cloneActive=false;return;}
+                o.pos=Math.floor(Math.random()*total);count++;
+            }});
+            return count>0 ? `🛰️ GPS欺骗！${count}名对手被传送到随机位置` : '🛰️ 所有对手被防火墙/分身抵消';
+        }},
+        {id:'virus_implant', ic:'🦠', n:'病毒植入', desc:'最富对手3回合-300/回合', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
+            const targets=mono.players.filter(o=>o!==p&&!o.bankrupt).sort((a,b)=>b.money-a.money);
+            if(!targets.length) return '🦠 没有可感染的目标';
+            const t=targets[0];
+            if(t.firewallTurns>0){t.firewallTurns--;return `🧱 ${t.nm} 的防火墙抵消了病毒`;}
+            if(t.cloneActive){t.cloneActive=false;return `👤 ${t.nm} 的虚拟分身吸收了病毒`;}
+            t.virusTurns=3;
+            return `🦠 病毒植入 ${t.nm}！3回合每回合-300💰`;
+        }},
+        {id:'firewall', ic:'🧱', n:'防火墙', desc:'2回合免疫骇客攻击', rarity:'rare', isHacker:true, monoEff:(p)=>{
+            p.firewallTurns=2;
+            return `🧱 防火墙激活！2回合内免疫骇客攻击`;
+        }},
+        {id:'virtual_clone', ic:'👤', n:'虚拟分身', desc:'吸收一个负面效果', rarity:'rare', isHacker:true, monoEff:(p)=>{
+            p.cloneActive=true;
+            return `👤 虚拟分身创建！将吸收下一个负面效果`;
+        }},
+        {id:'darknet_trade', ic:'🕸️', n:'暗网交易', desc:'与随机AI换1张手牌', rarity:'rare', isHacker:true, monoEff:(p,mono)=>{
+            const targets=mono.players.filter(o=>o!==p&&!o.bankrupt&&o.cards&&o.cards.length>0);
+            if(!targets.length) return '🕸️ 没有可交易的手牌';
+            if(!p.cards||p.cards.length===0) return '🕸️ 你没有手牌可交换';
+            const t=targets[Math.floor(Math.random()*targets.length)];
+            const myCard=p.cards[Math.floor(Math.random()*p.cards.length)];
+            const theirCard=t.cards[Math.floor(Math.random()*t.cards.length)];
+            p.cards.splice(p.cards.indexOf(myCard),1,theirCard);
+            t.cards.splice(t.cards.indexOf(theirCard),1,myCard);
+            return `🕸️ 暗网交易！与 ${t.nm} 交换了手牌`;
+        }},
+        {id:'quantum_link', ic:'⚛️', n:'量子纠缠', desc:'与最富对手2回合共享损益', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
+            const targets=mono.players.filter(o=>o!==p&&!o.bankrupt).sort((a,b)=>b.money-a.money);
+            if(!targets.length) return '⚛️ 没有可纠缠的目标';
+            const t=targets[0];
+            if(t.firewallTurns>0){t.firewallTurns--;return `🧱 ${t.nm} 的防火墙抵消了量子纠缠`;}
+            p.quantumTarget=mono.players.indexOf(t);
+            p.quantumTurns=2;
+            t.quantumTarget=mono.players.indexOf(p);
+            t.quantumTurns=2;
+            return `⚛️ 量子纠缠！与 ${t.nm} 2回合内共享收益与损失`;
+        }},
+        {id:'overclock', ic:'🔧', n:'超频', desc:'下回合骰子翻倍', rarity:'legendary', isHacker:true, monoEff:(p,mono)=>{
+            p.overclockNext=true;
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                const loss=Math.min(500,o.money);o.money-=loss;count++;
+            }});
+            return `🔧 超频激活！下回合骰子翻倍，${count}名对手各-500💰`;
+        }},
+        {id:'zone_lockdown', ic:'🌐', n:'区域封锁', desc:'对手下回合禁购地产', rarity:'uncommon', isHacker:true, monoEff:(p,mono)=>{
+            let count=0;
+            mono.players.forEach(o=>{if(o!==p&&!o.bankrupt){
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                o.lockdownTurns=1;count++;
+            }});
+            return count>0 ? `🌐 区域封锁！${count}名对手下回合无法购买地产` : '🌐 所有对手被防火墙抵消';
         }},
     ];
     const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
@@ -1861,7 +1987,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9305 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9306 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1944,6 +2070,13 @@
             if (p.slipTurns === undefined) p.slipTurns = 0;
             if (p.vehicleDiscount === undefined) p.vehicleDiscount = 0;
             if (p.vehicleDiscountTurns === undefined) p.vehicleDiscountTurns = 0;
+            if (p.firewallTurns === undefined) p.firewallTurns = 0;
+            if (p.virusTurns === undefined) p.virusTurns = 0;
+            if (p.cloneActive === undefined) p.cloneActive = false;
+            if (p.quantumTarget === undefined) p.quantumTarget = -1;
+            if (p.quantumTurns === undefined) p.quantumTurns = 0;
+            if (p.overclockNext === undefined) p.overclockNext = false;
+            if (p.lockdownTurns === undefined) p.lockdownTurns = 0;
             if (p.cards === undefined) p.cards = [];
             if (p.loans === undefined) p.loans = [];
             if (p.credit === undefined) p.credit = 100;
@@ -2675,6 +2808,7 @@
                 taxFree: 0, bankrupt: false,
                 blackoutTurns: 0, empTurns: 0, hologramTurns: 0, signalJamTurns: 0, slipTurns: 0,
                 vehicleDiscount: 0, vehicleDiscountTurns: 0,
+                firewallTurns: 0, virusTurns: 0, cloneActive: false, quantumTarget: -1, quantumTurns: 0, overclockNext: false, lockdownTurns: 0,
                 loans: [], credit: 100, vehicle: null, vehicles: [],
                 stocks: 0, stockAvgCost: 0,
                 stockHoldings: STOCK_TYPES.map(s => ({shares: 0, avgCost: 0, leverage: 1, isShort: false})),
@@ -2796,12 +2930,20 @@
     function monoLog(msg, type='info') {
         mono.log.push({msg, type});
         if (mono.log.length > 80) mono.log.shift();
+        markDirty('log');
     }
 
     /* ==================== Monopoly: Rendering ==================== */
     // RAF-based render throttling — coalesce multiple render calls into one frame
     let _renderRAFId = null;
     let _renderPending = false;
+    // Dirty flags — skip sub-renderers when their data hasn't changed
+    let _dirtyFlags = { players: true, map: true, ring: true, dice: true, cards: true, inventory: true, log: true, stats: true, stock: true, overview: true, buff: true, news: true };
+    function markDirty(flags) { if (typeof flags === 'string') flags = [flags]; if (Array.isArray(flags)) flags.forEach(f => { if (f in _dirtyFlags) _dirtyFlags[f] = true; }); }
+    // Pre-computed lookup sets for O(1) buff classification
+    const POSITIVE_BUFF_FIELDS = new Set(['shield','lucky','mirror','doubleDice','speed','rentDouble','interestFree','taxFree','hologramTurns']);
+    // Cached ring tile type colors — avoid recreating object per render
+    const RING_TYPE_COLORS = {start:'#FFD700', property:'#FF6B9D', bank:'#4CAF50', stock:'#2196F3', bonus:'#34D399', penalty:'#F87171', card:'#A78BFA', teleport:'#00BCD4', shortcut:'#FF9800', jail:'#9E9E9E', hospital:'#E91E63', casino:'#FF6B35'};
     // === ACT-style Buff Bar — shows active card effects for all players ===
     const BUFF_DEFS = [
         { field:'shield', type:'num', icon:'🛡️', name:'护盾' },
@@ -2822,6 +2964,12 @@
         { field:'hologramTurns', type:'num_gt0', icon:'🎭', name:'伪装' },
         { field:'signalJamTurns', type:'num_gt0', icon:'📡', name:'干扰' },
         { field:'slipTurns', type:'num_gt0', icon:'🍌', name:'香蕉皮' },
+        { field:'firewallTurns', type:'num_gt0', icon:'🧱', name:'防火墙' },
+        { field:'virusTurns', type:'num_gt0', icon:'🦠', name:'病毒' },
+        { field:'cloneActive', type:'bool', icon:'👤', name:'分身' },
+        { field:'quantumTurns', type:'num_gt0', icon:'⚛️', name:'量子' },
+        { field:'overclockNext', type:'bool', icon:'🔧', name:'超频' },
+        { field:'lockdownTurns', type:'num_gt0', icon:'🌐', name:'封锁' },
     ];
     // Debuff fields that should be shown for ALL players (not just current)
     const DEBUFF_FIELDS = ['jailTurns','banned','hospital','confused'];
@@ -2872,7 +3020,6 @@
             ).join(''));
         }
         // 2. Other players' buffs and debuffs — show ALL active effects for AI players
-        const POSITIVE_FIELDS = ['shield','lucky','mirror','doubleDice','speed','rentDouble','interestFree','taxFree','hologramTurns'];
         for (let i = 1; i < mono.players.length; i++) {
             const ap = mono.players[i];
             if (!ap || ap.bankrupt) continue;
@@ -2880,7 +3027,7 @@
             for (const def of BUFF_DEFS) {
                 const val = ap[def.field];
                 if (def.type === 'num' && val && val > 0) {
-                    otherEffects.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic, isDebuff: !POSITIVE_FIELDS.includes(def.field) });
+                    otherEffects.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic, isDebuff: !POSITIVE_BUFF_FIELDS.has(def.field) });
                 } else if (def.type === 'num_gt0' && val && val > 0) {
                     otherEffects.push({ icon: def.icon, name: `${ap.nm}: ${def.name}`, badge: val, playerIcon: ap.ic, isDebuff: true });
                 }
@@ -2901,6 +3048,20 @@
     }
 
     function renderMonopoly() {
+        markDirtyAll();
+        if (_renderRAFId) return; // Already scheduled — coalesce
+        _renderPending = true;
+        _renderRAFId = requestAnimationFrame(() => {
+            _renderRAFId = null;
+            if (!_renderPending) return;
+            _renderPending = false;
+            _doRenderMonopoly();
+        });
+    }
+    function markDirtyAll() { for (const k in _dirtyFlags) _dirtyFlags[k] = true; }
+    // Lightweight partial render — only update dirty sub-components
+    function renderMonopolyPartial(flags) {
+        markDirty(flags);
         if (_renderRAFId) return; // Already scheduled — coalesce
         _renderPending = true;
         _renderRAFId = requestAnimationFrame(() => {
@@ -2945,19 +3106,19 @@
         }
 
         // Update news ticker
-        renderNewsTicker();
+        if (_dirtyFlags.news) { renderNewsTicker(); _dirtyFlags.news = false; }
 
-        renderMonoPlayers();
-        renderMonoRing();
-        renderMonoMap();
-        renderMonoDice();
-        renderMonoCards();
-        renderMonoInventory();
-        renderMonoLog();
-        renderMonoStats();
-        renderStockPortfolio();
-        renderMonoOverview();
-        renderBuffBar();
+        if (_dirtyFlags.players) { renderMonoPlayers(); _dirtyFlags.players = false; }
+        if (_dirtyFlags.ring) { renderMonoRing(); _dirtyFlags.ring = false; }
+        if (_dirtyFlags.map) { renderMonoMap(); _dirtyFlags.map = false; }
+        renderMonoDice(); // lightweight, always render
+        if (_dirtyFlags.cards) { renderMonoCards(); _dirtyFlags.cards = false; }
+        if (_dirtyFlags.inventory) { renderMonoInventory(); _dirtyFlags.inventory = false; }
+        if (_dirtyFlags.log) { renderMonoLog(); _dirtyFlags.log = false; }
+        if (_dirtyFlags.stats) { renderMonoStats(); _dirtyFlags.stats = false; }
+        if (_dirtyFlags.stock) { renderStockPortfolio(); _dirtyFlags.stock = false; }
+        if (_dirtyFlags.overview) { renderMonoOverview(); _dirtyFlags.overview = false; }
+        if (_dirtyFlags.buff) { renderBuffBar(); _dirtyFlags.buff = false; }
         // Clear any stale player card tooltip after re-render (DOM elements replaced, mouseleave lost)
         hidePlayerCardTooltip();
     }
@@ -3177,14 +3338,13 @@
         ctx.clearRect(0, 0, rect.width, rect.height);
 
         // Draw all tile positions as small dots on canvas
-        const typeColors = {start:'#FFD700', property:'#FF6B9D', bank:'#4CAF50', stock:'#2196F3', bonus:'#34D399', penalty:'#F87171', card:'#A78BFA', teleport:'#00BCD4', shortcut:'#FF9800', jail:'#9E9E9E', hospital:'#E91E63', casino:'#FF6B35'};
         for (let i = 0; i < total; i++) {
             const tile = mono.tiles[i];
             if (!tile) continue;
             const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
             const x = cx + radius * Math.cos(angle);
             const y = cy + radius * Math.sin(angle);
-            const color = typeColors[tile.type] || '#888';
+            const color = RING_TYPE_COLORS[tile.type] || '#888';
             if (tile.type === 'shortcut') {
                 ctx.fillStyle = color;
                 ctx.beginPath();
@@ -3538,6 +3698,13 @@
         }
 
         let currentRegion = -1;
+        // Pre-build position→players map to avoid O(tiles × players) filter calls
+        const posMap = new Map();
+        for (const p of mono.players) {
+            if (p.bankrupt) continue;
+            if (!posMap.has(p.pos)) posMap.set(p.pos, []);
+            posMap.get(p.pos).push(p);
+        }
         for (let i = startIdx; i < endIdx; i++) {
             const tile = mono.tiles[i];
             if (!tile) continue;
@@ -3548,7 +3715,7 @@
                 h += `<div class="region-divider" style="background:${region.color};">${region.name}</div>`;
             }
             const isUnlocked = i < unlockedCount;
-            const players = mono.players.filter(p => p.pos === i && !p.bankrupt);
+            const players = posMap.get(i) || [];
             const isCurrent = currentPos === i;
             const prop = mono.properties[i];
             const ownedClass = prop && prop.owner >= 0 ? 'owned' : '';
@@ -3891,6 +4058,8 @@
                 const extra = p.speed || 0;
                 if (extra) p.speed = 0;
                 if (p.doubleDice > 0) { total *= 2; p.doubleDice--; monoLog('🎲 双倍骰子卡激活！', 'success'); }
+                // Overclock: double dice (v9306)
+                if (p.overclockNext) { total *= 2; p.overclockNext = false; monoLog('🔧 超频激活！骰子翻倍！', 'success'); }
                 // EMP effect: halve dice total
                 if (p.empTurns > 0) { total = Math.ceil(total / 2); monoLog('💥 EMP脉冲效果！骰子减半', 'error'); }
                 // Slip (banana peel): add 3 extra steps
@@ -4088,9 +4257,8 @@
                     recordGameEvent('jail', `${p.ic} ${p.nm}`, '监狱格', '使用出狱卡免于监禁');
                     monoLog(`${p.ic} 使用出狱卡，免于监禁`, 'success');
                 } else {
-                    p.jailTurns = 1;
-                    recordGameEvent('jail', `${p.ic} ${p.nm}`, '监狱格', '被关进监狱暂停一回合');
-                    monoLog(`${p.ic} 被关进监狱，暂停一回合`, 'error');
+                    if (p.cloneActive) { p.cloneActive = false; monoLog(`👤 ${p.nm} 的虚拟分身吸收了监禁效果！`, 'success'); }
+                    else { p.jailTurns = 1; recordGameEvent('jail', `${p.ic} ${p.nm}`, '监狱格', '被关进监狱暂停一回合'); monoLog(`${p.ic} 被关进监狱，暂停一回合`, 'error'); }
                 }
                 break;
             case 'casino':
@@ -4135,7 +4303,7 @@
                     } else if (playerIdx !== 0) {
                         const personality = AI_PERSONALITIES[p.personality];
                         const aiDiff = getAIDifficulty(); // AI learning: difficulty adaptation
-                        if (p.money >= tile.price && Math.random() < personality.buyChance * aiDiff) {
+                        if (p.money >= tile.price && p.lockdownTurns === 0 && Math.random() < personality.buyChance * aiDiff) {
                             prop.owner = playerIdx;
                             p.money -= tile.price;
                             p.stats.propertiesBought++;
@@ -4267,6 +4435,7 @@
                 p.confused = 0; p.banned = 0; p.hospital = 0; p.jailTurns = 0;
                 p.rentDouble = 0; p.interestFree = 0; p.taxFree = 0; p.doubleDice = 0;
                 p.blackoutTurns = 0; p.empTurns = 0; p.hologramTurns = 0; p.signalJamTurns = 0; p.slipTurns = 0; p.vehicleDiscount = 0; p.vehicleDiscountTurns = 0;
+                p.firewallTurns = 0; p.virusTurns = 0; p.cloneActive = false; p.quantumTarget = -1; p.quantumTurns = 0; p.overclockNext = false; p.lockdownTurns = 0;
                 monoLog(`💀 ${p.ic} ${p.nm} 破产离场！释放所有资产`, 'error');
                 if (typeof showToast === 'function') showToast(`${p.ic} ${p.nm} 已破产离场`, 'error');
             }
@@ -4321,6 +4490,7 @@
     function buyProperty(pos) {
         const tile = mono.tiles[pos];
         const p = mono.players[0];
+        if (p.lockdownTurns > 0) { monoLog('🌐 区域封锁中！无法购买地产', 'error'); showToast('🌐 区域封锁中！', 'error'); closeModal(); skipBuy(); return; }
         if (p.money < tile.price) { monoLog('资金不足！', 'error'); showToast('资金不足！', 'error'); closeModal(); skipBuy(); return; }
         mono.properties[pos].owner = 0;
         p.money -= tile.price;
@@ -6635,7 +6805,7 @@
                     monoLog(`${p.ic} 使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : ''}`, 'info');
                 }
             }
-            renderMonopoly();
+            renderMonopolyPartial(['players', 'cards', 'buff', 'log']);
         }
 
         mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
@@ -6644,6 +6814,7 @@
         const extra = p.speed || 0;
         if (extra) p.speed = 0;
         if (p.doubleDice > 0) { total *= 2; p.doubleDice--; }
+        if (p.overclockNext) { total *= 2; p.overclockNext = false; monoLog(`🔧 ${p.ic} 超频激活！骰子翻倍`, 'success'); }
         if (p.empTurns > 0) { total = Math.ceil(total / 2); }
         if (p.slipTurns > 0) { total += 3; p.slipTurns = 0; }
         const aiVehicleSpeed = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'speed');
@@ -6675,7 +6846,7 @@
             if (Math.random() < 0.5) { total = -total; monoLog(`😵 ${p.nm} 混乱效果触发！反向移动`, 'error'); }
         }
 
-        renderMonopoly();
+        renderMonopolyPartial(['players', 'map', 'dice', 'log']);
         monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
 
         mono.pendingAction = 'movePlayer';
@@ -7130,6 +7301,23 @@
                 newP.vehicleDiscount = 0;
             }
         }
+        // Hacker skill status effects (v9306)
+        if (newP.firewallTurns > 0) newP.firewallTurns--;
+        if (newP.virusTurns > 0) {
+            newP.virusTurns--;
+            const loss = Math.min(300, newP.money);
+            newP.money -= loss;
+            monoLog(`🦠 ${newP.ic} 病毒效果：-${loss}💰（剩${newP.virusTurns}回合）`, 'error');
+            if (newP.quantumTurns > 0 && newP.quantumTarget >= 0) {
+                const qt = mono.players[newP.quantumTarget];
+                if (qt && !qt.bankrupt) { qt.money += loss; monoLog(`⚛️ 量子纠缠：${qt.ic} 获得 ${loss}💰`, 'event'); }
+            }
+        }
+        if (newP.quantumTurns > 0) {
+            newP.quantumTurns--;
+            if (newP.quantumTurns === 0) { newP.quantumTarget = -1; monoLog(`⚛️ ${newP.ic} 量子纠缠结束`, 'info'); }
+        }
+        if (newP.lockdownTurns > 0) newP.lockdownTurns--;
         // Auto-save each turn
         mono.pendingAction = null;
         mono.autoSaveTurn = mono.turn;
@@ -7321,6 +7509,7 @@
         const extra = p.speed || 0;
         if (extra) p.speed = 0;
         if (p.doubleDice > 0) { total *= 2; p.doubleDice--; }
+        if (p.overclockNext) { total *= 2; p.overclockNext = false; }
         if (p.empTurns > 0) { total = Math.ceil(total / 2); }
         if (p.slipTurns > 0) { total += 3; p.slipTurns = 0; }
         // AI vehicle speed bonus
@@ -7335,7 +7524,7 @@
                 monoLog(`💥 ${p.ic} 倍率掷骰失败！(×${aiMult})`, 'error');
                 mono.rolling = false;
                 saveMonopoly();
-                renderMonopoly();
+                renderMonopolyPartial(['players', 'dice', 'log']);
                 setTimeout(() => nextTurn(), 600);
                 return;
             }
@@ -7369,7 +7558,7 @@
             if (Math.random() < 0.5) { total = -total; monoLog(`😵 ${p.nm} 混乱效果触发！反向移动`, 'error'); }
         }
         // perf: consider batching — this is the final render before AI movePlayer; kept for dice visibility
-        renderMonopoly();
+        renderMonopolyPartial(['players', 'map', 'dice', 'log']);
         monoLog(`${p.ic} 掷出 ${total}${extra?`+${extra}`:''}`, 'info');
 
         mono.pendingAction = 'movePlayer';
@@ -7617,7 +7806,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9305 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9306 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -8074,6 +8263,7 @@
         localStorage.setItem('theme', id);
         document.documentElement.setAttribute('data-theme', id);
         initThemeGrid();
+        if (typeof _invalidateTrailCache === 'function') _invalidateTrailCache();
         logEvent(`🎨 切换主题：${CONFIG.THEMES.find(t => t.id === id)?.name || id}`, 'info');
     }
 
@@ -9391,16 +9581,25 @@
         [0,0,0,0,0,0,0,0,0,0],
     ];
 
+    // Cached trail config — avoid getComputedStyle() on every frame
+    let _trailCfgCache = null;
+    let _trailCfgTheme = null;
     function getTrailConfig() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || '';
+        if (_trailCfgCache && _trailCfgTheme === currentTheme) return _trailCfgCache;
+        _trailCfgTheme = currentTheme;
         const cs = getComputedStyle(document.documentElement);
-        return {
+        _trailCfgCache = {
             style: (cs.getPropertyValue('--trail-style') || '').trim().replace(/['"]/g, '') || 'ribbon',
             width: parseFloat(cs.getPropertyValue('--trail-width')) || 6,
             glow: parseFloat((cs.getPropertyValue('--trail-glow') || '0px').replace('px', '')) || 0,
             accent: (cs.getPropertyValue('--accent') || '').trim() || '#FF6B9D',
             accent2: (cs.getPropertyValue('--accent2') || '').trim() || '#FFB5BA',
         };
+        return _trailCfgCache;
     }
+    // Invalidate cache when theme changes
+    function _invalidateTrailCache() { _trailCfgCache = null; _trailCfgTheme = null; }
 
     function initMouseTrail() {
         trailCanvas = document.getElementById('trail-canvas');
@@ -9509,6 +9708,18 @@
             case 'wave':
                 if (Math.random() < 0.25) trailParticles.push({x:x+(Math.random()-.5)*10, y:y+(Math.random()-.5)*10, vx:(Math.random()-.5)*.5, vy:-Math.random()*1.2-.2, life:1, type:'bubble', color:cfg.accent, size:Math.random()*4+2});
                 break;
+            case 'aurora':
+                if (Math.random() < 0.2) trailParticles.push({x:x+(Math.random()-.5)*15, y:y+(Math.random()-.5)*8, vx:(Math.random()-.5)*.3, vy:-Math.random()*.8-.2, life:1, type:'shimmer', color:`hsla(${(140+Math.random()*120)%360},80%,65%,1)`, size:Math.random()*3+1});
+                break;
+            case 'galaxy':
+                if (Math.random() < 0.3) trailParticles.push({x:x+(Math.random()-.5)*12, y:y+(Math.random()-.5)*12, vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5, life:1, type:'twinkle', color:Math.random()<.5?cfg.accent:cfg.accent2, size:Math.random()*2+1, twinkle:Math.random()*6.28});
+                break;
+            case 'candy':
+                if (Math.random() < 0.2) trailParticles.push({x:x+(Math.random()-.5)*8, y:y+(Math.random()-.5)*8, vx:(Math.random()-.5)*1, vy:-Math.random()*1-.3, life:1, type:'candy', color:[cfg.accent,cfg.accent2,'#FFD740','#FF80AB'][Math.floor(Math.random()*4)], size:Math.random()*3+2});
+                break;
+            case 'matrix':
+                if (Math.random() < 0.15) trailParticles.push({x:x+(Math.random()-.5)*4, y:y, vx:0, vy:Math.random()*2+1, life:1, type:'code', color:cfg.accent, char:String.fromCharCode(0x30A0+Math.floor(Math.random()*96)), size:Math.random()*3+2});
+                break;
         }
     }
 
@@ -9562,6 +9773,10 @@
                 case 'ribbon':     drawRibbonTrail(cfg); break;
                 case 'leaf':       drawLeafTrail(cfg); break;
                 case 'wave':      drawWaveTrail(cfg); break;
+                case 'aurora':    drawAuroraTrail(cfg); break;
+                case 'galaxy':    drawGalaxyTrail(cfg); break;
+                case 'candy':     drawCandyTrail(cfg); break;
+                case 'matrix':    drawMatrixTrail(cfg); break;
                 default:           drawRibbonTrail(cfg); break;
             }
         }
@@ -9740,7 +9955,101 @@
         trailCtx.shadowBlur = 0;
     }
 
-    // --- Particle physics & rendering (gorgeous v5.2 style) ---
+    // --- New v9306 trail themes (performance-optimized) ---
+    function drawAuroraTrail(cfg) {
+        const pts = trailPoints;
+        if (pts.length < 2) return;
+        const now = Date.now() * 0.002;
+        // Multi-layer gradient stroke for aurora effect
+        for (let layer = 0; layer < 3; layer++) {
+            const hueShift = layer * 60;
+            const alpha = 0.3 - layer * 0.08;
+            trailCtx.strokeStyle = `hsla(${(140 + hueShift + now * 30) % 360}, 80%, 60%, ${alpha})`;
+            trailCtx.shadowColor = `hsla(${(140 + hueShift + now * 30) % 360}, 80%, 60%, 0.5)`;
+            trailCtx.shadowBlur = cfg.glow * (1 - layer * 0.2);
+            trailCtx.lineWidth = cfg.width * (1 + layer * 0.5);
+            trailCtx.lineCap = 'round';
+            trailCtx.lineJoin = 'round';
+            const wobble = layer * 3;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[0].x, pts[0].y + Math.sin(now + 0) * wobble);
+            for (let i = 1; i < pts.length - 1; i++) {
+                const xc = (pts[i].x + pts[i+1].x) / 2;
+                const yc = (pts[i].y + pts[i+1].y) / 2 + Math.sin(now + i * 0.3) * wobble;
+                trailCtx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+            }
+            trailCtx.stroke();
+        }
+        trailCtx.shadowBlur = 0;
+    }
+    function drawGalaxyTrail(cfg) {
+        const pts = trailPoints;
+        if (pts.length < 2) return;
+        // Spiral gradient stroke
+        const grad = trailCtx.createLinearGradient(pts[0].x, pts[0].y, pts[pts.length-1].x, pts[pts.length-1].y);
+        grad.addColorStop(0, cfg.accent + '00');
+        grad.addColorStop(0.5, cfg.accent);
+        grad.addColorStop(1, cfg.accent2);
+        trailCtx.strokeStyle = grad;
+        trailCtx.shadowColor = cfg.accent;
+        trailCtx.shadowBlur = cfg.glow;
+        trailCtx.lineWidth = cfg.width;
+        trailCtx.lineCap = 'round';
+        trailCtx.lineJoin = 'round';
+        drawSmoothPath(trailCtx, pts);
+        trailCtx.stroke();
+        // Bright core
+        trailCtx.shadowBlur = 0;
+        trailCtx.strokeStyle = '#ffffff';
+        trailCtx.lineWidth = Math.max(1, cfg.width * 0.3);
+        trailCtx.globalAlpha = 0.6;
+        drawSmoothPath(trailCtx, pts);
+        trailCtx.stroke();
+        trailCtx.globalAlpha = 1;
+    }
+    function drawCandyTrail(cfg) {
+        const pts = trailPoints;
+        if (pts.length < 2) return;
+        // Alternating color segments
+        const colors = [cfg.accent, cfg.accent2, '#FFD740', '#FF80AB'];
+        for (let i = 1; i < pts.length; i++) {
+            const progress = i / pts.length;
+            trailCtx.strokeStyle = colors[i % colors.length];
+            trailCtx.shadowColor = colors[i % colors.length];
+            trailCtx.shadowBlur = cfg.glow * progress;
+            trailCtx.lineWidth = cfg.width * progress;
+            trailCtx.lineCap = 'round';
+            trailCtx.globalAlpha = progress * 0.8;
+            trailCtx.beginPath();
+            trailCtx.moveTo(pts[i-1].x, pts[i-1].y);
+            trailCtx.lineTo(pts[i].x, pts[i].y);
+            trailCtx.stroke();
+        }
+        trailCtx.globalAlpha = 1;
+        trailCtx.shadowBlur = 0;
+    }
+    function drawMatrixTrail(cfg) {
+        const pts = trailPoints;
+        if (pts.length < 2) return;
+        // Digital rain: vertical falling segments
+        trailCtx.strokeStyle = cfg.accent;
+        trailCtx.shadowColor = cfg.accent;
+        trailCtx.shadowBlur = cfg.glow;
+        trailCtx.lineWidth = cfg.width;
+        trailCtx.lineCap = 'round';
+        trailCtx.lineJoin = 'round';
+        drawSmoothPath(trailCtx, pts);
+        trailCtx.stroke();
+        // Glitch: occasional offset segments
+        trailCtx.shadowBlur = 0;
+        trailCtx.strokeStyle = cfg.accent + '60';
+        trailCtx.lineWidth = Math.max(1, cfg.width * 0.5);
+        for (let i = 0; i < pts.length; i += 3) {
+            if (Math.random() < 0.3) {
+                trailCtx.fillRect(pts[i].x - 1, pts[i].y, 2, 4 + Math.random() * 6);
+            }
+        }
+    }
     function drawTrailParticles(cfg) {
         trailParticles = trailParticles.filter(p => {
             p.life -= 0.02;
@@ -9753,6 +10062,10 @@
             if (p.type === 'spark')  { p.vy += 0.1; p.vx *= 0.95; }
             if (p.type === 'flame')  { p.vy -= 0.03; p.vx *= 0.97; }
             if (p.type === 'heart')  { p.vy -= 0.01; }
+            if (p.type === 'shimmer') { p.vy -= 0.005; p.vx *= 0.98; }
+            if (p.type === 'twinkle') { p.twinkle += 0.15; p.vx *= 0.97; p.vy *= 0.97; }
+            if (p.type === 'candy')  { p.vy += 0.02; p.vx *= 0.98; }
+            if (p.type === 'code')   { p.vy += 0.05; }
             return p.life > 0;
         });
         trailParticles.forEach(p => {
@@ -9815,6 +10128,50 @@
                 fxCtx.beginPath();
                 fxCtx.arc(p.x, p.y, (p.size || 2), 0, Math.PI*2);
                 fxCtx.fill();
+            } else if (p.type === 'shimmer') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 8;
+                fxCtx.globalAlpha = p.life * 0.7;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, (p.size || 1.5), 0, Math.PI*2);
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'twinkle') {
+                const tw = Math.abs(Math.sin(p.twinkle || 0));
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6 * tw;
+                fxCtx.globalAlpha = p.life * tw;
+                const sz = (p.size || 1.5) * (0.5 + tw * 0.5);
+                // Draw 4-point star
+                fxCtx.beginPath();
+                fxCtx.moveTo(p.x, p.y - sz);
+                fxCtx.lineTo(p.x + sz*0.3, p.y - sz*0.3);
+                fxCtx.lineTo(p.x + sz, p.y);
+                fxCtx.lineTo(p.x + sz*0.3, p.y + sz*0.3);
+                fxCtx.lineTo(p.x, p.y + sz);
+                fxCtx.lineTo(p.x - sz*0.3, p.y + sz*0.3);
+                fxCtx.lineTo(p.x - sz, p.y);
+                fxCtx.lineTo(p.x - sz*0.3, p.y - sz*0.3);
+                fxCtx.closePath();
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'candy') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 4;
+                fxCtx.beginPath();
+                fxCtx.arc(p.x, p.y, (p.size || 2), 0, Math.PI*2);
+                fxCtx.fill();
+                fxCtx.shadowBlur = 0;
+            } else if (p.type === 'code') {
+                fxCtx.fillStyle = p.color;
+                fxCtx.shadowColor = p.color;
+                fxCtx.shadowBlur = 6;
+                fxCtx.font = `${(p.size || 2) * 3}px monospace`;
+                fxCtx.fillText(p.char || '0', p.x, p.y);
+                fxCtx.shadowBlur = 0;
             }
         });
         fxCtx.globalAlpha = 1;
@@ -10063,7 +10420,16 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.7.2.9305', title:'卡牌文本修复 & 载具折扣过期 & AI智能炒股 & emoji选中修复', items:[
+        { ver:'v7.7.2.9306', title:'性能优化 & 4新光轨主题 & 骇客防火墙一致性 & 统一文本选中', items:[
+            '⚡ 性能优化：dirty flags条件渲染系统，跳过未变更的子组件；renderMonoMap预构建位置→玩家Map避免O(tiles×players)遍历；trailConfig缓存避免每帧getComputedStyle',
+            '🎨 4新光轨主题：极光绿(aurora)、银河紫(galaxy)、糖果粉(candy)、矩阵绿(matrix)，各有独特粒子效果和绘制风格',
+            '🧱 骇客防火墙一致性：所有16张骇客卡现在统一检查firewallTurns，GPS欺骗firewall检查从施法者修正为目标，蓝龟壳shield检查移至伤害前',
+            '👤 虚拟分身增强：cloneActive现在可吸收监狱格效果和GPS欺骗传送',
+            '🌐 区域封锁执行：lockdownTurns现在在玩家和AI购买地产时强制检查',
+            '📝 统一文本选中：body全局user-select:none，仅.log/.selectable/input/textarea允许选中',
+            '🔄 AI回合部分渲染：AI使用卡牌/掷骰后只渲染变更的子组件，减少不必要DOM操作',
+        ]},
+        { ver:'v7.7.2.9306', title:'卡牌文本修复 & 载具折扣过期 & AI智能炒股 & emoji选中修复', items:[
             '⚡ 骇客卡牌文本修复：缩短desc文案，ic改为emoji，添加title悬停提示和⚔️标识',
             '🏎️ 载具展览重构：概率动态变化（25%-55%），折扣可叠加且5回合过期',
             '🏷️ 折扣过期机制：每回合递减，过期自动清零并提示，商店/buff栏显示剩余回合',
