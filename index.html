@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9292 -->
+    <!-- VERSION: v7.7.2.9293 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -253,7 +253,9 @@
         .sidebar.collapsed .sidebar-logo .subtitle,
         .sidebar.collapsed .god-indicator { display: none; }
         .sidebar.collapsed .nav-item { justify-content: center; padding: .75rem 0; }
-        .sidebar.collapsed .sidebar-logo { margin-bottom: 1rem; }
+        .sidebar.collapsed .sidebar-logo { margin-bottom: 1rem; text-align: center; }
+        .sidebar.collapsed .sidebar-logo .bunny-icon { font-size: 1.8rem; }
+        .sidebar.collapsed .sidebar-pin { position: absolute; top: .5rem; right: .25rem; font-size: .7rem; }
         .sidebar.collapsed .sidebar-footer { font-size: 0; }
         .sidebar.collapsed .nav-item:hover .label {
             display: block; position: fixed; left: 64px;
@@ -262,6 +264,15 @@
             box-shadow: 2px 0 8px rgba(0,0,0,.2); z-index: 400;
             white-space: nowrap; margin-top: -1.2rem;
         }
+        /* Auto-hide: fully hide sidebar, show a thin strip for click-to-restore */
+        .sidebar.auto-hidden { width: 8px; padding: 0; overflow: visible; cursor: pointer; }
+        .sidebar.auto-hidden > * { opacity: 0; pointer-events: none; }
+        .sidebar.auto-hidden::after {
+            content: '🐰'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 1rem; opacity: .6;
+            pointer-events: none;
+        }
+        .sidebar.auto-hidden:hover::after { opacity: 1; }
         .sidebar-pin {
             display: inline-block; font-size: .8rem; cursor: pointer;
             opacity: .5; transition: opacity var(--transition); margin-top: .3rem;
@@ -564,10 +575,10 @@
 
         /* Tab bar collapse/hide */
         .tab-bar { transition: height var(--transition), transform .3s ease; overflow: hidden; }
-        .tab-bar.collapsed { height: 36px; }
+        .tab-bar.collapsed { height: 36px; padding-bottom: 0; }
         .tab-bar.collapsed .tab-label { display: none; }
         .tab-bar.collapsed .tab-icon { font-size: 1.2rem; }
-        .tab-bar.collapsed .tab-item { padding-top: 6px; }
+        .tab-bar.collapsed .tab-item { padding-top: 0; justify-content: center; height: 100%; }
         .tab-bar.hidden { transform: translateY(100%); }
         .tab-bar-handle {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
@@ -663,9 +674,13 @@
             document.documentElement.setAttribute('data-theme', t);
             var pf = localStorage.getItem('pixelFont') === '1';
             if (pf) document.documentElement.classList.add('font-pixel');
-            // DPI-aware scaling: boost font on HiDPI/Retina displays
-            var dpr = window.devicePixelRatio || 1;
-            var dpiScale = dpr >= 2 ? 1.15 : dpr >= 1.5 ? 1.08 : 1;
+            // DPI-aware scaling: use matchMedia for efficient detection (avoids layout thrashing)
+            var dpiScale = 1;
+            if (window.matchMedia && window.matchMedia('(min-resolution: 2dppx)').matches) {
+                dpiScale = 1.15;
+            } else if (window.matchMedia && window.matchMedia('(min-resolution: 1.5dppx)').matches) {
+                dpiScale = 1.08;
+            }
             document.documentElement.style.setProperty('--dpi-scale', dpiScale);
         })();
     </script>
@@ -712,7 +727,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9292</div>
+                <div class="subtitle">v7.7.2.9293</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -771,6 +786,11 @@
             <!-- Monopoly View -->
             <section id="view-monopoly" class="view">
                 <div class="card" style="margin-bottom:1rem;">
+                    <!-- Real-time system indicator -->
+                    <div id="mono-time-bar" style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:var(--card2);border-radius:6px;margin-bottom:.5rem;font-size:.7rem;">
+                        <span id="mono-time-phase">🕐 加载中...</span>
+                        <span id="mono-time-weather" style="color:var(--text2);">--</span>
+                    </div>
                     <div class="mono-era-bar">
                         <div class="mono-era-info">
                             <span class="mono-era-badge" id="mono-era-badge">草原时代</span>
@@ -903,6 +923,15 @@
                             <option value="hidden">隐藏</option>
                         </select>
                     </div>
+                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:.85rem;">🖥️ PC 侧边栏</span>
+                        <select id="sidebar-mode-select" onchange="setSidebarMode(this.value)" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;font-size:.8rem;">
+                            <option value="auto">自动折叠(悬停展开)</option>
+                            <option value="auto-hide">自动隐藏(点击恢复)</option>
+                            <option value="locked-open">始终展开</option>
+                            <option value="locked-collapsed">始终折叠</option>
+                        </select>
+                    </div>
                     <div class="setting-row">
                         <span>像素字体模式</span>
                         <div class="toggle" id="font-toggle" onclick="togglePixelFont()"></div>
@@ -940,7 +969,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9292</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9293</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1006,8 +1035,8 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9292',
-        SAVE_KEY: 'bunny_cc_v7.7.2.9292',
+        VERSION: 'v7.7.2.9293',
+        SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
         GOD_MODE_CLICKS: 7,
@@ -1507,7 +1536,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9292 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9293 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -1654,6 +1683,7 @@
         const inflation = economy.inflation || 0.03;
         const prosperity = economy.prosperity || 1.0;
         const blackSwanChance = economy.blackSwanChance || 0.02;
+        const timeVolMult = economy.stockVolatilityMult || 1.0; // Real-time volatility modifier
         // Black swan event: random crash on a random stock (20-40% drop)
         let blackSwanStock = -1;
         let blackSwanCrash = 0;
@@ -1663,7 +1693,7 @@
         }
         mono.stockPrices = mono.stockPrices.map((price, i) => {
             const stock = STOCK_TYPES[i];
-            let change = (Math.random() - 0.5) * 2 * stock.volatility;
+            let change = (Math.random() - 0.5) * 2 * stock.volatility * timeVolMult; // Apply time multiplier
             // Trend influence (reduced for realism)
             if (stock.trend === 'growth') change += 0.01;
             else if (stock.trend === 'cyclical') change += (prosperity - 1) * 0.03;
@@ -1745,6 +1775,76 @@
         return liquidated;
     }
 
+    /* ==================== Real-Time System ==================== */
+    // Real-world time affects all game mechanics: economy, stock market, events, rent, etc.
+    // Time phases: dawn(5-8), morning(8-12), noon(12-14), afternoon(14-18), evening(18-22), night(22-5)
+    // Weekday vs weekend also affects market behavior
+
+    const TIME_PHASES = [
+        { name: '黎明', icon: '🌅', start: 5, end: 8,
+          economyMod: { inflation: -0.005, stockVolatility: 0.8, rentMult: 0.95, eventChance: 1.1 },
+          desc: '市场冷清，波动降低' },
+        { name: '上午', icon: '🏢', start: 8, end: 12,
+          economyMod: { inflation: 0.002, stockVolatility: 1.2, rentMult: 1.0, eventChance: 1.0 },
+          desc: '交易活跃，波动增加' },
+        { name: '午间', icon: '☀️', start: 12, end: 14,
+          economyMod: { inflation: 0.001, stockVolatility: 0.9, rentMult: 1.05, eventChance: 0.9 },
+          desc: '午休时段，市场平稳' },
+        { name: '下午', icon: '📊', start: 14, end: 18,
+          economyMod: { inflation: 0.003, stockVolatility: 1.3, rentMult: 1.0, eventChance: 1.1 },
+          desc: '交易高峰，波动最大' },
+        { name: '傍晚', icon: '🌆', start: 18, end: 22,
+          economyMod: { inflation: -0.001, stockVolatility: 1.0, rentMult: 1.1, eventChance: 1.2 },
+          desc: '收市时段，事件增多' },
+        { name: '深夜', icon: '🌙', start: 22, end: 5,
+          economyMod: { inflation: -0.003, stockVolatility: 0.6, rentMult: 0.9, eventChance: 1.3 },
+          desc: '深夜交易，黑天鹅高发' },
+    ];
+
+    function getCurrentTimePhase() {
+        const hour = new Date().getHours();
+        for (const phase of TIME_PHASES) {
+            if (phase.start <= phase.end) {
+                if (hour >= phase.start && hour < phase.end) return phase;
+            } else {
+                // Wrap-around phase (e.g., 22-5)
+                if (hour >= phase.start || hour < phase.end) return phase;
+            }
+        }
+        return TIME_PHASES[1]; // default to morning
+    }
+
+    function isWeekend() {
+        const day = new Date().getDay();
+        return day === 0 || day === 6;
+    }
+
+    function getTimeSystemState() {
+        const phase = getCurrentTimePhase();
+        const weekend = isWeekend();
+        const mod = phase.economyMod;
+        return {
+            phase: phase.name,
+            phaseIcon: phase.icon,
+            phaseDesc: phase.desc,
+            hour: new Date().getHours(),
+            minute: new Date().getMinutes(),
+            isWeekend: weekend,
+            isDaytime: phase.name !== '深夜',
+            // Multipliers applied to various game systems
+            inflationDelta: mod.inflation + (weekend ? -0.002 : 0),
+            stockVolatilityMult: mod.stockVolatility * (weekend ? 0.7 : 1),
+            rentMultiplier: mod.rentMult,
+            eventChanceMult: mod.eventChance * (weekend ? 1.2 : 1),
+            blackSwanBonus: phase.name === '深夜' ? 0.03 : (phase.name === '傍晚' ? 0.01 : 0),
+        };
+    }
+
+    function getRealtimeEconomyModifiers() {
+        const ts = getTimeSystemState();
+        return ts;
+    }
+
     /* ==================== Dynamic Economy Engine ==================== */
     function calculateEconomyState() {
         const totalMoney = mono.players.reduce((s, p) => s + Math.max(0, p.money), 0);
@@ -1752,16 +1852,23 @@
         const bankruptCount = mono.players.filter(p => p.bankrupt).length;
         // Era system removed: use game progress (turn) for scaling instead
         const progressFactor = Math.min(1, mono.turn / 100);
+        // Real-time system modifiers
+        const ts = getTimeSystemState();
 
         return {
-            inflation: 0.03 + (avgMoney / 50000) * 0.05 + (Math.random() - 0.5) * 0.02,
+            inflation: 0.03 + (avgMoney / 50000) * 0.05 + (Math.random() - 0.5) * 0.02 + ts.inflationDelta,
             loanRateBase: 0.06 + (mono.turn / 100) * 0.04 + (Math.random() - 0.5) * 0.03,
             mortgageRatio: 0.5 + (Math.random() - 0.5) * 0.15,
             creditMultiplier: 100 + (progressFactor * 100) + (Math.random() - 0.5) * 30,
             maxDebtRatio: 0.6 + (Math.random() - 0.5) * 0.2,
-            rentMultiplier: 0.9 + (mono.turn / 200) + (Math.random() - 0.5) * 0.3,
+            rentMultiplier: (0.9 + (mono.turn / 200) + (Math.random() - 0.5) * 0.3) * ts.rentMultiplier,
             propertyPriceMultiplier: 1 + (progressFactor * 0.5) + (0.03 + (avgMoney / 50000) * 0.05),
-            blackSwanChance: 0.02 + bankruptCount * 0.01,
+            blackSwanChance: 0.02 + bankruptCount * 0.01 + ts.blackSwanBonus,
+            timePhase: ts.phase,
+            timePhaseIcon: ts.phaseIcon,
+            isWeekend: ts.isWeekend,
+            stockVolatilityMult: ts.stockVolatilityMult,
+            eventChanceMult: ts.eventChanceMult,
         };
     }
 
@@ -2000,6 +2107,19 @@
         // Era progress bar: always full (all regions unlocked)
         if (eraProgress) eraProgress.style.width = '100%';
         if (advanceBtn) advanceBtn.style.display = 'none';
+
+        // Update real-time system display
+        const ts = getTimeSystemState();
+        const timePhaseEl = document.getElementById('mono-time-phase');
+        const timeWeatherEl = document.getElementById('mono-time-weather');
+        if (timePhaseEl) {
+            timePhaseEl.textContent = `${ts.phaseIcon} ${ts.phase} ${String(ts.hour).padStart(2,'0')}:${String(ts.minute).padStart(2,'0')} ${ts.isWeekend ? '🗓️ 周末' : '🗓️ 工作日'}`;
+        }
+        if (timeWeatherEl) {
+            const vol = Math.round(ts.stockVolatilityMult * 100);
+            const evChance = Math.round(ts.eventChanceMult * 100);
+            timeWeatherEl.textContent = `📊 波动${vol}% · 🎲 事件${evChance}% · 🦢${(ts.blackSwanBonus*100).toFixed(0)}%`;
+        }
 
         renderMonoPlayers();
         renderMonoRing();
@@ -6212,6 +6332,20 @@
                     </div>
                 </div>
 
+                <!-- Real-Time System -->
+                <div style="background:var(--card2);border-radius:8px;padding:.6rem;margin-bottom:.5rem;">
+                    <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">🕐 现实时间系统</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;font-size:.7rem;">
+                        <div>当前时段：<span style="color:var(--accent);font-weight:700;">${economy.timePhaseIcon || '🏢'} ${economy.timePhase || '上午'}</span></div>
+                        <div>星期：<span style="color:var(--accent);font-weight:700;">${economy.isWeekend ? '周末' : '工作日'}</span></div>
+                        <div>📊 股市波动：<span style="color:var(--accent);">${((economy.stockVolatilityMult||1)*100).toFixed(0)}%</span></div>
+                        <div>🏠 租金系数：<span style="color:var(--accent);">${((economy.rentMultiplier||1)).toFixed(2)}x</span></div>
+                        <div>🎲 事件概率：<span style="color:var(--accent);">${((economy.eventChanceMult||1)*100).toFixed(0)}%</span></div>
+                        <div>🦢 黑天鹅：<span style="color:var(--bad);">${((economy.blackSwanChance||0.02)*100).toFixed(1)}%</span></div>
+                    </div>
+                    <div style="font-size:.65rem;color:var(--text2);margin-top:.3rem;">💡 现实时间影响所有游戏机制 — 不同时段经济、股市、事件、租金均不同</div>
+                </div>
+
                 <!-- Human Action Stats -->
                 <div style="background:var(--card2);border-radius:8px;padding:.6rem;margin-bottom:.5rem;">
                     <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:.4rem;">🎯 玩家行为分析</div>
@@ -6265,7 +6399,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9292 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9293 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -6664,9 +6798,15 @@
     }
 
     /* ---- Custom font scale: persisted multiplier 0.8 ~ 2.0 ---- */
+    // Uses requestAnimationFrame batching to avoid layout thrashing
+    let _fontScaleRafId = null;
     function setFontScale(pct) {
         const scale = Math.max(0.8, Math.min(2.0, pct / 100));
-        document.documentElement.style.setProperty('--font-scale', scale);
+        if (_fontScaleRafId) cancelAnimationFrame(_fontScaleRafId);
+        _fontScaleRafId = requestAnimationFrame(() => {
+            document.documentElement.style.setProperty('--font-scale', scale);
+            _fontScaleRafId = null;
+        });
         localStorage.setItem('fontScale', String(pct));
         const valEl = document.getElementById('font-scale-val');
         if (valEl) valEl.textContent = pct + '%';
@@ -6678,6 +6818,8 @@
         if (slider) slider.value = saved;
         const tbSelect = document.getElementById('tabbar-mode-select');
         if (tbSelect) tbSelect.value = localStorage.getItem('tabBarMode') || 'always';
+        const sbSelect = document.getElementById('sidebar-mode-select');
+        if (sbSelect) sbSelect.value = localStorage.getItem('sidebarCollapsed') || 'auto';
     }
 
     function toggleMouseBunny() {
@@ -6701,9 +6843,11 @@
     }
 
     /* ==================== Navigation ==================== */
-    // ===== Sidebar auto-collapse =====
+    // ===== Sidebar auto-collapse / auto-hide =====
     let _sidebarCollapseTimer = null;
     let _sidebarMode = localStorage.getItem('sidebarCollapsed') || 'auto';
+    // Modes: 'auto' (collapse to icons after 5s), 'auto-hide' (fully hide, click to restore),
+    //        'locked-open', 'locked-collapsed'
 
     function initSidebarCollapse() {
         const sidebar = document.querySelector('.sidebar');
@@ -6711,29 +6855,51 @@
         const pin = document.getElementById('sidebar-pin');
 
         function applyMode() {
+            sidebar.classList.remove('collapsed', 'auto-hidden');
+            if (pin) { pin.classList.remove('locked'); pin.textContent = '📌'; }
             if (_sidebarMode === 'locked-collapsed') {
                 sidebar.classList.add('collapsed');
                 if (pin) { pin.classList.add('locked'); pin.textContent = '📍'; }
             } else if (_sidebarMode === 'locked-open') {
-                sidebar.classList.remove('collapsed');
                 if (pin) { pin.classList.add('locked'); pin.textContent = '📍'; }
+            } else if (_sidebarMode === 'auto-hide') {
+                // Start auto-hide timer
+                startAutoHideTimer();
             } else {
-                if (pin) { pin.classList.remove('locked'); pin.textContent = '📌'; }
+                // 'auto' mode
                 checkFontScaleCollapse();
             }
         }
 
-        sidebar.addEventListener('mouseleave', function() {
-            if (_sidebarMode !== 'auto') return;
+        function startAutoHideTimer() {
+            if (_sidebarCollapseTimer) clearTimeout(_sidebarCollapseTimer);
             _sidebarCollapseTimer = setTimeout(function() {
-                sidebar.classList.add('collapsed');
+                if (_sidebarMode === 'auto-hide') {
+                    sidebar.classList.add('auto-hidden');
+                } else if (_sidebarMode === 'auto') {
+                    sidebar.classList.add('collapsed');
+                }
             }, 5000);
+        }
+
+        sidebar.addEventListener('mouseleave', function() {
+            if (_sidebarMode !== 'auto' && _sidebarMode !== 'auto-hide') return;
+            startAutoHideTimer();
         });
 
         sidebar.addEventListener('mouseenter', function() {
             if (_sidebarCollapseTimer) { clearTimeout(_sidebarCollapseTimer); _sidebarCollapseTimer = null; }
+            // In 'auto' mode, hover expands. In 'auto-hide' mode, hover does NOT expand — only click restores.
             if (_sidebarMode === 'auto') sidebar.classList.remove('collapsed');
         });
+
+        // In 'auto-hide' mode, click on the collapsed sidebar strip to restore
+        sidebar.addEventListener('click', function(e) {
+            if (_sidebarMode === 'auto-hide' && sidebar.classList.contains('auto-hidden')) {
+                sidebar.classList.remove('auto-hidden');
+                startAutoHideTimer();
+            }
+        }, true); // capture phase to catch clicks early
 
         function checkFontScaleCollapse() {
             if (_sidebarMode !== 'auto') return;
@@ -6784,6 +6950,33 @@
     }
 
     document.addEventListener('DOMContentLoaded', initSidebarCollapse);
+
+    function setSidebarMode(mode) {
+        _sidebarMode = mode;
+        localStorage.setItem('sidebarCollapsed', mode);
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar) return;
+        sidebar.classList.remove('collapsed', 'auto-hidden');
+        const pin = document.getElementById('sidebar-pin');
+        if (pin) { pin.classList.remove('locked'); pin.textContent = '📌'; }
+        if (mode === 'locked-collapsed') {
+            sidebar.classList.add('collapsed');
+            if (pin) { pin.classList.add('locked'); pin.textContent = '📍'; }
+        } else if (mode === 'locked-open') {
+            if (pin) { pin.classList.add('locked'); pin.textContent = '📍'; }
+        } else if (mode === 'auto-hide') {
+            if (_sidebarCollapseTimer) clearTimeout(_sidebarCollapseTimer);
+            _sidebarCollapseTimer = setTimeout(function() {
+                sidebar.classList.add('auto-hidden');
+            }, 5000);
+        } else {
+            // 'auto'
+            const scale = parseFloat(localStorage.getItem('fontScale')) || 100;
+            if (scale >= 110) sidebar.classList.add('collapsed');
+        }
+        const select = document.getElementById('sidebar-mode-select');
+        if (select) select.value = mode;
+    }
 
     // ===== Tab bar collapse/hide =====
     let _tabBarMode = localStorage.getItem('tabBarMode') || 'always';
@@ -7490,7 +7683,22 @@
         } else {
             updateEggTimerDisplay();
         }
-        // Reset ink persist timer
+        // Extend the whiteout visual animation if it's still showing
+        const whiteout = document.getElementById('egg-whiteout');
+        if (whiteout && whiteout.style.display !== 'none') {
+            // Restart the whiteout animation with extended duration
+            const extendMs = 10000;
+            whiteout.style.animation = 'none';
+            void whiteout.offsetWidth; // Force reflow
+            whiteout.style.animation = `eggWhiteout ${extendMs}ms ease forwards`;
+            // Extend the whiteout hide timer
+            if (eggWhiteoutTimer) clearTimeout(eggWhiteoutTimer);
+            eggWhiteoutTimer = setTimeout(() => {
+                if (whiteout) { whiteout.style.display = 'none'; whiteout.style.animation = ''; }
+            }, extendMs);
+        }
+        // Refresh ink persist mode — keep ink active
+        eggInkPersistMode = true;
         lastMouseMoveTime = performance.now();
         // Show feedback
         const btn = document.getElementById('egg-btn-extend');
@@ -7599,10 +7807,12 @@
         initEggControls();
     }
 
-    // ===== Rapid click egg trigger =====
-    const _eggClickTracker = { logo: [], avatar: [], blank: [] };
-    const EGG_CLICK_COUNT = 10;
-    const EGG_CLICK_WINDOW_MS = 1350;
+    // ===== Rapid click egg trigger (Android developer mode style) =====
+    // Uses pointerdown for instant response (faster than click/touchstart)
+    // 7 consecutive rapid taps anywhere triggers the egg (like Android dev mode)
+    const _eggClickTimestamps = [];
+    const EGG_CLICK_COUNT = 7;
+    const EGG_CLICK_WINDOW_MS = 2800; // 7 taps within 2.8s (avg 400ms between taps)
     const EGG_COOLDOWN_MS = 5 * 60 * 1000;
 
     function isEggClickTriggerEnabled() {
@@ -7615,49 +7825,36 @@
         return Date.now() < cooldownEnd;
     }
 
-    function triggerEggByClick(zone) {
+    function triggerEggByClick() {
         if (!isEggClickTriggerEnabled()) return;
         if (checkEggCooldown()) {
             monoLog('🎮 连点触发彩蛋 — 冷却中', 'info');
             return;
         }
         localStorage.setItem('eggCooldown', String(Date.now() + EGG_COOLDOWN_MS));
-        logEvent('🎮 ' + zone + '区域连点触发彩蛋！', 'god');
+        logEvent('🎮 连点触发彩蛋！', 'god');
         triggerEggWhiteout();
     }
 
-    function recordEggClick(zone, timestamp) {
+    function recordEggClick(timestamp) {
         if (!isEggClickTriggerEnabled()) return;
-        const arr = _eggClickTracker[zone];
-        if (!arr) return;
-        arr.push(timestamp);
-        while (arr.length > EGG_CLICK_COUNT) arr.shift();
-        while (arr.length > 0 && timestamp - arr[0] > EGG_CLICK_WINDOW_MS) arr.shift();
-        if (arr.length >= EGG_CLICK_COUNT) {
-            triggerEggByClick(zone);
-            _eggClickTracker[zone] = [];
+        _eggClickTimestamps.push(timestamp);
+        // Keep only recent timestamps within the window
+        while (_eggClickTimestamps.length > 0 && timestamp - _eggClickTimestamps[0] > EGG_CLICK_WINDOW_MS) {
+            _eggClickTimestamps.shift();
+        }
+        // Keep max count to prevent overflow
+        while (_eggClickTimestamps.length > EGG_CLICK_COUNT) _eggClickTimestamps.shift();
+        if (_eggClickTimestamps.length >= EGG_CLICK_COUNT) {
+            triggerEggByClick();
+            _eggClickTimestamps.length = 0;
         }
     }
 
-    document.addEventListener('click', function(e) {
+    // Use pointerdown for instant response (works for both mouse and touch)
+    document.addEventListener('pointerdown', function(e) {
         if (!isEggClickTriggerEnabled()) return;
-        const ts = Date.now();
-        const logo = e.target.closest('.sidebar-logo');
-        const avatar = e.target.closest('.avatar-img, .mp-ic');
-        if (logo) recordEggClick('logo', ts);
-        else if (avatar) recordEggClick('avatar', ts);
-        else recordEggClick('blank', ts);
-    });
-
-    document.addEventListener('touchstart', function(e) {
-        if (!isEggClickTriggerEnabled()) return;
-        const ts = Date.now();
-        const target = e.target;
-        const logo = target.closest('.sidebar-logo');
-        const avatar = target.closest('.avatar-img, .mp-ic');
-        if (logo) recordEggClick('logo', ts);
-        else if (avatar) recordEggClick('avatar', ts);
-        else recordEggClick('blank', ts);
+        recordEggClick(Date.now());
     }, { passive: true });
 
     function triggerEggWhiteout() {
@@ -7757,6 +7954,7 @@
     let trailPoints = [];
     let trailParticles = [];
     let mouseX = 0, mouseY = 0;
+    let _isOverEggFab = false; // Pause trail when hovering FAB in egg mode
     let trailCtx = null, fxCtx = null;
     let trailCanvas = null, fxCanvas = null;
     const MAX_TRAIL_POINTS = 50;
@@ -7823,7 +8021,17 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
             if (eggInkPersistMode) lastMouseMoveTime = performance.now();
-            if (mouseBunnyEnabled) {
+            // Check if mouse is over the egg FAB — pause trail to prevent FAB becoming trail head
+            const eggFab = document.getElementById('egg-fab');
+            _isOverEggFab = false;
+            if (eggFab && eggFab.style.display !== 'none' && eggInkPersistMode) {
+                const rect = eggFab.getBoundingClientRect();
+                if (mouseX >= rect.left - 10 && mouseX <= rect.right + 10 &&
+                    mouseY >= rect.top - 10 && mouseY <= rect.bottom + 10) {
+                    _isOverEggFab = true;
+                }
+            }
+            if (mouseBunnyEnabled && !_isOverEggFab) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
                 if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
                 spawnTrailParticles(mouseX, mouseY);
@@ -7837,7 +8045,17 @@
             mouseX = e.touches[0].clientX;
             mouseY = e.touches[0].clientY;
             if (eggInkPersistMode) lastMouseMoveTime = performance.now();
-            if (mouseBunnyEnabled) {
+            // Check if touch is over the egg FAB
+            const eggFab = document.getElementById('egg-fab');
+            _isOverEggFab = false;
+            if (eggFab && eggFab.style.display !== 'none' && eggInkPersistMode) {
+                const rect = eggFab.getBoundingClientRect();
+                if (mouseX >= rect.left - 10 && mouseX <= rect.right + 10 &&
+                    mouseY >= rect.top - 10 && mouseY <= rect.bottom + 10) {
+                    _isOverEggFab = true;
+                }
+            }
+            if (mouseBunnyEnabled && !_isOverEggFab) {
                 trailPoints.push({ x: mouseX, y: mouseY, t: performance.now() });
                 if (trailPoints.length > MAX_TRAIL_POINTS) trailPoints.shift();
                 spawnTrailParticles(mouseX, mouseY);
@@ -8432,6 +8650,18 @@
         const el = document.getElementById('changelog-content');
         if (!el) return;
         el.innerHTML = `
+            <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9293</strong> — 现实时间系统 & 连点修复 & 彩蛋延长修复 & FAB光轨修复 & PC侧边栏选项 & 字体优化</div>
+            <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
+                <li>🕐 现实时间系统：6个时段(黎明/上午/午间/下午/傍晚/深夜)+工作日/周末，影响通胀、股市波动、租金、事件概率、黑天鹅</li>
+                <li>🕐 时间显示：大富翁页面顶部实时显示当前时段和各系数，关于面板新增时间系统详情</li>
+                <li>🎮 连点触发修复：改为安卓开发者模式风格7次快速连点，使用pointerdown提高响应速度，不分区域</li>
+                <li>🎨 彩蛋延长修复：延长功能现在同步延长白屏动画和墨迹持久模式，不再只延长计时器</li>
+                <li>🎨 FAB光轨修复：彩蛋模式下鼠标经过悬浮按钮时暂停轨迹绘制，防止按钮变成光轨头</li>
+                <li>🖥️ PC侧边栏新增auto-hide模式：空闲5秒后完全隐藏，仅点击恢复（不随悬停恢复）</li>
+                <li>🖥️ 设置页新增PC侧边栏模式下拉选择：自动折叠/自动隐藏/始终展开/始终折叠</li>
+                <li>📱 Tab栏折叠修复：折叠态图标垂直居中，侧边栏折叠态logo居中+图钉定位优化</li>
+                <li>🔤 字体缩放优化：使用requestAnimationFrame批量处理避免布局抖动，DPI检测改用matchMedia</li>
+            </ul>
             <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">v7.7.2.9292</strong> — PWA安装修复 & 骰子倍率记忆修复</div>
             <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
                 <li>📲 PWA安装修复：iOS/Android/macOS/桌面平台自动检测，显示对应安装指引，不再只显示"不支持"提示</li>
@@ -8665,6 +8895,21 @@
                 const at = document.getElementById('anni-time');
                 if (ad) ad.textContent = days;
                 if (at) at.textContent = `${hours} 时 ${mins} 分 ${secs} 秒`;
+            }
+
+            // Update real-time system display on monopoly view (every tick, cheap)
+            if (currentView === 'monopoly' && mono && mono.started) {
+                const ts = getTimeSystemState();
+                const timePhaseEl = document.getElementById('mono-time-phase');
+                const timeWeatherEl = document.getElementById('mono-time-weather');
+                if (timePhaseEl) {
+                    timePhaseEl.textContent = `${ts.phaseIcon} ${ts.phase} ${String(ts.hour).padStart(2,'0')}:${String(ts.minute).padStart(2,'0')} ${ts.isWeekend ? '🗓️ 周末' : '🗓️ 工作日'}`;
+                }
+                if (timeWeatherEl) {
+                    const vol = Math.round(ts.stockVolatilityMult * 100);
+                    const evChance = Math.round(ts.eventChanceMult * 100);
+                    timeWeatherEl.textContent = `📊 波动${vol}% · 🎲 事件${evChance}% · 🦢${(ts.blackSwanBonus*100).toFixed(0)}%`;
+                }
             }
         }
         tick();
