@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9311 -->
+    <!-- VERSION: v7.7.2.9312 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1273,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9311</div>
+                <div class="subtitle">v7.7.2.9312</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1555,7 +1555,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9311</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9312</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1621,7 +1621,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9311',
+        VERSION: 'v7.7.2.9312',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1908,6 +1908,113 @@
             }});
             return count>0 ? `🌐 区域封锁！${count}名对手下回合无法购买地产` : '🌐 所有对手被防火墙抵消';
         }},
+        // === Forced Movement Cards: drag opponents to your properties for rent ===
+        {id:'summon_rent', ic:'🧲', n:'引力召唤', desc:'将指定对手传送到你的最高级地产并收租', rarity:'rare', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了引力召唤`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了引力召唤！`;}
+            if(target.firewallTurns>0){target.firewallTurns--;return `${target.nm} 的防火墙抵消了引力召唤`;}
+            const pi=mono.players.indexOf(p);
+            const owned=mono.tiles.map((t,i)=>({t,i})).filter(({t,i})=>t.type==='property'&&mono.properties[i].owner===pi&&mono.properties[i].level>=0&&!mono.properties[i].mortgaged);
+            if(owned.length===0) return '没有可召唤到的地产';
+            // Pick the highest-level property (best rent)
+            owned.sort((a,b)=>(mono.properties[b.i].level||0)-(mono.properties[a.i].level||0));
+            const dest=owned[0];
+            target.pos=dest.i;
+            // Calculate rent immediately
+            const rent=calculateRent(dest.t,mono.properties[dest.i]);
+            const actualRent=Math.min(rent,target.money);
+            target.money-=actualRent;
+            p.money+=actualRent;
+            target.stats.rentPaidTotal+=actualRent;
+            p.stats.rentIncomeTotal+=actualRent;
+            p.stats.rentLog.push({from:target.nm,fromIc:target.ic,to:p.nm,amount:actualRent,tileNm:dest.t.nm,turn:mono.turn});
+            if(p.stats.rentLog.length>50) p.stats.rentLog.shift();
+            checkBankruptcy(target);
+            return `🧲 将 ${target.nm} 召唤到 ${dest.t.nm}，收取租金 ${actualRent}💰`;
+        }},
+        {id:'mass_summon', ic:'🌀', n:'万有引力', desc:'所有对手被传送到你的随机地产并收租', rarity:'legendary', monoEff:(p,mono)=>{
+            const pi=mono.players.indexOf(p);
+            const owned=mono.tiles.map((t,i)=>({t,i})).filter(({t,i})=>t.type==='property'&&mono.properties[i].owner===pi&&!mono.properties[i].mortgaged);
+            if(owned.length===0) return '没有可传送的地产';
+            let count=0,totalRent=0;
+            mono.players.forEach(o=>{
+                if(o===p||o.bankrupt) return;
+                if(o.shield>0){o.shield--;return;}
+                if(o.firewallTurns>0){o.firewallTurns--;return;}
+                if(o.mirror>0){o.mirror--;return;}
+                const dest=owned[Math.floor(Math.random()*owned.length)];
+                o.pos=dest.i;
+                const rent=calculateRent(dest.t,mono.properties[dest.i]);
+                const actualRent=Math.min(rent,o.money);
+                o.money-=actualRent;
+                p.money+=actualRent;
+                o.stats.rentPaidTotal+=actualRent;
+                p.stats.rentIncomeTotal+=actualRent;
+                p.stats.rentLog.push({from:o.nm,fromIc:o.ic,to:p.nm,amount:actualRent,tileNm:dest.t.nm,turn:mono.turn});
+                totalRent+=actualRent;
+                count++;
+                checkBankruptcy(o);
+            });
+            if(p.stats.rentLog.length>50) p.stats.rentLog.shift();
+            return count>0 ? `🌀 万有引力！${count}名对手被传送至你的地产，共收租 ${totalRent}💰` : '🌀 所有对手被护盾/防火墙/镜像抵消';
+        }},
+        {id:'magnetic_field', ic:'🧭', n:'磁场牵引', desc:'50%概率将附近对手牵引到你的地产', rarity:'rare', monoEff:(p,mono)=>{
+            const pi=mono.players.indexOf(p);
+            const owned=mono.tiles.map((t,i)=>({t,i})).filter(({t,i})=>t.type==='property'&&mono.properties[i].owner===pi&&!mono.properties[i].mortgaged);
+            if(owned.length===0) return '没有可牵引到的地产';
+            const total=getUnlockedTileCount();
+            let count=0,totalRent=0;
+            mono.players.forEach(o=>{
+                if(o===p||o.bankrupt) return;
+                // Check if opponent is within 8 tiles of any of your properties
+                const nearby=owned.some(({i})=>{
+                    const dist=Math.min(Math.abs(o.pos-i),total-Math.abs(o.pos-i));
+                    return dist<=8;
+                });
+                if(nearby&&Math.random()<0.5){
+                    if(o.shield>0){o.shield--;return;}
+                    if(o.firewallTurns>0){o.firewallTurns--;return;}
+                    if(o.mirror>0){o.mirror--;return;}
+                    // Pull to nearest owned property
+                    let nearest=owned[0],minDist=Infinity;
+                    owned.forEach(({i})=>{
+                        const d=Math.min(Math.abs(o.pos-i),total-Math.abs(o.pos-i));
+                        if(d<minDist){minDist=d;nearest=owned.find(x=>x.i===i);}
+                    });
+                    o.pos=nearest.i;
+                    const rent=calculateRent(nearest.t,mono.properties[nearest.i]);
+                    const actualRent=Math.min(rent,o.money);
+                    o.money-=actualRent;
+                    p.money+=actualRent;
+                    o.stats.rentPaidTotal+=actualRent;
+                    p.stats.rentIncomeTotal+=actualRent;
+                    p.stats.rentLog.push({from:o.nm,fromIc:o.ic,to:p.nm,amount:actualRent,tileNm:nearest.t.nm,turn:mono.turn});
+                    totalRent+=actualRent;
+                    count++;
+                    checkBankruptcy(o);
+                }
+            });
+            if(p.stats.rentLog.length>50) p.stats.rentLog.shift();
+            return count>0 ? `🧭 磁场牵引！${count}名对手被拉至你的地产，收租 ${totalRent}💰` : '🧭 磁场未捕获到对手';
+        }},
+        {id:'tax_audit', ic:'📋', n:'税务稽查', desc:'对手必须向你支付所有地产总值的10%', rarity:'legendary', isCurse:true, monoEff:(p,mono,target)=>{
+            if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了税务稽查`;}
+            if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了税务稽查！`;}
+            if(target.firewallTurns>0){target.firewallTurns--;return `${target.nm} 的防火墙抵消了税务稽查`;}
+            const ti=mono.players.indexOf(target);
+            let totalValue=0;
+            mono.tiles.forEach((t,i)=>{
+                if(t.type==='property'&&mono.properties[i].owner===ti&&!mono.properties[i].mortgaged){
+                    totalValue+=t.price*(1+(mono.properties[i].level||0)*0.3);
+                }
+            });
+            const tax=Math.floor(totalValue*0.1);
+            const actualTax=Math.min(tax,target.money);
+            target.money-=actualTax;
+            p.money+=actualTax;
+            checkBankruptcy(target);
+            return `📋 税务稽查！${target.nm} 缴纳地产税 ${actualTax}💰`;
+        }},
     ];
     const RARITY_COLORS = {common:'var(--text2)', uncommon:'var(--good)', rare:'#3b82f6', legendary:'#a78bfa'};
     const RARITY_WEIGHTS = {common:40, uncommon:30, rare:20, legendary:10};
@@ -2039,9 +2146,9 @@
         {ic:'🦔', nm:'刺刺', color:'#78716C', personality:'conservative'},
     ];
     const AI_PERSONALITIES = {
-        aggressive:   {nm:'激进', buyChance:0.70, cardUseChance:0.45, loanChance:0.7, upgradeChance:0.6},
-        conservative: {nm:'保守', buyChance:0.35, cardUseChance:0.15, loanChance:0.2, upgradeChance:0.25},
-        balanced:     {nm:'平衡', buyChance:0.50, cardUseChance:0.3, loanChance:0.4, upgradeChance:0.4},
+        aggressive:   {nm:'激进', buyChance:0.70, cardUseChance:0.65, loanChance:0.7, upgradeChance:0.6, attackLeaderBias:0.75},
+        conservative: {nm:'保守', buyChance:0.35, cardUseChance:0.30, loanChance:0.2, upgradeChance:0.25, attackLeaderBias:0.45},
+        balanced:     {nm:'平衡', buyChance:0.50, cardUseChance:0.50, loanChance:0.4, upgradeChance:0.4, attackLeaderBias:0.60},
     };
 
     /* ==================== AI Learning System ==================== */
@@ -2463,7 +2570,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9311 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9312 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -4387,6 +4494,12 @@
                     h += `<div style="font-size:.6rem;color:#e8a838;margin-top:.2rem;text-align:center;">🎲 连续双数：${cp.consecutiveDoubles}/3（再出双数进监狱！）</div>`;
                 }
                 h += `<button class="btn btn-primary" style="margin-top:.5rem;" onclick="rollDice()">🎲 掷骰子${curMult > 1 ? ` (×${curMult})` : ''}</button>`;
+                // Auto-pilot toggle button
+                const apOn = mono.autoPilot === true;
+                h += `<button class="btn ${apOn ? 'btn-primary' : 'btn-secondary'}" style="margin-top:.3rem;font-size:.7rem;" onclick="toggleAutoPilot()">${apOn ? '🤖 托管中... (点击关闭)' : '🤖 开启全自动托管'}</button>`;
+                if (apOn) {
+                    h += `<div style="font-size:.55rem;color:var(--accent);margin-top:.15rem;text-align:center;">自动交易·升级·用卡·掷骰</div>`;
+                }
             }
         } else if (mono.rolling) {
             h += `<div style="color:var(--text2);margin-top:.3rem;">🎲 掷骰中...</div>`;
@@ -4406,6 +4519,252 @@
         p.diceMultiplier = v;
         safeSetItem('diceMultiplierPref', String(v));
         renderMonopoly();
+    }
+
+    /* ==================== Auto-Pilot System (全自动托管) ==================== */
+    function toggleAutoPilot() {
+        if (!mono || !mono.started) { monoLog('游戏未开始', 'error'); return; }
+        mono.autoPilot = !mono.autoPilot;
+        saveMonopoly();
+        renderMonopoly();
+        if (mono.autoPilot) {
+            monoLog('🤖 全自动托管已开启！将自动交易·升级·用卡·掷骰', 'success');
+            showToast('🤖 托管已开启', 'success');
+            // If it's our turn, start auto-pilot immediately
+            if (mono.currentPlayer === 0 && !mono.rolling) {
+                setTimeout(() => executeAutoPilot(), 500);
+            }
+        } else {
+            monoLog('🤖 全自动托管已关闭', 'info');
+            showToast('🤖 托管已关闭', 'info');
+        }
+    }
+
+    function executeAutoPilot() {
+        if (!mono || !mono.autoPilot || mono.currentPlayer !== 0 || mono.rolling) return;
+        const p = mono.players[0];
+        if (!p || p.bankrupt) { mono.autoPilot = false; return; }
+
+        // Step 1: Auto-use strategic cards
+        if (p.cards.length > 0) {
+            const curseCards = p.cards.map((c, i) => c.isCurse ? i : -1).filter(i => i >= 0);
+            const forceMoveCards = p.cards.map((c, i) => (c.id === 'summon_rent' || c.id === 'mass_summon' || c.id === 'magnetic_field' || c.id === 'tax_audit') ? i : -1).filter(i => i >= 0);
+            const defensiveCards = p.cards.map((c, i) => (c.id === 'shield' || c.id === 'mirror') ? i : -1).filter(i => i >= 0);
+            const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i].owner === 0);
+            // Use 1-2 cards strategically
+            const cardsToUse = Math.min(p.cards.length, 2);
+            for (let round = 0; round < cardsToUse; round++) {
+                let cardIdx = -1;
+                // Priority 1: Forced movement cards if we own properties
+                if (aiOwnsProperties && forceMoveCards.length > 0) {
+                    cardIdx = forceMoveCards.shift();
+                }
+                // Priority 2: Defensive cards if we don't have shield
+                else if (p.shield === 0 && defensiveCards.length > 0 && Math.random() < 0.5) {
+                    cardIdx = defensiveCards.shift();
+                }
+                // Priority 3: Curse cards to attack leader
+                else if (curseCards.length > 0) {
+                    cardIdx = curseCards.shift();
+                }
+                if (cardIdx < 0 || cardIdx >= p.cards.length) break;
+                const card = p.cards[cardIdx];
+                p.cards.splice(cardIdx, 1);
+                // Adjust remaining indices
+                curseCards.forEach((v, i) => { if (v > cardIdx) curseCards[i]--; });
+                forceMoveCards.forEach((v, i) => { if (v > cardIdx) forceMoveCards[i]--; });
+                defensiveCards.forEach((v, i) => { if (v > cardIdx) defensiveCards[i]--; });
+                restoreCardFunctions(card);
+                if (card.monoEff) {
+                    if (card.isCurse) {
+                        const targets = mono.players.filter((pl, i) => i !== 0 && !pl.bankrupt);
+                        if (targets.length > 0) {
+                            // Target the wealthiest opponent
+                            const target = targets.reduce((a, b) => a.money > b.money ? a : b);
+                            const effResult = card.monoEff(p, mono, target) || '';
+                            recordGameEvent('card_curse', `${p.ic} ${p.nm}`, `对 ${target.nm} 施放 ${card.ic} ${card.n}`, effResult);
+                            monoLog(`🤖 自动使用 ${card.ic} ${card.n} → ${target.nm} — ${effResult}`, 'event');
+                        }
+                    } else {
+                        const effResult = card.monoEff(p, mono) || '';
+                        recordGameEvent('card_use', `${p.ic} ${p.nm}`, `使用 ${card.ic} ${card.n}`, effResult);
+                        monoLog(`🤖 自动使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : ''}`, 'info');
+                    }
+                }
+            }
+            saveMonopoly();
+            renderMonopolyPartial(['players', 'cards', 'buff', 'log']);
+        }
+
+        // Step 2: Auto-trade stocks (buy low, sell high) — with commission & slippage matching manual trading
+        let _apStockTraded = false;
+        if (p.stockHoldings && mono.stockPrices) {
+            // Auto-sell: check all holdings for profit-taking (≥20% gain)
+            for (let i = 0; i < p.stockHoldings.length; i++) {
+                const h = p.stockHoldings[i];
+                if (!h || h.shares <= 0 || !h.avgCost || h.avgCost <= 0) continue;
+                const price = mono.stockPrices[i];
+                const profitRatio = h.isShort ? (h.avgCost - price) / h.avgCost : (price - h.avgCost) / h.avgCost;
+                if (profitRatio >= 0.20) {
+                    const amount = h.shares;
+                    const lev = h.leverage || 1;
+                    if (h.isShort) {
+                        const profit = Math.round((h.avgCost - price) * amount * lev);
+                        const marginReturn = Math.ceil(h.avgCost * amount / lev);
+                        p.money += marginReturn + profit;
+                        p.stats.stockProfit += profit;
+                        // Commission on sale value
+                        const commission = Math.ceil(price * amount * STOCK_COMMISSION_RATE);
+                        p.money -= commission;
+                        // Slippage: selling pushes price down
+                        const sellSlippage = 1 - amount * 0.005 - STOCK_SLIPPAGE_RATE * Math.min(amount, 20);
+                        mono.stockPrices[i] = Math.max(STOCK_TYPES[i].basePrice * 0.25, Math.floor(mono.stockPrices[i] * sellSlippage));
+                        monoLog(`🤖 自动止盈做空 ${amount} 股 ${STOCK_TYPES[i].ic}，+💰${profit}（手续费${commission}）`, 'success');
+                        h.shares = 0; h.avgCost = 0; h.leverage = 1; h.isShort = false;
+                    } else {
+                        const profit = Math.round((price - h.avgCost) * amount * lev);
+                        const marginReturn = Math.ceil(h.avgCost * amount / lev);
+                        p.money += marginReturn + profit;
+                        p.stats.stockProfit += profit;
+                        // Commission on sale value
+                        const commission = Math.ceil(price * amount * STOCK_COMMISSION_RATE);
+                        p.money -= commission;
+                        // Slippage: selling pushes price down
+                        const sellSlippage = 1 - amount * 0.005 - STOCK_SLIPPAGE_RATE * Math.min(amount, 20);
+                        mono.stockPrices[i] = Math.max(STOCK_TYPES[i].basePrice * 0.25, Math.floor(mono.stockPrices[i] * sellSlippage));
+                        monoLog(`🤖 自动止盈卖出 ${amount} 股 ${STOCK_TYPES[i].ic}，+💰${profit}（手续费${commission}）`, 'success');
+                        h.shares = 0; h.avgCost = 0; h.leverage = 1;
+                    }
+                    p.stats.stockTrades++;
+                    mono.stockMarket = getStockIndex();
+                    _apStockTraded = true;
+                }
+            }
+            // Auto-buy: find the best discounted stock (price < 80% of base)
+            let bestBuyIdx = -1, bestRatio = Infinity;
+            for (let i = 0; i < STOCK_TYPES.length; i++) {
+                const stock = STOCK_TYPES[i];
+                const price = mono.stockPrices[i];
+                const h = p.stockHoldings[i];
+                const ratio = price / stock.basePrice;
+                if (h.shares > 0 || h.isShort) continue;
+                if (ratio < bestRatio && ratio < 0.80 && p.money > price * 10) {
+                    bestRatio = ratio;
+                    bestBuyIdx = i;
+                }
+            }
+            if (bestBuyIdx >= 0) {
+                const price = mono.stockPrices[bestBuyIdx];
+                const amount = Math.floor(p.money * 0.15 / price);
+                if (amount > 0) {
+                    const margin = Math.ceil(price * amount);
+                    const h = p.stockHoldings[bestBuyIdx];
+                    h.avgCost = h.shares > 0 ? Math.round((h.avgCost * h.shares + price * amount) / (h.shares + amount)) : price;
+                    h.shares += amount;
+                    h.isShort = false;
+                    h.leverage = 1;
+                    p.money -= margin;
+                    // Commission on margin
+                    const commission = Math.ceil(margin * STOCK_COMMISSION_RATE);
+                    p.money -= commission;
+                    // Slippage: buying pushes price up
+                    const buySlippage = 1 + amount * 0.005 + STOCK_SLIPPAGE_RATE * Math.min(amount, 20);
+                    mono.stockPrices[bestBuyIdx] = Math.min(STOCK_TYPES[bestBuyIdx].basePrice * 2.5, Math.floor(mono.stockPrices[bestBuyIdx] * buySlippage));
+                    p.stats.stockTrades++;
+                    monoLog(`🤖 自动买入 ${amount} 股 ${STOCK_TYPES[bestBuyIdx].ic}（折扣${Math.round((1-bestRatio)*100)}%，手续费${commission}）`, 'info');
+                    mono.stockMarket = getStockIndex();
+                    _apStockTraded = true;
+                }
+            }
+            if (_apStockTraded) { saveMonopoly(); renderMonopolyPartial(['players', 'log']); }
+        }
+
+        // Step 3: Auto-roll dice after a short delay
+        setTimeout(() => {
+            if (mono.autoPilot && mono.currentPlayer === 0 && !mono.rolling) {
+                rollDice();
+            }
+        }, 600);
+    }
+
+    // Auto-pilot hook for modals: auto-handle buy/upgrade/skip decisions
+    function autoPilotHandleModal() {
+        if (!mono || !mono.autoPilot || mono.currentPlayer !== 0) return false;
+        const p = mono.players[0];
+        const tile = mono.tiles[p.pos];
+        if (!tile) return false;
+
+        // Auto-buy property if it's a good deal
+        if (tile.type === 'property' && mono.properties[p.pos].owner === -1) {
+            const prop = mono.properties[p.pos];
+            const cost = tile.price;
+            // Buy if we can afford it and it's < 40% of our money, or if it's cheap
+            if (p.money >= cost && (cost < p.money * 0.4 || cost < 3000)) {
+                prop.owner = 0;
+                p.money -= cost;
+                p.stats.propertiesBought++;
+                p.stats.purchaseSpent += cost;
+                recordHumanAction('buyProperty');
+                monoLog(`🤖 自动购买 ${tile.nm} (-💰${cost})`, 'success');
+                closeModal();
+                saveMonopoly();
+                renderMonopoly();
+                if (!checkGameOver()) nextTurn();
+                return true;
+            }
+            // Skip if can't afford or too expensive
+            monoLog(`🤖 自动跳过购买 ${tile.nm}（价格过高）`, 'info');
+            skipBuy();
+            return true;
+        }
+        // Auto-upgrade: upgrade the most valuable property
+        if (tile.type === 'upgrade') {
+            const owned = [];
+            for (let i = 0; i < mono.tiles.length; i++) {
+                if (mono.tiles[i].type === 'property' && mono.properties[i].owner === 0 && mono.properties[i].level < 5) {
+                    owned.push(i);
+                }
+            }
+            if (owned.length > 0) {
+                owned.sort((a, b) => mono.tiles[b].price - mono.tiles[a].price);
+                const tileIdx = owned[0];
+                const cost = Math.floor(mono.tiles[tileIdx].price * 0.3);
+                if (p.money >= cost) {
+                    upgradeProperty(tileIdx, cost);
+                    return true;
+                }
+            }
+            // Skip upgrade
+            skipBuy();
+            return true;
+        }
+        // Auto-skip bank, stock, auction, casino (when from tile)
+        if (tile.type === 'bank' || tile.type === 'auction') {
+            skipBuy();
+            return true;
+        }
+        if (tile.type === 'stock') {
+            // Use closeStockModal to properly clear stock refresh timer
+            if (typeof closeStockModal === 'function') {
+                closeStockModal();
+            } else {
+                skipBuy();
+            }
+            return true;
+        }
+        if (tile.type === 'casino') {
+            // Leave casino without gambling
+            leaveCasino();
+            return true;
+        }
+        // Auto-close card draw and event modals (effects already applied)
+        if (tile.type === 'card' || tile.type === 'event') {
+            closeModal();
+            saveMonopoly();
+            if (!checkGameOver()) nextTurn();
+            return true;
+        }
+        return false;
     }
 
     function renderMonoCards() {
@@ -4648,6 +5007,51 @@
         // Handle backward movement (confused effect) — wrap around correctly
         let newPos = (p.pos + steps) % total;
         if (newPos < 0) newPos += total; // Fix JS modulo for negative numbers
+
+        // === Passing Rent: charge reduced rent for tiles passed through (not landed on) ===
+        if (steps > 0 && !(p.taxFree > 0)) {
+            const economy = mono.economy || calculateEconomyState();
+            const rentMultiplier = economy.rentMultiplier || 1;
+            for (let s = 1; s <= Math.abs(steps); s++) {
+                const passPos = (oldPos + s) % total;
+                if (passPos === newPos) continue; // Skip destination — handled by triggerTile
+                const passTile = mono.tiles[passPos];
+                const passProp = mono.properties[passPos];
+                if (!passTile || !passProp || passTile.type !== 'property') continue;
+                if (passProp.owner < 0 || passProp.owner === playerIdx || passProp.mortgaged) continue;
+                const owner = mono.players[passProp.owner];
+                if (!owner || owner.bankrupt) continue;
+                // 35% chance to collect passing rent — mixed system
+                if (Math.random() > 0.35) continue;
+                // Passing rent = 30% of normal rent
+                const baseRent = Math.floor(passTile.price * (0.12 + (passProp.level || 0) * 0.02));
+                const passRent = Math.max(0, Math.floor(baseRent * 0.3 * rentMultiplier * (0.8 + Math.random() * 0.4)));
+                if (passRent <= 0) continue;
+                // Shield blocks passing rent
+                if (p.shield > 0) { p.shield--; monoLog(`🛡️ ${p.nm} 护盾抵消过路费！`, 'success'); continue; }
+                // Mirror reflects passing rent
+                if (p.mirror > 0) {
+                    p.mirror--;
+                    owner.money -= passRent;
+                    p.money += passRent;
+                    monoLog(`🪞 ${p.nm} 经过 ${passTile.nm}，镜像反射过路费给 ${owner.nm}`, 'event');
+                    checkBankruptcy(owner);
+                    continue;
+                }
+                // Vehicle rent immunity
+                const immuneChance = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'rentImmune');
+                if (immuneChance && Math.random() < immuneChance) continue;
+                const actualRent = Math.min(passRent, p.money);
+                p.money -= actualRent;
+                owner.money += actualRent;
+                p.stats.rentPaidTotal += actualRent;
+                owner.stats.rentIncomeTotal += actualRent;
+                monoLog(`${p.ic} 经过 ${passTile.nm}，向 ${owner.ic} 付过路费 ${actualRent}💰`, 'info');
+                checkBankruptcy(p);
+                if (p.bankrupt) break;
+            }
+        }
+
         p.pos = newPos;
 
         // Pass start bonus (only when moving forward past start)
@@ -4680,6 +5084,19 @@
         // Clear pending action — tile trigger has started
         mono.pendingAction = null;
         saveMonopoly();
+
+        // Auto-pilot: automatically handle tile events for human player
+        if (mono.autoPilot && playerIdx === 0) {
+            // For tiles that show modals, auto-handle them
+            const modalTypes = ['property', 'bank', 'stock', 'auction', 'upgrade', 'casino', 'card', 'event'];
+            if (modalTypes.includes(tile.type)) {
+                setTimeout(() => {
+                    if (mono.autoPilot && playerIdx === 0) {
+                        autoPilotHandleModal();
+                    }
+                }, 500);
+            }
+        }
 
         switch(tile.type) {
             case 'start':
@@ -6473,39 +6890,64 @@
                 owned.push(i);
             }
         }
-        if (owned.length === 0) {
-            monoLog(`${p.ic} 没有可升级的地产`, 'info');
-            return false;
-        }
-        const tileIdx = owned[Math.floor(Math.random() * owned.length)];
-        const tile = mono.tiles[tileIdx];
-        const cost = Math.floor(tile.price * 0.3);
 
         if (playerIdx === 0) {
+            // Always show modal for human player — even if no upgradeable properties
             const modal = document.getElementById('modal-content');
-            modal.innerHTML = `
-                <div class="modal-drag-handle"></div>
-                <div class="modal-title">⬆️ 地产升级</div>
-                <div style="text-align:center;padding:.5rem 0;">
-                    <div style="font-size:2rem;">${tile.ic}</div>
-                    <div style="font-weight:800;">${tile.nm} (Lv.${mono.properties[tileIdx].level})</div>
-                    <div style="font-size:.8rem;color:var(--text2);">升级费用：💰${cost}</div>
-                    <div style="font-size:.8rem;color:var(--text2);">你的资金：💰${p.money}</div>
-                </div>
-                <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;">
-                    <button class="btn btn-primary" onclick="upgradeProperty(${tileIdx},${cost})" ${p.money<cost?'disabled':''}>⬆️ 升级</button>
-                    <button class="btn btn-secondary" onclick="skipBuy()">跳过</button>
-                </div>`;
+            if (owned.length === 0) {
+                modal.innerHTML = `
+                    <div class="modal-drag-handle"></div>
+                    <div class="modal-title">⬆️ 地产升级</div>
+                    <div style="text-align:center;padding:1rem 0;">
+                        <div style="font-size:2.5rem;">🏚️</div>
+                        <div style="font-weight:700;margin-top:.3rem;">没有可升级的地产</div>
+                        <div style="font-size:.8rem;color:var(--text2);margin-top:.2rem;">购买地产后才能使用升级格</div>
+                        <div style="font-size:.8rem;color:var(--text2);">你的资金：💰${p.money}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="width:100%;margin-top:.5rem;" onclick="skipBuy()">继续</button>`;
+            } else {
+                // Show ALL upgradeable properties as a list — player picks which to upgrade
+                const listHtml = owned.map(idx => {
+                    const t = mono.tiles[idx];
+                    const prop = mono.properties[idx];
+                    const cost = Math.floor(t.price * 0.3);
+                    const canAfford = p.money >= cost;
+                    return `<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--card2);border-radius:6px;margin-bottom:.3rem;${!canAfford?'opacity:.5;':''}">
+                        <span style="font-size:1.5rem;">${t.ic}</span>
+                        <div style="flex:1;">
+                            <div style="font-size:.8rem;font-weight:700;">${t.nm} <span style="color:var(--text2);font-weight:400;">Lv.${prop.level}→${prop.level+1}</span></div>
+                            <div style="font-size:.7rem;color:var(--text2);">💰${cost}</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="upgradeProperty(${idx},${cost})" ${!canAfford?'disabled':''}>⬆️ 升级</button>
+                    </div>`;
+                }).join('');
+                modal.innerHTML = `
+                    <div class="modal-drag-handle"></div>
+                    <div class="modal-title">⬆️ 地产升级</div>
+                    <div style="text-align:center;font-size:.8rem;color:var(--text2);padding:.3rem 0;">选择要升级的地产 | 你的资金：💰${p.money}</div>
+                    <div style="max-height:50vh;overflow-y:auto;">${listHtml}</div>
+                    <button class="btn btn-secondary" style="width:100%;margin-top:.5rem;" onclick="skipBuy()">跳过</button>`;
+            }
             document.getElementById('modal-overlay').classList.add('show');
-            return true; // Modal shown — wait for player decision
+            return true; // Modal shown — always pause for player
         } else {
+            // AI: pick the property with highest price (best ROI for rent increase)
+            if (owned.length === 0) return false;
+            // Sort by tile price descending — upgrade the most valuable first
+            owned.sort((a, b) => mono.tiles[b].price - mono.tiles[a].price);
             const personality = AI_PERSONALITIES[p.personality];
-            if (p.money >= cost && Math.random() < personality.upgradeChance) {
-                p.money -= cost;
-                mono.properties[tileIdx].level++;
-                p.stats.upgradesDone++;
-                p.stats.upgradeSpent += cost;
-                monoLog(`${p.ic} 升级 ${tile.nm} 到 Lv.${mono.properties[tileIdx].level}`, 'success');
+            const aiDiff = getAIDifficulty();
+            // AI may upgrade multiple properties if it has lots of money
+            for (const tileIdx of owned) {
+                const tile = mono.tiles[tileIdx];
+                const cost = Math.floor(tile.price * 0.3);
+                if (p.money >= cost && Math.random() < personality.upgradeChance * aiDiff) {
+                    p.money -= cost;
+                    mono.properties[tileIdx].level++;
+                    p.stats.upgradesDone++;
+                    p.stats.upgradeSpent += cost;
+                    monoLog(`${p.ic} 升级 ${tile.nm} 到 Lv.${mono.properties[tileIdx].level}`, 'success');
+                }
             }
             return false;
         }
@@ -7316,26 +7758,71 @@
         if (!p || p.bankrupt) { nextTurn(); return; }
         const personality = AI_PERSONALITIES[p.personality];
 
-        // Use card?
-        if (p.cards.length > 0 && Math.random() < personality.cardUseChance) {
-            const ci = Math.floor(Math.random() * p.cards.length);
-            const card = p.cards[ci];
-            p.cards.splice(ci, 1);
-            // Ensure monoEff function exists (restore from pool if lost during serialization)
-            restoreCardFunctions(card);
-            if (card.monoEff) {
-                if (card.isCurse) {
-                    const targets = mono.players.filter((pl, i) => i !== idx && !pl.bankrupt);
-                    if (targets.length > 0) {
-                        const target = targets[Math.floor(Math.random() * targets.length)];
-                        const effResult = card.monoEff(p, mono, target) || '';
-                        recordGameEvent('card_curse', `${p.ic} ${p.nm}`, `对 ${target.nm} 施放 ${card.ic} ${card.n}`, effResult);
-                        monoLog(`🔥 ${p.ic} 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
-                    }
+        // Use card? Smart selection — synced with aiTurn logic for consistency
+        if (p.cards.length > 0) {
+            const aiDiff = getAIDifficulty();
+            const effectiveCardChance = personality.cardUseChance * aiDiff;
+            const alivePlayers = mono.players.filter(pl => !pl.bankrupt);
+            const leader = alivePlayers.reduce((a, b) => (a.money + (a.stats?.propertiesBought || 0) * 1000) > (b.money + (b.stats?.propertiesBought || 0) * 1000) ? a : b);
+            const humanIsLeader = leader === mono.players[0] && idx !== 0;
+            const aggressionBonus = humanIsLeader ? 0.2 : 0;
+            const maxCards = (p.personality === 'aggressive' && p.cards.length > 2) ? 2 : 1;
+            for (let cardRound = 0; cardRound < maxCards && p.cards.length > 0; cardRound++) {
+                if (Math.random() > effectiveCardChance + aggressionBonus) break;
+                let cardIdx = -1;
+                const curseCards = p.cards.map((c, i) => c.isCurse ? i : -1).filter(i => i >= 0);
+                const hackerCards = p.cards.map((c, i) => c.isHacker ? i : -1).filter(i => i >= 0);
+                const defensiveCards = p.cards.map((c, i) => (c.id === 'shield' || c.id === 'mirror' || c.id === 'tax_free') ? i : -1).filter(i => i >= 0);
+                const forceMoveCards = p.cards.map((c, i) => (c.id === 'summon_rent' || c.id === 'mass_summon' || c.id === 'magnetic_field' || c.id === 'tax_audit') ? i : -1).filter(i => i >= 0);
+                const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i].owner === idx);
+                // Decision tree (same as aiTurn):
+                if (aiOwnsProperties && forceMoveCards.length > 0 && Math.random() < 0.65) {
+                    cardIdx = forceMoveCards[Math.floor(Math.random() * forceMoveCards.length)];
+                } else if (p.money < 3000 && curseCards.length > 0) {
+                    const drainCards = curseCards.filter(ci => p.cards[ci].id === 'curse_drain' || p.cards[ci].id === 'tax_audit' || p.cards[ci].id === 'summon_rent');
+                    if (drainCards.length > 0) cardIdx = drainCards[Math.floor(Math.random() * drainCards.length)];
+                } else if (p.shield === 0 && defensiveCards.length > 0 && Math.random() < 0.4) {
+                    cardIdx = defensiveCards[Math.floor(Math.random() * defensiveCards.length)];
+                } else if (humanIsLeader && (curseCards.length > 0 || hackerCards.length > 0) && Math.random() < (personality.attackLeaderBias || 0.5)) {
+                    const attackCards = [...curseCards, ...hackerCards];
+                    cardIdx = attackCards[Math.floor(Math.random() * attackCards.length)];
+                } else if (curseCards.length > 0 && Math.random() < 0.7) {
+                    cardIdx = curseCards[Math.floor(Math.random() * curseCards.length)];
                 } else {
-                    const effResult = card.monoEff(p, mono) || '';
-                    recordGameEvent('card_use', `${p.ic} ${p.nm}`, `使用 ${card.ic} ${card.n}`, effResult);
-                    monoLog(`${p.ic} 使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : ''}`, 'info');
+                    cardIdx = Math.floor(Math.random() * p.cards.length);
+                }
+                if (cardIdx < 0) break;
+                const card = p.cards[cardIdx];
+                p.cards.splice(cardIdx, 1);
+                restoreCardFunctions(card);
+                if (card.monoEff) {
+                    if (card.isCurse) {
+                        const targets = mono.players.filter((pl, i) => i !== idx && !pl.bankrupt);
+                        if (targets.length > 0) {
+                            let target;
+                            const r = Math.random();
+                            if (r < (personality.attackLeaderBias || 0.5)) {
+                                target = humanIsLeader ? mono.players[0] : leader;
+                                if (target === p || target.bankrupt) target = targets.reduce((a, b) => a.money > b.money ? a : b);
+                            } else if (r < (personality.attackLeaderBias || 0.5) + 0.25 && targets.includes(mono.players[0])) {
+                                target = mono.players[0];
+                            } else {
+                                if (card.id === 'curse_drain' || card.id === 'tax_audit' || card.id === 'summon_rent') {
+                                    target = targets.reduce((a, b) => a.money > b.money ? a : b);
+                                } else {
+                                    target = targets[Math.floor(Math.random() * targets.length)];
+                                }
+                            }
+                            const effResult = card.monoEff(p, mono, target) || '';
+                            recordGameEvent('card_curse', `${p.ic} ${p.nm}`, `对 ${target.nm} 施放 ${card.ic} ${card.n}`, effResult);
+                            monoLog(`🔥 ${p.ic} 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
+                            if (target === mono.players[0]) showToast(`🔥 被 ${p.nm} 施放 ${card.ic} ${card.n}！`, 'error');
+                        }
+                    } else {
+                        const effResult = card.monoEff(p, mono) || '';
+                        recordGameEvent('card_use', `${p.ic} ${p.nm}`, `使用 ${card.ic} ${card.n}`, effResult);
+                        monoLog(`${p.ic} 使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : ''}`, 'info');
+                    }
                 }
             }
             renderMonopolyPartial(['players', 'cards', 'buff', 'log']);
@@ -7455,6 +7942,57 @@
         continueAiTurn(aiIdx);
     };
 
+    /* ==================== Casino Animation CSS ==================== */
+    const casinoAnimStyle = document.createElement('style');
+    casinoAnimStyle.textContent = `
+    @keyframes casino-reel-spin {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-200px); }
+    }
+    @keyframes casino-reel-bounce {
+        0% { transform: translateY(0); }
+        30% { transform: translateY(-12px); }
+        50% { transform: translateY(0); }
+        70% { transform: translateY(-6px); }
+        100% { transform: translateY(0); }
+    }
+    @keyframes casino-wheel-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(1080deg); }
+    }
+    @keyframes casino-dice-roll {
+        0% { transform: rotate(0deg) scale(1); }
+        25% { transform: rotate(90deg) scale(1.2); }
+        50% { transform: rotate(180deg) scale(0.9); }
+        75% { transform: rotate(270deg) scale(1.1); }
+        100% { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes casino-pulse {
+        0%, 100% { opacity: 0.4; transform: scale(0.95); }
+        50% { opacity: 1; transform: scale(1.05); }
+    }
+    .casino-reel-container {
+        height: 60px; overflow: hidden; position: relative;
+        background: var(--card2); border-radius: 8px; border: 2px solid var(--border);
+    }
+    .casino-reel-spinning {
+        animation: casino-reel-spin 0.15s linear infinite;
+    }
+    .casino-reel-result {
+        animation: casino-reel-bounce 0.5s ease-out;
+    }
+    .casino-wheel-spinning {
+        animation: casino-wheel-spin 1.5s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+    }
+    .casino-dice-rolling {
+        animation: casino-dice-roll 0.3s ease-in-out infinite;
+    }
+    .casino-loading-text {
+        animation: casino-pulse 1s ease-in-out infinite;
+    }
+    `;
+    document.head.appendChild(casinoAnimStyle);
+
     /* ==================== Monopoly: Casino System ==================== */
     const CASINO_MIN_BET = 100;
     const ROULETTE_NUMBERS = Array.from({length: 37}, (_, i) => i); // 0-36
@@ -7545,38 +8083,49 @@
         const result = Math.floor(Math.random() * 37); // 0-36
         const isRed = ROULETTE_RED.includes(result);
         const isBlack = result !== 0 && !isRed;
-        let won = false;
-        let payout = 0;
-        let desc = '';
 
-        if (betType === 'red') { won = isRed; payout = bet * 2; desc = '红'; }
-        else if (betType === 'black') { won = isBlack; payout = bet * 2; desc = '黑'; }
-        else if (betType === 'odd') { won = result !== 0 && result % 2 === 1; payout = bet * 2; desc = '单数'; }
-        else if (betType === 'even') { won = result !== 0 && result % 2 === 0; payout = bet * 2; desc = '双数'; }
-        else if (betType === 'low') { won = result >= 1 && result <= 18; payout = bet * 2; desc = '小(1-18)'; }
-        else if (betType === 'high') { won = result >= 19 && result <= 36; payout = bet * 2; desc = '大(19-36)'; }
-        else if (betType === 'number') { won = result === numChoice; payout = bet * 36; desc = `数字${numChoice}`; }
+        // Show spinning animation first
+        showModal(`<div class="modal-title">🎡 轮盘赌</div>
+            <div style="text-align:center;padding:1.5rem;">
+                <div style="font-size:4rem;display:inline-block;" class="casino-wheel-spinning">🎡</div>
+                <div style="font-size:.9rem;color:var(--text2);margin-top:.5rem;" class="casino-loading-text">轮盘旋转中...</div>
+            </div>`);
 
-        const colorLabel = result === 0 ? '🟢' : (isRed ? '🔴' : '⚫');
-        const resultHtml = `<div style="text-align:center;padding:1rem;">
-            <div style="font-size:3rem;">🎡</div>
-            <div style="font-size:2rem;font-weight:800;color:${isRed ? '#ef4444' : result === 0 ? '#10b981' : '#fff'};">${result} ${colorLabel}</div>
-            <div style="font-size:.9rem;margin-top:.3rem;color:${won ? 'var(--accent)' : 'var(--text2)'};">${won ? `🎉 赢了！+💰${payout - bet}` : `💔 输了 -💰${bet}`}</div>
-        </div>`;
+        // Reveal result after animation
+        setTimeout(() => {
+            let won = false;
+            let payout = 0;
+            let desc = '';
 
-        if (won) {
-            p.money += payout;
-            monoLog(`🎡 轮盘开出 ${result} ${colorLabel} — 押${desc}赢！获得 💰${payout - bet}`, 'success');
-        } else {
-            monoLog(`🎡 轮盘开出 ${result} ${colorLabel} — 押${desc}输，损失 💰${bet}`, 'info');
-        }
+            if (betType === 'red') { won = isRed; payout = bet * 2; desc = '红'; }
+            else if (betType === 'black') { won = isBlack; payout = bet * 2; desc = '黑'; }
+            else if (betType === 'odd') { won = result !== 0 && result % 2 === 1; payout = bet * 2; desc = '单数'; }
+            else if (betType === 'even') { won = result !== 0 && result % 2 === 0; payout = bet * 2; desc = '双数'; }
+            else if (betType === 'low') { won = result >= 1 && result <= 18; payout = bet * 2; desc = '小(1-18)'; }
+            else if (betType === 'high') { won = result >= 19 && result <= 36; payout = bet * 2; desc = '大(19-36)'; }
+            else if (betType === 'number') { won = result === numChoice; payout = bet * 36; desc = `数字${numChoice}`; }
 
-        showModal(`${resultHtml}
-            <div style="font-size:.75rem;color:var(--text2);text-align:center;">当前资金：💰${p.money}</div>
-            <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="showRoulette()" ${p.money < CASINO_MIN_BET ? 'disabled' : ''}>再来一局</button>
-            <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showCasino(casinoFromTile)">返回赌场</button>`);
-        saveMonopoly();
-        renderMonopoly();
+            const colorLabel = result === 0 ? '🟢' : (isRed ? '🔴' : '⚫');
+            if (won) {
+                p.money += payout;
+                monoLog(`🎡 轮盘开出 ${result} ${colorLabel} — 押${desc}赢！获得 💰${payout - bet}`, 'success');
+            } else {
+                monoLog(`🎡 轮盘开出 ${result} ${colorLabel} — 押${desc}输，损失 💰${bet}`, 'info');
+            }
+
+            const resultHtml = `<div style="text-align:center;padding:1rem;">
+                <div style="font-size:3rem;animation:casino-reel-bounce .5s ease-out;">🎡</div>
+                <div style="font-size:2rem;font-weight:800;color:${isRed ? '#ef4444' : result === 0 ? '#10b981' : '#fff'};animation:casino-reel-bounce .5s ease-out .1s;">${result} ${colorLabel}</div>
+                <div style="font-size:.9rem;margin-top:.3rem;color:${won ? 'var(--accent)' : 'var(--text2)'};font-weight:700;">${won ? `🎉 赢了！+💰${payout - bet}` : `💔 输了 -💰${bet}`}</div>
+            </div>`;
+
+            showModal(`${resultHtml}
+                <div style="font-size:.75rem;color:var(--text2);text-align:center;">当前资金：💰${p.money}</div>
+                <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="showRoulette()" ${p.money < CASINO_MIN_BET ? 'disabled' : ''}>再来一局</button>
+                <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showCasino(casinoFromTile)">返回赌场</button>`);
+            saveMonopoly();
+            renderMonopoly();
+        }, 1500);
     }
 
     // ===== Slot Machine =====
@@ -7608,45 +8157,56 @@
             SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)],
         ];
 
-        let won = false;
-        let payout = 0;
-        let msg = '';
-
-        if (reels[0] === reels[1] && reels[1] === reels[2]) {
-            // Three of a kind
-            won = true;
-            const multiplier = SLOT_PAYOUTS[reels[0]];
-            payout = bet * multiplier;
-            msg = `🎉 三连 ${reels[0]}！赔率 ${multiplier}:1 → +💰${payout - bet}`;
-        } else if (reels[0] === reels[1] || reels[1] === reels[2] || reels[0] === reels[2]) {
-            // Two of a kind — small consolation prize
-            won = true;
-            payout = Math.floor(bet * 1.5);
-            msg = `✨ 两连 ${reels[0]} → 回本 +💰${payout - bet}`;
-        } else {
-            msg = `💔 没有中奖 -💰${bet}`;
-        }
-
-        if (won) {
-            p.money += payout;
-            monoLog(`🎰 老虎机 ${reels.join(' ')} — ${msg}`, 'success');
-        } else {
-            monoLog(`🎰 老虎机 ${reels.join(' ')} — ${msg}`, 'info');
-        }
-
-        const reelColor = won ? 'var(--accent)' : 'var(--text2)';
-        showModal(`<div class="modal-title">🎰 老虎机结果</div>
+        // Show spinning animation first
+        const reelStrip = SLOT_SYMBOLS.join('') + SLOT_SYMBOLS.join('');
+        showModal(`<div class="modal-title">🎰 老虎机</div>
             <div style="display:flex;justify-content:center;gap:.5rem;padding:1.5rem;">
-                <span style="font-size:2.5rem;">${reels[0]}</span>
-                <span style="font-size:2.5rem;">${reels[1]}</span>
-                <span style="font-size:2.5rem;">${reels[2]}</span>
+                <div class="casino-reel-container" style="width:50px;"><div class="casino-reel-spinning" style="font-size:2rem;line-height:60px;text-align:center;">${reelStrip}</div></div>
+                <div class="casino-reel-container" style="width:50px;"><div class="casino-reel-spinning" style="font-size:2rem;line-height:60px;text-align:center;">${reelStrip}</div></div>
+                <div class="casino-reel-container" style="width:50px;"><div class="casino-reel-spinning" style="font-size:2rem;line-height:60px;text-align:center;">${reelStrip}</div></div>
             </div>
-            <div style="text-align:center;font-size:.9rem;color:${reelColor};">${msg}</div>
-            <div style="font-size:.75rem;color:var(--text2);text-align:center;margin-top:.3rem;">当前资金：💰${p.money}</div>
-            <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="showSlots()" ${p.money < CASINO_MIN_BET ? 'disabled' : ''}>再来一局</button>
-            <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showCasino(casinoFromTile)">返回赌场</button>`);
-        saveMonopoly();
-        renderMonopoly();
+            <div style="text-align:center;font-size:.9rem;color:var(--text2);" class="casino-loading-text">🎰 转动中...</div>`);
+
+        // Reveal result after animation
+        setTimeout(() => {
+            let won = false;
+            let payout = 0;
+            let msg = '';
+
+            if (reels[0] === reels[1] && reels[1] === reels[2]) {
+                won = true;
+                const multiplier = SLOT_PAYOUTS[reels[0]];
+                payout = bet * multiplier;
+                msg = `🎉 三连 ${reels[0]}！赔率 ${multiplier}:1 → +💰${payout - bet}`;
+            } else if (reels[0] === reels[1] || reels[1] === reels[2] || reels[0] === reels[2]) {
+                won = true;
+                payout = Math.floor(bet * 1.5);
+                msg = `✨ 两连 ${reels[0]} → 回本 +💰${payout - bet}`;
+            } else {
+                msg = `💔 没有中奖 -💰${bet}`;
+            }
+
+            if (won) {
+                p.money += payout;
+                monoLog(`🎰 老虎机 ${reels.join(' ')} — ${msg}`, 'success');
+            } else {
+                monoLog(`🎰 老虎机 ${reels.join(' ')} — ${msg}`, 'info');
+            }
+
+            const reelColor = won ? 'var(--accent)' : 'var(--text2)';
+            showModal(`<div class="modal-title">🎰 老虎机结果</div>
+                <div style="display:flex;justify-content:center;gap:.5rem;padding:1.5rem;">
+                    <span class="casino-reel-result" style="font-size:2.5rem;display:inline-block;">${reels[0]}</span>
+                    <span class="casino-reel-result" style="font-size:2.5rem;display:inline-block;animation-delay:.1s;">${reels[1]}</span>
+                    <span class="casino-reel-result" style="font-size:2.5rem;display:inline-block;animation-delay:.2s;">${reels[2]}</span>
+                </div>
+                <div style="text-align:center;font-size:.9rem;color:${reelColor};font-weight:700;">${msg}</div>
+                <div style="font-size:.75rem;color:var(--text2);text-align:center;margin-top:.3rem;">当前资金：💰${p.money}</div>
+                <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="showSlots()" ${p.money < CASINO_MIN_BET ? 'disabled' : ''}>再来一局</button>
+                <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showCasino(casinoFromTile)">返回赌场</button>`);
+            saveMonopoly();
+            renderMonopoly();
+        }, 1500);
     }
 
     // ===== Dice Game (Sic Bo) =====
@@ -7684,41 +8244,52 @@
         const isBig = total >= 11 && total <= 18;
         const isSmall = total >= 3 && total <= 10;
 
-        let won = false;
-        let payout = 0;
-        let msg = '';
-
-        if (isTriple) {
-            // Triple — house wins (通杀)
-            msg = `💔 豹子 ${dice[0]}-${dice[1]}-${dice[2]} 通杀！损失 💰${bet}`;
-        } else if ((betSide === 'big' && isBig) || (betSide === 'small' && isSmall)) {
-            won = true;
-            payout = bet * 2;
-            msg = `🎉 掷出 ${total} 点 — 押${betSide === 'big' ? '大' : '小'}赢！+💰${payout - bet}`;
-        } else {
-            msg = `💔 掷出 ${total} 点 — 押${betSide === 'big' ? '大' : '小'}输，损失 💰${bet}`;
-        }
-
-        if (won) {
-            p.money += payout;
-            monoLog(`🎲 骰子 ${dice.join('-')} = ${total} — ${msg}`, 'success');
-        } else {
-            monoLog(`🎲 骰子 ${dice.join('-')} = ${total} — ${msg}`, 'info');
-        }
-
-        const diceHtml = dice.map(d => `<span style="font-size:2.5rem;">${['', '⚀','⚁','⚂','⚃','⚄','⚅'][d]}</span>`).join('');
-
-        showModal(`<div class="modal-title">🎲 骰子结果</div>
-            <div style="display:flex;justify-content:center;gap:.5rem;padding:1rem;">
-                ${diceHtml}
+        // Show rolling animation first
+        showModal(`<div class="modal-title">🎲 骰子大小</div>
+            <div style="display:flex;justify-content:center;gap:.5rem;padding:1.5rem;">
+                <span class="casino-dice-rolling" style="font-size:2.5rem;display:inline-block;">🎲</span>
+                <span class="casino-dice-rolling" style="font-size:2.5rem;display:inline-block;animation-delay:.1s;">🎲</span>
+                <span class="casino-dice-rolling" style="font-size:2.5rem;display:inline-block;animation-delay:.2s;">🎲</span>
             </div>
-            <div style="text-align:center;font-size:.9rem;font-weight:700;">总和：${total} ${isTriple ? '(豹子!)' : isBig ? '(大)' : '(小)'}</div>
-            <div style="text-align:center;font-size:.9rem;color:${won ? 'var(--accent)' : 'var(--text2)'};margin-top:.3rem;">${msg}</div>
-            <div style="font-size:.75rem;color:var(--text2);text-align:center;margin-top:.2rem;">当前资金：💰${p.money}</div>
-            <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="showDiceGame()" ${p.money < CASINO_MIN_BET ? 'disabled' : ''}>再来一局</button>
-            <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showCasino(casinoFromTile)">返回赌场</button>`);
-        saveMonopoly();
-        renderMonopoly();
+            <div style="text-align:center;font-size:.9rem;color:var(--text2);" class="casino-loading-text">骰子滚动中...</div>`);
+
+        // Reveal result after animation
+        setTimeout(() => {
+            let won = false;
+            let payout = 0;
+            let msg = '';
+
+            if (isTriple) {
+                msg = `💔 豹子 ${dice[0]}-${dice[1]}-${dice[2]} 通杀！损失 💰${bet}`;
+            } else if ((betSide === 'big' && isBig) || (betSide === 'small' && isSmall)) {
+                won = true;
+                payout = bet * 2;
+                msg = `🎉 掷出 ${total} 点 — 押${betSide === 'big' ? '大' : '小'}赢！+💰${payout - bet}`;
+            } else {
+                msg = `💔 掷出 ${total} 点 — 押${betSide === 'big' ? '大' : '小'}输，损失 💰${bet}`;
+            }
+
+            if (won) {
+                p.money += payout;
+                monoLog(`🎲 骰子 ${dice.join('-')} = ${total} — ${msg}`, 'success');
+            } else {
+                monoLog(`🎲 骰子 ${dice.join('-')} = ${total} — ${msg}`, 'info');
+            }
+
+            const diceHtml = dice.map((d, i) => `<span class="casino-reel-result" style="font-size:2.5rem;display:inline-block;animation-delay:${i*.1}s;">${['', '⚀','⚁','⚂','⚃','⚄','⚅'][d]}</span>`).join('');
+
+            showModal(`<div class="modal-title">🎲 骰子结果</div>
+                <div style="display:flex;justify-content:center;gap:.5rem;padding:1rem;">
+                    ${diceHtml}
+                </div>
+                <div style="text-align:center;font-size:.9rem;font-weight:700;">总和：${total} ${isTriple ? '(豹子!)' : isBig ? '(大)' : '(小)'}</div>
+                <div style="text-align:center;font-size:.9rem;color:${won ? 'var(--accent)' : 'var(--text2)'};margin-top:.3rem;font-weight:700;">${msg}</div>
+                <div style="font-size:.75rem;color:var(--text2);text-align:center;margin-top:.2rem;">当前资金：💰${p.money}</div>
+                <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="showDiceGame()" ${p.money < CASINO_MIN_BET ? 'disabled' : ''}>再来一局</button>
+                <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showCasino(casinoFromTile)">返回赌场</button>`);
+            saveMonopoly();
+            renderMonopoly();
+        }, 1200);
     }
 
     /* ==================== Monopoly: Next Turn & AI ==================== */
@@ -7760,10 +8331,10 @@
             if (!tile || !prop || tile.type !== 'property' || prop.owner < 0 || prop.mortgaged) continue;
             const owner = mono.players[prop.owner];
             if (!owner || owner.bankrupt) continue;
-            // 8% chance per property per turn to collect passive rent
-            if (Math.random() < 0.08) {
+            // 15% chance per property per turn to collect passive rent (increased from 8%)
+            if (Math.random() < 0.15) {
                 const baseRent = Math.floor(tile.price * (0.12 + (prop.level || 0) * 0.02));
-                const passiveRent = Math.floor(baseRent * 0.3 * rentMultiplier * (0.8 + Math.random() * 0.4));
+                const passiveRent = Math.floor(baseRent * 0.35 * rentMultiplier * (0.8 + Math.random() * 0.4));
                 if (passiveRent > 0) {
                     owner.money += passiveRent;
                     owner.stats.rentIncomeTotal += passiveRent;
@@ -7783,6 +8354,7 @@
             renderMonopoly();
             if (mono.currentPlayer === 0 && mono.started) {
                 notifyMyTurn();
+                if (mono.autoPilot) { setTimeout(() => executeAutoPilot(), 800); }
             }
             if (mono.currentPlayer !== 0 && mono.started) {
                 mono.pendingAction = 'aiTurn';
@@ -7861,6 +8433,7 @@
         // Push notification when it becomes the human player's turn
         if (mono.currentPlayer === 0 && mono.started) {
             notifyMyTurn();
+            if (mono.autoPilot) { setTimeout(() => executeAutoPilot(), 800); }
         }
 
         if (mono.currentPlayer !== 0 && mono.started) {
@@ -7981,38 +8554,74 @@
             return;
         }
 
-        // Use card? AI prefers curse cards to attack opponents
+        // Use card? AI uses smart card selection strategy
         if (p.cards.length > 0) {
             const aiDiff = getAIDifficulty();
             const effectiveCardChance = personality.cardUseChance * aiDiff;
-            if (Math.random() < effectiveCardChance) {
-                // AI strategy: prefer curse cards (70% chance to pick curse if available)
-                let cardIdx;
+            // Identify the leader ( wealthiest player ) for strategic targeting
+            const alivePlayers = mono.players.filter(pl => !pl.bankrupt);
+            const leader = alivePlayers.reduce((a, b) => (a.money + (a.stats?.propertiesBought || 0) * 1000) > (b.money + (b.stats?.propertiesBought || 0) * 1000) ? a : b);
+            const isLeader = leader === p;
+            const humanIsLeader = leader === mono.players[0] && idx !== 0;
+            // If human is leading, AI is more aggressive
+            const aggressionBonus = humanIsLeader ? 0.2 : 0;
+            // AI may use 1-2 cards per turn if aggressive
+            const maxCards = (p.personality === 'aggressive' && p.cards.length > 2) ? 2 : 1;
+            for (let cardRound = 0; cardRound < maxCards && p.cards.length > 0; cardRound++) {
+                if (Math.random() > effectiveCardChance + aggressionBonus) break;
+                // Smart card selection: prioritize based on game state
+                let cardIdx = -1;
                 const curseCards = p.cards.map((c, i) => c.isCurse ? i : -1).filter(i => i >= 0);
-                if (curseCards.length > 0 && Math.random() < 0.7) {
-                    // Pick a curse card — target the wealthiest opponent for drain, or random for others
+                const hackerCards = p.cards.map((c, i) => c.isHacker ? i : -1).filter(i => i >= 0);
+                const defensiveCards = p.cards.map((c, i) => (c.id === 'shield' || c.id === 'mirror' || c.id === 'tax_free') ? i : -1).filter(i => i >= 0);
+                const forceMoveCards = p.cards.map((c, i) => (c.id === 'summon_rent' || c.id === 'mass_summon' || c.id === 'magnetic_field' || c.id === 'tax_audit') ? i : -1).filter(i => i >= 0);
+                const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i].owner === idx);
+                // Decision tree:
+                // 1. If AI owns properties and has forced movement cards → use them (high priority)
+                if (aiOwnsProperties && forceMoveCards.length > 0 && Math.random() < 0.65) {
+                    cardIdx = forceMoveCards[Math.floor(Math.random() * forceMoveCards.length)];
+                }
+                // 2. If AI is low on money and has drain/steal cards → use them
+                else if (p.money < 3000 && curseCards.length > 0) {
+                    const drainCards = curseCards.filter(ci => p.cards[ci].id === 'curse_drain' || p.cards[ci].id === 'tax_audit' || p.cards[ci].id === 'summon_rent');
+                    if (drainCards.length > 0) cardIdx = drainCards[Math.floor(Math.random() * drainCards.length)];
+                }
+                // 3. If AI is being threatened (low shield, opponents have cards) → use defensive
+                else if (p.shield === 0 && defensiveCards.length > 0 && Math.random() < 0.4) {
+                    cardIdx = defensiveCards[Math.floor(Math.random() * defensiveCards.length)];
+                }
+                // 4. If human is leader → prefer curse/hacker attack cards
+                else if (humanIsLeader && (curseCards.length > 0 || hackerCards.length > 0) && Math.random() < (personality.attackLeaderBias || 0.5)) {
+                    const attackCards = [...curseCards, ...hackerCards];
+                    cardIdx = attackCards[Math.floor(Math.random() * attackCards.length)];
+                }
+                // 5. Default: prefer curse cards (70%), then any card
+                else if (curseCards.length > 0 && Math.random() < 0.7) {
                     cardIdx = curseCards[Math.floor(Math.random() * curseCards.length)];
                 } else {
-                    // Pick any card
                     cardIdx = Math.floor(Math.random() * p.cards.length);
                 }
+                if (cardIdx < 0) break;
                 const card = p.cards[cardIdx];
                 p.cards.splice(cardIdx, 1);
-                // Ensure monoEff function exists (restore from pool if lost during serialization)
                 restoreCardFunctions(card);
                 if (card.monoEff) {
                     if (card.isCurse) {
-                        // AI targets: wealthiest player (for drain) or closest player (for jail/backtrack)
+                        // Smart targeting: target the leader 60%, human 25%, random 15%
                         const targets = mono.players.filter((pl, i) => i !== idx && !pl.bankrupt);
                         if (targets.length > 0) {
                             let target;
-                            if (card.id === 'curse_drain') {
-                                // Target wealthiest player
-                                target = targets.reduce((a, b) => a.money > b.money ? a : b);
+                            const r = Math.random();
+                            if (r < (personality.attackLeaderBias || 0.5)) {
+                                // Target the leader (or human if human is leader)
+                                target = humanIsLeader ? mono.players[0] : leader;
+                                if (target === p || target.bankrupt) target = targets.reduce((a, b) => a.money > b.money ? a : b);
+                            } else if (r < (personality.attackLeaderBias || 0.5) + 0.25 && targets.includes(mono.players[0])) {
+                                target = mono.players[0];
                             } else {
-                                // Target random player (weighted toward human player 40%)
-                                if (targets.includes(mono.players[0]) && Math.random() < 0.4) {
-                                    target = mono.players[0];
+                                // For drain-type cards, always target wealthiest
+                                if (card.id === 'curse_drain' || card.id === 'tax_audit' || card.id === 'summon_rent') {
+                                    target = targets.reduce((a, b) => a.money > b.money ? a : b);
                                 } else {
                                     target = targets[Math.floor(Math.random() * targets.length)];
                                 }
@@ -8020,7 +8629,6 @@
                             const effResult = card.monoEff(p, mono, target) || '';
                             recordGameEvent('card_curse', `${p.ic} ${p.nm}`, `对 ${target.nm} 施放 ${card.ic} ${card.n}`, effResult);
                             monoLog(`🔥 ${p.ic} 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
-                            // Show toast if targeting human player
                             if (target === mono.players[0]) {
                                 showToast(`🔥 被 ${p.nm} 施放 ${card.ic} ${card.n}！`, 'error');
                             }
@@ -8031,9 +8639,8 @@
                         monoLog(`${p.ic} 使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : ''}`, 'info');
                     }
                 }
-                // perf: consider batching — card effect will be reflected by the next renderMonopoly() before movePlayer
-                // renderMonopoly();
             }
+            renderMonopolyPartial(['players', 'cards', 'buff', 'log']);
         }
 
         mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
@@ -8339,7 +8946,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9311 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9312 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -8723,10 +9330,13 @@
         recordHumanAction('useCard');
         recordGameEvent('card_use', `${p.ic} ${p.nm}`, `使用 ${card.ic} ${card.n}`, effResult);
         monoLog(`🃏 兔可可 直接使用背包 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : card.desc ? ' — ' + card.desc : ''}`, 'success');
-        // Render FIRST so game state updates immediately, THEN show modal
+        // Force synchronous render so money/state updates are visible immediately on mobile
         saveInventory();
         saveMonopoly();
-        renderMonopoly();
+        if (_renderRAFId) { cancelAnimationFrame(_renderRAFId); _renderRAFId = null; }
+        _renderPending = false;
+        _doRenderMonopoly();
+        renderCardDrawArea();
         showCardUseModal(card, effResult);
     }
 
@@ -8746,7 +9356,11 @@
         monoLog(`🔥 兔可可 对 ${target.nm} 施放 ${card.ic} ${card.n} — ${effResult}`, 'event');
         saveInventory();
         saveMonopoly();
-        renderMonopoly();
+        // Force synchronous render so money/state updates are visible immediately on mobile
+        if (_renderRAFId) { cancelAnimationFrame(_renderRAFId); _renderRAFId = null; }
+        _renderPending = false;
+        _doRenderMonopoly();
+        renderCardDrawArea();
         showCurseHitEffect(target, card);
     }
 
@@ -11515,13 +12129,24 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.7.2.9311', title:'移动端主题特效系统 & Bug修复', items:[
-            '📱 移动端主题特效系统：12套主题各自独立的玩家圆点呼吸动画——兔子心跳/森林摇曳/海洋涟漪/星光闪烁/赛博故障/夕阳火焰/薄荷泡泡/玫瑰花瓣/极光呼吸/银河脉冲/糖果闪烁/矩阵数字雨，全部使用GPU加速的transform/opacity动画，零box-shadow重绘',
-            '🗺️ 移动端格子主题光效：当前格子用伪元素::after径向渐变呼吸光效替代box-shadow脉冲，每套主题独立配色和动画节奏，格子内容position:relative+z-index:1确保文字始终可见',
-            '🌸 移动端触控Bloom主题化：12套主题各自独特的bloom形状——兔子心形/森林叶形/海洋双环/星光星形(clip-path)/赛博方形/夕阳圆形/薄荷水滴/玫瑰花瓣/极光模糊/银河光晕/糖果心形/矩阵方形，20%概率释放主题专属emoji粒子',
-            '🎲 移动端玩家移动动画：玩家移动时触发一次性弹性bounce(cubic-bezier弹性曲线)，骰子滚动时触发shake动画，活跃玩家卡片渐变光效呼吸——全部GPU加速，低性能模式自动禁用',
-            '🔧 avgCost精度修复：内幕消息卡获得5股时avgCost未取整导致小数累积，已添加Math.round()',
-            '🔧 破产车库清理修复：玩家有车库载具但无激活载具时破产不清理车库的bug已修复，现在折价变卖所有车库载具',
+        { ver:'v7.7.2.9312', title:'AI全自动托管 & 强制移动卡牌 & 混合租金 & 赌场动画 & Bug修复', items:[
+            '🤖 全自动托管系统：一键开启全自动交易·升级·用卡·掷骰，自动止盈卖出(≥20%盈利)、自动买入折扣股(<80%基准价)，自动处理地产购买/升级/事件弹窗',
+            '🧲 4张强制移动卡牌：引力召唤(传送对手到最高级地产收租)、万有引力(全体对手传送收租)、磁场牵引(50%概率牵引附近对手)、税务稽查(征收地产总值10%税)',
+            '💰 混合租金系统：路过对手房产35%概率收取30%过路费+落地全租金+每回合15%被动租金，三重租金机制',
+            '🧠 AI智慧升级：多卡决策树(强制移动→低资金汲取→防御→攻击领头羊→诅咒)、激进AI每回合可用2张卡、人类领先时AI攻击性+20%、智能目标选择(领头羊/人类/最富玩家)',
+            '🎰 赌场过渡动画：老虎机3轴滚动+弹跳揭示、轮盘1.5s旋转+结果弹跳、骰子翻滚+结果动画，全部CSS GPU加速',
+            '⬆️ 升级格修复：handleUpgradeTile始终弹出升级弹窗，显示所有可升级地产列表',
+            '📱 移动端卡牌实时更新：useCardFromInventory/executeCurseFromInventory改用同步渲染替代RAF节流，金钱/卡牌变更即时显示',
+            '🔧 自动托管股票交易修复：添加手续费(0.4%)、滑点(0.3%)、价格冲击、saveMonopoly持久化、renderMonopolyPartial渲染',
+            '🔧 强制移动卡牌防御检查：summon_rent/magnetic_field/tax_audit添加firewallTurns检查，mass_summon/magnetic_field添加mirror检查',
+            '🔧 强制移动卡牌破产检查：所有4张卡添加checkBankruptcy调用，防止对手负资产未处理',
+            '🔧 强制移动卡牌rentLog：mass_summon/magnetic_field添加p.stats.rentLog记录，与summon_rent保持一致',
+            '🔧 continueAiTurn卡牌逻辑同步：交易后AI续行使用与aiTurn相同的完整决策树(多卡/防御/攻击领头羊/骇客卡)',
+            '📱 移动端主题特效系统：12套主题各自独立的玩家圆点呼吸动画，全部GPU加速transform/opacity',
+            '🗺️ 移动端格子主题光效：伪元素径向渐变呼吸光效替代脉冲动画',
+            '🌸 移动端触控Bloom主题化：12套主题各自独特的bloom形状，20%概率释放主题专属emoji粒子',
+            '🔧 avgCost精度修复：Math.round()防止小数累积',
+            '🔧 破产车库清理修复：折价变卖所有车库载具',
         ]},
         { ver:'v7.7.2.9310', title:'读档迁移 & 移动端闪烁修复 & 触控Bloom特效 & 设置迁移', items:[
             '📂 读档兼容修复：存档tile数与当前地图不匹配时自动迁移重建地图，保留玩家数据/地产所有权，不再直接拒绝读取',
