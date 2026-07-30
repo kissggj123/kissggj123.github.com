@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9310 -->
+    <!-- VERSION: v7.7.2.9311 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -440,12 +440,93 @@
         .mono-ring-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 10; }
         .mono-ring-dot.current { animation: ringPulse 1s ease infinite; }
         @keyframes ringPulse { 50% { transform: translate(-50%, -50%) scale(1.4); box-shadow: 0 0 8px currentColor; } }
-        /* Mobile: replace infinite pulse with steady glow to prevent flickering */
+        /* ==================== Mobile Theme-Specific Player Dot Effects ==================== */
+        /* Replaces infinite pulse with GPU-accelerated pseudo-element breathing — no box-shadow animation */
         html.touch-device .mono-ring-dot.current {
             animation: none;
-            transform: translate(-50%, -50%) scale(1.3);
-            box-shadow: 0 0 10px currentColor, 0 0 4px #fff;
+            transform: translate(-50%, -50%) scale(1.25);
+            will-change: transform;
         }
+        html.touch-device .mono-ring-dot.current::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        /* Bunny: heartbeat — double-pulse warmth */
+        html.touch-device[data-theme="bunny"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(255,107,157,.35) 0%, transparent 70%);
+            animation: mHeartbeat 1.8s ease-in-out infinite;
+        }
+        @keyframes mHeartbeat { 0%,100%{transform:scale(1);opacity:.3} 15%{transform:scale(1.4);opacity:.6} 30%{transform:scale(1.15);opacity:.4} 45%{transform:scale(1.5);opacity:.65} 60%{transform:scale(1.2);opacity:.35} }
+        /* Forest: leaf sway — gentle rotation breath */
+        html.touch-device[data-theme="forest"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(76,175,80,.3) 0%, transparent 70%);
+            animation: mLeafSway 3s ease-in-out infinite;
+        }
+        @keyframes mLeafSway { 0%,100%{transform:scale(1) rotate(0);opacity:.25} 50%{transform:scale(1.35) rotate(8deg);opacity:.5} }
+        /* Ocean: wave ripple — expanding ring */
+        html.touch-device[data-theme="ocean"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(14,165,233,.3) 0%, transparent 70%);
+            animation: mWaveRipple 2.5s ease-out infinite;
+        }
+        @keyframes mWaveRipple { 0%{transform:scale(0.8);opacity:.5} 100%{transform:scale(2.2);opacity:0} }
+        /* Starlight: star twinkle — irregular opacity */
+        html.touch-device[data-theme="starlight"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(167,139,250,.35) 0%, transparent 70%);
+            animation: mStarTwinkle 2s ease-in-out infinite;
+        }
+        @keyframes mStarTwinkle { 0%,100%{transform:scale(1);opacity:.2} 20%{transform:scale(1.3);opacity:.6} 40%{transform:scale(1.1);opacity:.3} 60%{transform:scale(1.4);opacity:.55} 80%{transform:scale(1.15);opacity:.25} }
+        /* Cyber: digital glitch — quick jitter */
+        html.touch-device[data-theme="cyber"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(251,191,36,.3) 0%, transparent 70%);
+            animation: mGlitch 1.5s steps(4) infinite;
+        }
+        @keyframes mGlitch { 0%{transform:scale(1) translateX(0);opacity:.3} 25%{transform:scale(1.3) translateX(2px);opacity:.55} 50%{transform:scale(1.1) translateX(-1px);opacity:.35} 75%{transform:scale(1.35) translateX(1px);opacity:.5} 100%{transform:scale(1) translateX(0);opacity:.3} }
+        /* Sunset: flame flicker — irregular scale */
+        html.touch-device[data-theme="sunset"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(255,107,53,.35) 0%, transparent 70%);
+            animation: mFlicker 1.6s ease-in-out infinite;
+        }
+        @keyframes mFlicker { 0%,100%{transform:scale(1) translateY(0);opacity:.3} 25%{transform:scale(1.3) translateY(-2px);opacity:.55} 50%{transform:scale(1.15) translateY(0);opacity:.4} 75%{transform:scale(1.4) translateY(-1px);opacity:.5} }
+        /* Mint: bubble pop — bouncy scale */
+        html.touch-device[data-theme="mint"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(38,166,154,.3) 0%, transparent 70%);
+            animation: mBubblePop 2.2s ease-in-out infinite;
+        }
+        @keyframes mBubblePop { 0%,100%{transform:scale(0.9);opacity:.3} 50%{transform:scale(1.5);opacity:.55} }
+        /* Rose: petal flutter — rotation + scale */
+        html.touch-device[data-theme="rose"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(233,30,99,.3) 0%, transparent 70%);
+            animation: mPetalFlutter 2.8s ease-in-out infinite;
+        }
+        @keyframes mPetalFlutter { 0%,100%{transform:scale(1) rotate(-5deg);opacity:.25} 50%{transform:scale(1.4) rotate(5deg);opacity:.5} }
+        /* Aurora: aurora shimmer — slow hue breathing */
+        html.touch-device[data-theme="aurora"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(6,255,165,.3) 0%, transparent 70%);
+            animation: mAuroraBreath 3s ease-in-out infinite;
+        }
+        @keyframes mAuroraBreath { 0%,100%{transform:scale(1);opacity:.2} 33%{transform:scale(1.3);opacity:.5} 66%{transform:scale(1.45);opacity:.4} }
+        /* Galaxy: cosmic pulse — slow expansion */
+        html.touch-device[data-theme="galaxy"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(192,132,252,.3) 0%, transparent 70%);
+            animation: mCosmicPulse 2.6s ease-out infinite;
+        }
+        @keyframes mCosmicPulse { 0%{transform:scale(0.9);opacity:.5} 100%{transform:scale(2);opacity:0} }
+        /* Candy: candy sparkle — quick twinkle */
+        html.touch-device[data-theme="candy"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(255,64,129,.3) 0%, transparent 70%);
+            animation: mCandySparkle 1.4s ease-in-out infinite;
+        }
+        @keyframes mCandySparkle { 0%,100%{transform:scale(1);opacity:.25} 30%{transform:scale(1.3);opacity:.6} 60%{transform:scale(1.1);opacity:.3} }
+        /* Matrix: digital rain — quick opacity steps */
+        html.touch-device[data-theme="matrix"] .mono-ring-dot.current::after {
+            background: radial-gradient(circle, rgba(0,255,65,.3) 0%, transparent 70%);
+            animation: mDigitalRain 1.2s steps(3) infinite;
+        }
+        @keyframes mDigitalRain { 0%{transform:scale(1);opacity:.3} 33%{transform:scale(1.3);opacity:.6} 66%{transform:scale(1.1);opacity:.35} 100%{transform:scale(1);opacity:.3} }
         .mono-ring-region {
             position: absolute; border-radius: 50%; opacity: 0.15;
         }
@@ -465,12 +546,86 @@
         .mono-tile-cell:hover { border-color: var(--accent); box-shadow: 0 2px 8px var(--shadow); transform: translateY(-2px); z-index: 10; }
         .mono-tile-cell.current { border-color: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb),.4); animation: tilePulse 1s ease infinite; }
         @keyframes tilePulse { 50% { box-shadow: 0 0 14px rgba(var(--accent-rgb),.5); } }
-        /* Mobile: replace infinite tile pulse with steady glow to prevent flickering */
+        /* ==================== Mobile Theme-Specific Tile Effects ==================== */
+        /* Replaces infinite box-shadow pulse with pseudo-element glow — GPU-accelerated transform/opacity only */
         html.touch-device .mono-tile-cell.current {
             animation: none;
-            box-shadow: 0 0 12px rgba(var(--accent-rgb),.45);
             border-width: 2px;
+            border-color: var(--accent);
+            position: relative;
         }
+        html.touch-device .mono-tile-cell.current::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 0;
+            will-change: transform, opacity;
+        }
+        /* Bunny: soft pink heartbeat glow */
+        html.touch-device[data-theme="bunny"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(255,107,157,.18) 0%, transparent 80%);
+            animation: mTileBreath 2s ease-in-out infinite;
+        }
+        /* Forest: green leaf sway glow */
+        html.touch-device[data-theme="forest"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(76,175,80,.15) 0%, transparent 80%);
+            animation: mTileBreath 2.5s ease-in-out infinite;
+        }
+        /* Ocean: blue wave glow */
+        html.touch-device[data-theme="ocean"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(14,165,233,.15) 0%, transparent 80%);
+            animation: mTileBreath 2.2s ease-in-out infinite;
+        }
+        /* Starlight: purple magic glow */
+        html.touch-device[data-theme="starlight"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(167,139,250,.2) 0%, transparent 80%);
+            animation: mTileBreath 1.8s ease-in-out infinite;
+        }
+        /* Cyber: gold glitch glow */
+        html.touch-device[data-theme="cyber"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(251,191,36,.18) 0%, transparent 80%);
+            animation: mTileGlitch 1.4s steps(3) infinite;
+        }
+        /* Sunset: orange flame glow */
+        html.touch-device[data-theme="sunset"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(255,107,53,.18) 0%, transparent 80%);
+            animation: mTileBreath 1.6s ease-in-out infinite;
+        }
+        /* Mint: teal bubble glow */
+        html.touch-device[data-theme="mint"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(38,166,154,.15) 0%, transparent 80%);
+            animation: mTileBreath 2.4s ease-in-out infinite;
+        }
+        /* Rose: pink petal glow */
+        html.touch-device[data-theme="rose"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(233,30,99,.15) 0%, transparent 80%);
+            animation: mTileBreath 2.6s ease-in-out infinite;
+        }
+        /* Aurora: green aurora glow */
+        html.touch-device[data-theme="aurora"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(6,255,165,.18) 0%, transparent 80%);
+            animation: mTileBreath 3s ease-in-out infinite;
+        }
+        /* Galaxy: purple cosmic glow */
+        html.touch-device[data-theme="galaxy"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(192,132,252,.18) 0%, transparent 80%);
+            animation: mTileBreath 2.8s ease-in-out infinite;
+        }
+        /* Candy: pink sparkle glow */
+        html.touch-device[data-theme="candy"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(255,64,129,.18) 0%, transparent 80%);
+            animation: mTileBreath 1.5s ease-in-out infinite;
+        }
+        /* Matrix: green digital glow */
+        html.touch-device[data-theme="matrix"] .mono-tile-cell.current::after {
+            background: radial-gradient(ellipse at center, rgba(0,255,65,.15) 0%, transparent 80%);
+            animation: mTileGlitch 1.2s steps(3) infinite;
+        }
+        @keyframes mTileBreath { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(1.02);opacity:.7} }
+        @keyframes mTileGlitch { 0%{transform:scale(1);opacity:.4} 33%{transform:scale(1.03);opacity:.7} 66%{transform:scale(1.01);opacity:.5} 100%{transform:scale(1);opacity:.4} }
+        /* Mobile highlighted tile — steady warn glow */
         html.touch-device .mono-tile-cell.highlighted {
             animation: none;
             box-shadow: 0 0 12px rgba(255,152,0,.5);
@@ -478,10 +633,10 @@
         .mono-tile-cell.owned { border-color: var(--good); }
         .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
         .mono-tile-cell.highlighted { border-color: var(--warn); box-shadow: 0 0 12px rgba(255,152,0,.5); animation: tilePulse 0.8s ease 3; }
-        .mono-tile-cell .tile-ic { font-size: clamp(1rem, 1.2vw + 0.7rem, 1.5rem); line-height: 1; margin-top: 2px; }
-        .mono-tile-cell .tile-nm { font-size: clamp(.58rem, 0.55vw + 0.45rem, 0.78rem); color: var(--text2); margin-top: 2px; line-height: 1.1; overflow: hidden; max-height: 2em; }
-        .mono-tile-cell .tile-cost { font-size: clamp(.52rem, 0.5vw + 0.4rem, 0.72rem); color: var(--accent); font-weight: 700; }
-        .mono-tile-cell .tile-level { font-size: clamp(.46rem, 0.45vw + 0.35rem, 0.62rem); color: var(--good); }
+        .mono-tile-cell .tile-ic { font-size: clamp(1rem, 1.2vw + 0.7rem, 1.5rem); line-height: 1; margin-top: 2px; position: relative; z-index: 1; }
+        .mono-tile-cell .tile-nm { font-size: clamp(.58rem, 0.55vw + 0.45rem, 0.78rem); color: var(--text2); margin-top: 2px; line-height: 1.1; overflow: hidden; max-height: 2em; position: relative; z-index: 1; }
+        .mono-tile-cell .tile-cost { font-size: clamp(.52rem, 0.5vw + 0.4rem, 0.72rem); color: var(--accent); font-weight: 700; position: relative; z-index: 1; }
+        .mono-tile-cell .tile-level { font-size: clamp(.46rem, 0.45vw + 0.35rem, 0.62rem); color: var(--good); position: relative; z-index: 1; }
         .mono-tile-cell .tile-owner { position: absolute; top: 3px; right: 3px; width: 7px; height: 7px; border-radius: 50%; }
         .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: clamp(.6rem, 0.55vw + 0.45rem, 0.78rem); }
         .tile-tooltip {
@@ -944,13 +1099,12 @@
             }
         }
 
-        /* ==================== Mobile-Exclusive Touch Bloom Effect ==================== */
+        /* ==================== Mobile-Exclusive Touch Bloom — Theme-Specific ==================== */
         /* Independent from PC trail system — lightweight CSS-only bloom at touch points */
         html.touch-device .touch-bloom {
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            border-radius: 50%;
             opacity: 0;
             animation: touchBloom 0.6s ease-out forwards;
             will-change: transform, opacity;
@@ -961,6 +1115,75 @@
             40%  { opacity: 0.35; }
             100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
         }
+        /* Theme-specific bloom shapes — each theme gets a unique visual */
+        html.touch-device[data-theme="bunny"] .touch-bloom {
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        html.touch-device[data-theme="forest"] .touch-bloom {
+            border-radius: 50% 0 50% 50% / 50% 0 50% 50%;
+        }
+        html.touch-device[data-theme="ocean"] .touch-bloom {
+            border-radius: 50%;
+            border-style: double;
+            border-width: 3px;
+        }
+        html.touch-device[data-theme="starlight"] .touch-bloom {
+            border-radius: 30%;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            border: none !important;
+        }
+        html.touch-device[data-theme="cyber"] .touch-bloom {
+            border-radius: 2px;
+        }
+        html.touch-device[data-theme="sunset"] .touch-bloom {
+            border-radius: 50%;
+        }
+        html.touch-device[data-theme="mint"] .touch-bloom {
+            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+        }
+        html.touch-device[data-theme="rose"] .touch-bloom {
+            border-radius: 50% 0 50% 50%;
+        }
+        html.touch-device[data-theme="aurora"] .touch-bloom {
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+        html.touch-device[data-theme="galaxy"] .touch-bloom {
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+        html.touch-device[data-theme="candy"] .touch-bloom {
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        html.touch-device[data-theme="matrix"] .touch-bloom {
+            border-radius: 0;
+        }
+        /* ==================== Mobile Player Move Animation ==================== */
+        /* One-shot bounce when a player moves — GPU-accelerated, no infinite loops */
+        html.touch-device .mono-ring-dot.player-moved {
+            animation: mPlayerBounce 0.5s cubic-bezier(.34,1.56,.64,1) !important;
+        }
+        @keyframes mPlayerBounce {
+            0%   { transform: translate(-50%, -50%) scale(0.5); }
+            50%  { transform: translate(-50%, -50%) scale(1.6); }
+            100% { transform: translate(-50%, -50%) scale(1.25); }
+        }
+        /* ==================== Mobile Player Card Active Effect ==================== */
+        /* Theme-specific active player card glow using pseudo-element */
+        html.touch-device .mono-player.active {
+            position: relative;
+        }
+        html.touch-device .mono-player.active::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-sm, 8px);
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(var(--accent-rgb),.12), transparent);
+            animation: mPlayerCardGlow 2s ease-in-out infinite;
+            will-change: opacity;
+        }
+        @keyframes mPlayerCardGlow { 0%,100%{opacity:.3} 50%{opacity:.6} }
         /* Mobile: softer trail canvas opacity for gentler visual */
         html.touch-device #trail-canvas { opacity: 0.7; }
         /* Mobile: add subtle glow to active buttons instead of relying on trail */
@@ -978,6 +1201,16 @@
         html.touch-device .mono-tile-cell:active {
             transform: scale(0.97);
             transition: transform .08s;
+        }
+        /* Mobile: dice roll animation — theme-adaptive shake */
+        html.touch-device .mono-dice-num.rolling {
+            animation: mDiceShake 0.4s ease-in-out !important;
+        }
+        @keyframes mDiceShake {
+            0%,100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-3px) rotate(-5deg); }
+            50% { transform: translateX(3px) rotate(5deg); }
+            75% { transform: translateX(-2px) rotate(-3deg); }
         }
     </style>
     <script>
@@ -1040,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9310</div>
+                <div class="subtitle">v7.7.2.9311</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1322,7 +1555,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9310</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9311</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1388,7 +1621,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9310',
+        VERSION: 'v7.7.2.9311',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1536,7 +1769,7 @@
             if(!p.stockHoldings) return '股票系统未初始化';
             const si=Math.floor(Math.random()*STOCK_TYPES.length);
             const h=p.stockHoldings[si];const price=mono.stockPrices[si];
-            h.avgCost=h.shares>0?(h.avgCost*h.shares+price*5)/(h.shares+5):price;
+            h.avgCost=h.shares>0?Math.round((h.avgCost*h.shares+price*5)/(h.shares+5)):price;
             h.shares+=5;h.isShort=false;
             return `获得 5 股 ${STOCK_TYPES[si].nm}`;
         }},
@@ -2230,7 +2463,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9310 已启动', 'info');
+        logEvent('兔可可王国 v7.7.2.9311 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -3653,6 +3886,7 @@
             const y = cy + radius * Math.sin(angle);
             const dot = document.createElement('div');
             dot.className = 'mono-ring-dot' + (i === mono.currentPlayer ? ' current' : '');
+            dot.setAttribute('data-player', i);
             dot.style.background = p.color;
             dot.style.color = p.color;
             dot.style.left = x + 'px';
@@ -4332,6 +4566,7 @@
         mono.rolling = true;
         mono.started = true;
         renderMonopoly();
+        if (typeof _triggerMobileDiceAnim === 'function') _triggerMobileDiceAnim();
 
         let rolls = 0;
         const interval = setInterval(() => {
@@ -4432,6 +4667,8 @@
         mono.pendingAction = 'triggerTile';
         saveMonopoly();
         renderMonopoly();
+        // Delay animation trigger to ensure DOM is updated after RAF render
+        setTimeout(() => { if (typeof _triggerMobilePlayerMoveAnim === 'function') _triggerMobilePlayerMoveAnim(playerIdx); }, 20);
         setTimeout(() => { try { triggerTile(playerIdx); } catch(e) { console.error('[triggerTile Error]', e); if (mono.currentPlayer !== 0) { _clearWatchdog(); nextTurn(); } } }, 400);
     }
 
@@ -4695,6 +4932,15 @@
                     p.vehicle = null;
                     p.vehicles = []; // Clear garage on bankruptcy
                     monoLog(`${p.ic} 载具折价变卖获得 💰${refund}`, 'info');
+                } else if (p.vehicles && p.vehicles.length > 0) {
+                    // Clear garage even if no active vehicle
+                    let totalRefund = 0;
+                    p.vehicles.forEach(v => {
+                        totalRefund += Math.floor((VEHICLE_POOL.find(vp => vp.id === v.id) || {price:0}).price * 0.3);
+                    });
+                    p.money += totalRefund;
+                    p.vehicles = [];
+                    if (totalRefund > 0) monoLog(`${p.ic} 车库载具折价变卖获得 💰${totalRefund}`, 'info');
                 }
                 // Release stocks at current market price (multi-stock)
                 if (p.stockHoldings) {
@@ -8093,7 +8339,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9310 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.7.2.9311 | 环形岛屿 · AI学习系统 · 事件记录系统
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9891,10 +10137,30 @@
         });
     })();
 
-    /* ==================== Mobile Touch Bloom — Independent from PC Trail ==================== */
+    /* ==================== Mobile Touch Bloom — Theme-Specific, Independent from PC Trail ==================== */
     // Lightweight CSS-only bloom effect at touch points, no Canvas/RAF overhead
+    // Each theme gets a unique bloom emoji + color for visual identity
     let _bloomColorCache = null;
     let _bloomColorTheme = null;
+    let _bloomEmojiCache = null;
+    let _bloomEmojiTheme = null;
+
+    // Theme → bloom emoji mapping (matches signature particle aesthetic)
+    const MOBILE_BLOOM_EMOJI = {
+        bunny:    ['🐾', '💕', '🐰'],
+        forest:   ['🍂', '🌰', '🌿'],
+        ocean:    ['🫧', '🐟', '🌊'],
+        starlight:['✨', '🌙', '⭐'],
+        cyber:    ['⚡', '🔷', '💫'],
+        sunset:   ['☀️', '🔥', '🌅'],
+        mint:     ['🍃', '🫧', '💧'],
+        rose:     ['🦋', '🌸', '🌷'],
+        aurora:   ['❄️', '💫', '🌌'],
+        galaxy:   ['⭐', '🌠', '💫'],
+        candy:    ['🍭', '🍬', '🌟'],
+        matrix:   ['0', '1', '💚'],
+    };
+
     function _getBloomColor() {
         const theme = document.documentElement.getAttribute('data-theme') || '';
         if (_bloomColorCache && _bloomColorTheme === theme) return _bloomColorCache;
@@ -9903,7 +10169,17 @@
         _bloomColorCache = (cs.getPropertyValue('--accent') || '').trim() || '#FF6B9D';
         return _bloomColorCache;
     }
-    function _invalidateBloomCache() { _bloomColorCache = null; _bloomColorTheme = null; }
+
+    function _getBloomEmoji() {
+        const theme = document.documentElement.getAttribute('data-theme') || 'bunny';
+        if (_bloomEmojiCache && _bloomEmojiTheme === theme) return _bloomEmojiCache;
+        _bloomEmojiTheme = theme;
+        const pool = MOBILE_BLOOM_EMOJI[theme] || MOBILE_BLOOM_EMOJI.bunny;
+        _bloomEmojiCache = pool;
+        return pool;
+    }
+
+    function _invalidateBloomCache() { _bloomColorCache = null; _bloomColorTheme = null; _bloomEmojiCache = null; _bloomEmojiTheme = null; }
 
     function initMobileTouchBloom() {
         if (!_isMobile) return; // Only on touch devices
@@ -9916,6 +10192,9 @@
             if (now - _lastBloomTime < BLOOM_THROTTLE_MS) return;
             _lastBloomTime = now;
             const color = _getBloomColor();
+            const emojiPool = _getBloomEmoji();
+
+            // Main bloom circle
             const bloom = document.createElement('div');
             bloom.className = 'touch-bloom';
             bloom.style.left = x + 'px';
@@ -9925,7 +10204,24 @@
             bloom.style.background = `radial-gradient(circle, ${color}40 0%, ${color}10 50%, transparent 70%)`;
             bloom.style.border = `1.5px solid ${color}60`;
             document.body.appendChild(bloom);
-            // Auto-remove after animation
+
+            // Theme-specific emoji particle (20% chance — lightweight)
+            if (Math.random() < 0.2 && !_perfConfig._lowPerfMode) {
+                const emoji = document.createElement('div');
+                emoji.style.cssText = `position:fixed;left:${x}px;top:${y}px;pointer-events:none;z-index:9999;font-size:${Math.random()*8+12}px;opacity:0;transform:translate(-50%,-50%);will-change:transform,opacity;`;
+                emoji.textContent = emojiPool[Math.floor(Math.random() * emojiPool.length)];
+                document.body.appendChild(emoji);
+                const dx = (Math.random() - 0.5) * 60;
+                const dy = -Math.random() * 40 - 10;
+                requestAnimationFrame(() => {
+                    emoji.style.transition = 'transform .6s ease-out, opacity .6s ease-out';
+                    emoji.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.5) rotate(${(Math.random()-.5)*360}deg)`;
+                    emoji.style.opacity = '0';
+                });
+                setTimeout(() => { if (emoji.parentNode) emoji.parentNode.removeChild(emoji); }, 700);
+            }
+
+            // Auto-remove bloom after animation
             setTimeout(() => { if (bloom.parentNode) bloom.parentNode.removeChild(bloom); }, 650);
         }
 
@@ -9944,6 +10240,30 @@
             if (e.target.closest('#egg-fab') || e.target.closest('#egg-whiteout')) return;
             spawnBloom(e.clientX, e.clientY);
         }, { passive: true });
+    }
+
+    /* ==================== Mobile Player Move Animation Trigger ==================== */
+    // Called after renderMonopoly to add one-shot bounce on the current player's dot
+    function _triggerMobilePlayerMoveAnim(playerIdx) {
+        if (!_isMobile || _perfConfig._lowPerfMode) return;
+        const dot = document.querySelector(`.mono-ring-dot[data-player="${playerIdx}"]`);
+        if (!dot) return;
+        dot.classList.remove('player-moved');
+        // Force reflow to restart animation
+        void dot.offsetWidth;
+        dot.classList.add('player-moved');
+        setTimeout(() => dot.classList.remove('player-moved'), 600);
+    }
+
+    /* ==================== Mobile Dice Roll Animation Trigger ==================== */
+    function _triggerMobileDiceAnim() {
+        if (!_isMobile || _perfConfig._lowPerfMode) return;
+        const diceEl = document.querySelector('.mono-dice-num');
+        if (!diceEl) return;
+        diceEl.classList.remove('rolling');
+        void diceEl.offsetWidth;
+        diceEl.classList.add('rolling');
+        setTimeout(() => diceEl.classList.remove('rolling'), 500);
     }
 
     /* ==================== Mouse Trail — Gorgeous Edition (v5.2华丽版 + v6.0像素兔子) ==================== */
@@ -11195,6 +11515,14 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.7.2.9311', title:'移动端主题特效系统 & Bug修复', items:[
+            '📱 移动端主题特效系统：12套主题各自独立的玩家圆点呼吸动画——兔子心跳/森林摇曳/海洋涟漪/星光闪烁/赛博故障/夕阳火焰/薄荷泡泡/玫瑰花瓣/极光呼吸/银河脉冲/糖果闪烁/矩阵数字雨，全部使用GPU加速的transform/opacity动画，零box-shadow重绘',
+            '🗺️ 移动端格子主题光效：当前格子用伪元素::after径向渐变呼吸光效替代box-shadow脉冲，每套主题独立配色和动画节奏，格子内容position:relative+z-index:1确保文字始终可见',
+            '🌸 移动端触控Bloom主题化：12套主题各自独特的bloom形状——兔子心形/森林叶形/海洋双环/星光星形(clip-path)/赛博方形/夕阳圆形/薄荷水滴/玫瑰花瓣/极光模糊/银河光晕/糖果心形/矩阵方形，20%概率释放主题专属emoji粒子',
+            '🎲 移动端玩家移动动画：玩家移动时触发一次性弹性bounce(cubic-bezier弹性曲线)，骰子滚动时触发shake动画，活跃玩家卡片渐变光效呼吸——全部GPU加速，低性能模式自动禁用',
+            '🔧 avgCost精度修复：内幕消息卡获得5股时avgCost未取整导致小数累积，已添加Math.round()',
+            '🔧 破产车库清理修复：玩家有车库载具但无激活载具时破产不清理车库的bug已修复，现在折价变卖所有车库载具',
+        ]},
         { ver:'v7.7.2.9310', title:'读档迁移 & 移动端闪烁修复 & 触控Bloom特效 & 设置迁移', items:[
             '📂 读档兼容修复：存档tile数与当前地图不匹配时自动迁移重建地图，保留玩家数据/地产所有权，不再直接拒绝读取',
             '✨ 移动端闪烁修复：触摸设备用稳定高亮替代无限脉冲动画——玩家圆点用scale(1.3)+steady glow、格子用固定box-shadow，消除地图闪烁',
