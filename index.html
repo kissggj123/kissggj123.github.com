@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.7.2.9312 -->
+    <!-- VERSION: v7.8.0.9320 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1273,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.7.2.9312</div>
+                <div class="subtitle">v7.8.0.9320</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1555,7 +1555,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.7.2.9312</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.0.9320</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1621,7 +1621,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.7.2.9312',
+        VERSION: 'v7.8.0.9320',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2570,7 +2570,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.7.2.9312 已启动', 'info');
+        logEvent('兔可可王国 v7.8.0.9320 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -3208,16 +3208,48 @@
         document.getElementById('modal-overlay').classList.add('show');
     }
 
-    /* Dynamic rent calculation using economy state */
+    /* Dynamic rent calculation with standard Monopoly set bonuses, level escalation, & mortgage check */
     function calculateRent(tile, prop) {
-        const base = Math.floor(tile.price * (0.12 + (prop.level || 0) * 0.02));
+        if (!tile || !prop || prop.mortgaged || prop.owner < 0) return 0;
+        const owner = prop.owner;
+        const regionId = tile.region;
+
+        // Level multipliers: Lv0=1.0x, Lv1=1.8x, Lv2=3.2x, Lv3=5.5x, Lv4=8.5x, Lv5=13.0x
+        const levelMultipliers = [1.0, 1.8, 3.2, 5.5, 8.5, 13.0];
+        const lvl = Math.min(5, Math.max(0, prop.level || 0));
+        const levelMult = levelMultipliers[lvl];
+
+        const baseRent = Math.floor((tile.price || 1000) * 0.12 * levelMult);
+
+        // Region monopoly calculation
+        const regionProperties = mono.tiles.filter(t => t.type === 'property' && t.region === regionId);
+        const ownedInRegion = regionProperties.filter(t => mono.properties[t.id] && mono.properties[t.id].owner === owner && !mono.properties[t.id].mortgaged).length;
+        const totalInRegion = regionProperties.length;
+
+        let setMultiplier = 1.0;
+        if (totalInRegion > 0 && ownedInRegion === totalInRegion) {
+            // Full Set Monopoly! Double base rent for Lv0, +50% for improved
+            setMultiplier = lvl === 0 ? 2.0 : 1.5;
+        } else if (ownedInRegion > 1) {
+            // Partial region set bonus (+15% per extra owned property in region)
+            setMultiplier = 1.0 + (ownedInRegion - 1) * 0.15;
+        }
+
         const economy = mono.economy || { inflation: 0.03, rentMultiplier: 1 };
-        const inflationMultiplier = 1 + economy.inflation;
-        const randomFactor = 0.9 + Math.random() * 0.2;
-        const ownerProps = mono.tiles.filter((t, i) => t.type === 'property' && mono.properties[i].owner === prop.owner).length;
-        const monopolyDiscount = Math.max(0.5, 1 - Math.min(ownerProps, 50) * 0.01); // Clamp: max 50% discount, never negative
-        return Math.max(0, Math.floor(base * inflationMultiplier * randomFactor * monopolyDiscount * economy.rentMultiplier));
+        const inflationMultiplier = 1 + (economy.inflation || 0.03);
+        const rentMultiplier = economy.rentMultiplier || 1;
+
+        // Player active buffs
+        const ownerPlayer = mono.players[owner];
+        let buffMultiplier = 1.0;
+        if (ownerPlayer) {
+            if (ownerPlayer.rentDouble > 0) buffMultiplier *= 2.0;
+            if (ownerPlayer.hologramTurns > 0) buffMultiplier *= 1.5;
+        }
+
+        return Math.max(0, Math.floor(baseRent * setMultiplier * inflationMultiplier * rentMultiplier * buffMultiplier));
     }
+
 
     function generateAllTiles() {
         const tiles = [];
@@ -4893,17 +4925,85 @@
         }
     }
 
+    function showJailOptionsModal() {
+        const p = mono.players[0];
+        const canPay = p.money >= 500;
+        const hasCard = p.jailFree;
+
+        showModal(`<div class="modal-title">🔒 处于监禁中</div>
+            <div style="text-align:center;padding:.5rem 0;">
+                <div style="font-size:2.5rem;">⚖️</div>
+                <div style="font-weight:700;">请选择本回合出狱方式</div>
+                <div style="font-size:.75rem;color:var(--text2);margin-top:.2rem;">剩余监禁回合：${p.jailTurns} | 你的资金：💰${p.money}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem;">
+                <button class="btn btn-primary" onclick="payBailAndRoll()" ${!canPay ? 'disabled' : ''}>💵 支付保释金 (💰500)</button>
+                <button class="btn btn-primary" onclick="useJailCardAndRoll()" ${!hasCard ? 'disabled' : ''}>🔑 使用出狱卡</button>
+                <button class="btn btn-secondary" onclick="tryDoubleEscape()">🎲 尝试掷双数越狱 (不消耗金币)</button>
+                <button class="btn btn-secondary" onclick="stayInJailPass()">⏳ 放弃本回合 (等待自然解禁)</button>
+            </div>`);
+    }
+
+    window.payBailAndRoll = function() {
+        const p = mono.players[0];
+        if (p.money < 500) return;
+        p.money -= 500;
+        p.jailTurns = 0;
+        monoLog(`💵 支付 500💰 保释金成功出狱！`, 'success');
+        closeModal();
+        rollDice();
+    };
+
+    window.useJailCardAndRoll = function() {
+        const p = mono.players[0];
+        if (!p.jailFree) return;
+        p.jailFree = false;
+        p.jailTurns = 0;
+        monoLog(`🔑 使用出狱卡成功出狱！`, 'success');
+        closeModal();
+        rollDice();
+    };
+
+    window.tryDoubleEscape = function() {
+        const p = mono.players[0];
+        closeModal();
+        mono.rolling = true;
+        renderMonopoly();
+        mono.dice = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
+        if (mono.dice[0] === mono.dice[1]) {
+            p.jailTurns = 0;
+            monoLog(`🎲 成功掷出双数 [${mono.dice[0]},${mono.dice[1]}]！免费出狱！`, 'success');
+            showToast('🎲 掷出双数！免费出狱！', 'success');
+            const total = mono.dice[0] + mono.dice[1];
+            movePlayer(0, total);
+        } else {
+            p.jailTurns--;
+            monoLog(`🔒 未能掷出双数 [${mono.dice[0]},${mono.dice[1]}]，越狱失败，暂停一回合`, 'error');
+            showToast('越狱失败！未掷出双数', 'error');
+            mono.rolling = false;
+            saveMonopoly();
+            renderMonopoly();
+            setTimeout(() => nextTurn(), 600);
+        }
+    };
+
+    window.stayInJailPass = function() {
+        const p = mono.players[0];
+        p.jailTurns--;
+        monoLog(`🔒 ${p.nm} 在监狱中，暂停一回合（剩${p.jailTurns}回合）`, 'error');
+        closeModal();
+        saveMonopoly();
+        nextTurn();
+    };
+
     /* ==================== Monopoly: Turn Logic ==================== */
     function rollDice() {
         if (mono.rolling || mono.currentPlayer !== 0) return;
         const p = mono.players[0];
         if (p.bankrupt) { nextTurn(); return; }
-        // Jail check
+        // Jail check: present choice to pay bail, use card, or try rolling doubles
         if (p.jailTurns > 0) {
-            p.jailTurns--;
-            monoLog(`🔒 ${p.nm} 在监狱中，暂停一回合（剩${p.jailTurns}回合）`, 'error');
-            saveMonopoly();
-            nextTurn();
+            showJailOptionsModal();
             return;
         }
         // Banned check (seal curse)
@@ -5319,22 +5419,89 @@
         if (!checkGameOver()) nextTurn();
     }
 
+    function autoLiquidateAssets(p) {
+        const pi = mono.players.indexOf(p);
+        if (pi < 0) return;
+        const economy = mono.economy || { mortgageRatio: 0.5 };
+        const mortgageRatio = economy.mortgageRatio || 0.5;
+
+        // 1. Sell stock holdings
+        if (p.stockHoldings) {
+            for (let si = 0; si < STOCK_TYPES.length; si++) {
+                const h = p.stockHoldings[si];
+                if (h.shares > 0) {
+                    const price = mono.stockPrices ? mono.stockPrices[si] : 100;
+                    const lev = h.leverage || 1;
+                    const marginReturn = Math.ceil(h.avgCost * h.shares / lev);
+                    const pnl = Math.round(h.isShort ? (h.avgCost - price) * h.shares * lev : (price - h.avgCost) * h.shares * lev);
+                    const total = Math.max(0, marginReturn + pnl);
+                    p.money += total;
+                    h.shares = 0; h.avgCost = 0;
+                    monoLog(`📈 ${p.ic} 变卖 ${STOCK_TYPES[si].nm} 筹集 💰${total}`, 'warn');
+                    if (p.money >= 0) return;
+                }
+            }
+        }
+
+        // 2. Sell property levels (houses/hotels)
+        for (let i = 0; i < mono.tiles.length; i++) {
+            if (mono.tiles[i].type === 'property' && mono.properties[i] && mono.properties[i].owner === pi && mono.properties[i].level > 0) {
+                while (mono.properties[i].level > 0 && p.money < 0) {
+                    mono.properties[i].level--;
+                    const refund = Math.floor(mono.tiles[i].price * 0.15);
+                    p.money += refund;
+                    monoLog(`🏚️ ${p.ic} 拆卸 ${mono.tiles[i].nm} 房屋筹集 💰${refund}`, 'warn');
+                    if (p.money >= 0) return;
+                }
+            }
+        }
+
+        // 3. Mortgage properties
+        for (let i = 0; i < mono.tiles.length; i++) {
+            if (mono.tiles[i].type === 'property' && mono.properties[i] && mono.properties[i].owner === pi && !mono.properties[i].mortgaged) {
+                mono.properties[i].mortgaged = true;
+                const val = Math.floor(mono.tiles[i].price * mortgageRatio);
+                p.money += val;
+                monoLog(`🔒 ${p.ic} 抵押 ${mono.tiles[i].nm} 筹集 💰${val}`, 'warn');
+                if (p.money >= 0) return;
+            }
+        }
+
+        // 4. Sell vehicle garage
+        if (p.vehicle) {
+            const refund = Math.floor((VEHICLE_POOL.find(v => v.id === p.vehicle.id) || {price:0}).price * 0.3);
+            p.money += refund;
+            p.vehicle = null;
+            monoLog(`🚗 ${p.ic} 出售载具筹集 💰${refund}`, 'warn');
+            if (p.money >= 0) return;
+        }
+    }
+
     function checkBankruptcy(p) {
-        if (p.money < 0 || (p.money === 0 && getPlayerPropertyValue(p) === 0 && (!p.vehicle) && (!p.vehicles || p.vehicles.length === 0) && (!p.stockHoldings || p.stockHoldings.every(h => h.shares === 0)) && p.loans.length === 0)) {
-            // Try to take emergency loan
-            const propValue = getPlayerPropertyValue(p);
-            const economy = mono.economy || calculateEconomyState();
-            if (propValue > Math.abs(p.money) && p.credit > 30) {
-                const loanAmount = Math.abs(p.money) + 1000;
-                p.money += loanAmount;
-                p.loans.push({amount: loanAmount, remaining: 5, rate: economy.loanRateBase + 0.02 + (100 - p.credit) * 0.001, type: 'mortgage'});
-                p.credit = Math.max(10, p.credit - 20);
-                monoLog(`${p.ic} 紧急贷款 ${loanAmount}💰，信用下降`, 'warn');
-            } else {
+        if (p.money < 0) {
+            // First attempt auto-liquidation of assets (stocks, buildings, mortgage properties, vehicles)
+            autoLiquidateAssets(p);
+
+            // If still negative, try emergency bank loan
+            if (p.money < 0) {
+                const propValue = getPlayerPropertyValue(p);
+                const economy = mono.economy || calculateEconomyState();
+                if (propValue > 0 && p.credit > 30) {
+                    const loanAmount = Math.abs(p.money) + 1000;
+                    p.money += loanAmount;
+                    p.loans.push({amount: loanAmount, remaining: 5, rate: economy.loanRateBase + 0.02 + (100 - p.credit) * 0.001, type: 'mortgage'});
+                    p.credit = Math.max(10, p.credit - 20);
+                    monoLog(`${p.ic} 紧急贷款 ${loanAmount}💰，信用下降`, 'warn');
+                }
+            }
+
+            // If money is STILL negative after all liquidations & emergency loans, declare bankruptcy!
+            if (p.money < 0) {
                 p.money = 0;
                 p.bankrupt = true;
-                // Release all properties
                 const pi = mono.players.indexOf(p);
+                monoLog(`☠️ ${p.ic} ${p.nm} 资不抵债，宣布破产！`, 'error');
+                // Release all properties
                 mono.properties.forEach(prop => {
                     if (prop && prop.owner === pi) {
                         prop.owner = -1;
@@ -5342,42 +5509,11 @@
                         prop.mortgaged = false;
                     }
                 });
-                // Release vehicle (30% value goes back to market)
-                if (p.vehicle) {
-                    const refund = Math.floor((VEHICLE_POOL.find(v => v.id === p.vehicle.id) || {price:0}).price * 0.3);
-                    p.money += refund;
-                    p.vehicle = null;
-                    p.vehicles = []; // Clear garage on bankruptcy
-                    monoLog(`${p.ic} 载具折价变卖获得 💰${refund}`, 'info');
-                } else if (p.vehicles && p.vehicles.length > 0) {
-                    // Clear garage even if no active vehicle
-                    let totalRefund = 0;
-                    p.vehicles.forEach(v => {
-                        totalRefund += Math.floor((VEHICLE_POOL.find(vp => vp.id === v.id) || {price:0}).price * 0.3);
-                    });
-                    p.money += totalRefund;
-                    p.vehicles = [];
-                    if (totalRefund > 0) monoLog(`${p.ic} 车库载具折价变卖获得 💰${totalRefund}`, 'info');
-                }
-                // Release stocks at current market price (multi-stock)
-                if (p.stockHoldings) {
-                    let stockTotal = 0;
-                    for (let si = 0; si < STOCK_TYPES.length; si++) {
-                        const h = p.stockHoldings[si];
-                        if (h.shares > 0) {
-                            const price = mono.stockPrices[si];
-                            const lev = h.leverage || 1;
-                            const marginReturn = Math.ceil(h.avgCost * h.shares / lev);
-                            const pnl = Math.round(h.isShort ? (h.avgCost - price) * h.shares * lev : (price - h.avgCost) * h.shares * lev);
-                            stockTotal += Math.max(0, marginReturn + pnl);
-                            h.shares = 0; h.avgCost = 0; h.leverage = 1;
-                        }
-                    }
-                    if (stockTotal > 0) {
-                        p.money += stockTotal;
-                        monoLog(`${p.ic} 股票清算获得 💰${stockTotal}`, 'info');
-                    }
-                }
+                // Release vehicle
+                p.vehicle = null;
+                p.vehicles = [];
+                // Clear stocks
+                if (p.stockHoldings) p.stockHoldings.forEach(h => { h.shares = 0; h.avgCost = 0; });
                 // Clear all debts
                 p.loans = [];
                 // Clear all status effects
@@ -6769,10 +6905,26 @@
             const ai = mono.players[idx];
             const personality = AI_PERSONALITIES[ai.personality] || { buyChance: 0.5 };
             const bidIncrement = Math.floor(auctionState.currentBid * 0.1);
-            const aiMaxBid = Math.floor(ai.money * 0.6); // AI won't spend more than 60% of money
-            // AI more likely to bid if current bid is below market price
-            const belowMarket = auctionState.tile.price > auctionState.currentBid;
-            const bidChance = personality.buyChance * (belowMarket ? 1.3 : 0.5);
+
+            const tile = auctionState.tile;
+            const regionProps = mono.tiles.filter(t => t.type === 'property' && t.region === tile.region);
+            const ownedInRegion = regionProps.filter(t => mono.properties[t.id] && mono.properties[t.id].owner === idx).length;
+            const isSetCompleter = ownedInRegion >= regionProps.length - 1;
+            const isSetBlocker = regionProps.some(t => {
+                const owner = mono.properties[t.id]?.owner;
+                if (owner >= 0 && owner !== idx) {
+                    const ownerCount = regionProps.filter(rt => mono.properties[rt.id]?.owner === owner).length;
+                    return ownerCount >= regionProps.length - 1;
+                }
+                return false;
+            });
+
+            const maxRatio = (isSetCompleter || isSetBlocker) ? 0.85 : 0.6;
+            const aiMaxBid = Math.floor(ai.money * maxRatio);
+            const bidMultiplier = isSetCompleter ? 1.8 : isSetBlocker ? 1.4 : 1.0;
+            const belowMarket = (tile.price * bidMultiplier) > auctionState.currentBid;
+            const bidChance = personality.buyChance * (belowMarket ? 1.4 : 0.4);
+
             if (Math.random() < bidChance && ai.money >= auctionState.currentBid + bidIncrement && auctionState.currentBid + bidIncrement <= aiMaxBid) {
                 auctionState.currentBid += bidIncrement;
                 auctionState.highestBidder = idx;
@@ -6799,7 +6951,6 @@
             finishAuction();
         } else {
             // Continue to next round — reset passes for new round
-            // Keep passes only for this round check
             if (auctionState.passedPlayers.size >= auctionState.participants.length - 1) {
                 finishAuction();
             }
@@ -6816,9 +6967,26 @@
                 const ai = mono.players[idx];
                 const personality = AI_PERSONALITIES[ai.personality] || { buyChance: 0.5 };
                 const bidIncrement = Math.floor(auctionState.currentBid * 0.1);
-                const aiMaxBid = Math.floor(ai.money * 0.6);
-                const belowMarket = auctionState.tile.price > auctionState.currentBid;
-                const bidChance = personality.buyChance * (belowMarket ? 1.3 : 0.5);
+
+                const tile = auctionState.tile;
+                const regionProps = mono.tiles.filter(t => t.type === 'property' && t.region === tile.region);
+                const ownedInRegion = regionProps.filter(t => mono.properties[t.id] && mono.properties[t.id].owner === idx).length;
+                const isSetCompleter = ownedInRegion >= regionProps.length - 1;
+                const isSetBlocker = regionProps.some(t => {
+                    const owner = mono.properties[t.id]?.owner;
+                    if (owner >= 0 && owner !== idx) {
+                        const ownerCount = regionProps.filter(rt => mono.properties[rt.id]?.owner === owner).length;
+                        return ownerCount >= regionProps.length - 1;
+                    }
+                    return false;
+                });
+
+                const maxRatio = (isSetCompleter || isSetBlocker) ? 0.85 : 0.6;
+                const aiMaxBid = Math.floor(ai.money * maxRatio);
+                const bidMultiplier = isSetCompleter ? 1.8 : isSetBlocker ? 1.4 : 1.0;
+                const belowMarket = (tile.price * bidMultiplier) > auctionState.currentBid;
+                const bidChance = personality.buyChance * (belowMarket ? 1.4 : 0.4);
+
                 if (Math.random() < bidChance && ai.money >= auctionState.currentBid + bidIncrement && auctionState.currentBid + bidIncrement <= aiMaxBid) {
                     auctionState.currentBid += bidIncrement;
                     auctionState.highestBidder = idx;
@@ -7486,14 +7654,25 @@
         const myVehicleOpt = p.vehicle ? `<option value="vehicle">🚗 ${p.vehicle.ic} ${p.vehicle.nm}</option>` : '';
         const targetVehicleOpt = target.vehicle ? `<option value="vehicle">🚗 ${target.vehicle.ic} ${target.vehicle.nm}</option>` : '';
 
+        // Property options
+        const myProps = mono.tiles.map((t, i) => ({t, i})).filter(({t, i}) => t.type === 'property' && mono.properties[i].owner === 0);
+        const targetProps = mono.tiles.map((t, i) => ({t, i})).filter(({t, i}) => t.type === 'property' && mono.properties[i].owner === targetIdx);
+
+        const myPropOpt = myProps.length > 0 ? myProps.map(({t, i}) => `<option value="prop_${i}">🏠 ${t.nm} (💰${t.price})</option>`).join('') : '';
+        const targetPropOpt = targetProps.length > 0 ? targetProps.map(({t, i}) => `<option value="prop_${i}">🏠 ${t.nm} (💰${t.price})</option>`).join('') : '';
+
         // Reset negotiation state
         tradeNegotiation = { targetIdx, round: 0, maxRounds: 3 };
 
         showModal(`<div class="modal-title">🤝 与 ${target.ic} ${target.nm} 交易</div>
-            <div style="font-size:.65rem;color:var(--text2);margin-bottom:.3rem;">💡 提示：给出价值越高，AI越可能接受。AI也可能还价。</div>
+            <div style="font-size:.65rem;color:var(--text2);margin-bottom:.3rem;">💡 提示：给出价值越高，AI越可能接受。可交易地产、卡牌、载具与现金。</div>
             <div style="display:flex;gap:.5rem;margin-top:.5rem;">
                 <div style="flex:1;padding:.5rem;background:var(--card2);border-radius:8px;">
                     <div style="font-size:.75rem;font-weight:700;color:var(--accent);">你给出</div>
+                    <select id="give-property" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
+                        <option value="none">不选地产</option>
+                        ${myPropOpt}
+                    </select>
                     <select id="give-card" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
                         <option value="none">不选卡牌</option>
                         ${myCards}
@@ -7506,6 +7685,10 @@
                 </div>
                 <div style="flex:1;padding:.5rem;background:var(--card2);border-radius:8px;">
                     <div style="font-size:.75rem;font-weight:700;color:var(--accent);">你想要</div>
+                    <select id="want-property" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
+                        <option value="none">不选地产</option>
+                        ${targetPropOpt}
+                    </select>
                     <select id="want-card" style="width:100%;margin-top:.3rem;padding:.3rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;font-size:.7rem;">
                         <option value="none">不选卡牌</option>
                         ${targetCards}
@@ -7521,12 +7704,31 @@
             <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;" onclick="showMarketModal()">返回</button>`);
     }
 
-    /* Calculate trade value of an item */
-    function getTradeValue(player, cardVal, vehicleVal, money) {
+    /* Calculate trade value of items including properties with region monopoly strategic bonus */
+    function getTradeValue(player, propVal, cardVal, vehicleVal, money, evaluatorPlayerIdx = -1) {
         let val = money || 0;
+        if (propVal && propVal !== 'none') {
+            const tileIdx = parseInt(propVal.split('_')[1]);
+            const tile = mono.tiles[tileIdx];
+            const prop = mono.properties[tileIdx];
+            if (tile && prop) {
+                let pVal = Math.floor(tile.price * (1 + (prop.level || 0) * 0.3));
+                if (evaluatorPlayerIdx >= 0) {
+                    // Check if acquiring this property completes a region set for the evaluator
+                    const regionProps = mono.tiles.filter(t => t.type === 'property' && t.region === tile.region);
+                    const ownedByEvaluator = regionProps.filter(t => mono.properties[t.id].owner === evaluatorPlayerIdx).length;
+                    if (ownedByEvaluator >= regionProps.length - 1) {
+                        pVal = Math.floor(pVal * 1.8); // Strategic bonus for completing a set
+                    }
+                }
+                val += pVal;
+            }
+        }
         if (cardVal && cardVal !== 'none') {
             const cardIdx = parseInt(cardVal.split('_')[1]);
-            val += CARD_PRICE_BASE[player.cards[cardIdx].rarity] || 500;
+            if (player.cards && player.cards[cardIdx]) {
+                val += CARD_PRICE_BASE[player.cards[cardIdx].rarity] || 500;
+            }
         }
         if (vehicleVal === 'vehicle' && player.vehicle) {
             const vp = VEHICLE_POOL.find(v => v.id === player.vehicle.id);
@@ -7536,18 +7738,29 @@
     }
 
     /* Execute a trade with given parameters */
-    function doExecuteTrade(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney) {
+    function doExecuteTrade(targetIdx, givePropVal, giveCardVal, giveVehicleVal, giveMoney, wantPropVal, wantCardVal, wantVehicleVal, wantMoney) {
         const p = mono.players[0];
         const target = mono.players[targetIdx];
 
+        // Transfer properties
+        if (givePropVal && givePropVal !== 'none') {
+            const tileIdx = parseInt(givePropVal.split('_')[1]);
+            mono.properties[tileIdx].owner = targetIdx;
+            monoLog(`🏠 转移地产 ${mono.tiles[tileIdx].nm} 给 ${target.nm}`, 'info');
+        }
+        if (wantPropVal && wantPropVal !== 'none') {
+            const tileIdx = parseInt(wantPropVal.split('_')[1]);
+            mono.properties[tileIdx].owner = 0;
+            monoLog(`🏠 从 ${target.nm} 获得地产 ${mono.tiles[tileIdx].nm}`, 'success');
+        }
         // Transfer cards
-        if (giveCardVal !== 'none') {
+        if (giveCardVal && giveCardVal !== 'none') {
             const cardIdx = parseInt(giveCardVal.split('_')[1]);
             const card = p.cards[cardIdx];
             p.cards.splice(cardIdx, 1);
             if (target.cards.length < 8) target.cards.push({...card});
         }
-        if (wantCardVal !== 'none') {
+        if (wantCardVal && wantCardVal !== 'none') {
             const cardIdx = parseInt(wantCardVal.split('_')[1]);
             const card = target.cards[cardIdx];
             target.cards.splice(cardIdx, 1);
@@ -7574,42 +7787,43 @@
         const target = mono.players[targetIdx];
         if (!target || target.bankrupt) { showMarketModal(); return; }
 
+        const givePropVal = document.getElementById('give-property')?.value || 'none';
         const giveCardVal = document.getElementById('give-card')?.value || 'none';
         const giveVehicleVal = document.getElementById('give-vehicle')?.value || 'none';
         const giveMoney = parseInt(document.getElementById('give-money')?.value) || 0;
+        const wantPropVal = document.getElementById('want-property')?.value || 'none';
         const wantCardVal = document.getElementById('want-card')?.value || 'none';
         const wantVehicleVal = document.getElementById('want-vehicle')?.value || 'none';
         const wantMoney = parseInt(document.getElementById('want-money')?.value) || 0;
 
-        if (giveCardVal === 'none' && giveVehicleVal === 'none' && giveMoney === 0) {
+        if (givePropVal === 'none' && giveCardVal === 'none' && giveVehicleVal === 'none' && giveMoney === 0) {
             monoLog('请提供交易内容', 'error'); return;
         }
-        if (wantCardVal === 'none' && wantVehicleVal === 'none' && wantMoney === 0) {
+        if (wantPropVal === 'none' && wantCardVal === 'none' && wantVehicleVal === 'none' && wantMoney === 0) {
             monoLog('请选择想要的回报', 'error'); return;
         }
         if (giveMoney > p.money) { monoLog('资金不足', 'error'); return; }
         if (wantMoney > target.money) { monoLog('对方资金不足', 'error'); return; }
 
-        const giveValue = getTradeValue(p, giveCardVal, giveVehicleVal, giveMoney);
-        const wantValue = getTradeValue(target, wantCardVal, wantVehicleVal, wantMoney);
+        const giveValue = getTradeValue(p, givePropVal, giveCardVal, giveVehicleVal, giveMoney, targetIdx);
+        const wantValue = getTradeValue(target, wantPropVal, wantCardVal, wantVehicleVal, wantMoney, 0);
 
         tradeNegotiation.round++;
-        const personality = AI_PERSONALITIES[target.personality];
+        const personality = AI_PERSONALITIES[target.personality] || { buyChance: 0.5 };
 
         // AI evaluates the offer
         const ratio = wantValue / Math.max(1, giveValue);
-        // Personality affects acceptance threshold
-        const threshold = personality === 'aggressive' ? 0.7 : personality === 'conservative' ? 0.9 : 0.8;
-        const acceptChance = Math.max(0.05, 1 - ratio) * (personality === 'aggressive' ? 1.2 : personality === 'conservative' ? 0.8 : 1);
+        const acceptChance = Math.max(0.05, 1 - ratio) * (target.personality === 'aggressive' ? 1.2 : target.personality === 'conservative' ? 0.8 : 1);
 
         if (Math.random() < acceptChance && target.money >= wantMoney) {
             // AI accepts
-            doExecuteTrade(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney);
+            doExecuteTrade(targetIdx, givePropVal, giveCardVal, giveVehicleVal, giveMoney, wantPropVal, wantCardVal, wantVehicleVal, wantMoney);
             monoLog(`🤝 ${target.ic} ${target.nm} 接受了交易！(第${tradeNegotiation.round}轮)`, 'success');
             showToast(`✓ 交易成功`, 'success');
             tradeNegotiation = null;
             showMarketModal();
             saveMonopoly();
+            renderMonopoly();
         } else if (tradeNegotiation.round < tradeNegotiation.maxRounds) {
             // AI generates counter-offer
             showCounterOffer(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue);
@@ -8946,7 +9160,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.7.2.9312 | 环形岛屿 · AI学习系统 · 事件记录系统
+                    BunnyBot 大富翁 v7.8.0.9320 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -12129,6 +12343,14 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.0.9320', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
+            '🏠 同区域集套 (Block Monopoly)：集齐区域全套地产基础租金翻倍 (2.0x)，已建房租金提升 1.5x；多处同区地产享 15%/处 叠加租金提升；抵押房产租金清零',
+            '🤝 全功能地产交易系统：支持自由交易/买卖/互换 地产 + 卡牌 + 载具 + 现金，包含智能估值与多轮还价机制',
+            '⚖️ 阶梯式资产清算救济：负资金时按“股票→拆房退款→抵押地产→卖载具→紧急贷款”顺序自动变卖资产抵债，清算后仍负债才宣告破产',
+            '🔒 交互式监狱系统：提供 500💰 保释金出狱、使用出狱卡、掷双数 (Doubles) 免费越狱或放弃回合四种决策',
+            '🧠 智能 AI 引擎升级：AI 增加区域集套与阻断战略估值，拍品/交易价值判断与抢拍上限出价 (高达85%~90%)',
+            '💾 存档完全兼容：validateMono 升级防护，无缝自动补全旧版本 v6 存档的所有缺失字段与结构',
+        ]},
         { ver:'v7.7.2.9312', title:'AI全自动托管 & 强制移动卡牌 & 混合租金 & 赌场动画 & Bug修复', items:[
             '🤖 全自动托管系统：一键开启全自动交易·升级·用卡·掷骰，自动止盈卖出(≥20%盈利)、自动买入折扣股(<80%基准价)，自动处理地产购买/升级/事件弹窗',
             '🧲 4张强制移动卡牌：引力召唤(传送对手到最高级地产收租)、万有引力(全体对手传送收租)、磁场牵引(50%概率牵引附近对手)、税务稽查(征收地产总值10%税)',
