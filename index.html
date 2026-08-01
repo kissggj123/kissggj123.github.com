@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9334 -->
+    <!-- VERSION: v7.8.1.9335 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1040,13 +1040,13 @@
             will-change: transform;
             transform: translateZ(0);
         }
-        /* Sidebar collapse animation — GPU */
+        /* Sidebar — no persistent will-change; transitions are infrequent */
         .sidebar {
-            will-change: width, transform;
+            will-change: auto;
         }
-        /* Tab bar — GPU for smooth transitions */
+        /* Tab bar — no persistent will-change; transitions are infrequent */
         .tab-bar {
-            will-change: transform, opacity;
+            will-change: auto;
         }
         /* Egg FAB — GPU for smooth drag */
         #egg-fab {
@@ -1063,9 +1063,9 @@
             contain: layout style paint;
         }
         /* Skip rendering for off-screen content in long views */
-        .view.active > .card:nth-child(n+3) {
+        .view.active > .card:nth-child(n+5) {
             content-visibility: auto;
-            contain-intrinsic-size: 0 300px;
+            contain-intrinsic-size: auto 300px;
         }
         /* Button press ripple effect */
         @keyframes rippleEffect {
@@ -1290,7 +1290,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9334</div>
+                <div class="subtitle">v7.8.1.9335</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1583,7 +1583,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9334</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9335</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1650,7 +1650,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9334',
+        VERSION: 'v7.8.1.9335',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2371,6 +2371,14 @@
     };
     // Start RAF-based FPS monitoring immediately
     _perfMonitor.startRAF();
+    // Pause FPS monitoring when tab is hidden to save CPU/GPU
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            if (_perfMonitor._rafId) { cancelAnimationFrame(_perfMonitor._rafId); _perfMonitor._rafId = null; _perfMonitor._activeRAF = false; }
+        } else {
+            _perfMonitor.startRAF();
+        }
+    });
 
     // === Platform detection + Performance adaptive config ===
     const _isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
@@ -2616,7 +2624,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9334 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9335 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -5515,13 +5523,24 @@
             }
         }
 
-        // 4. Sell vehicle garage
+        // 4. Sell active vehicle and garage vehicles
         if (p.vehicle) {
             const refund = Math.floor((VEHICLE_POOL.find(v => v.id === p.vehicle.id) || {price:0}).price * 0.3);
             p.money += refund;
             p.vehicle = null;
             monoLog(`🚗 ${p.ic} 出售载具筹集 💰${refund}`, 'warn');
             if (p.money >= 0) return;
+        }
+        // Sell garage vehicles
+        if (p.vehicles && p.vehicles.length > 0) {
+            for (let vi = p.vehicles.length - 1; vi >= 0; vi--) {
+                const v = p.vehicles[vi];
+                const refund = Math.floor((VEHICLE_POOL.find(vp => vp.id === v.id) || {price:0}).price * 0.3);
+                p.money += refund;
+                monoLog(`🚗 ${p.ic} 出售车库载具筹集 💰${refund}`, 'warn');
+                p.vehicles.splice(vi, 1);
+                if (p.money >= 0) return;
+            }
         }
     }
 
@@ -7084,7 +7103,14 @@
                     // Re-run with remaining participants
                     auctionState.highestBidder = -1;
                     auctionState.currentBid = auctionState.startPrice;
-                    setTimeout(() => runAIAuctionRounds(), 300);
+                    auctionState.round = 1;
+                    auctionState.passedPlayers = new Set();
+                    // If human player is still a participant, show bidding UI; otherwise auto-run
+                    if (auctionState.participants.includes(0)) {
+                        showAuctionBiddingUI();
+                    } else {
+                        setTimeout(() => runAIAuctionRounds(), 300);
+                    }
                     return;
                 }
             }
@@ -8688,6 +8714,15 @@
             if (newP.quantumTurns === 0) { newP.quantumTarget = -1; monoLog(`⚛️ ${newP.ic} 量子纠缠结束`, 'info'); }
         }
         if (newP.lockdownTurns > 0) newP.lockdownTurns--;
+        // Check if player went bankrupt from status effects or loans during turn processing
+        if (newP.money < 0) {
+            checkBankruptcy(newP);
+            if (newP.bankrupt && !checkGameOver()) {
+                // Skip to next player if this one went bankrupt during turn start
+                setTimeout(() => nextTurn(), 300);
+                return;
+            }
+        }
         // Auto-save each turn
         mono.pendingAction = null;
         mono.autoSaveTurn = mono.turn;
@@ -9211,7 +9246,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9334 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9335 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9518,13 +9553,15 @@
     let _bcosActiveOutput = null;
 
     function _bcosPrint(html) {
-        const out = _bcosActiveOutput || document.getElementById('bcos-output');
-        if (!out) return;
+        let out = _bcosActiveOutput;
+        if (out && !out.isConnected) { _bcosActiveOutput = null; out = null; }
+        if (!out) out = document.getElementById('bcos-output');
+        if (!out || !out.isConnected) return;
         const line = document.createElement('div');
         line.innerHTML = html;
         out.appendChild(line);
         const screen = document.getElementById('bcos-screen');
-        if (screen) screen.scrollTop = screen.scrollHeight;
+        if (screen && screen.isConnected) screen.scrollTop = screen.scrollHeight;
         else out.scrollTop = out.scrollHeight;
     }
 
@@ -9540,6 +9577,7 @@
     }
 
     function _bcosFuzzy(input, candidates) {
+        if (!input) return null;
         if (candidates.includes(input)) return input;
         const prefix = candidates.filter(c => c.startsWith(input));
         if (prefix.length === 1) return prefix[0];
@@ -9630,7 +9668,7 @@
                     const lc = _bcosLangColors[r[2]] || '#e0e0e0';
                     const fb = r[7] ? ' <span class="bcos-repo-fork">[fork]</span>' : '';
                     const st = r[3] > 0 ? ' <span class="bcos-repo-stars">*' + r[3] + '</span>' : '';
-                    _bcosPrint('<span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>' + fb + ' — <span style="color:' + lc + ';">' + r[2] + '</span>' + st + ' <span class="bcos-repo-date">' + r[5] + '</span>');
+                    _bcosPrint('<span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>' + fb + ' — <span style="color:' + lc + ';">' + _bcosEscape(r[2]) + '</span>' + st + ' <span class="bcos-repo-date">' + _bcosEscape(r[5]) + '</span>');
                 });
             },
             cat: (args) => {
@@ -9640,7 +9678,7 @@
                     const matches = _bcosRepos.filter(r => r[0].toLowerCase().includes(args[0].toLowerCase()));
                     if (matches.length === 1) { _bcosGetCommands().cat([matches[0][0]]); return; }
                     _bcosPrint('<span class="bcos-error">cat: ' + _bcosEscape(args[0]) + ': No such repository</span>');
-                    if (matches.length > 0) _bcosPrint('<span class="bcos-suggestion">Did you mean: ' + matches.slice(0,5).map(r => r[0]).join(', ') + '?</span>');
+                    if (matches.length > 0) _bcosPrint('<span class="bcos-suggestion">Did you mean: ' + matches.slice(0,5).map(r => _bcosEscape(r[0])).join(', ') + '?</span>');
                     return;
                 }
                 const lc = _bcosLangColors[repo[2]] || '#e0e0e0';
@@ -9652,8 +9690,12 @@
                 _bcosPrint('  <span class="bcos-success">Updated:</span> ' + repo[5]);
                 _bcosPrint('  <span class="bcos-success">Size:</span> ' + (repo[8] >= 1024 ? (repo[8]/1024).toFixed(1) + ' MB' : repo[8] + ' KB'));
                 _bcosPrint('  <span class="bcos-success">Type:</span> ' + (repo[7] ? 'Fork' : 'Original'));
-                if (repo[9]) _bcosPrint('  <span class="bcos-success">Homepage:</span> <span class="bcos-link" onclick="window.open(\'' + repo[9] + '\',\'_blank\')">' + _bcosEscape(repo[9]) + '</span>');
-                _bcosPrint('  <span class="bcos-success">URL:</span> <span class="bcos-link" onclick="window.open(\'' + repo[6] + '\',\'_blank\')">' + _bcosEscape(repo[6]) + '</span>');
+                if (repo[9]) {
+                    const safeHp = _bcosEscape(repo[9]).replace(/'/g, '&#39;');
+                    _bcosPrint('  <span class="bcos-success">Homepage:</span> <span class="bcos-link" onclick="window.open(\'' + safeHp + '\',\'_blank\')">' + _bcosEscape(repo[9]) + '</span>');
+                }
+                const safeUrl = _bcosEscape(repo[6]).replace(/'/g, '&#39;');
+                _bcosPrint('  <span class="bcos-success">URL:</span> <span class="bcos-link" onclick="window.open(\'' + safeUrl + '\',\'_blank\')">' + _bcosEscape(repo[6]) + '</span>');
                 _bcosPrint('<span class="bcos-info">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>');
             },
             open: (args) => {
@@ -9756,7 +9798,7 @@
                 langs.forEach(([lang, repos], i) => {
                     const isLast = i === langs.length - 1;
                     const c = _bcosLangColors[lang] || '#e0e0e0';
-                    _bcosPrint('<span style="color:' + c + ';">' + (isLast ? '`-- ' : '|-- ') + lang + '/ (' + repos.length + ')</span>');
+                    _bcosPrint('<span style="color:' + c + ';">' + (isLast ? '`-- ' : '|-- ') + _bcosEscape(lang) + '/ (' + repos.length + ')</span>');
                     repos.slice(0, 5).forEach((r, j) => {
                         const rl = j === Math.min(repos.length, 5) - 1;
                         _bcosPrint('<span class="bcos-dim">' + (isLast ? '    ' : '|   ') + (rl ? '`-- ' : '|-- ') + '</span><span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>' + (r[3] > 0 ? ' <span class="bcos-repo-stars">*' + r[3] + '</span>' : ''));
@@ -9768,13 +9810,13 @@
                 const n = parseInt(args[0]) || 10;
                 const s = [..._bcosRepos].sort((a,b) => b[5].localeCompare(a[5])).slice(0, n);
                 _bcosPrint('<span class="bcos-info">Recent ' + s.length + ' repositories:</span>');
-                s.forEach(r => _bcosPrint('  <span class="bcos-repo-date">' + r[5] + '</span>  <span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>  <span class="bcos-dim">' + r[2] + '</span>'));
+                s.forEach(r => _bcosPrint('  <span class="bcos-repo-date">' + _bcosEscape(r[5]) + '</span>  <span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>  <span class="bcos-dim">' + _bcosEscape(r[2]) + '</span>'));
             },
             popular: (args) => {
                 const n = parseInt(args[0]) || 10;
                 const s = [..._bcosRepos].sort((a,b) => b[3] - a[3]).slice(0, n);
                 _bcosPrint('<span class="bcos-info">Top ' + s.length + ' starred repositories:</span>');
-                s.forEach((r, i) => _bcosPrint('  ' + String(i+1).padStart(2) + '. <span class="bcos-repo-stars">*' + r[3] + '</span>  <span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>  <span class="bcos-dim">' + r[2] + '</span>'));
+                s.forEach((r, i) => _bcosPrint('  ' + String(i+1).padStart(2) + '. <span class="bcos-repo-stars">*' + r[3] + '</span>  <span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>  <span class="bcos-dim">' + _bcosEscape(r[2]) + '</span>'));
             },
             // === System control commands ===
             theme: (args) => {
@@ -10088,7 +10130,16 @@
         const name = parts[0].toLowerCase();
         const args = parts.slice(1);
         const cmds = _bcosGetCommands();
-        if (cmds[name]) { cmds[name](args); }
+        if (cmds[name]) {
+            try {
+                const result = cmds[name](args);
+                if (result && typeof result.then === 'function') {
+                    result.catch(err => _bcosPrint('<span class="bcos-cmd-not-found">bcos: error: ' + _bcosEscape(err.message) + '</span>'));
+                }
+            } catch(err) {
+                _bcosPrint('<span class="bcos-cmd-not-found">bcos: error: ' + _bcosEscape(err.message) + '</span>');
+            }
+        }
         else {
             const match = _bcosFuzzy(name, Object.keys(cmds));
             _bcosPrint('<span class="bcos-cmd-not-found">bcos: command not found: ' + _bcosEscape(name) + '</span>');
@@ -10260,6 +10311,7 @@
     function _bcosBackToTerminal() {
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         _bcos.wins = {}; _bcos.activeWin = null; _bcos.mode = 'terminal';
+        _bcosActiveOutput = null; // Clear stale desktop terminal reference
         const ov = document.getElementById('bcos-overlay');
         if (!ov) return;
         // Lightweight switch: restore terminal UI without replaying boot sequence
@@ -10302,10 +10354,15 @@
         _bcos.activeWin = app;
         win.addEventListener('mousedown', () => _bcosFocusWin(app));
         const content = document.getElementById(winId + '-content');
-        if (app === 'terminal') _bcosRenderDesktopTerminal(content);
-        else if (app === 'files') _bcosRenderFileManager(content);
-        else if (app === 'monitor') _bcosRenderMonitor(content);
-        else if (app === 'about') _bcosRenderAbout(content);
+        try {
+            if (app === 'terminal') _bcosRenderDesktopTerminal(content);
+            else if (app === 'files') _bcosRenderFileManager(content);
+            else if (app === 'monitor') _bcosRenderMonitor(content);
+            else if (app === 'about') _bcosRenderAbout(content);
+        } catch(err) {
+            if (content) content.innerHTML = '<div style="color:#f44;padding:.5rem;font-size:12px;">Error loading app: ' + _bcosEscape(err.message) + '</div>';
+            console.error('bcos app render error:', err);
+        }
         _bcosUpdateTaskbar();
     }
 
@@ -10367,7 +10424,7 @@
                         else {
                             const result = cmds[name](args);
                             if (result && typeof result.then === 'function') {
-                                result.then(() => { if (out.isConnected) out.scrollTop = out.scrollHeight; }).catch(() => {});
+                                result.then(() => { if (out.isConnected) out.scrollTop = out.scrollHeight; }).catch(err => { _bcosPrint('<span style="color:#f44;">bcos: error: ' + _bcosEscape(err.message) + '</span>'); });
                                 return;
                             }
                         }
@@ -10392,7 +10449,7 @@
             const lc = _bcosLangColors[r[2]] || '#e0e0e0';
             const item = document.createElement('div');
             item.className = 'bcos-file-item';
-            item.innerHTML = `<span>${r[7]?'📂':'📄'}</span><span class="bcos-file-name" style="color:${lc};">${_bcosEscape(r[0])}</span><span class="bcos-file-meta">${r[2]} | ${r[5]}</span>`;
+            item.innerHTML = `<span>${r[7]?'📂':'📄'}</span><span class="bcos-file-name" style="color:${lc};">${_bcosEscape(r[0])}</span><span class="bcos-file-meta">${_bcosEscape(r[2])} | ${_bcosEscape(r[5])}</span>`;
             item.onclick = () => _bcosOpenCatWindow(r);
             let _longPressTimer = null;
             item.addEventListener('touchstart', () => { _longPressTimer = setTimeout(() => window.open(r[6], '_blank'), 600); }, { passive: true });
@@ -10413,15 +10470,17 @@
         const cx = 80+Math.random()*100, cy = 50+Math.random()*80;
         win.style.cssText += `left:0;top:0;width:380px;height:320px;transform:translate3d(${cx}px, ${cy}px, 0);`;
         win._bcosTX = cx; win._bcosTY = cy;
+        const safeRepoUrl = _bcosEscape(repo[6]).replace(/'/g, '&#39;');
+        const safeLang = _bcosEscape(repo[2]);
         win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><span class="bcos-window-title">📄 ${_bcosEscape(repo[0])}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseCatWin('${winId}')"></button></div></div><div class="bcos-window-content" style="padding:.6rem;font-size:12px;">
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Repo:</span> ${_bcosEscape(repo[0])}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Desc:</span> ${repo[1]?_bcosEscape(repo[1].substring(0,80)):'<span style="color:#666;">// None</span>'}</div>
-            <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Lang:</span> <span style="color:${lc};">${repo[2]}</span></div>
+            <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Lang:</span> <span style="color:${lc};">${safeLang}</span></div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Stars:</span> ★ ${repo[3]} | <span style="color:#00ff41;">Forks:</span> ⑂ ${repo[4]}</div>
-            <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Updated:</span> ${repo[5]}</div>
+            <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Updated:</span> ${_bcosEscape(repo[5])}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Size:</span> ${repo[8]>=1024?(repo[8]/1024).toFixed(1)+' MB':repo[8]+' KB'}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Type:</span> ${repo[7]?'Fork':'Original'}</div>
-            <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;" onclick="window.open('${repo[6]}','_blank')">🌐 Open on GitHub</button></div>
+            <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;" onclick="window.open('${safeRepoUrl}','_blank')">🌐 Open on GitHub</button></div>
         </div>`;
         container.appendChild(win);
         win.addEventListener('mousedown', () => { win.style.zIndex = ++_bcos.winZ; });
@@ -13632,9 +13691,19 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.1.9334', title:'侧边栏头像照片拖拽修复', items:[
-            '🔒 修复侧边栏照片头像可被拖拽：img元素缺少draggable=false和-webkit-user-drag:none，在tab栏折叠模式下尤其明显',
-            '🛡️ 添加pointer-events:none到头像img：防止图片拦截父容器的点击事件',
+        { ver:'v7.8.1.9335', title:'bcos安全加固 & 性能优化 & 错误处理', items:[
+            '🛡️ 修复bcos终端XSS漏洞：cat/ls/recent/popular/tree命令未转义语言名和日期字段，文件管理器窗口未转义URL和语言',
+            '🛡️ cat命令Homepage/URL的onclick handler未转义单引号，可能导致HTML注入',
+            '🔒 侧边栏头像照片拖拽修复：添加draggable=false和-webkit-user-drag:none',
+            '🔧 _bcosExec添加try-catch和异步Promise错误处理：命令异常不再静默失败',
+            '🔧 _bcosPrint添加isConnected检查：防止输出到已分离的DOM元素',
+            '🔧 _bcosBackToTerminal清除_bcosActiveOutput：防止桌面终端引用残留',
+            '🔧 _bcosOpenApp添加try-catch错误边界：应用渲染失败时显示错误信息而非空白窗口',
+            '🔧 桌面终端异步命令catch不再静默吞错：错误信息打印到终端',
+            '⚡ 移除sidebar/tab-bar的持久will-change：这两个元素转换不频繁，无需常驻GPU层',
+            '⚡ content-visibility优化：contain-intrinsic-size改用auto模式减少滚动跳跃，延迟到第5个卡片起',
+            '⚡ FPS监控RAF添加visibilitychange暂停：页面隐藏时停止requestAnimationFrame节省CPU/GPU',
+            '🔧 _bcosFuzzy空输入快速返回：避免空字符串触发Levenshtein全量计算',
         ]},
         { ver:'v7.8.1.9333', title:'GPU层优化 & bcos桌面bug修复 & 破产清理', items:[
             '⚡ 移除过度will-change声明：游戏UI和bcos桌面静态元素移除不必要的GPU层提示，降低内存开销',
