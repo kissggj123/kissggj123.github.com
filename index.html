@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.0.9327 -->
+    <!-- VERSION: v7.8.1.9328 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1273,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.0.9327</div>
+                <div class="subtitle">v7.8.1.9328</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1555,13 +1555,13 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.0.9327</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9328</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
                         <div style="margin-top:.2rem;font-size:.7rem;color:var(--text2);opacity:.6;">点击查看更多信息</div>
                     </div>
-                    <button class="btn" style="width:100%;margin-top:.6rem;background:linear-gradient(135deg,#001020,#002030);border:1px solid #00f0ff;color:#00f0ff;font-family:'Courier New',monospace;font-weight:700;text-transform:uppercase;letter-spacing:2px;box-shadow:0 0 10px rgba(0,240,255,.3);padding:.6rem;font-size:.8rem;" onclick="showBcosOS()">🖥️ bcos — Bunny可可系统</button>
+                    <button class="bcos-btn" onclick="showBcosOS()">🖥️ bcos — Bunny可可系统</button>
                 </div>
                 <div class="card">
                     <div class="card-title">📋 更新日志</div>
@@ -1622,7 +1622,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.0.9327',
+        VERSION: 'v7.8.1.9328',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2571,7 +2571,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.0.9327 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9328 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9161,7 +9161,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.0.9327 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9328 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9445,8 +9445,39 @@
                 .bcos-desktop-icon-emoji { font-size: 1.5rem; }
                 .bcos-window { min-width: 240px; }
             }
+            /* Theme-adaptive BCOS button */
+            .bcos-btn { width:100%; margin-top:.6rem; padding:.6rem; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; cursor:pointer; border-radius:var(--radius-sm); transition:all .25s ease; position:relative; overflow:hidden; }
+            .bcos-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transform:translateX(-100%); transition:transform .5s; }
+            .bcos-btn:hover::after { transform:translateX(100%); }
+            [data-theme="bunny"] .bcos-btn { background:linear-gradient(135deg,#FFF0F5,#FF6B9D); border:1px solid #FF6B9D; color:#fff; box-shadow:0 2px 12px rgba(255,107,157,.3); }
+            [data-theme="forest"] .bcos-btn { background:linear-gradient(135deg,#F0F7EE,#4CAF50); border:1px solid #4CAF50; color:#fff; box-shadow:0 2px 12px rgba(76,175,80,.3); }
+            [data-theme="ocean"] .bcos-btn { background:linear-gradient(135deg,#E8F4FD,#0EA5E9); border:1px solid #0EA5E9; color:#fff; box-shadow:0 2px 12px rgba(14,165,233,.3); }
+            [data-theme="starlight"] .bcos-btn { background:linear-gradient(135deg,#1a1a2e,#a78bfa); border:1px solid #a78bfa; color:#fff; box-shadow:0 2px 12px rgba(167,139,250,.4); }
+            [data-theme="cyber"] .bcos-btn { background:linear-gradient(135deg,#0c0a1d,#fbbf24); border:1px solid #fbbf24; color:#0c0a1d; box-shadow:0 0 16px rgba(251,191,36,.4); text-shadow:0 0 4px rgba(236,72,153,.5); }
+            [data-theme="sunset"] .bcos-btn { background:linear-gradient(135deg,#FFF3E0,#FF6B35); border:1px solid #FF6B35; color:#fff; box-shadow:0 2px 12px rgba(255,107,53,.3); }
+            [data-theme="mint"] .bcos-btn { background:linear-gradient(135deg,#E8F5E9,#26A69A); border:1px solid #26A69A; color:#fff; box-shadow:0 2px 12px rgba(38,166,154,.3); }
+            [data-theme="rose"] .bcos-btn { background:linear-gradient(135deg,#FCE4EC,#E91E63); border:1px solid #E91E63; color:#fff; box-shadow:0 2px 12px rgba(233,30,99,.3); }
+            [data-theme="aurora"] .bcos-btn { background:linear-gradient(135deg,#0B1026,#06FFA5); border:1px solid #06FFA5; color:#0B1026; box-shadow:0 0 16px rgba(6,255,165,.4); }
+            [data-theme="galaxy"] .bcos-btn { background:linear-gradient(135deg,#0F0C29,#C084FC); border:1px solid #C084FC; color:#fff; box-shadow:0 0 16px rgba(192,132,252,.4); }
+            [data-theme="candy"] .bcos-btn { background:linear-gradient(135deg,#FFF8E7,#FF4081); border:1px solid #FF4081; color:#fff; box-shadow:0 2px 12px rgba(255,64,129,.3); }
+            [data-theme="matrix"] .bcos-btn { background:linear-gradient(135deg,#000000,#003B00); border:1px solid #00FF41; color:#00FF41; box-shadow:0 0 16px rgba(0,255,65,.4); font-family:'Courier New',monospace; }
         `;
         document.head.appendChild(style);
+    }
+
+    function _bcosApplyThemeStyle() {
+        const ov = document.getElementById('bcos-overlay');
+        if (!ov || !ov.classList.contains('active')) return;
+        const theme = document.documentElement.getAttribute('data-theme') || 'bunny';
+        const t = CONFIG.THEMES.find(t => t.id === theme);
+        if (!t) return;
+        const c1 = t.colors[0], c2 = t.colors[1], c3 = t.colors[2];
+        ov.style.background = c1.startsWith('#') && c1.length <= 7 ? c1 : '#0a0a0a';
+        if (theme === 'matrix' || theme === 'starlight' || theme === 'aurora' || theme === 'galaxy' || theme === 'cyber') {
+            ov.style.background = '#0a0a0a';
+        }
+        const out = document.getElementById('bcos-output');
+        if (out) out.style.color = c2;
     }
 
     function _bcosEscape(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -9526,6 +9557,24 @@
                 _bcosPrint('  <span class="bcos-success">echo &lt;text&gt;</span>   Print text');
                 _bcosPrint('  <span class="bcos-success">pwd</span>           Print working directory');
                 _bcosPrint('  <span class="bcos-success">exit</span>          Exit bcos');
+                _bcosPrint('<span class="bcos-info">─── System Control ───</span>');
+                _bcosPrint('  <span class="bcos-success">theme [id]</span>    Switch theme (no arg = list)');
+                _bcosPrint('  <span class="bcos-success">font [80-200|pixel]</span> Set font scale or toggle pixel font');
+                _bcosPrint('  <span class="bcos-success">tabbar [mode]</span> Set tab bar (always|auto|hidden)');
+                _bcosPrint('  <span class="bcos-success">sidebar [mode]</span> Set sidebar (auto|hide|open|collapsed)');
+                _bcosPrint('  <span class="bcos-success">mouse</span>         Toggle mouse effect');
+                _bcosPrint('  <span class="bcos-success">select</span>        Toggle text selection');
+                _bcosPrint('  <span class="bcos-success">avatar [type]</span> Set avatar (emoji|photo)');
+                _bcosPrint('  <span class="bcos-success">mapsize [size]</span> Set map size (small|medium|standard)');
+                _bcosPrint('  <span class="bcos-success">players [n]</span>  Set player count (random|4|6|8)');
+                _bcosPrint('  <span class="bcos-success">fullscreen</span>    Toggle fullscreen');
+                _bcosPrint('  <span class="bcos-success">egg</span>           Toggle egg click trigger');
+                _bcosPrint('  <span class="bcos-success">settings</span>      Show all current settings');
+                _bcosPrint('  <span class="bcos-success">goto [view]</span>  Navigate to (home|settings|monopoly|logs)');
+                _bcosPrint('<span class="bcos-info">─── Save Management ───</span>');
+                _bcosPrint('  <span class="bcos-success">saves</span>         List all save slots');
+                _bcosPrint('  <span class="bcos-success">save [1-3]</span>    Save game to slot');
+                _bcosPrint('  <span class="bcos-success">load [1-3]</span>    Load game from slot');
                 _bcosPrint('<span class="bcos-dim">Tip: TAB=autocomplete | Up/Down=history | Ctrl+L=clear</span>');
             },
             ls: (args) => {
@@ -9682,6 +9731,121 @@
                 const s = [..._bcosRepos].sort((a,b) => b[3] - a[3]).slice(0, n);
                 _bcosPrint('<span class="bcos-info">Top ' + s.length + ' starred repositories:</span>');
                 s.forEach((r, i) => _bcosPrint('  ' + String(i+1).padStart(2) + '. <span class="bcos-repo-stars">*' + r[3] + '</span>  <span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>  <span class="bcos-dim">' + r[2] + '</span>'));
+            },
+            // === System control commands ===
+            theme: (args) => {
+                if (!args[0]) {
+                    _bcosPrint('<span class="bcos-info">Available themes:</span>');
+                    CONFIG.THEMES.forEach((t, i) => {
+                        const cur = document.documentElement.getAttribute('data-theme') === t.id;
+                        _bcosPrint('  ' + String(i+1).padStart(2) + '. <span style="color:' + t.colors[1] + ';">' + t.name + '</span> (' + t.id + ')' + (cur ? ' <span class="bcos-success">← current</span>' : ''));
+                    });
+                    _bcosPrint('<span class="bcos-dim">Usage: theme &lt;id|name|number&gt;</span>');
+                    return;
+                }
+                const q = args[0].toLowerCase();
+                let target = CONFIG.THEMES.find(t => t.id === q) ||
+                             CONFIG.THEMES.find(t => t.name.toLowerCase().includes(q)) ||
+                             CONFIG.THEMES[parseInt(q) - 1];
+                if (!target) { _bcosPrint('<span class="bcos-error">theme: Unknown theme: ' + _bcosEscape(args[0]) + '</span>'); return; }
+                setTheme(target.id);
+                _bcosPrint('<span class="bcos-success">✓ Theme switched to: ' + target.name + ' (' + target.id + ')</span>');
+                _bcosApplyThemeStyle();
+            },
+            font: (args) => {
+                if (!args[0]) {
+                    _bcosPrint('<span class="bcos-info">Font scale: ' + (safeGetItem('fontScale','100')) + '%</span>');
+                    _bcosPrint('<span class="bcos-dim">Usage: font &lt;80-200|pixel&gt;</span>');
+                    return;
+                }
+                if (args[0] === 'pixel' || args[0] === 'mono') { togglePixelFont(); _bcosPrint('<span class="bcos-success">✓ Pixel font: ' + (pixelFontEnabled ? 'ON' : 'OFF') + '</span>'); return; }
+                const pct = parseInt(args[0]);
+                if (isNaN(pct) || pct < 80 || pct > 200) { _bcosPrint('<span class="bcos-error">font: Invalid scale. Range: 80-200</span>'); return; }
+                setFontScale(pct);
+                _bcosPrint('<span class="bcos-success">✓ Font scale set to: ' + pct + '%</span>');
+            },
+            tabbar: (args) => {
+                const modes = ['always', 'auto-collapse', 'hidden'];
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Tab bar mode: ' + (safeGetItem('tabBarMode','always')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: tabbar &lt;always|auto|hidden&gt;</span>'); return; }
+                const m = args[0] === 'auto' ? 'auto-collapse' : args[0];
+                if (!modes.includes(m)) { _bcosPrint('<span class="bcos-error">tabbar: Invalid mode. Options: always, auto, hidden</span>'); return; }
+                setTabBarMode(m);
+                _bcosPrint('<span class="bcos-success">✓ Tab bar: ' + m + '</span>');
+            },
+            sidebar: (args) => {
+                const modes = ['auto', 'auto-hide', 'locked-open', 'locked-collapsed'];
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Sidebar mode: ' + (safeGetItem('sidebarMode','auto')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: sidebar &lt;auto|hide|open|collapsed&gt;</span>'); return; }
+                const map = { auto: 'auto', hide: 'auto-hide', open: 'locked-open', collapsed: 'locked-collapsed' };
+                const m = map[args[0]] || args[0];
+                if (!modes.includes(m)) { _bcosPrint('<span class="bcos-error">sidebar: Invalid mode. Options: auto, hide, open, collapsed</span>'); return; }
+                setSidebarMode(m);
+                _bcosPrint('<span class="bcos-success">✓ Sidebar: ' + m + '</span>');
+            },
+            mouse: () => { toggleMouseBunny(); _bcosPrint('<span class="bcos-success">✓ Mouse effect: ' + (safeGetItem('mouseBunny','1') === '1' ? 'ON' : 'OFF') + '</span>'); },
+            select: () => { toggleTextSelect(); _bcosPrint('<span class="bcos-success">✓ Text selection: ' + (document.body.classList.contains('no-select') ? 'DISABLED' : 'ENABLED') + '</span>'); },
+            avatar: (args) => {
+                if (!args[0]) { _bcosPrint('<span class="bcos-dim">Usage: avatar &lt;emoji|photo&gt;</span>'); return; }
+                if (args[0] !== 'emoji' && args[0] !== 'photo') { _bcosPrint('<span class="bcos-error">avatar: Invalid option. Use: emoji or photo</span>'); return; }
+                setSidebarAvatar(args[0]);
+                _bcosPrint('<span class="bcos-success">✓ Avatar: ' + args[0] + '</span>');
+            },
+            mapsize: (args) => {
+                const sizes = ['small', 'medium', 'standard'];
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Map size: ' + (safeGetItem('mapSizePref','medium')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: mapsize &lt;small|medium|standard&gt;</span>'); return; }
+                if (!sizes.includes(args[0])) { _bcosPrint('<span class="bcos-error">mapsize: Invalid size. Options: small, medium, standard</span>'); return; }
+                setMapSize(args[0]); _bcosPrint('<span class="bcos-success">✓ Map size: ' + args[0] + ' (next game)</span>'); },
+            players: (args) => {
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Player count: ' + (safeGetItem('playerCountPref','random')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: players &lt;random|4|6|8&gt;</span>'); return; }
+                setPlayerCount(args[0] === 'random' ? 'random' : parseInt(args[0]));
+                _bcosPrint('<span class="bcos-success">✓ Players: ' + args[0] + ' (next game)</span>');
+            },
+            fullscreen: () => { toggleFullscreen(); _bcosPrint('<span class="bcos-success">✓ Fullscreen toggled</span>'); },
+            egg: () => { toggleEggClickTrigger(); _bcosPrint('<span class="bcos-success">✓ Egg click trigger: ' + (safeGetItem('eggClickTrigger','0') === '1' ? 'ON' : 'OFF') + '</span>'); },
+            save: (args) => {
+                const slot = parseInt(args[0]) - 1;
+                if (isNaN(slot) || slot < 0 || slot >= 3) { _bcosPrint('<span class="bcos-error">save: Invalid slot. Usage: save &lt;1-3&gt;</span>'); return; }
+                if (typeof mono === 'undefined' || !mono.players) { _bcosPrint('<span class="bcos-error">save: No active game to save</span>'); return; }
+                saveToSlot(slot);
+                _bcosPrint('<span class="bcos-success">✓ Game saved to slot ' + (slot+1) + '</span>');
+            },
+            load: (args) => {
+                const slot = parseInt(args[0]) - 1;
+                if (isNaN(slot) || slot < 0 || slot >= 3) { _bcosPrint('<span class="bcos-error">load: Invalid slot. Usage: load &lt;1-3&gt;</span>'); return; }
+                const meta = getSaveSlotMeta(slot);
+                if (!meta) { _bcosPrint('<span class="bcos-error">load: Slot ' + (slot+1) + ' is empty</span>'); return; }
+                _bcosPrint('<span class="bcos-info">Loading slot ' + (slot+1) + '...</span>');
+                closeBcosOS();
+                navigateTo('monopoly');
+                setTimeout(() => loadSaveSlot(slot), 300);
+            },
+            saves: () => {
+                for (let i = 0; i < 3; i++) {
+                    const meta = getSaveSlotMeta(i);
+                    if (meta) {
+                        _bcosPrint('  <span class="bcos-success">Slot ' + (i+1) + '</span>: Turn ' + meta.turn + ' | ' + (meta.players?.length||0) + ' players | ' + new Date(meta.savedAt).toLocaleString('zh-CN'));
+                    } else {
+                        _bcosPrint('  <span class="bcos-dim">Slot ' + (i+1) + '</span>: <span class="bcos-dim">empty</span>');
+                    }
+                }
+            },
+            settings: () => {
+                _bcosPrint('<span class="bcos-info">===== Current Settings =====</span>');
+                _bcosPrint('  Theme:     <span class="bcos-success">' + (document.documentElement.getAttribute('data-theme')||'bunny') + '</span>');
+                _bcosPrint('  Font:      <span class="bcos-success">' + (safeGetItem('fontScale','100')) + '%</span> | Pixel: <span class="bcos-success">' + (pixelFontEnabled?'ON':'OFF') + '</span>');
+                _bcosPrint('  Tab bar:   <span class="bcos-success">' + (safeGetItem('tabBarMode','always')) + '</span>');
+                _bcosPrint('  Sidebar:   <span class="bcos-success">' + (safeGetItem('sidebarMode','auto')) + '</span>');
+                _bcosPrint('  Mouse fx:  <span class="bcos-success">' + (safeGetItem('mouseBunny','1')==='1'?'ON':'OFF') + '</span>');
+                _bcosPrint('  Text sel:  <span class="bcos-success">' + (document.body.classList.contains('no-select')?'DISABLED':'ENABLED') + '</span>');
+                _bcosPrint('  Map size:  <span class="bcos-success">' + (safeGetItem('mapSizePref','medium')) + '</span>');
+                _bcosPrint('  Players:   <span class="bcos-success">' + (safeGetItem('playerCountPref','random')) + '</span>');
+                _bcosPrint('  Egg click: <span class="bcos-success">' + (safeGetItem('eggClickTrigger','0')==='1'?'ON':'OFF') + '</span>');
+                _bcosPrint('  Avatar:    <span class="bcos-success">' + (safeGetItem('sidebarAvatar','emoji')) + '</span>');
+            },
+            goto: (args) => {
+                const views = { home: 'home', settings: 'settings', monopoly: 'monopoly', game: 'monopoly', anniversary: 'anniversary', logs: 'logs' };
+                const v = views[args[0]?.toLowerCase()];
+                if (!v) { _bcosPrint('<span class="bcos-error">goto: Unknown view. Options: home, settings, monopoly, anniversary, logs</span>'); return; }
+                closeBcosOS(); navigateTo(v);
             },
             sudo: () => _bcosPrint('<span class="bcos-warn">bcos: bunny is not in the sudoers file. This incident will be reported.</span>'),
             rm: (args) => { _bcosPrint(args[0] === '-rf' && (args[1] === '/' || args[1] === '/*') ? '<span class="bcos-warn">bcos: Nice try! The bunny prevented destruction.</span>' : '<span class="bcos-warn">bcos: rm: operation not permitted. The bunny protects all files.</span>'); },
@@ -13141,7 +13305,7 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.0.9327', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
+        { ver:'v7.8.1.9328', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
             '🏠 同区域集套 (Block Monopoly)：集齐区域全套地产基础租金翻倍 (2.0x)，已建房租金提升 1.5x；多处同区地产享 15%/处 叠加租金提升；抵押房产租金清零',
             '🤝 全功能地产交易系统：支持自由交易/买卖/互换 地产 + 卡牌 + 载具 + 现金，包含智能估值与多轮还价机制',
             '⚖️ 阶梯式资产清算救济：负资金时按“股票→拆房退款→抵押地产→卖载具→紧急贷款”顺序自动变卖资产抵债，清算后仍负债才宣告破产',
