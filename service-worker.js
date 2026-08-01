@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.0.9321
-const CACHE_VERSION = 'v7.8.0.9321';
+// Service Worker - Bunny CC v7.8.0.9322
+const CACHE_VERSION = 'v7.8.0.9322';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 const CORE_ASSETS = [
@@ -14,6 +14,7 @@ const CORE_ASSETS = [
 // Old cache versions to force-purge (ensures icon refresh)
 const OLD_CACHE_PATTERNS = [
     'bunny-cc-v7.8.0.9320', 'bunny-cc-runtime-v7.8.0.9320',
+    'bunny-cc-v7.8.0.9321', 'bunny-cc-runtime-v7.8.0.9321',
     'bunny-cc-v7.7.2.9312', 'bunny-cc-runtime-v7.7.2.9312',
     'bunny-cc-v7.7.2.9305', 'bunny-cc-runtime-v7.7.2.9305',
     'bunny-cc-v7.7.2.9306', 'bunny-cc-runtime-v7.7.2.9306',
