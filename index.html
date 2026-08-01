@@ -1273,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9328</div>
+                <div class="subtitle">v7.8.1.9329</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1566,7 +1566,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9328</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9329</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1633,7 +1633,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9328',
+        VERSION: 'v7.8.1.9329',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2599,7 +2599,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9328 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9329 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9189,7 +9189,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9328 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9329 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9438,9 +9438,9 @@
             .bcos-desktop-wallpaper::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px); background-size: 30px 30px; }
             .bcos-desktop-icons { position: absolute; top: 1rem; left: 1rem; display: flex; flex-direction: column; gap: 1rem; z-index: 1; }
             .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; gap: .3rem; cursor: pointer; width: 70px; padding: .5rem; border-radius: 4px; transition: background .15s; }
-            .bcos-desktop-icon:hover { background: rgba(0,255,65,.1); }
-            .bcos-desktop-icon-emoji { font-size: 2rem; }
-            .bcos-desktop-icon-label { font-size: 11px; color: #e0e0e0; text-align: center; }
+            .bcos-desktop-icon:hover { background: rgba(0,0,0,.12); }
+            .bcos-desktop-icon-emoji { font-size: 2rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
+            .bcos-desktop-icon-label { font-size: 11px; color: #fff; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.7); font-weight: 600; }
             .bcos-window { position: absolute; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; box-shadow: 0 8px 32px rgba(0,0,0,.5); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; }
             .bcos-window-titlebar { background: #2a2a2a; padding: .4rem .6rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid #333; border-radius: 4px 4px 0 0; user-select: none; -webkit-user-select: none; }
             .bcos-window-title { font-size: 12px; color: #e0e0e0; font-weight: bold; }
@@ -9603,6 +9603,10 @@
                 _bcosPrint('  <span class="bcos-success">saves</span>         List all save slots');
                 _bcosPrint('  <span class="bcos-success">save [1-3]</span>    Save game to slot');
                 _bcosPrint('  <span class="bcos-success">load [1-3]</span>    Load game from slot');
+                _bcosPrint('<span class="bcos-info">─── Package Manager ───</span>');
+                _bcosPrint('  <span class="bcos-success">bcos update</span>   Refresh browser storage (clear cache & reload)');
+                _bcosPrint('  <span class="bcos-success">bcos upgrade</span>  View all installed module packages');
+                _bcosPrint('  <span class="bcos-success">bcos version</span>  Show bcos version info');
                 _bcosPrint('<span class="bcos-dim">Tip: TAB=autocomplete | Up/Down=history | Ctrl+L=clear</span>');
             },
             ls: (args) => {
@@ -9762,11 +9766,15 @@
             },
             // === System control commands ===
             theme: (args) => {
+                const curId = document.documentElement.getAttribute('data-theme') || 'bunny';
+                const curTheme = CONFIG.THEMES.find(t => t.id === curId);
                 if (!args[0]) {
-                    _bcosPrint('<span class="bcos-info">Available themes:</span>');
+                    _bcosPrint('<span class="bcos-info">===== Current Theme =====</span>');
+                    _bcosPrint('  Active: <span style="color:' + (curTheme?.colors[1]||'#FF6B9D') + ';font-weight:bold;">' + (curTheme?.name || curId) + '</span> (' + curId + ')');
+                    _bcosPrint('<span class="bcos-info">─── All Themes (' + CONFIG.THEMES.length + ') ───</span>');
                     CONFIG.THEMES.forEach((t, i) => {
-                        const cur = document.documentElement.getAttribute('data-theme') === t.id;
-                        _bcosPrint('  ' + String(i+1).padStart(2) + '. <span style="color:' + t.colors[1] + ';">' + t.name + '</span> (' + t.id + ')' + (cur ? ' <span class="bcos-success">← current</span>' : ''));
+                        const isCur = t.id === curId;
+                        _bcosPrint('  ' + String(i+1).padStart(2) + '. ' + (isCur ? '▸' : ' ') + ' <span style="color:' + t.colors[1] + ';">' + t.name + '</span> (' + t.id + ')' + (isCur ? ' <span class="bcos-success">← current</span>' : ''));
                     });
                     _bcosPrint('<span class="bcos-dim">Usage: theme &lt;id|name|number&gt;</span>');
                     return;
@@ -9882,6 +9890,67 @@
                 if (!v) { _bcosPrint('<span class="bcos-error">default: Invalid option. Choices: home, monopoly, anniversary, settings, bcos, desktop</span>'); return; }
                 setDefaultView(v);
                 _bcosPrint('<span class="bcos-success">✓ Default view set to: ' + v + '</span>');
+            },
+            bcos: (args) => {
+                const sub = args[0]?.toLowerCase();
+                if (!sub) {
+                    _bcosPrint('<span class="bcos-info">bcos — Bunny可可系统 Package Manager</span>');
+                    _bcosPrint('  <span class="bcos-success">bcos update</span>     Refresh browser storage (clear cache & reload)');
+                    _bcosPrint('  <span class="bcos-success">bcos upgrade</span>    View all installed module packages');
+                    _bcosPrint('  <span class="bcos-success">bcos version</span>    Show bcos version info');
+                    return;
+                }
+                if (sub === 'update') {
+                    _bcosPrint('<span class="bcos-warn">⏳ Refreshing browser storage...</span>');
+                    _bcosPrint('<span class="bcos-dim">  - Clearing caches...</span>');
+                    if ('caches' in window) {
+                        caches.keys().then(names => { names.forEach(n => caches.delete(n)); _bcosPrint('<span class="bcos-dim">  - Cleared ' + names.length + ' cache(s)</span>'); });
+                    }
+                    _bcosPrint('<span class="bcos-dim">  - Unregistering service worker...</span>');
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(regs => { regs.forEach(r => r.unregister()); });
+                    }
+                    _bcosPrint('<span class="bcos-dim">  - Clearing localStorage (preserving saves)...</span>');
+                    const _keepKeys = ['mono_save_0', 'mono_save_1', 'mono_save_2', 'mono_save_meta_0', 'mono_save_meta_1', 'mono_save_meta_2', 'cardInventory', 'defaultView', 'theme', 'fontScale', 'tabBarMode', 'sidebarMode'];
+                    const _allKeys = Object.keys(localStorage);
+                    let cleared = 0;
+                    _allKeys.forEach(k => { if (!_keepKeys.includes(k)) { localStorage.removeItem(k); cleared++; } });
+                    _bcosPrint('<span class="bcos-dim">  - Cleared ' + cleared + ' localStorage key(s)</span>');
+                    _bcosPrint('<span class="bcos-success">✓ Storage refreshed! Reloading in 1.5s...</span>');
+                    setTimeout(() => window.location.reload(true), 1500);
+                    return;
+                }
+                if (sub === 'upgrade' || sub === 'packages' || sub === 'modules') {
+                    const modules = [
+                        { name: 'bcos-core',        ver: '1.0.0', desc: 'Core system kernel & shell' },
+                        { name: 'bcos-terminal',     ver: '1.0.0', desc: 'Terminal emulator with fuzzy matching' },
+                        { name: 'bcos-desktop',      ver: '1.0.0', desc: 'Desktop environment & window manager' },
+                        { name: 'bcos-repos',        ver: '177.0', desc: 'GitHub repository archive (177 repos)' },
+                        { name: 'bcos-theme',        ver: '1.2.0', desc: '12 theme-adaptive desktop wallpapers & icons' },
+                        { name: 'bcos-files',        ver: '1.0.0', desc: 'File manager for repository browsing' },
+                        { name: 'bcos-monitor',      ver: '1.0.0', desc: 'System performance monitor' },
+                        { name: 'bcos-commands',     ver: '1.1.0', desc: 'System control commands (theme/font/save/etc)' },
+                        { name: 'bcos-defaultview',  ver: '1.0.0', desc: 'Default page on visit configuration' },
+                        { name: 'bcos-help',         ver: '1.0.0', desc: 'Help system & manual pages' },
+                        { name: 'bcos-boot',         ver: '1.0.0', desc: 'Boot sequence & logo renderer' },
+                        { name: 'bcos-windowmgr',    ver: '1.0.0', desc: 'Window drag, focus, z-index management' },
+                    ];
+                    _bcosPrint('<span class="bcos-info">===== bcos Installed Modules (' + modules.length + ') =====</span>');
+                    modules.forEach(m => {
+                        _bcosPrint('  <span class="bcos-success">' + m.name.padEnd(20) + '</span> <span class="bcos-dim">v' + m.ver.padEnd(7) + '</span> ' + m.desc);
+                    });
+                    _bcosPrint('<span class="bcos-dim">All packages are up to date. 🐰</span>');
+                    return;
+                }
+                if (sub === 'version' || sub === 'ver' || sub === '-v') {
+                    _bcosPrint('bcos 1.0.0 (Bunny可可系统)');
+                    _bcosPrint('Kernel: 177.0-repo | Shell: bsh 1.0.0');
+                    _bcosPrint('Theme engine: v1.2.0 (12 themes)');
+                    _bcosPrint('Build: ' + CONFIG.VERSION);
+                    return;
+                }
+                _bcosPrint('<span class="bcos-error">bcos: Unknown subcommand: ' + _bcosEscape(sub) + '</span>');
+                _bcosPrint('<span class="bcos-dim">Usage: bcos &lt;update|upgrade|version&gt;</span>');
             },
             sudo: () => _bcosPrint('<span class="bcos-warn">bcos: bunny is not in the sudoers file. This incident will be reported.</span>'),
             rm: (args) => { _bcosPrint(args[0] === '-rf' && (args[1] === '/' || args[1] === '/*') ? '<span class="bcos-warn">bcos: Nice try! The bunny prevented destruction.</span>' : '<span class="bcos-warn">bcos: rm: operation not permitted. The bunny protects all files.</span>'); },
@@ -10005,8 +10074,7 @@
         _bcos.mode = 'desktop';
         const ov = document.getElementById('bcos-overlay');
         const dt = _bcosGetDesktopTheme();
-        ov.innerHTML = `<button class="bcos-exit-btn" onclick="closeBcosOS()">[EXIT] bcos</button>
-        <div id="bcos-desktop">
+        ov.innerHTML = `<div id="bcos-desktop">
             <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
@@ -13364,6 +13432,14 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9329', title:'bcos系统增强 & 桌面图标修复 & 包管理命令', items:[
+            '🎨 修复亮色主题下桌面图标文字不清晰：添加文字阴影和emoji投影，确保所有主题下可读性',
+            '🖥️ 移除桌面右上角退出按钮，统一使用开始菜单的关机功能退出bcos',
+            '📋 theme命令优化：输入theme直接显示当前激活主题信息，再列出全部主题列表',
+            '📦 新增bcos update命令：刷新浏览器存储（清除缓存/注销SW/清理localStorage保留存档）',
+            '📦 新增bcos upgrade命令：查看所有已安装模块包（12个bcos系统模块）',
+            '📦 新增bcos version命令：显示bcos系统版本、内核、主题引擎等详细信息',
+        ]},
         { ver:'v7.8.1.9328', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
             '🏠 同区域集套 (Block Monopoly)：集齐区域全套地产基础租金翻倍 (2.0x)，已建房租金提升 1.5x；多处同区地产享 15%/处 叠加租金提升；抵押房产租金清零',
             '🤝 全功能地产交易系统：支持自由交易/买卖/互换 地产 + 卡牌 + 载具 + 现金，包含智能估值与多轮还价机制',
