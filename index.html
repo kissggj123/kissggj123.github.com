@@ -1538,6 +1538,17 @@
                         <span>🔔 回合通知</span>
                         <button class="btn btn-secondary btn-sm" id="notify-toggle-btn" onclick="subscribePushNotifications()">开启</button>
                     </div>
+                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:.85rem;">🚀 首次进入页面</span>
+                        <select id="default-view-select" onchange="setDefaultView(this.value)" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;font-size:.8rem;">
+                            <option value="home">🏠 首页</option>
+                            <option value="monopoly">🎲 大富翁</option>
+                            <option value="anniversary">💕 纪念日</option>
+                            <option value="settings">⚙️ 设置</option>
+                            <option value="bcos">🖥️ bcos 终端</option>
+                            <option value="bcos-desktop">🖥️ bcos 桌面</option>
+                        </select>
+                    </div>
                     <div class="setting-row">
                         <span>📲 安装App</span>
                         <button class="btn btn-secondary btn-sm" onclick="installPWA()">添加到主屏</button>
@@ -2441,7 +2452,24 @@
         safe(initAvatarEffect);
         safe(initMobileTouchBloom);
         safe(startLoop);
+        safe(applyDefaultView);
     };
+
+    function applyDefaultView() {
+        const dv = safeGetItem('defaultView', 'home');
+        if (dv === 'home') return;
+        if (dv === 'monopoly') navigateTo('monopoly');
+        else if (dv === 'anniversary') navigateTo('anniversary');
+        else if (dv === 'logs') navigateTo('logs');
+        else if (dv === 'settings') navigateTo('settings');
+        else if (dv === 'bcos') setTimeout(() => showBcosOS(), 500);
+        else if (dv === 'bcos-desktop') setTimeout(() => { showBcosOS(); setTimeout(() => { const ov = document.getElementById('bcos-overlay'); if (ov) _bcosBoot(ov).then(() => _bcosLaunchDesktop()); }, 2000); }, 500);
+    }
+
+    function setDefaultView(v) {
+        safeSetItem('defaultView', v);
+        showToast('默认页面已更新', 'success');
+    }
 
     /* ==================== Save Migration ==================== */
     function migrateSaveKey() {
@@ -9847,6 +9875,14 @@
                 if (!v) { _bcosPrint('<span class="bcos-error">goto: Unknown view. Options: home, settings, monopoly, anniversary, logs</span>'); return; }
                 closeBcosOS(); navigateTo(v);
             },
+            default: (args) => {
+                const opts = { home: 'home', monopoly: 'monopoly', anniversary: 'anniversary', settings: 'settings', bcos: 'bcos', 'bcos-desktop': 'bcos-desktop', desktop: 'bcos-desktop', terminal: 'bcos' };
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Default view: ' + (safeGetItem('defaultView','home')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: default &lt;home|monopoly|anniversary|settings|bcos|desktop&gt;</span>'); return; }
+                const v = opts[args[0].toLowerCase()];
+                if (!v) { _bcosPrint('<span class="bcos-error">default: Invalid option. Choices: home, monopoly, anniversary, settings, bcos, desktop</span>'); return; }
+                setDefaultView(v);
+                _bcosPrint('<span class="bcos-success">✓ Default view set to: ' + v + '</span>');
+            },
             sudo: () => _bcosPrint('<span class="bcos-warn">bcos: bunny is not in the sudoers file. This incident will be reported.</span>'),
             rm: (args) => { _bcosPrint(args[0] === '-rf' && (args[1] === '/' || args[1] === '/*') ? '<span class="bcos-warn">bcos: Nice try! The bunny prevented destruction.</span>' : '<span class="bcos-warn">bcos: rm: operation not permitted. The bunny protects all files.</span>'); },
             vim: () => _bcosPrint('<span class="bcos-dim">bcos: vim is not installed. Try \'echo\' instead.</span>'),
@@ -9944,32 +9980,53 @@
         _bcosActiveOutput = null;
     }
 
+    const _bcosThemeDesktop = {
+        bunny:    { wallpaper: 'linear-gradient(135deg,#FFF0F5 0%,#FFB5BA 50%,#FF6B9D 100%)', grid: 'rgba(255,107,157,.06)', accent: '#FF6B9D', icons: { terminal: '🐰', files: '🌸', monitor: '💖', about: '🎀', github: '🌐' }, taskbarBg: '#FF6B9D', label: '棉花糖兔' },
+        forest:   { wallpaper: 'linear-gradient(135deg,#F0F7EE 0%,#A5D6A7 50%,#4CAF50 100%)', grid: 'rgba(76,175,80,.06)', accent: '#4CAF50', icons: { terminal: '🌿', files: '🍃', monitor: '🌳', about: '🦌', github: '🌐' }, taskbarBg: '#2E7D32', label: '森林兔窝' },
+        ocean:    { wallpaper: 'linear-gradient(135deg,#E8F4FD 0%,#7DD3FC 50%,#0EA5E9 100%)', grid: 'rgba(14,165,233,.06)', accent: '#0EA5E9', icons: { terminal: '🐚', files: '🌊', monitor: '🐬', about: '🐟', github: '🌐' }, taskbarBg: '#0284C7', label: '海洋蓝' },
+        starlight:{ wallpaper: 'linear-gradient(135deg,#1a1a2e 0%,#16213E 50%,#0F3460 100%)', grid: 'rgba(167,139,250,.08)', accent: '#a78bfa', icons: { terminal: '⭐', files: '🌌', monitor: '🔮', about: '🌙', github: '🌐' }, taskbarBg: '#0F0F23', label: '星空紫' },
+        cyber:    { wallpaper: 'linear-gradient(135deg,#0c0a1d 0%,#1a0B2E 50%,#0c0a1d 100%)', grid: 'rgba(251,191,36,.06)', accent: '#fbbf24', icons: { terminal: '⚡', files: '💾', monitor: '🔥', about: '🤖', github: '🌐' }, taskbarBg: '#0c0a1d', label: '赛博朋克' },
+        sunset:   { wallpaper: 'linear-gradient(135deg,#FFF3E0 0%,#FFB74D 50%,#FF6B35 100%)', grid: 'rgba(255,107,53,.06)', accent: '#FF6B35', icons: { terminal: '🌅', files: '🌵', monitor: '🔥', about: '🏜️', github: '🌐' }, taskbarBg: '#E55100', label: '日落橙' },
+        mint:     { wallpaper: 'linear-gradient(135deg,#E8F5E9 0%,#80CBC4 50%,#26A69A 100%)', grid: 'rgba(38,166,154,.06)', accent: '#26A69A', icons: { terminal: '🍵', files: '🌱', monitor: '🫧', about: '🍃', github: '🌐' }, taskbarBg: '#00695C', label: '薄荷绿' },
+        rose:     { wallpaper: 'linear-gradient(135deg,#FCE4EC 0%,#F48FB1 50%,#E91E63 100%)', grid: 'rgba(233,30,99,.06)', accent: '#E91E63', icons: { terminal: '🌹', files: '💝', monitor: '💎', about: '🦩', github: '🌐' }, taskbarBg: '#AD1457', label: '玫瑰金' },
+        aurora:   { wallpaper: 'linear-gradient(135deg,#0B1026 0%,#1a2a4a 50%,#0B1026 100%)', grid: 'rgba(6,255,165,.08)', accent: '#06FFA5', icons: { terminal: '🌌', files: '✨', monitor: '🛸', about: '🦊', github: '🌐' }, taskbarBg: '#0B1026', label: '极光绿' },
+        galaxy:   { wallpaper: 'linear-gradient(135deg,#0F0C29 0%,#302B63 50%,#24243E 100%)', grid: 'rgba(192,132,252,.08)', accent: '#C084FC', icons: { terminal: '🌠', files: '🪐', monitor: '🔭', about: '🌑', github: '🌐' }, taskbarBg: '#0F0C29', label: '银河紫' },
+        candy:    { wallpaper: 'linear-gradient(135deg,#FFF8E7 0%,#FFD740 50%,#FF4081 100%)', grid: 'rgba(255,64,129,.06)', accent: '#FF4081', icons: { terminal: '🍬', files: '🍭', monitor: '🧁', about: '🍰', github: '🌐' }, taskbarBg: '#C2185B', label: '糖果粉' },
+        matrix:   { wallpaper: 'linear-gradient(135deg,#000000 0%,#001500 50%,#000000 100%)', grid: 'rgba(0,255,65,.08)', accent: '#00FF41', icons: { terminal: '💻', files: '📡', monitor: '📟', about: '🟢', github: '🌐' }, taskbarBg: '#000000', label: '矩阵绿' },
+    };
+
+    function _bcosGetDesktopTheme() {
+        const id = document.documentElement.getAttribute('data-theme') || 'bunny';
+        return _bcosThemeDesktop[id] || _bcosThemeDesktop.bunny;
+    }
+
     function _bcosLaunchDesktop() {
         if (_bcos.clockInterval) clearInterval(_bcos.clockInterval);
         _bcos.mode = 'desktop';
         const ov = document.getElementById('bcos-overlay');
+        const dt = _bcosGetDesktopTheme();
         ov.innerHTML = `<button class="bcos-exit-btn" onclick="closeBcosOS()">[EXIT] bcos</button>
         <div id="bcos-desktop">
-            <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg">
+            <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
-                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">🖥️</div><div class="bcos-desktop-icon-label">Terminal</div></div>
-                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">📁</div><div class="bcos-desktop-icon-label">Files</div></div>
-                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">📊</div><div class="bcos-desktop-icon-label">Monitor</div></div>
-                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">🐰</div><div class="bcos-desktop-icon-label">About</div></div>
-                    <div class="bcos-desktop-icon" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')"><div class="bcos-desktop-icon-emoji">🌐</div><div class="bcos-desktop-icon-label">GitHub</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">${dt.icons.files}</div><div class="bcos-desktop-icon-label">Files</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">${dt.icons.monitor}</div><div class="bcos-desktop-icon-label">Monitor</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">${dt.icons.about}</div><div class="bcos-desktop-icon-label">About</div></div>
+                    <div class="bcos-desktop-icon" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')"><div class="bcos-desktop-icon-emoji">${dt.icons.github}</div><div class="bcos-desktop-icon-label">GitHub</div></div>
                 </div>
                 <div id="bcos-windows"></div>
             </div>
-            <div class="bcos-taskbar">
-                <button class="bcos-start-btn" onclick="_bcosToggleStartMenu()">🐰 bcos</button>
+            <div class="bcos-taskbar" style="background:${dt.taskbarBg};">
+                <button class="bcos-start-btn" style="border-color:${dt.accent};color:${dt.accent};" onclick="_bcosToggleStartMenu()">🐰 bcos</button>
                 <div class="bcos-taskbar-items" id="bcos-taskbar-items"></div>
                 <div class="bcos-taskbar-clock" id="bcos-clock">--:--</div>
             </div>
             <div class="bcos-start-menu" id="bcos-start-menu">
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('terminal');_bcosToggleStartMenu()">🖥️ Terminal</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('files');_bcosToggleStartMenu()">📁 File Manager</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monitor');_bcosToggleStartMenu()">📊 System Monitor</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('about');_bcosToggleStartMenu()">🐰 About bcos</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('terminal');_bcosToggleStartMenu()">${dt.icons.terminal} Terminal</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('files');_bcosToggleStartMenu()">${dt.icons.files} File Manager</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monitor');_bcosToggleStartMenu()">${dt.icons.monitor} System Monitor</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('about');_bcosToggleStartMenu()">${dt.icons.about} About bcos</div>
                 <div class="bcos-start-menu-separator"></div>
                 <div class="bcos-start-menu-item" onclick="_bcosBackToTerminal();_bcosToggleStartMenu()">⌨️ Back to Terminal</div>
                 <div class="bcos-start-menu-item" onclick="closeBcosOS();_bcosToggleStartMenu()">⏻ Exit bcos</div>
@@ -10696,6 +10753,8 @@
         if (tbSelect) tbSelect.value = safeGetItem('tabBarMode', 'always');
         const sbSelect = document.getElementById('sidebar-mode-select');
         if (sbSelect) sbSelect.value = safeGetItem('sidebarCollapsed', 'auto');
+        const dvSelect = document.getElementById('default-view-select');
+        if (dvSelect) dvSelect.value = safeGetItem('defaultView', 'home');
         loadGameSettings();
     }
 
