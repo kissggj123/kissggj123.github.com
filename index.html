@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9328 -->
+    <!-- VERSION: v7.8.1.9330 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1273,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9329</div>
+                <div class="subtitle">v7.8.1.9330</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1566,7 +1566,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9329</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9330</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1633,7 +1633,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9329',
+        VERSION: 'v7.8.1.9330',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2599,7 +2599,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9329 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9330 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9189,7 +9189,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9329 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9330 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9597,8 +9597,12 @@
                 _bcosPrint('  <span class="bcos-success">players [n]</span>  Set player count (random|4|6|8)');
                 _bcosPrint('  <span class="bcos-success">fullscreen</span>    Toggle fullscreen');
                 _bcosPrint('  <span class="bcos-success">egg</span>           Toggle egg click trigger');
+                _bcosPrint('  <span class="bcos-success">notify</span>        Enable push notifications');
+                _bcosPrint('  <span class="bcos-success">dice [1-4]</span>   Set dice multiplier (1x|2x|3x|4x)');
                 _bcosPrint('  <span class="bcos-success">settings</span>      Show all current settings');
                 _bcosPrint('  <span class="bcos-success">goto [view]</span>  Navigate to (home|settings|monopoly|logs)');
+                _bcosPrint('  <span class="bcos-success">default [view]</span> Set default page (home|monopoly|bcos|desktop)');
+                _bcosPrint('  <span class="bcos-success">install</span>       PWA install guide / prompt');
                 _bcosPrint('<span class="bcos-info">─── Save Management ───</span>');
                 _bcosPrint('  <span class="bcos-success">saves</span>         List all save slots');
                 _bcosPrint('  <span class="bcos-success">save [1-3]</span>    Save game to slot');
@@ -9810,7 +9814,7 @@
             },
             sidebar: (args) => {
                 const modes = ['auto', 'auto-hide', 'locked-open', 'locked-collapsed'];
-                if (!args[0]) { _bcosPrint('<span class="bcos-info">Sidebar mode: ' + (safeGetItem('sidebarMode','auto')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: sidebar &lt;auto|hide|open|collapsed&gt;</span>'); return; }
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Sidebar mode: ' + (safeGetItem('sidebarCollapsed','auto')) + '</span>'); _bcosPrint('<span class="bcos-dim">Usage: sidebar &lt;auto|hide|open|collapsed&gt;</span>'); return; }
                 const map = { auto: 'auto', hide: 'auto-hide', open: 'locked-open', collapsed: 'locked-collapsed' };
                 const m = map[args[0]] || args[0];
                 if (!modes.includes(m)) { _bcosPrint('<span class="bcos-error">sidebar: Invalid mode. Options: auto, hide, open, collapsed</span>'); return; }
@@ -9836,7 +9840,7 @@
                 _bcosPrint('<span class="bcos-success">✓ Players: ' + args[0] + ' (next game)</span>');
             },
             fullscreen: () => { toggleFullscreen(); _bcosPrint('<span class="bcos-success">✓ Fullscreen toggled</span>'); },
-            egg: () => { toggleEggClickTrigger(); _bcosPrint('<span class="bcos-success">✓ Egg click trigger: ' + (safeGetItem('eggClickTrigger','0') === '1' ? 'ON' : 'OFF') + '</span>'); },
+            egg: () => { toggleEggClickTrigger(); _bcosPrint('<span class="bcos-success">✓ Egg click trigger: ' + (safeGetItem('eggClickTrigger','1') === '1' ? 'ON' : 'OFF') + '</span>'); },
             save: (args) => {
                 const slot = parseInt(args[0]) - 1;
                 if (isNaN(slot) || slot < 0 || slot >= 3) { _bcosPrint('<span class="bcos-error">save: Invalid slot. Usage: save &lt;1-3&gt;</span>'); return; }
@@ -9865,17 +9869,67 @@
                 }
             },
             settings: () => {
-                _bcosPrint('<span class="bcos-info">===== Current Settings =====</span>');
-                _bcosPrint('  Theme:     <span class="bcos-success">' + (document.documentElement.getAttribute('data-theme')||'bunny') + '</span>');
-                _bcosPrint('  Font:      <span class="bcos-success">' + (safeGetItem('fontScale','100')) + '%</span> | Pixel: <span class="bcos-success">' + (pixelFontEnabled?'ON':'OFF') + '</span>');
-                _bcosPrint('  Tab bar:   <span class="bcos-success">' + (safeGetItem('tabBarMode','always')) + '</span>');
-                _bcosPrint('  Sidebar:   <span class="bcos-success">' + (safeGetItem('sidebarMode','auto')) + '</span>');
-                _bcosPrint('  Mouse fx:  <span class="bcos-success">' + (safeGetItem('mouseBunny','1')==='1'?'ON':'OFF') + '</span>');
-                _bcosPrint('  Text sel:  <span class="bcos-success">' + (document.body.classList.contains('no-select')?'DISABLED':'ENABLED') + '</span>');
-                _bcosPrint('  Map size:  <span class="bcos-success">' + (safeGetItem('mapSizePref','medium')) + '</span>');
-                _bcosPrint('  Players:   <span class="bcos-success">' + (safeGetItem('playerCountPref','random')) + '</span>');
-                _bcosPrint('  Egg click: <span class="bcos-success">' + (safeGetItem('eggClickTrigger','0')==='1'?'ON':'OFF') + '</span>');
-                _bcosPrint('  Avatar:    <span class="bcos-success">' + (safeGetItem('sidebarAvatar','emoji')) + '</span>');
+                const curTheme = CONFIG.THEMES.find(t => t.id === (document.documentElement.getAttribute('data-theme')||'bunny'));
+                const notifyStatus = !('Notification' in window) ? 'unsupported' : Notification.permission;
+                const dvLabel = { home: '🏠 首页', monopoly: '🎲 大富翁', anniversary: '💕 纪念日', settings: '⚙️ 设置', bcos: '🖥️ bcos终端', 'bcos-desktop': '🖥️ bcos桌面' }[safeGetItem('defaultView','home')] || safeGetItem('defaultView','home');
+                _bcosPrint('<span class="bcos-info">===== All Settings =====</span>');
+                _bcosPrint('<span class="bcos-info">─── Appearance ───</span>');
+                _bcosPrint('  Theme:       <span class="bcos-success">' + (curTheme?.name||'bunny') + '</span> (' + (document.documentElement.getAttribute('data-theme')||'bunny') + ')');
+                _bcosPrint('  Font scale:  <span class="bcos-success">' + (safeGetItem('fontScale','100')) + '%</span>');
+                _bcosPrint('  Pixel font:  <span class="bcos-success">' + (pixelFontEnabled?'ON':'OFF') + '</span>');
+                _bcosPrint('  Avatar:      <span class="bcos-success">' + (safeGetItem('sidebarAvatar','emoji')) + '</span>');
+                _bcosPrint('<span class="bcos-info">─── Layout ───</span>');
+                _bcosPrint('  Tab bar:     <span class="bcos-success">' + (safeGetItem('tabBarMode','always')) + '</span>');
+                _bcosPrint('  Sidebar:     <span class="bcos-success">' + (safeGetItem('sidebarCollapsed','auto')) + '</span>');
+                _bcosPrint('<span class="bcos-info">─── Behavior ───</span>');
+                _bcosPrint('  Mouse fx:    <span class="bcos-success">' + (safeGetItem('mouseBunny','1')==='1'?'ON':'OFF') + '</span>');
+                _bcosPrint('  Text select: <span class="bcos-success">' + (document.body.classList.contains('no-select')?'DISABLED':'ENABLED') + '</span>');
+                _bcosPrint('  Egg click:   <span class="bcos-success">' + (safeGetItem('eggClickTrigger','1')==='1'?'ON':'OFF') + '</span>');
+                _bcosPrint('  Notify:      <span class="bcos-success">' + notifyStatus + '</span>');
+                _bcosPrint('  Fullscreen:  <span class="bcos-success">' + (!!document.fullscreenElement?'ON':'OFF') + '</span>');
+                _bcosPrint('<span class="bcos-info">─── Game ───</span>');
+                _bcosPrint('  Map size:    <span class="bcos-success">' + (safeGetItem('mapSizePref','medium')) + '</span>');
+                _bcosPrint('  Players:     <span class="bcos-success">' + (safeGetItem('playerCountPref','random')) + '</span>');
+                _bcosPrint('  Dice mult:   <span class="bcos-success">' + (safeGetItem('diceMultiplierPref','1')) + 'x</span>');
+                _bcosPrint('<span class="bcos-info">─── Navigation ───</span>');
+                _bcosPrint('  Default view:<span class="bcos-success"> ' + dvLabel + '</span>');
+                _bcosPrint('<span class="bcos-dim">Tip: Use corresponding commands to change any setting.</span>');
+            },
+            notify: async () => {
+                if (!('Notification' in window)) { _bcosPrint('<span class="bcos-error">notify: Notifications not supported in this browser</span>'); return; }
+                if (Notification.permission === 'granted') { _bcosPrint('<span class="bcos-success">✓ Notifications already enabled</span>'); return; }
+                if (Notification.permission === 'denied') { _bcosPrint('<span class="bcos-error">notify: Permission denied. Please enable in browser settings.</span>'); return; }
+                const perm = await Notification.requestPermission();
+                if (perm === 'granted') {
+                    _bcosPrint('<span class="bcos-success">✓ Notifications enabled</span>');
+                    try { const reg = await navigator.serviceWorker.ready; reg.showNotification('🐰 bcos', { body: 'Notifications activated!', icon: '/icon/192.png' }); } catch(e) {}
+                } else {
+                    _bcosPrint('<span class="bcos-warn">Notification permission denied</span>');
+                }
+            },
+            install: () => {
+                const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                if (standalone) { _bcosPrint('<span class="bcos-success">✓ Already running in PWA mode</span>'); return; }
+                if (_deferredPrompt) { _deferredPrompt.prompt(); _deferredPrompt.userChoice.then(r => { _bcosPrint('<span class="bcos-success">✓ PWA install: ' + r.outcome + '</span>'); _deferredPrompt = null; }); return; }
+                const ua = navigator.userAgent;
+                const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+                const isAndroid = /Android/i.test(ua);
+                const isMacSafari = /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome/.test(ua);
+                _bcosPrint('<span class="bcos-info">===== PWA Install Guide =====</span>');
+                if (isIOS) { _bcosPrint('  iOS: Safari → Share ↗ → Add to Home Screen'); }
+                else if (isAndroid) { _bcosPrint('  Android: Chrome menu ⋮ → Install app'); }
+                else if (isMacSafari) { _bcosPrint('  macOS Safari: File → Add to Dock'); }
+                else { _bcosPrint('  Desktop: Click install icon in address bar'); }
+                _bcosPrint('<span class="bcos-dim">Or use Chrome/Edge for one-click install prompt.</span>');
+            },
+            dice: (args) => {
+                const mults = [1, 2, 3, 4];
+                if (!args[0]) { _bcosPrint('<span class="bcos-info">Dice multiplier: ' + (safeGetItem('diceMultiplierPref','1')) + 'x</span>'); _bcosPrint('<span class="bcos-dim">Usage: dice &lt;1|2|3|4&gt;  (2x=25% fail, 3x=35%, 4x=45%)</span>'); return; }
+                const v = parseInt(args[0]);
+                if (!mults.includes(v)) { _bcosPrint('<span class="bcos-error">dice: Invalid multiplier. Options: 1, 2, 3, 4</span>'); return; }
+                safeSetItem('diceMultiplierPref', String(v));
+                if (typeof mono !== 'undefined' && mono.players && mono.players[0] && mono.currentPlayer === 0 && !mono.rolling) { mono.players[0].diceMultiplier = v; renderMonopoly(); }
+                _bcosPrint('<span class="bcos-success">✓ Dice multiplier: ' + v + 'x</span>');
             },
             goto: (args) => {
                 const views = { home: 'home', settings: 'settings', monopoly: 'monopoly', game: 'monopoly', anniversary: 'anniversary', logs: 'logs' };
@@ -9911,7 +9965,7 @@
                         navigator.serviceWorker.getRegistrations().then(regs => { regs.forEach(r => r.unregister()); });
                     }
                     _bcosPrint('<span class="bcos-dim">  - Clearing localStorage (preserving saves)...</span>');
-                    const _keepKeys = ['mono_save_0', 'mono_save_1', 'mono_save_2', 'mono_save_meta_0', 'mono_save_meta_1', 'mono_save_meta_2', 'cardInventory', 'defaultView', 'theme', 'fontScale', 'tabBarMode', 'sidebarMode'];
+                    const _keepKeys = ['mono_save_0', 'mono_save_1', 'mono_save_2', 'mono_save_meta_0', 'mono_save_meta_1', 'mono_save_meta_2', 'cardInventory', 'defaultView', 'theme', 'fontScale', 'pixelFont', 'tabBarMode', 'sidebarCollapsed', 'mouseBunny', 'textSelectDisabled', 'sidebarAvatar', 'mapSizePref', 'playerCountPref', 'diceMultiplierPref', 'eggClickTrigger', 'stockSelectedIdx', 'stockSelectedLeverage'];
                     const _allKeys = Object.keys(localStorage);
                     let cleared = 0;
                     _allKeys.forEach(k => { if (!_keepKeys.includes(k)) { localStorage.removeItem(k); cleared++; } });
@@ -9960,6 +10014,7 @@
             git: () => _bcosPrint('<span class="bcos-dim">bcos: You ARE the git! 177 repos belong to you.</span>'),
             vi: () => _bcosPrint('<span class="bcos-dim">bcos: vi is not installed.</span>'),
             python: () => _bcosPrint('<span class="bcos-dim">bcos: python is not installed in bcos.</span>'),
+            setting: () => _bcosGetCommands().settings(),
             bc: () => _bcosPrint('🐰'),
         };
     }
@@ -13432,6 +13487,17 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9330', title:'bcos命令全覆盖 & settings增强 & bug修复', items:[
+            '📋 settings命令重构：分组显示全部16项参数（外观/布局/行为/游戏/导航），含default view、dice mult、notify、fullscreen等',
+            '🔔 新增notify命令：请求浏览器推送通知权限，支持granted/denied状态检测',
+            '📱 新增install命令：PWA安装引导，自动检测平台并显示对应安装步骤',
+            '🎲 新增dice命令：设置骰子倍数(1x/2x/3x/4x)，含风险提示',
+            '🔧 修复sidebar命令读取错误localStorage键名(sidebarMode→sidebarCollapsed)',
+            '🔧 修复settings命令中sidebar参数读取错误键名',
+            '🔧 修复egg命令默认值不一致(eggClickTrigger默认应为1)',
+            '🔧 修复bcos update保留键名错误(sidebarMode→sidebarCollapsed)，补全12个缺失设置键',
+            '⚡ 新增setting(单数)别名，输入setting或settings均可查看全部参数',
+        ]},
         { ver:'v7.8.1.9329', title:'bcos系统增强 & 桌面图标修复 & 包管理命令', items:[
             '🎨 修复亮色主题下桌面图标文字不清晰：添加文字阴影和emoji投影，确保所有主题下可读性',
             '🖥️ 移除桌面右上角退出按钮，统一使用开始菜单的关机功能退出bcos',
