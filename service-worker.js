@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.0.9326
-const CACHE_VERSION = 'v7.8.0.9326';
+// Service Worker - Bunny CC v7.8.0.9327
+const CACHE_VERSION = 'v7.8.0.9327';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 const CORE_ASSETS = [
@@ -19,6 +19,7 @@ const OLD_CACHE_PATTERNS = [
     'bunny-cc-v7.8.0.9323', 'bunny-cc-runtime-v7.8.0.9323',
     'bunny-cc-v7.8.0.9324', 'bunny-cc-runtime-v7.8.0.9324',
     'bunny-cc-v7.8.0.9325', 'bunny-cc-runtime-v7.8.0.9325',
+    'bunny-cc-v7.8.0.9326', 'bunny-cc-runtime-v7.8.0.9326',
     'bunny-cc-v7.7.2.9312', 'bunny-cc-runtime-v7.7.2.9312',
     'bunny-cc-v7.7.2.9305', 'bunny-cc-runtime-v7.7.2.9305',
     'bunny-cc-v7.7.2.9306', 'bunny-cc-runtime-v7.7.2.9306',
