@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.0.9323 -->
+    <!-- VERSION: v7.8.0.9324 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1273,7 +1273,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.0.9323</div>
+                <div class="subtitle">v7.8.0.9324</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1555,7 +1555,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.0.9323</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.0.9324</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1622,7 +1622,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.0.9323',
+        VERSION: 'v7.8.0.9324',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2571,7 +2571,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.0.9323 已启动', 'info');
+        logEvent('兔可可王国 v7.8.0.9324 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9161,7 +9161,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.0.9323 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.0.9324 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9454,7 +9454,9 @@
     function _bcosPrint(html) {
         const out = document.getElementById('bcos-output');
         if (!out) return;
-        out.innerHTML += html + '\n';
+        const line = document.createElement('div');
+        line.innerHTML = html;
+        out.appendChild(line);
         const screen = document.getElementById('bcos-screen');
         if (screen) screen.scrollTop = screen.scrollHeight;
     }
@@ -9556,7 +9558,7 @@
                 _bcosPrint('  <span class="bcos-success">Updated:</span> ' + repo[5]);
                 _bcosPrint('  <span class="bcos-success">Size:</span> ' + (repo[8] >= 1024 ? (repo[8]/1024).toFixed(1) + ' MB' : repo[8] + ' KB'));
                 _bcosPrint('  <span class="bcos-success">Type:</span> ' + (repo[7] ? 'Fork' : 'Original'));
-                if (repo[9]) _bcosPrint('  <span class="bcos-success">Homepage:</span> <span class="bcos-link">' + _bcosEscape(repo[9]) + '</span>');
+                if (repo[9]) _bcosPrint('  <span class="bcos-success">Homepage:</span> <span class="bcos-link" onclick="window.open(\'' + repo[9] + '\',\'_blank\')">' + _bcosEscape(repo[9]) + '</span>');
                 _bcosPrint('  <span class="bcos-success">URL:</span> <span class="bcos-link" onclick="window.open(\'' + repo[6] + '\',\'_blank\')">' + _bcosEscape(repo[6]) + '</span>');
                 _bcosPrint('<span class="bcos-info">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>');
             },
@@ -9750,7 +9752,10 @@
         const input = document.getElementById('bcos-input');
         input.focus();
         input.addEventListener('keydown', _bcosHandleKey);
-        document.getElementById('bcos-screen').addEventListener('click', () => { if (_bcos.mode === 'terminal') input.focus(); });
+        const screen = document.getElementById('bcos-screen');
+        const newScreen = screen.cloneNode(true);
+        screen.replaceWith(newScreen);
+        newScreen.addEventListener('click', () => { if (_bcos.mode === 'terminal') { const inp = document.getElementById('bcos-input'); if (inp) inp.focus(); } });
     }
 
     function showBcosOS() {
@@ -9776,11 +9781,11 @@
         <div id="bcos-desktop">
             <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg">
                 <div class="bcos-desktop-icons">
-                    <div class="bcos-desktop-icon" ondblclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">🖥️</div><div class="bcos-desktop-icon-label">Terminal</div></div>
-                    <div class="bcos-desktop-icon" ondblclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">📁</div><div class="bcos-desktop-icon-label">Files</div></div>
-                    <div class="bcos-desktop-icon" ondblclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">📊</div><div class="bcos-desktop-icon-label">Monitor</div></div>
-                    <div class="bcos-desktop-icon" ondblclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">🐰</div><div class="bcos-desktop-icon-label">About</div></div>
-                    <div class="bcos-desktop-icon" ondblclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')"><div class="bcos-desktop-icon-emoji">🌐</div><div class="bcos-desktop-icon-label">GitHub</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">🖥️</div><div class="bcos-desktop-icon-label">Terminal</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">📁</div><div class="bcos-desktop-icon-label">Files</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">📊</div><div class="bcos-desktop-icon-label">Monitor</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">🐰</div><div class="bcos-desktop-icon-label">About</div></div>
+                    <div class="bcos-desktop-icon" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')"><div class="bcos-desktop-icon-emoji">🌐</div><div class="bcos-desktop-icon-label">GitHub</div></div>
                 </div>
                 <div id="bcos-windows"></div>
             </div>
@@ -9801,7 +9806,8 @@
         </div>`;
         _bcosUpdateClock();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
-        document.getElementById('bcos-desktop-bg').addEventListener('click', () => { document.getElementById('bcos-start-menu').classList.remove('show'); });
+        document.getElementById('bcos-desktop-bg').addEventListener('click', () => { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show'); });
+        if (!_bcos._escBound) { _bcos._escBound = true; document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.getElementById('bcos-overlay') && document.getElementById('bcos-overlay').classList.contains('active')) closeBcosOS(); }); }
         setTimeout(() => _bcosOpenApp('terminal'), 300);
     }
 
@@ -9819,9 +9825,10 @@
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         const offset = Object.keys(_bcos.wins).length * 30;
         win.style.cssText += `left:${50+offset}px;top:${30+offset}px;width:${cfg.w}px;height:${cfg.h}px;`;
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)"><span class="bcos-window-title">${cfg.t}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseWin('${app}')"></button></div></div><div class="bcos-window-content" id="${winId}-content"></div>`;
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><span class="bcos-window-title">${cfg.t}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseWin('${app}')"></button></div></div><div class="bcos-window-content" id="${winId}-content"></div>`;
         container.appendChild(win);
         _bcos.wins[app] = winId;
+        _bcos.activeWin = app;
         win.addEventListener('mousedown', () => _bcosFocusWin(app));
         const content = document.getElementById(winId + '-content');
         if (app === 'terminal') _bcosRenderDesktopTerminal(content);
@@ -9831,10 +9838,11 @@
         _bcosUpdateTaskbar();
     }
 
-    function _bcosFocusWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.style.zIndex = ++_bcos.winZ; _bcosUpdateTaskbar(); }
-    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; _bcosUpdateTaskbar(); }
-    function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
-    function _bcosDragStart(winId, e) { const win = document.getElementById(winId); if (!win) return; const r = win.getBoundingClientRect(); const ox = e.clientX - r.left, oy = e.clientY - r.top; function mv(e) { win.style.left = (e.clientX-ox)+'px'; win.style.top = (e.clientY-oy)+'px'; } function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); } document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up); e.preventDefault(); }
+    function _bcosFocusWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.style.zIndex = ++_bcos.winZ; _bcos.activeWin = app; _bcosUpdateTaskbar(); }
+    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; _bcosUpdateTaskbar(); }
+    function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
+    function _bcosDragStart(winId, e) { const win = document.getElementById(winId); if (!win) return; const r = win.getBoundingClientRect(); const ox = e.clientX - r.left, oy = e.clientY - r.top; function mv(ev) { win.style.left = (ev.clientX-ox)+'px'; win.style.top = (ev.clientY-oy)+'px'; } function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); } document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up); e.preventDefault(); }
+    function _bcosTouchDragStart(winId, e) { const win = document.getElementById(winId); if (!win || !e.touches[0]) return; const r = win.getBoundingClientRect(); const t = e.touches[0]; const ox = t.clientX - r.left, oy = t.clientY - r.top; function mv(ev) { if (!ev.touches[0]) return; win.style.left = (ev.touches[0].clientX-ox)+'px'; win.style.top = (ev.touches[0].clientY-oy)+'px'; } function up() { document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up); } document.addEventListener('touchmove',mv,{passive:false}); document.addEventListener('touchend',up); e.preventDefault(); }
 
     function _bcosRenderDesktopTerminal(content) {
         content.style.padding = '0';
@@ -9852,11 +9860,17 @@
                 const parts = cmd.trim().split(/\s+/), name = parts[0].toLowerCase(), args = parts.slice(1);
                 if (name === 'exit' || name === 'close') { _bcosCloseWin('terminal'); return; }
                 const oldP = window._bcosPrint;
-                window._bcosPrint = (h) => { out.innerHTML += '<div>' + h + '</div>'; out.scrollTop = out.scrollHeight; };
-                const cmds = _bcosGetCommands();
-                if (cmds[name]) { cmds[name](args); if (name === 'desktop') { window._bcosPrint = oldP; return; } }
-                else { window._bcosPrint('<span style="color:#f44;">bcos: command not found: ' + _bcosEscape(name) + '</span>'); const m = _bcosFuzzy(name, Object.keys(cmds)); if (m) window._bcosPrint('<span style="color:#fa0;">Did you mean \'' + m + '\'?</span>'); }
-                window._bcosPrint = oldP;
+                window._bcosPrint = (h) => { const d = document.createElement('div'); d.innerHTML = h; out.appendChild(d); out.scrollTop = out.scrollHeight; };
+                try {
+                    const cmds = _bcosGetCommands();
+                    if (cmds[name]) {
+                        if (name === 'desktop') { window._bcosPrint('<span style="color:#fa0;">bcos: Already in desktop mode.</span>'); }
+                        else if (name === 'clear' || name === 'cls') { out.innerHTML = ''; }
+                        else cmds[name](args);
+                    }
+                    else { window._bcosPrint('<span style="color:#f44;">bcos: command not found: ' + _bcosEscape(name) + '</span>'); const m = _bcosFuzzy(name, Object.keys(cmds)); if (m) window._bcosPrint('<span style="color:#fa0;">Did you mean \'' + m + '\'?</span>'); }
+                } catch(err) { window._bcosPrint('<span style="color:#f44;">bcos: error: ' + _bcosEscape(err.message) + '</span>'); }
+                finally { window._bcosPrint = oldP; }
                 out.scrollTop = out.scrollHeight;
             } else if (e.key === 'ArrowUp') { e.preventDefault(); if (mi > 0) { mi--; input.value = mh[mi]; } }
             else if (e.key === 'ArrowDown') { e.preventDefault(); if (mi < mh.length-1) { mi++; input.value = mh[mi]; } else { mi = mh.length; input.value = ''; } }
@@ -9888,7 +9902,7 @@
         const win = document.createElement('div');
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         win.style.cssText += `left:${80+Math.random()*100}px;top:${50+Math.random()*80}px;width:380px;height:320px;`;
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)"><span class="bcos-window-title">📄 ${_bcosEscape(repo[0])}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="document.getElementById('${winId}').remove();"></button></div></div><div class="bcos-window-content" style="padding:.6rem;font-size:12px;">
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><span class="bcos-window-title">📄 ${_bcosEscape(repo[0])}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="document.getElementById('${winId}').remove();"></button></div></div><div class="bcos-window-content" style="padding:.6rem;font-size:12px;">
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Repo:</span> ${_bcosEscape(repo[0])}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Desc:</span> ${repo[1]?_bcosEscape(repo[1].substring(0,80)):'<span style="color:#666;">// None</span>'}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Lang:</span> <span style="color:${lc};">${repo[2]}</span></div>
@@ -13119,7 +13133,7 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.0.9323', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
+        { ver:'v7.8.0.9324', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
             '🏠 同区域集套 (Block Monopoly)：集齐区域全套地产基础租金翻倍 (2.0x)，已建房租金提升 1.5x；多处同区地产享 15%/处 叠加租金提升；抵押房产租金清零',
             '🤝 全功能地产交易系统：支持自由交易/买卖/互换 地产 + 卡牌 + 载具 + 现金，包含智能估值与多轮还价机制',
             '⚖️ 阶梯式资产清算救济：负资金时按“股票→拆房退款→抵押地产→卖载具→紧急贷款”顺序自动变卖资产抵债，清算后仍负债才宣告破产',
