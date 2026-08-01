@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9333 -->
+    <!-- VERSION: v7.8.1.9334 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -288,6 +288,7 @@
             width: 100%; height: 100%; object-fit: cover; display: block;
             border-radius: 50%; -webkit-border-radius: 50%;
             clip-path: circle(50%); -webkit-clip-path: circle(50%);
+            -webkit-user-drag: none; user-drag: none; pointer-events: none;
         }
         .sidebar.collapsed .sidebar-logo .bunny-icon.avatar-photo {
             width: 1.8rem; height: 1.8rem; margin: 0 auto;
@@ -1289,7 +1290,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9333</div>
+                <div class="subtitle">v7.8.1.9334</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1582,7 +1583,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9333</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9334</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1649,7 +1650,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9333',
+        VERSION: 'v7.8.1.9334',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2615,7 +2616,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9333 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9334 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9210,7 +9211,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9333 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9334 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -10936,7 +10937,7 @@
         if (!container) return;
         if (mode === 'photo') {
             container.className = 'bunny-icon avatar-photo';
-            container.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" onerror="this.parentElement.className=\'bunny-icon\';this.parentElement.textContent=\'🐰\'">';
+            container.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" draggable="false" onerror="this.parentElement.className=\'bunny-icon\';this.parentElement.textContent=\'🐰\'">';
             if (emojiBtn) emojiBtn.classList.remove('btn-primary');
             if (photoBtn) photoBtn.classList.add('btn-primary');
         } else {
@@ -13631,6 +13632,10 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9334', title:'侧边栏头像照片拖拽修复', items:[
+            '🔒 修复侧边栏照片头像可被拖拽：img元素缺少draggable=false和-webkit-user-drag:none，在tab栏折叠模式下尤其明显',
+            '🛡️ 添加pointer-events:none到头像img：防止图片拦截父容器的点击事件',
+        ]},
         { ver:'v7.8.1.9333', title:'GPU层优化 & bcos桌面bug修复 & 破产清理', items:[
             '⚡ 移除过度will-change声明：游戏UI和bcos桌面静态元素移除不必要的GPU层提示，降低内存开销',
             '⚡ 仅保留动画元素的will-change：窗口拖拽、图标交互保留，静态容器改用translateZ(0)单层提升',
