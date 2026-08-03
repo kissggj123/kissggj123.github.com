@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9358 -->
+    <!-- VERSION: v7.8.1.9359 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9358</div>
+                <div class="subtitle">v7.8.1.9359</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9358</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9359</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9358',
+        VERSION: 'v7.8.1.9359',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1745,6 +1745,22 @@
             const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===mono.players.indexOf(p));
             if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];if(mono.properties[t.id].level<5){mono.properties[t.id].level++;return `${t.nm} 升级到 Lv.${mono.properties[t.id].level}`;}return `${t.nm} 已满级`;}
             return '没有可升级的地产';
+        }},
+        {id:'card_boost_double', ic:'✨', n:'双重强化', desc:'强化手牌中任意 2 张卡牌效果', rarity:'rare', monoEff:(p,mono)=>{
+            if (!p.cards || p.cards.length === 0) return '手牌为空，无卡可强化';
+            const targets = p.cards.filter(c => c.id !== 'card_boost_double');
+            if (targets.length === 0) return '没有其他手牌可供强化';
+            const boostedNames = [];
+            const poolCopy = [...targets];
+            const count = Math.min(2, poolCopy.length);
+            for (let i = 0; i < count; i++) {
+                const randIdx = Math.floor(Math.random() * poolCopy.length);
+                const c = poolCopy.splice(randIdx, 1)[0];
+                c.enhanced = true;
+                boostedNames.push(c.n);
+            }
+            if (typeof renderMonopoly === 'function') renderMonopoly();
+            return `成功强化 2 张手牌效果: ${boostedNames.join('、')}`;
         }},
         // Legendary
         {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=(p.shield||0)+1;p.lucky=(p.lucky||0)+1;return '+3000💰, 护盾+幸运'}},
@@ -2625,7 +2641,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9358 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9359 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -3265,6 +3281,15 @@
         document.getElementById('modal-overlay').classList.add('show');
     }
 
+    /* Calculate maximum money cap: price/rent must not exceed 20% of the wealthiest active player's money */
+    function getMaxMoneyCap() {
+        if (!mono || !mono.players) return 2000;
+        const alive = mono.players.filter(p => !p.bankrupt);
+        if (alive.length === 0) return 2000;
+        const maxMoney = Math.max(...alive.map(p => p.money || 0));
+        return Math.max(500, Math.floor(maxMoney * 0.20));
+    }
+
     /* Dynamic rent calculation with standard Monopoly set bonuses, level escalation, & mortgage check */
     function calculateRent(tile, prop) {
         if (!tile || !prop || prop.mortgaged || prop.owner < 0) return 0;
@@ -3304,7 +3329,10 @@
             if (ownerPlayer.hologramTurns > 0) buffMultiplier *= 1.5;
         }
 
-        return Math.max(0, Math.floor(baseRent * setMultiplier * inflationMultiplier * rentMultiplier * buffMultiplier));
+        let calculatedRent = Math.max(0, Math.floor(baseRent * setMultiplier * inflationMultiplier * rentMultiplier * buffMultiplier));
+        // Dynamic Price Cap: rent multiplier / total rent capped at 20% of wealthiest player's money
+        const cap = getMaxMoneyCap();
+        return Math.min(calculatedRent, cap);
     }
 
 
@@ -4883,15 +4911,15 @@
         const el = document.getElementById('mono-cards');
         if (!el) return;
         const p = mono.players[0];
-        if (!p || p.cards.length === 0) {
+        if (!p || !p.cards || p.cards.length === 0) {
             el.innerHTML = '<div style="font-size:.7rem;color:var(--text2);">暂无手牌</div>';
             return;
         }
         el.innerHTML = p.cards.map((c, i) =>
-            `<div class="mono-card-item" onclick="monoUseCard(${i})" title="${c.desc}">
+            `<div class="mono-card-item${c.enhanced ? ' enhanced' : ''}" style="${c.enhanced ? 'border:1.5px solid #FFD700;box-shadow:0 0 10px rgba(255,215,0,0.6);background:rgba(255,215,0,0.15);' : ''}" onclick="monoUseCard(${i})" title="${c.desc}${c.enhanced ? ' (✨ 已强化效果倍增)' : ''}">
                 <span>${c.ic}</span>
-                <span style="font-size:.5rem;font-weight:700;color:${RARITY_COLORS[c.rarity]};">${c.n}</span>
-                <span class="mc-desc">${c.desc}</span>
+                <span style="font-size:.5rem;font-weight:700;color:${RARITY_COLORS[c.rarity]||'#fff'};">${c.n}${c.enhanced ? '✨' : ''}</span>
+                <span class="mc-desc">${c.enhanced ? '✨【已强化】' + c.desc : c.desc}</span>
             </div>`
         ).join('');
     }
@@ -5565,13 +5593,14 @@
     }
 
     function checkBankruptcy(p) {
-        if (!p) return;
-        if (p.money < 0) {
+        if (!p || p.bankrupt) return;
+        // Bankruptcy rule: money <= 0 triggers asset liquidation & loans. If still <= 0, declare bankruptcy!
+        if (p.money <= 0) {
             // First attempt auto-liquidation of assets (stocks, buildings, mortgage properties, vehicles)
             autoLiquidateAssets(p);
 
-            // If still negative, try emergency bank loan
-            if (p.money < 0) {
+            // If still <= 0, try emergency bank loan
+            if (p.money <= 0) {
                 const propValue = getPlayerPropertyValue(p);
                 const economy = mono.economy || calculateEconomyState();
                 if (propValue > 0 && p.credit > 30) {
@@ -5583,18 +5612,19 @@
                 }
             }
 
-            // If money is STILL negative after all liquidations & emergency loans, declare bankruptcy!
-            if (p.money < 0) {
+            // If money is STILL <= 0 after all liquidations & emergency loans, declare bankruptcy!
+            if (p.money <= 0) {
                 p.money = 0;
                 p.bankrupt = true;
                 const pi = mono.players.indexOf(p);
-                monoLog(`☠️ ${p.ic} ${p.nm} 资不抵债，宣布破产！`, 'error');
-                // Release all properties
-                mono.properties.forEach(prop => {
+                monoLog(`☠️ ${p.ic} ${p.nm} 资金归零资不抵债，宣布破产！`, 'error');
+                // Release all properties so other players can land on and buy them
+                mono.properties.forEach((prop, idx) => {
                     if (prop && prop.owner === pi) {
                         prop.owner = -1;
                         prop.level = 0;
                         prop.mortgaged = false;
+                        if (mono.tiles[idx]) mono.tiles[idx].owner = null;
                     }
                 });
                 // Release vehicle
@@ -5612,8 +5642,7 @@
                 p.firewallTurns = 0; p.virusTurns = 0; p.cloneActive = false; p.quantumTarget = -1; p.quantumTurns = 0; p.overclockNext = false; p.lockdownTurns = 0;
                 p.cards = []; // Clear hand cards on bankruptcy
                 p._extraTurn = false; // Clear extra turn flag
-                monoLog(`💀 ${p.ic} ${p.nm} 破产离场！释放所有资产`, 'error');
-                if (typeof showToast === 'function') showToast(`${p.ic} ${p.nm} 已破产离场`, 'error');
+                monoLog(`💀 ${p.ic} ${p.nm} 破产离场！所有地产资产已全数释放，可供其他玩家购买`, 'error');
             }
         }
     }
@@ -7259,6 +7288,17 @@
         p.cards.splice(cardIdx, 1);
         let effResult = '';
         if (card.monoEff) effResult = card.monoEff(p, mono) || '';
+        if (card.enhanced) {
+            if (card.id === 'funds_boost' || card.id === 'heal' || card.id === 'mega_funds' || card.id === 'god_bless') {
+                p.money += 2000;
+                effResult += ' (✨ 强化金币 +2000💰)';
+            } else if (card.id === 'speed_boost') {
+                p.speed = (p.speed || 0) + 3;
+                effResult += ' (✨ 强化步数 +3)';
+            } else {
+                effResult += ' (✨ 强化卡牌效果倍增生效)';
+            }
+        }
         recordHumanAction('useCard');
         recordGameEvent('card_use', `${p.ic} ${p.nm}`, `使用 ${card.ic} ${card.n}`, effResult);
         monoLog(`🃏 兔可可 使用 ${card.ic} ${card.n}${effResult ? ' — ' + effResult : card.desc ? ' — ' + card.desc : ''}`, 'success');
@@ -9286,7 +9326,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9358 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9359 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -15542,6 +15582,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9359', title:'资金≤0破产资产全释放 & 动态租金倍率封顶20% & PC端手牌实时刷新 & 新增「✨ 双重强化」卡牌', items:[
+            '☠️ 破产条件与资产全释放：金币降至 0 或负数 (且资产清算/紧急贷款后仍≤0) 时立即触发破产，名下所有地产 100% 释放归还公开市场 (owner=-1, level=0)，供其他玩家自由购买',
+            '💰 动态价格与租金倍率上限：任何单笔租金/惩罚/价格倍率计算最高不超过场上最富裕活跃玩家金币的 20% (getMaxMoneyCap)，杜绝指数级通胀导致无辜瞬间破产',
+            '✨ 手牌实时刷新与双重强化卡：新增「✨ 双重强化」卡牌（随机强化手牌中 2 张卡牌效果），PC端/移动端手牌 UI 实时刷新并展示金色亮光 border、✨ 标识与【已强化】特效倍增',
+        ]},
         { ver:'v7.8.1.9358', title:'玩家入狱死局 Bug 彻底修复 & 监禁应对面板自动弹出 & AutoPilot 自动解禁 & 看门狗防卡死加固', items:[
             '🐛 玩家入狱死局修复：彻底修复 playerIdx===0 监禁状态下 UI 隐藏操作按钮导致游戏卡死无响应的严重缺陷，现在将渲染「⚖️ 应对监狱处分」按钮，并在回合开始时自动弹出解禁选择弹窗',
             '🤖 AutoPilot 智能解禁：为全自动托管模式集成入狱决策（优先出狱卡 → 其次保释金 → 尝试掷双数越狱），彻底消除了托管状态下进监狱导致卡死的缺陷',
