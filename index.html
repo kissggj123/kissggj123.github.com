@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9360 -->
+    <!-- VERSION: v7.8.1.9361 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9360</div>
+                <div class="subtitle">v7.8.1.9361</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9360</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9361</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9360',
+        VERSION: 'v7.8.1.9361',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1761,6 +1761,18 @@
             }
             if (typeof renderMonopoly === 'function') renderMonopoly();
             return `成功强化 2 张手牌效果: ${boostedNames.join('、')}`;
+        }},
+        {id:'card_short_market', ic:'📈', n:'股市拉升', desc:'使随机股票价格大幅拉升 40%', rarity:'rare', monoEff:(p,mono)=>{
+            if (!mono.stockPrices) return '股市未初始化';
+            const idx = Math.floor(Math.random() * STOCK_TYPES.length);
+            const oldP = mono.stockPrices[idx];
+            mono.stockPrices[idx] = Math.min(STOCK_TYPES[idx].basePrice * 3, Math.floor(oldP * 1.4));
+            mono.stockMarket = getStockIndex();
+            return `${STOCK_TYPES[idx].nm} 股价暴涨 40% (💰${oldP} → 💰${mono.stockPrices[idx]})`;
+        }},
+        {id:'card_insurance_shield', ic:'🏰', n:'地产圣盾', desc:'全场名下地产获得 5 回合强效保全', rarity:'legendary', monoEff:(p)=>{
+            p.propertyInsuranceTurns = (p.propertyInsuranceTurns || 0) + 5;
+            return `地产圣盾已激活（剩 ${p.propertyInsuranceTurns} 回合），免疫所有破坏贬值`;
         }},
         // Legendary
         {id:'god_bless', ic:'✨', n:'神之祝福', desc:'资金+3000，获护盾与幸运', rarity:'legendary', monoEff:(p)=>{p.money+=3000;p.shield=(p.shield||0)+1;p.lucky=(p.lucky||0)+1;return '+3000💰, 护盾+幸运'}},
@@ -2641,7 +2653,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9360 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9361 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -5149,6 +5161,16 @@
                 clearInterval(interval);
                 const isDouble = mono.dice[0] === mono.dice[1];
                 let total = mono.dice[0] + mono.dice[1];
+                // Lucky 7 Combo Skill
+                if (mono.dice[0] + mono.dice[1] === 7) {
+                    p.money += 800;
+                    monoLog('🎯 触发「幸运 7」点数神技！获得 +800💰 现金红利', 'success');
+                    if (Math.random() < 0.35 && p.cards.length < 8) {
+                        const newCard = drawWeightedCard();
+                        p.cards.push(newCard);
+                        monoLog(`🎁 幸运 7 额外赠送手牌: ${newCard.ic} ${newCard.n}`, 'success');
+                    }
+                }
                 const extra = p.speed || 0;
                 if (extra) p.speed = 0;
                 if (p.doubleDice > 0) { total *= 2; p.doubleDice--; monoLog('🎲 双倍骰子卡激活！', 'success'); }
@@ -8706,9 +8728,33 @@
     };
 
     // Passive rent: each turn, property owners have a chance to collect small rent from NPC visitors
-    // This addresses the issue where properties are rarely landed on with large maps
+    // Landmark Dividends & Commercial Empire Synergy
+    function processLandmarkDividends() {
+        if (!mono || !mono.started) return;
+        mono.players.forEach((p, pi) => {
+            if (!p || p.bankrupt) return;
+            let landmarkCount = 0;
+            MONO_REGIONS.forEach((r, ri) => {
+                const regProperties = mono.tiles.filter(t => t.type === 'property' && t.region === (ri + 1));
+                if (regProperties.length > 0) {
+                    const owned = regProperties.filter(t => mono.properties[t.id] && mono.properties[t.id].owner === pi).length;
+                    if (owned === regProperties.length) landmarkCount++;
+                }
+            });
+            const maxLvCount = mono.tiles.filter(t => t.type === 'property' && mono.properties[t.id] && mono.properties[t.id].owner === pi && mono.properties[t.id].level >= 5).length;
+            const totalLandmarks = landmarkCount + Math.floor(maxLvCount / 2);
+            if (totalLandmarks > 0 && mono.turn % 2 === 0) {
+                const dividend = totalLandmarks * 1200;
+                p.money += dividend;
+                monoLog(`🏛️ ${p.ic} ${p.nm} 获得地标大楼商业分红 +${dividend}💰 (${totalLandmarks}处商业巨擘)`, 'success');
+            }
+            if (p.propertyInsuranceTurns > 0) p.propertyInsuranceTurns--;
+        });
+    }
+
     function processPassiveRent() {
         if (!mono.started) return;
+        processLandmarkDividends();
         const economy = mono.economy || calculateEconomyState();
         const rentMultiplier = economy.rentMultiplier || 1;
         for (let i = 0; i < mono.tiles.length; i++) {
@@ -9354,7 +9400,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9360 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9361 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -15610,6 +15656,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9361', title:'新增地产大亨商业帝国玩法：地标商业分红 & 幸运7点数神技 & 股市拉升/地产圣盾新卡入池', items:[
+            '🏛️ 商业地标与分红机制：拥有单区域全部地产或 2 处 Lv.5 满级建筑时自动解锁「🏛️ 商业地标」，每 2 回合自动产出 +1200💰~3600💰 商业高额红利分红',
+            '🎯 幸运 7 点数神技：当掷骰点数和为 7 时触发「🎯 幸运 7」特技，奖励 +800💰 现金并有 35% 几率免费抽取一张稀有手牌',
+            '🃏 全新战略卡牌入池：新增「📈 股市拉升」（使指定股票暴涨40%）与「🏰 地产圣盾」（5回合全场名下地产免疫毁损与降级），极大地丰富了大富翁局势博弈深度',
+        ]},
         { ver:'v7.8.1.9360', title:'AI 思考卡死手动跳过按钮 & 看门狗 8s 强制解除 & 交易弹窗关闭解锁救济', items:[
             '⏭️ 新增手动跳过 AI 按钮：在 AI 思考与掷骰期间，控制面板显著位置新增「⏭️ 跳过 AI (恢复游戏)」与「⏭️ 跳过回合」按钮，玩家随时可以一键解除卡死',
             '🛡️ Watchdog 8s 极速救济：看门狗超时调优至 8s，若 AI 或任何回合陷入超时等待，自动重置 rolling/pendingTrade 状态并流畅推进 nextTurn()',
