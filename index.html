@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9361 -->
+    <!-- VERSION: v7.8.1.9362 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9361</div>
+                <div class="subtitle">v7.8.1.9362</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9361</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9362</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9361',
+        VERSION: 'v7.8.1.9362',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -1742,8 +1742,8 @@
         {id:'mega_funds', ic:'💎', n:'天降横财', desc:'获得 5000💰', rarity:'rare', monoEff:(p)=>{p.money+=5000;return '+5000💰'}},
         {id:'tax_free', ic:'🧾', n:'免税卡', desc:'下3回合免付租金', rarity:'rare', monoEff:(p)=>{p.taxFree=3;return '免税 3 回合'}},
         {id:'upgrade_free', ic:'⬆️', n:'免费升级', desc:'随机地产免费升级', rarity:'rare', monoEff:(p,mono)=>{
-            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===mono.players.indexOf(p));
-            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];if(mono.properties[t.id].level<5){mono.properties[t.id].level++;return `${t.nm} 升级到 Lv.${mono.properties[t.id].level}`;}return `${t.nm} 已满级`;}
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id]?.owner===mono.players.indexOf(p));
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];if((mono.properties[t.id]?.level||0)<5){mono.properties[t.id].level=(mono.properties[t.id]?.level||0)+1;return `${t.nm} 升级到 Lv.${mono.properties[t.id].level}`;}return `${t.nm} 已满级`;}
             return '没有可升级的地产';
         }},
         {id:'card_boost_double', ic:'✨', n:'双重强化', desc:'强化手牌中任意 2 张卡牌效果', rarity:'rare', monoEff:(p,mono)=>{
@@ -1807,8 +1807,8 @@
             if(target.shield>0){target.shield--;return `${target.nm} 的护盾抵消了贬值咒`;}
             if(target.mirror>0){target.mirror--;return `${target.nm} 的镜像反射了贬值咒！`;}
             const ti=mono.players.indexOf(target);
-            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===ti&&mono.properties[t.id].level>0);
-            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;return `${target.nm} 的 ${t.nm} 降级了`;}
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id]?.owner===ti&&(mono.properties[t.id]?.level||0)>0);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.max(0, (mono.properties[t.id]?.level||1)-1);return `${target.nm} 的 ${t.nm} 降级了`;}
             return `${target.nm} 没有可降级的房产`;
         }},
         // === New cards: tactical & strategic ===
@@ -2125,8 +2125,8 @@
         {nm:'物价波动', ic:'📊', desc:'当前玩家资金随机波动±15%', rarity:'uncommon', eff:(mono,p)=>{p.money=Math.max(0,Math.floor(p.money*(1+(Math.random()-0.5)*0.3)))}},
         {nm:'科技突破', ic:'🔬', desc:'当前玩家随机地产升级', rarity:'uncommon', eff:(mono,p)=>{
             const pi=mono.players.indexOf(p);
-            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<5);
-            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level++;}
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id]?.owner===pi&&(mono.properties[t.id]?.level||0)<5);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=(mono.properties[t.id]?.level||0)+1;}
         }},
         {nm:'神秘商人', ic:'🧙', desc:'当前玩家获得一张随机卡牌', rarity:'uncommon', eff:(mono,p)=>{p.cards.push(drawWeightedCard())}},
         {nm:'节日礼花', ic:'🎆', desc:'所有玩家获得随机卡牌', rarity:'uncommon', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.cards.push(drawWeightedCard())})}},
@@ -2134,8 +2134,8 @@
         {nm:'宝藏发现', ic:'🗺️', desc:'当前玩家获得 3000💰', rarity:'rare', eff:(mono,p)=>{p.money+=3000}},
         {nm:'自然灾害', ic:'🌪️', desc:'当前玩家随机地产降级', rarity:'rare', eff:(mono,p)=>{
             const pi=mono.players.indexOf(p);
-            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level>0);
-            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level--;}
+            const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id]?.owner===pi&&(mono.properties[t.id]?.level||0)>0);
+            if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.max(0, (mono.properties[t.id]?.level||1)-1);}
         }},
         {nm:'幸运转盘', ic:'🎡', desc:'当前玩家随机获得金钱或卡牌', rarity:'rare', eff:(mono,p)=>{if(Math.random()<0.5){const amt=500+Math.floor(Math.random()*3000);p.money+=amt;}else{p.cards.push(drawWeightedCard())}}},
         {nm:'黑市拍卖', ic:'🏪', desc:'当前玩家随机获得一张诅咒卡', rarity:'rare', eff:(mono,p)=>{const curses=CARD_POOL.filter(c=>c.isCurse);if(curses.length)p.cards.push({...curses[Math.floor(Math.random()*curses.length)]})}},
@@ -2147,7 +2147,7 @@
         {nm:'股市暴涨', ic:'🚀', desc:'所有股价上涨 15%', rarity:'rare', eff:(mono,p)=>{if(mono.stockPrices)mono.stockPrices=mono.stockPrices.map(pr=>Math.floor(pr*1.15));mono.stockMarket=getStockIndex()}},
         {nm:'股市崩盘', ic:'💥', desc:'所有股价下跌 20%', rarity:'rare', eff:(mono,p)=>{if(mono.stockPrices)mono.stockPrices=mono.stockPrices.map(pr=>Math.max(1,Math.floor(pr*0.8)));mono.stockMarket=getStockIndex()}},
         {nm:'免费抽卡日', ic:'🎁', desc:'所有玩家免费抽取 2 张卡牌', rarity:'uncommon', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt){for(let i=0;i<2;i++)pl.cards.push(drawWeightedCard())}})}},
-        {nm:'地产大亨', ic:'👑', desc:'当前玩家随机地产升 2 级', rarity:'rare', eff:(mono,p)=>{const pi=mono.players.indexOf(p);const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id].owner===pi&&mono.properties[t.id].level<4);if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.min(5,mono.properties[t.id].level+2);}}},
+        {nm:'地产大亨', ic:'👑', desc:'当前玩家随机地产升 2 级', rarity:'rare', eff:(mono,p)=>{const pi=mono.players.indexOf(p);const owned=mono.tiles.filter(t=>t.type==='property'&&mono.properties[t.id]?.owner===pi&&(mono.properties[t.id]?.level||0)<4);if(owned.length){const t=owned[Math.floor(Math.random()*owned.length)];mono.properties[t.id].level=Math.min(5,(mono.properties[t.id]?.level||0)+2);}}},
         {nm:'慈善晚宴', ic:'🤝', desc:'最富有玩家向最穷玩家捐赠 2000💰', rarity:'uncommon', eff:(mono,p)=>{const sorted=[...mono.players].filter(pl=>!pl.bankrupt).sort((a,b)=>b.money-a.money);if(sorted.length>=2){sorted[0].money-=2000;sorted[sorted.length-1].money+=2000}}},
         {nm:'黄金时代', ic:'🌟', desc:'所有玩家获得 5% 资金加成', rarity:'legendary', eff:(mono,p)=>{mono.players.forEach(pl=>{if(!pl.bankrupt)pl.money+=Math.floor(pl.money*0.05)})}},
         {nm:'载具展览', ic:'🏎️', desc:'获得1500💰或载具折扣（可叠加，5回合过期）', rarity:'uncommon', eff:(mono,p)=>{
@@ -2653,7 +2653,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9361 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9362 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -4696,25 +4696,31 @@
             return;
         }
 
-        // Step 1: Auto-use strategic cards
-        if (p.cards.length > 0) {
+        // Step 1: Auto-use strategic cards with profit maximization
+        if (p.cards && p.cards.length > 0) {
             const curseCards = p.cards.map((c, i) => c.isCurse ? i : -1).filter(i => i >= 0);
             const forceMoveCards = p.cards.map((c, i) => (c.id === 'summon_rent' || c.id === 'mass_summon' || c.id === 'magnetic_field' || c.id === 'tax_audit') ? i : -1).filter(i => i >= 0);
             const defensiveCards = p.cards.map((c, i) => (c.id === 'shield' || c.id === 'mirror') ? i : -1).filter(i => i >= 0);
-            const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i].owner === 0);
-            // Use 1-2 cards strategically
+            const profitBoostCards = p.cards.map((c, i) => (c.id === 'funds_boost' || c.id === 'mega_funds' || c.id === 'god_bless' || c.id === 'card_boost_double' || c.id === 'card_short_market' || c.id === 'upgrade_free') ? i : -1).filter(i => i >= 0);
+            const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i]?.owner === 0);
+            
+            // Use up to 2 cards strategically for max ROI
             const cardsToUse = Math.min(p.cards.length, 2);
             for (let round = 0; round < cardsToUse; round++) {
                 let cardIdx = -1;
-                // Priority 1: Forced movement cards if we own properties
-                if (aiOwnsProperties && forceMoveCards.length > 0) {
+                // Priority 1: Instant money / boost cards
+                if (profitBoostCards.length > 0) {
+                    cardIdx = profitBoostCards.shift();
+                }
+                // Priority 2: Forced movement cards if we own properties
+                else if (aiOwnsProperties && forceMoveCards.length > 0) {
                     cardIdx = forceMoveCards.shift();
                 }
-                // Priority 2: Defensive cards if we don't have shield
+                // Priority 3: Defensive cards if we don't have shield
                 else if (p.shield === 0 && defensiveCards.length > 0 && Math.random() < 0.5) {
                     cardIdx = defensiveCards.shift();
                 }
-                // Priority 3: Curse cards to attack leader
+                // Priority 4: Curse cards to attack leader
                 else if (curseCards.length > 0) {
                     cardIdx = curseCards.shift();
                 }
@@ -4725,13 +4731,14 @@
                 curseCards.forEach((v, i) => { if (v > cardIdx) curseCards[i]--; });
                 forceMoveCards.forEach((v, i) => { if (v > cardIdx) forceMoveCards[i]--; });
                 defensiveCards.forEach((v, i) => { if (v > cardIdx) defensiveCards[i]--; });
+                profitBoostCards.forEach((v, i) => { if (v > cardIdx) profitBoostCards[i]--; });
                 restoreCardFunctions(card);
                 if (card.monoEff) {
                     if (card.isCurse) {
                         const targets = mono.players.filter((pl, i) => i !== 0 && !pl.bankrupt);
                         if (targets.length > 0) {
                             // Target the wealthiest opponent
-                            const target = targets.reduce((a, b) => a.money > b.money ? a : b);
+                            const target = targets.reduce((a, b) => (a.money || 0) > (b.money || 0) ? a : b);
                             const effResult = card.monoEff(p, mono, target) || '';
                             recordGameEvent('card_curse', `${p.ic} ${p.nm}`, `对 ${target.nm} 施放 ${card.ic} ${card.n}`, effResult);
                             monoLog(`🤖 自动使用 ${card.ic} ${card.n} → ${target.nm} — ${effResult}`, 'event');
@@ -4851,34 +4858,39 @@
         const tile = mono.tiles[p.pos];
         if (!tile) return false;
 
-        // Auto-buy property if it's a good deal
-        if (tile.type === 'property' && mono.properties[p.pos].owner === -1) {
+        // Auto-buy property: Maximize ROI and Region Monopolies
+        if (tile.type === 'property' && (mono.properties[p.pos]?.owner === -1 || mono.properties[p.pos]?.owner === undefined)) {
             const prop = mono.properties[p.pos];
             const cost = tile.price;
-            // Buy if we can afford it and it's < 40% of our money, or if it's cheap
-            if (p.money >= cost && (cost < p.money * 0.4 || cost < 3000)) {
+            // Check if buying completes or expands a region monopoly
+            const regionId = tile.region;
+            const regProps = mono.tiles.filter(t => t.type === 'property' && t.region === regionId);
+            const ownedInReg = regProps.filter(t => mono.properties[t.id]?.owner === 0).length;
+            const isMonopolyPiece = regProps.length > 0 && (ownedInReg + 1 >= regProps.length * 0.5);
+
+            // Buy if affordable and (is a monopoly piece OR cost <= 60% of money OR cost < 5000)
+            if (prop && p.money >= cost && (isMonopolyPiece || cost < p.money * 0.6 || cost < 5000)) {
                 prop.owner = 0;
                 p.money -= cost;
-                p.stats.propertiesBought++;
-                p.stats.purchaseSpent += cost;
+                p.stats.propertiesBought = (p.stats.propertiesBought || 0) + 1;
+                p.stats.purchaseSpent = (p.stats.purchaseSpent || 0) + cost;
                 recordHumanAction('buyProperty');
-                monoLog(`🤖 自动购买 ${tile.nm} (-💰${cost})`, 'success');
+                monoLog(`🤖 自动智购 ${tile.nm} (-💰${cost})${isMonopolyPiece ? ' 🔥[套系垄断首选]' : ''}`, 'success');
                 closeModal();
                 saveMonopoly();
                 renderMonopoly();
                 if (!checkGameOver()) nextTurn();
                 return true;
             }
-            // Skip if can't afford or too expensive
-            monoLog(`🤖 自动跳过购买 ${tile.nm}（价格过高）`, 'info');
+            monoLog(`🤖 自动跳过购买 ${tile.nm}（保留运营资金）`, 'info');
             skipBuy();
             return true;
         }
-        // Auto-upgrade: upgrade the most valuable property
+        // Auto-upgrade: upgrade the most valuable property owned
         if (tile.type === 'upgrade') {
             const owned = [];
             for (let i = 0; i < mono.tiles.length; i++) {
-                if (mono.tiles[i].type === 'property' && mono.properties[i].owner === 0 && mono.properties[i].level < 5) {
+                if (mono.tiles[i].type === 'property' && mono.properties[i]?.owner === 0 && (mono.properties[i]?.level || 0) < 5) {
                     owned.push(i);
                 }
             }
@@ -4891,7 +4903,6 @@
                     return true;
                 }
             }
-            // Skip upgrade
             skipBuy();
             return true;
         }
@@ -5675,11 +5686,13 @@
     }
 
     function getPlayerPropertyValue(p) {
+        if (!p || !mono || !mono.players || !mono.properties) return 0;
         const pi = mono.players.indexOf(p);
+        if (pi < 0) return 0;
         let total = 0;
         mono.tiles.forEach((t, i) => {
-            if (t.type === 'property' && mono.properties[i].owner === pi) {
-                total += t.price * (mono.properties[i].level + 1);
+            if (t && t.type === 'property' && mono.properties[i]?.owner === pi) {
+                total += (t.price || 0) * ((mono.properties[i]?.level || 0) + 1);
             }
         });
         return total;
@@ -9400,7 +9413,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9361 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9362 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -15656,6 +15669,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9362', title:'修复 null.owner 托管卡死 Error & 升级全自动托管智购垄断与收益最大化策略', items:[
+            '🐛 修复 properties[i].owner 报错：为 executeAutoPilot、getPlayerPropertyValue、processLandmarkDividends 及 CARD_POOL 全量加入 mono.properties[i]?.owner 可选链防护，彻底解决了连续托管数局后报 TypeError 卡死的问题',
+            '🧠 智购套系垄断 (Monopoly-Piece Priority)：托管模式自动分析区域地产持有度，若购买该地产可完成或扩大套系垄断（获得地标分红与租金加成），将突破普通预算限制优先强制购买',
+            '💎 极速财富增长 (Profit Maximization)：托管系统在每回合自动优先释放手牌中的暴富金币卡、双重强化卡、股市拉升卡与免费升级卡，实现挂机资产指数级增长',
+        ]},
         { ver:'v7.8.1.9361', title:'新增地产大亨商业帝国玩法：地标商业分红 & 幸运7点数神技 & 股市拉升/地产圣盾新卡入池', items:[
             '🏛️ 商业地标与分红机制：拥有单区域全部地产或 2 处 Lv.5 满级建筑时自动解锁「🏛️ 商业地标」，每 2 回合自动产出 +1200💰~3600💰 商业高额红利分红',
             '🎯 幸运 7 点数神技：当掷骰点数和为 7 时触发「🎯 幸运 7」特技，奖励 +800💰 现金并有 35% 几率免费抽取一张稀有手牌',
