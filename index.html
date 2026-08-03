@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9362 -->
+    <!-- VERSION: v7.8.1.9363 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9362</div>
+                <div class="subtitle">v7.8.1.9363</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9362</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9363</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9362',
+        VERSION: 'v7.8.1.9363',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2018,7 +2018,7 @@
         }},
         {id:'magnetic_field', ic:'🧭', n:'磁场牵引', desc:'50%概率将附近对手牵引到你的地产', rarity:'rare', monoEff:(p,mono)=>{
             const pi=mono.players.indexOf(p);
-            const owned=mono.tiles.map((t,i)=>({t,i})).filter(({t,i})=>t.type==='property'&&mono.properties[i].owner===pi&&!mono.properties[i].mortgaged);
+            const owned=mono.tiles.map((t,i)=>({t,i})).filter(({t,i})=>t.type==='property'&&mono.properties[i]?.owner===pi&&!mono.properties[i]?.mortgaged);
             if(owned.length===0) return '没有可牵引到的地产';
             const total=getUnlockedTileCount();
             let count=0,totalRent=0;
@@ -2653,7 +2653,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9362 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9363 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -4696,6 +4696,33 @@
             return;
         }
 
+        // Step 0: Auto-transfer inventory cards to hand & auto-buy vehicle / draw cards if wealthy
+        if (typeof cardInventory !== 'undefined' && Array.isArray(cardInventory) && cardInventory.length > 0) {
+            while (cardInventory.length > 0 && p.cards.length < 8) {
+                const card = cardInventory.shift();
+                restoreCardFunctions(card);
+                p.cards.push(card);
+                monoLog(`🤖 托管自动将背包卡牌 [${card.ic} ${card.n}] 放置到手牌`, 'info');
+            }
+            if (typeof saveInventory === 'function') saveInventory();
+        }
+        // Auto-draw card if wealthy & hand has space
+        if (p.cards.length < 6 && p.money >= 5000) {
+            const drawn = drawWeightedCard();
+            p.money -= 800;
+            p.cards.push(drawn);
+            monoLog(`🤖 托管自动抽取神级卡牌 [${drawn.ic} ${drawn.n}] (-800💰)`, 'success');
+        }
+        // Auto-buy vehicle for speed & rent discounts if wealthy
+        if (!p.vehicle && p.money >= 4000 && typeof VEHICLES !== 'undefined' && VEHICLES.length > 0) {
+            const vehicle = VEHICLES[Math.min(1, VEHICLES.length - 1)];
+            if (p.money >= vehicle.price) {
+                p.money -= vehicle.price;
+                p.vehicle = vehicle;
+                monoLog(`🤖 托管自动购入高级载具 [${vehicle.ic} ${vehicle.nm}] (-💰${vehicle.price})`, 'success');
+            }
+        }
+
         // Step 1: Auto-use strategic cards with profit maximization
         if (p.cards && p.cards.length > 0) {
             const curseCards = p.cards.map((c, i) => c.isCurse ? i : -1).filter(i => i >= 0);
@@ -5482,8 +5509,11 @@
                 return; // Don't proceed to normal nextTurn
             }
             case 'property': {
+                if (!mono.properties[p.pos]) {
+                    mono.properties[p.pos] = { owner: -1, level: 0, mortgaged: false };
+                }
                 const prop = mono.properties[p.pos];
-                if (prop.owner === -1) {
+                if (prop.owner === -1 || prop.owner === undefined) {
                     if (playerIdx === 0 && p.money >= tile.price) {
                         showBuyModal(p.pos);
                         return; // Wait for player decision
@@ -5493,12 +5523,12 @@
                         if (p.money >= tile.price && p.lockdownTurns === 0 && Math.random() < personality.buyChance * aiDiff) {
                             prop.owner = playerIdx;
                             p.money -= tile.price;
-                            p.stats.propertiesBought++;
-                            p.stats.purchaseSpent += tile.price;
+                            p.stats.propertiesBought = (p.stats.propertiesBought || 0) + 1;
+                            p.stats.purchaseSpent = (p.stats.purchaseSpent || 0) + tile.price;
                             monoLog(`${p.ic} 购买了 ${tile.nm}`, 'success');
                         }
                     }
-                } else if (prop.owner !== playerIdx) {
+                } else if (prop.owner !== playerIdx && prop.owner >= 0) {
                     // Mortgaged properties don't collect rent
                     if (prop.mortgaged) {
                         monoLog(`🏠 ${tile.nm} 已被抵押，免租金通过`, 'info');
@@ -6874,7 +6904,7 @@
         const unlockedCount = getUnlockedTileCount();
         const unowned = [];
         for (let i = 0; i < unlockedCount; i++) {
-            if (mono.tiles[i].type === 'property' && mono.properties[i].owner === -1) {
+            if (mono.tiles[i].type === 'property' && (mono.properties[i]?.owner === -1 || mono.properties[i]?.owner === undefined)) {
                 unowned.push(i);
             }
         }
@@ -6900,7 +6930,7 @@
         const unlockedCount = getUnlockedTileCount();
         const unowned = [];
         for (let i = 0; i < unlockedCount; i++) {
-            if (mono.tiles[i].type === 'property' && mono.properties[i].owner === -1) {
+            if (mono.tiles[i].type === 'property' && (mono.properties[i]?.owner === -1 || mono.properties[i]?.owner === undefined)) {
                 unowned.push(i);
             }
         }
@@ -6985,6 +7015,22 @@
     function showAuctionBiddingUI() {
         if (!auctionState) return;
         const p = mono.players[0];
+        if (mono.autoPilot) {
+            // AutoPilot decision for auction
+            const increment = Math.floor(auctionState.currentBid * 0.1);
+            const tile = auctionState.tile;
+            const regionProps = mono.tiles.filter(t => t.type === 'property' && t.region === tile.region);
+            const ownedInRegion = regionProps.filter(t => mono.properties[t.id]?.owner === 0).length;
+            const isMonopolyPiece = regionProps.length > 0 && (ownedInRegion + 1 >= regionProps.length * 0.5);
+            const maxBid = isMonopolyPiece ? tile.price * 1.5 : tile.price * 1.0;
+            
+            if (p.money >= auctionState.currentBid + increment && auctionState.currentBid + increment <= maxBid) {
+                setTimeout(() => placeAuctionBid(increment), 400);
+            } else {
+                setTimeout(() => passAuctionRound(), 400);
+            }
+            return;
+        }
         const isParticipant = auctionState.participants.includes(0);
         const increment = Math.floor(auctionState.currentBid * 0.1);
         const canBid = isParticipant && p.money >= auctionState.currentBid + increment;
@@ -9037,7 +9083,7 @@
                 const hackerCards = p.cards.map((c, i) => c.isHacker ? i : -1).filter(i => i >= 0);
                 const defensiveCards = p.cards.map((c, i) => (c.id === 'shield' || c.id === 'mirror' || c.id === 'tax_free') ? i : -1).filter(i => i >= 0);
                 const forceMoveCards = p.cards.map((c, i) => (c.id === 'summon_rent' || c.id === 'mass_summon' || c.id === 'magnetic_field' || c.id === 'tax_audit') ? i : -1).filter(i => i >= 0);
-                const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i].owner === idx);
+                const aiOwnsProperties = mono.tiles.some((t, i) => t.type === 'property' && mono.properties[i]?.owner === idx);
                 // Decision tree:
                 // 1. If AI owns properties and has forced movement cards → use them (high priority)
                 if (aiOwnsProperties && forceMoveCards.length > 0 && Math.random() < 0.65) {
@@ -9413,7 +9459,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9362 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9363 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -15669,6 +15715,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9363', title:'重构 AI 全自动托管：自动抽取背包卡牌、全自动拍卖竞价/交易应对与无干预挂机', items:[
+            '🛡️ 全量 null.owner 防护修复：彻底修复 handleAuction、triggerTile、aiTurn 及 magnetic_field 咒卡中的 properties[i].owner 报错，防止任何界面或交易阶段崩溃',
+            '🎒 背包手牌自动转移 & 抽卡：全自动托管模式下，系统每回合自动将卡牌包 (cardInventory) 中的卡牌无缝转移至大富翁手牌中，资金充裕时还会自动在商店抽神卡！',
+            '🔨 全自动拍卖竞价与交易应对：当触发拍卖行 (Auction) 或 AI 发起交易时，托管系统自动分析产出价值进行智能竞拍、加价或接受/拒绝交易，达成 100% 无干预极速挂机！',
+        ]},
         { ver:'v7.8.1.9362', title:'修复 null.owner 托管卡死 Error & 升级全自动托管智购垄断与收益最大化策略', items:[
             '🐛 修复 properties[i].owner 报错：为 executeAutoPilot、getPlayerPropertyValue、processLandmarkDividends 及 CARD_POOL 全量加入 mono.properties[i]?.owner 可选链防护，彻底解决了连续托管数局后报 TypeError 卡死的问题',
             '🧠 智购套系垄断 (Monopoly-Piece Priority)：托管模式自动分析区域地产持有度，若购买该地产可完成或扩大套系垄断（获得地标分红与租金加成），将突破普通预算限制优先强制购买',
