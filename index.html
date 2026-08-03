@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9336 -->
+    <!-- VERSION: v7.8.1.9337 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1290,7 +1290,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9336</div>
+                <div class="subtitle">v7.8.1.9337</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1583,7 +1583,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9336</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9337</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1650,7 +1650,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9336',
+        VERSION: 'v7.8.1.9337',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2624,7 +2624,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9336 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9337 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9650,7 +9650,10 @@
                 _bcosPrint('<span class="bcos-info">─── File System ───</span>');
                 _bcosPrint('  <span class="bcos-success">mkdir &lt;name&gt;</span>  Create a directory in virtual FS');
                 _bcosPrint('  <span class="bcos-success">mk &lt;name&gt;</span>     Alias for mkdir');
+                _bcosPrint('  <span class="bcos-success">touch &lt;name&gt;</span>  Create an empty file (supports paths)');
                 _bcosPrint('  <span class="bcos-success">rm &lt;name&gt;</span>     Remove a file or directory');
+                _bcosPrint('  <span class="bcos-success">cat &lt;path&gt;</span>    Show file content or repository details');
+                _bcosPrint('  <span class="bcos-success">./&lt;app&gt;</span>       Run desktop app (e.g. ./texteditor)');
                 _bcosPrint('  <span class="bcos-success">ls [path|lang]</span> List virtual FS or repos by language');
                 _bcosPrint('<span class="bcos-info">─── System Control ───</span>');
                 _bcosPrint('  <span class="bcos-success">theme [id]</span>    Switch theme (no arg = list)');
@@ -9725,7 +9728,37 @@
                 });
             },
             cat: (args) => {
-                if (!args[0]) { _bcosPrint('<span class="bcos-error">cat: missing operand</span>'); _bcosPrint('<span class="bcos-dim">Usage: cat &lt;repository-name&gt;</span>'); return; }
+                if (!args[0]) { _bcosPrint('<span class="bcos-error">cat: missing operand</span>'); _bcosPrint('<span class="bcos-dim">Usage: cat &lt;repository-name | file-path&gt;</span>'); return; }
+                // Check virtual FS files first (e.g. me/readme.md, me/edit.lock)
+                const rawName = args[0].replace(/^\.\//, '');
+                const parts = rawName.split('/');
+                let vfsFile = null;
+                if (parts.length === 1 && _bcosFS[parts[0]] && _bcosFS[parts[0]].type === 'file') {
+                    vfsFile = _bcosFS[parts[0]];
+                } else if (parts.length > 1) {
+                    const fileName = parts.pop();
+                    let dir = _bcosFS;
+                    for (const p of parts) {
+                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
+                        dir = dir[p].children;
+                    }
+                    if (dir && dir[fileName] && dir[fileName].type === 'file') {
+                        vfsFile = dir[fileName];
+                    }
+                }
+                if (vfsFile) {
+                    if (rawName.includes('edit.lock') || rawName.includes('edit_lock')) {
+                        if (vfsFile.systemCreated) {
+                            _bcosPrint('<span class="bcos-warn">' + _bcosEscape(vfsFile.content || '') + '</span>');
+                        } else {
+                            _bcosPrint('<span class="bcos-dim">' + _bcosEscape(vfsFile.content || '(empty file)') + '</span>');
+                        }
+                    } else {
+                        const lines = (vfsFile.content || '(empty file)').split('\n');
+                        lines.forEach(line => _bcosPrint('<span class="bcos-info">' + _bcosEscape(line) + '</span>'));
+                    }
+                    return;
+                }
                 const repo = _bcosRepos.find(r => r[0].toLowerCase() === args[0].toLowerCase());
                 if (!repo) {
                     const matches = _bcosRepos.filter(r => r[0].toLowerCase().includes(args[0].toLowerCase()));
@@ -9835,11 +9868,14 @@
                 const mans = {
                     help: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    help - show available commands\n\nSYNOPSIS\n    help</span>',
                     ls: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    ls - list repositories\n\nSYNOPSIS\n    ls [LANGUAGE]\n\nDESCRIPTION\n    List all repos. Optionally filter by language.\n\nEXAMPLES\n    ls          List all\n    ls C#       List C# repos\n    ls Python   List Python repos</span>',
-                    cat: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    cat - show repository details\n\nSYNOPSIS\n    cat &lt;REPO_NAME&gt;\n\nEXAMPLES\n    cat YumikoToys\n    cat Twist</span>',
+                    cat: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    cat - show file content or repository details\n\nSYNOPSIS\n    cat &lt;REPO_NAME | FILE_PATH&gt;\n\nEXAMPLES\n    cat YumikoToys         Show repo details\n    cat me/readme.md       Show file content\n    cat me/edit.lock       Show edit.lock content</span>',
                     open: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    open - open repo on GitHub\n\nSYNOPSIS\n    open &lt;REPO_NAME&gt;</span>',
                     search: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    search - search repositories\n\nSYNOPSIS\n    search &lt;QUERY&gt;</span>',
                     neofetch: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    neofetch - display system info\n\nSYNOPSIS\n    neofetch</span>',
                     desktop: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    desktop - launch desktop environment\n\nSYNOPSIS\n    desktop\n\nDESCRIPTION\n    Switch to GUI mode. Use \'exit\' in desktop to return.</span>',
+                    touch: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    touch - create an empty file\n\nSYNOPSIS\n    touch &lt;FILENAME&gt;\n\nDESCRIPTION\n    Create an empty file in the virtual file system.\n    Supports multi-level paths.\n\nEXAMPLES\n    touch notes.txt       Create file in root\n    touch me/readme.md    Create file in me/ folder</span>',
+                    mkdir: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    mkdir - create a directory\n\nSYNOPSIS\n    mkdir &lt;DIRNAME&gt;\n\nDESCRIPTION\n    Create a directory in the virtual file system.\n    Supports multi-level paths.\n\nEXAMPLES\n    mkdir projects        Create dir in root\n    mkdir me/notes        Create dir in me/ folder</span>',
+                    rm: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    rm - remove a file or directory\n\nSYNOPSIS\n    rm &lt;NAME&gt;\n\nDESCRIPTION\n    Remove a file or directory from the virtual FS.\n    Use rm -rf / at your own risk.</span>',
                 };
                 if (mans[args[0]]) _bcosPrint(mans[args[0]]); else _bcosPrint('<span class="bcos-error">man: No manual entry for ' + _bcosEscape(args[0]) + '</span>');
             },
@@ -10097,6 +10133,7 @@
                         { name: 'bcos-repos',        ver: '177.0', desc: 'GitHub repository archive (177 repos)' },
                         { name: 'bcos-theme',        ver: '1.2.0', desc: '12 theme-adaptive desktop wallpapers & icons' },
                         { name: 'bcos-files',        ver: _BCOS_VER, desc: 'File manager for repository browsing' },
+                        { name: 'bcos-vfs',          ver: _BCOS_VER, desc: 'Virtual file system (mkdir/touch/rm/cat)' },
                         { name: 'bcos-monitor',      ver: _BCOS_VER, desc: 'System performance monitor' },
                         { name: 'bcos-commands',     ver: '1.1.0', desc: 'System control commands (theme/font/save/etc)' },
                         { name: 'bcos-defaultview',  ver: _BCOS_VER, desc: 'Default page on visit configuration' },
@@ -10140,6 +10177,7 @@
                         if (name === 'edit.lock' || name === 'edit_lock') {
                             _bcosEggState.systemEditLock = false;
                             _bcosEggState.eggTriggered = false;
+                            _bcosEggState.userCreatedEditLock = false;
                         }
                         delete _bcosFS[name];
                         _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(name) + '</span>');
@@ -10157,6 +10195,7 @@
                         if (fileName === 'edit.lock' || fileName === 'edit_lock') {
                             _bcosEggState.systemEditLock = false;
                             _bcosEggState.eggTriggered = false;
+                            _bcosEggState.userCreatedEditLock = false;
                         }
                         delete dir[fileName];
                         _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(name) + '</span>');
@@ -10207,6 +10246,43 @@
                 }
             },
             mk: (args) => _bcosGetCommands().mkdir(args),
+            touch: (args) => {
+                const raw = args.filter(a => !a.startsWith('-')).join(' ');
+                if (!raw) {
+                    _bcosPrint('<span class="bcos-error">touch: missing operand</span>');
+                    _bcosPrint('<span class="bcos-dim">Usage: touch &lt;name&gt;</span>');
+                    return;
+                }
+                const name = raw.replace(/^\.\//, '').replace(/\/$/, '');
+                const parts = name.split('/');
+                if (parts.length === 1) {
+                    if (!_bcosFS[name]) {
+                        _bcosFS[name] = { type: 'file', content: '' };
+                        if (name === 'edit.lock' || name === 'edit_lock') {
+                            _bcosEggState.userCreatedEditLock = true;
+                        }
+                    }
+                    _bcosPrint('<span class="bcos-success">✓ Touched: ' + _bcosEscape(name) + '</span>');
+                } else {
+                    const fileName = parts.pop();
+                    let dir = _bcosFS;
+                    for (const p of parts) {
+                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
+                        dir = dir[p].children;
+                    }
+                    if (!dir) {
+                        _bcosPrint('<span class="bcos-error">touch: cannot touch \'' + _bcosEscape(name) + '\': No such file or directory</span>');
+                        return;
+                    }
+                    if (!dir[fileName]) {
+                        dir[fileName] = { type: 'file', content: '' };
+                        if (fileName === 'edit.lock' || fileName === 'edit_lock') {
+                            _bcosEggState.userCreatedEditLock = true;
+                        }
+                    }
+                    _bcosPrint('<span class="bcos-success">✓ Touched: ' + _bcosEscape(name) + '</span>');
+                }
+            },
             vim: () => _bcosPrint('<span class="bcos-dim">bcos: vim is not installed. Try \'echo\' instead.</span>'),
             nano: () => _bcosPrint('<span class="bcos-dim">bcos: nano is not installed. Try \'echo\' instead.</span>'),
             apt: (args) => _bcosPrint(args[0] === 'install' || args[0] === 'update' ? '<span class="bcos-dim">bcos: All 177 packages are already installed!</span>' : '<span class="bcos-dim">bcos: apt 1.0.0 | Usage: apt [install|update|search]</span>'),
@@ -10267,6 +10343,24 @@
         const name = parts[0].toLowerCase();
         const args = parts.slice(1);
         const cmds = _bcosGetCommands();
+        // Support ./ prefix for running desktop apps (e.g. ./texteditor, ./browser)
+        if (name.startsWith('./')) {
+            const appName = name.slice(2);
+            const appMap = { 'texteditor': 'texteditor', 'editor': 'texteditor', 'browser': 'browser', 'files': 'files', 'monitor': 'monitor', 'about': 'about', 'terminal': 'terminal', 'me': 'me' };
+            const app = appMap[appName];
+            if (app) {
+                if (_bcos.mode !== 'desktop') {
+                    _bcosPrint('<span class="bcos-warn">bcos: ' + _bcosEscape(appName) + ' requires desktop mode. Type \'desktop\' first.</span>');
+                } else {
+                    _bcosOpenApp(app);
+                    _bcosPrint('<span class="bcos-success">✓ Launched: ' + _bcosEscape(appName) + '</span>');
+                }
+                return;
+            }
+            _bcosPrint('<span class="bcos-cmd-not-found">bcos: ' + _bcosEscape(name) + ': No such application</span>');
+            _bcosPrint('<span class="bcos-dim">Available: ./texteditor ./browser ./files ./monitor ./about</span>');
+            return;
+        }
         if (cmds[name]) {
             try {
                 const result = cmds[name](args);
@@ -10615,10 +10709,12 @@
             _bcosEggState.browseCount++;
         }
         _bcosEggState.lastBrowseTime = now;
-        if (_bcosEggState.browseCount >= 7 && !_bcosEggState.eggTriggered) {
+        if (_bcosEggState.browseCount >= 7 && !_bcosEggState.eggTriggered && !_bcosEggState.userCreatedEditLock) {
             _bcosEggState.eggTriggered = true;
             _bcosEggState.systemEditLock = true;
-            _bcosFS.me.children.edit_lock = { type: 'file', content: '0x' + Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join(''), systemCreated: true };
+            if (!_bcosFS.me.children.edit_lock && !_bcosFS.me.children['edit.lock']) {
+                _bcosFS.me.children.edit_lock = { type: 'file', content: '0x' + Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join(''), systemCreated: true };
+            }
         }
         const winId = 'bcos-win-cat-' + repo[0].replace(/[^a-zA-Z0-9]/g,'');
         if (document.getElementById(winId)) { const w = document.getElementById(winId); w.style.zIndex = ++_bcos.winZ; return; }
@@ -10790,6 +10886,19 @@
         list.appendChild(teItem);
     }
     function _bcosOpenEditLock(name) {
+        // Check if this is a user-created file (via terminal touch/mkdir) — show as normal file
+        const file = _bcosFS.me.children[name];
+        if (file && !file.systemCreated) {
+            _bcosOpenApp('texteditor');
+            setTimeout(() => {
+                const ta = document.getElementById('bcos-te-textarea');
+                if (ta) { ta.value = file.content || ''; }
+                const fn = document.getElementById('bcos-te-filename');
+                if (fn) fn.textContent = 'me/' + name;
+            }, 200);
+            return;
+        }
+        // System-created edit.lock shows garbage content (easter egg)
         const winId = 'bcos-win-editlock';
         if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
         const container = document.getElementById('bcos-windows');
@@ -14063,6 +14172,16 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9337', title:'bcos彩蛋修复: touch命令 + edit.lock终端创建无效 + cat虚拟文件支持', items:[
+            '📝 新增touch命令：创建空文件，支持多级路径（如 touch me/edit.lock）',
+            '🔒 edit.lock终端创建无效修复：easter egg触发条件增加userCreatedEditLock检查，终端创建后浏览7+项目不再触发彩蛋',
+            '🔒 edit.lock系统创建防覆盖：系统触发彩蛋时检查me文件夹是否已存在edit.lock，避免覆盖用户创建的文件',
+            '🔒 _bcosOpenEditLock区分系统/用户创建：终端创建的edit.lock在桌面打开时显示正常内容而非乱码',
+            '📂 rm删除edit.lock时同时重置userCreatedEditLock：删除后可重新触发彩蛋',
+            '📖 cat命令支持虚拟文件系统：可直接cat me/readme.md或cat me/edit.lock查看文件内容',
+            '🏃 新增./前缀支持：终端输入./texteditor等可直接启动桌面应用',
+            '❓ help文本新增touch命令说明',
+        ]},
         { ver:'v7.8.1.9336', title:'bcos系统大改版: Angora rabbit art + Browser + OOBE + TextEditor + Easter Egg', items:[
             '🐰 终端字符画替换为安哥拉兔ASCII art（终端启动/返回/桌面About共用）',
             '🌐 终端中文文本全部移除改为英文，Bunny可可系统→Bunny OS',
