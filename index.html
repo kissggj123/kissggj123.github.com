@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9346 -->
+    <!-- VERSION: v7.8.1.9351 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9340</div>
+                <div class="subtitle">v7.8.1.9351</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9340</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9351</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9347',
+        VERSION: 'v7.8.1.9351',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2625,7 +2625,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9340 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9351 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -5418,16 +5418,12 @@
                         monoLog(`🧾 ${p.nm} 免税卡生效，免付租金`, 'success');
                     } else {
                         let rent = calculateRent(tile, prop);
-                        // Rent double card (owner's active effect)
                         const owner = mono.players[prop.owner];
                         if (owner.rentDouble > 0) {
-                            rent *= 2;
-                            monoLog(`🏘️ ${owner.nm} 的收租令生效！租金翻倍`, 'event');
+                            monoLog(`🏘️ ${owner.nm} 的收租令加持！租金倍增`, 'event');
                         }
-                        // Hologram: +50% rent for owner
                         if (owner.hologramTurns > 0) {
-                            rent = Math.floor(rent * 1.5);
-                            monoLog(`🎭 ${owner.nm} 的全息伪装生效！租金+50%`, 'event');
+                            monoLog(`🎭 ${owner.nm} 的全息伪装加持！租金+50%`, 'event');
                         }
                         // Blackout: vehicle bonuses disabled
                         const rentDiscount = (p.blackoutTurns > 0) ? 0 : getVehicleBonus(p, 'rentDiscount');
@@ -7904,7 +7900,7 @@
             renderMonopoly();
         } else if (tradeNegotiation.round < tradeNegotiation.maxRounds) {
             // AI generates counter-offer
-            showCounterOffer(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue);
+            showCounterOffer(targetIdx, givePropVal, giveCardVal, giveVehicleVal, giveMoney, wantPropVal, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue);
         } else {
             // Max rounds reached, AI walks away
             monoLog(`🤝 ${target.ic} ${target.nm} 谈判破裂（已达${tradeNegotiation.maxRounds}轮上限）`, 'error');
@@ -7915,12 +7911,11 @@
         }
     }
 
-    function showCounterOffer(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue) {
+    function showCounterOffer(targetIdx, givePropVal, giveCardVal, giveVehicleVal, giveMoney, wantPropVal, wantCardVal, wantVehicleVal, wantMoney, giveValue, wantValue) {
         const p = mono.players[0];
         const target = mono.players[targetIdx];
-        const personality = AI_PERSONALITIES[target.personality];
+        const personality = AI_PERSONALITIES[target.personality] || { buyChance: 0.5 };
 
-        // AI generates counter: ask for more money or different items
         let counterType = '';
         let counterDesc = '';
         let adjustedGiveMoney = giveMoney;
@@ -7930,7 +7925,7 @@
         const gap = wantValue - giveValue;
         if (gap > 0) {
             // AI is getting less than giving — ask for more money from player
-            const extra = Math.floor(gap * (personality === 'aggressive' ? 1.1 : 0.9));
+            const extra = Math.floor(gap * (target.personality === 'aggressive' ? 1.1 : 0.9));
             adjustedGiveMoney = Math.min(p.money, giveMoney + extra);
             counterType = 'request_more';
             counterDesc = `需要你额外支付 💰${extra} 金币`;
@@ -7944,11 +7939,14 @@
 
         // Build counter-offer summary
         let giveSummary = [];
-        if (giveCardVal !== 'none') giveSummary.push(`${p.cards[parseInt(giveCardVal.split('_')[1])]?.ic}卡牌`);
+        if (givePropVal && givePropVal !== 'none') giveSummary.push(`🏠${mono.tiles[parseInt(givePropVal.split('_')[1])]?.nm || '地产'}`);
+        if (giveCardVal && giveCardVal !== 'none') giveSummary.push(`${p.cards[parseInt(giveCardVal.split('_')[1])]?.ic}卡牌`);
         if (giveVehicleVal === 'vehicle') giveSummary.push('载具');
         if (adjustedGiveMoney > 0) giveSummary.push(`💰${adjustedGiveMoney}`);
+
         let wantSummary = [];
-        if (wantCardVal !== 'none') wantSummary.push(`${target.cards[parseInt(wantCardVal.split('_')[1])]?.ic}卡牌`);
+        if (wantPropVal && wantPropVal !== 'none') wantSummary.push(`🏠${mono.tiles[parseInt(wantPropVal.split('_')[1])]?.nm || '地产'}`);
+        if (wantCardVal && wantCardVal !== 'none') wantSummary.push(`${target.cards[parseInt(wantCardVal.split('_')[1])]?.ic}卡牌`);
         if (wantVehicleVal === 'vehicle') wantSummary.push('载具');
         if (adjustedWantMoney > 0) wantSummary.push(`💰${adjustedWantMoney}`);
 
@@ -7969,13 +7967,14 @@
                 </div>
             </div>
             <div style="display:flex;gap:.3rem;margin-top:.5rem;">
-                <button class="btn btn-primary" style="flex:1;font-size:.75rem;" onclick="acceptCounterOffer('${giveCardVal}','${giveVehicleVal}',${adjustedGiveMoney},'${wantCardVal}','${wantVehicleVal}',${adjustedWantMoney})">✓ 接受还价</button>
+                <button class="btn btn-primary" style="flex:1;font-size:.75rem;" onclick="acceptCounterOffer('${givePropVal}','${giveCardVal}','${giveVehicleVal}',${adjustedGiveMoney},'${wantPropVal}','${wantCardVal}','${wantVehicleVal}',${adjustedWantMoney})">✓ 接受还价</button>
                 <button class="btn btn-secondary" style="flex:1;font-size:.75rem;" onclick="rejectCounterOffer()">✗ 拒绝还价</button>
             </div>
             <button class="btn btn-secondary" style="width:100%;margin-top:.3rem;font-size:.7rem;" onclick="showMarketModal()">放弃交易</button>`);
     }
 
-    window.acceptCounterOffer = function(giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney) {
+    window.acceptCounterOffer = function(givePropVal, giveCardVal, giveVehicleVal, giveMoney, wantPropVal, wantCardVal, wantVehicleVal, wantMoney) {
+        if (!tradeNegotiation) return;
         const targetIdx = tradeNegotiation.targetIdx;
         const target = mono.players[targetIdx];
         const p = mono.players[0];
@@ -7983,12 +7982,13 @@
         if (giveMoney > p.money) { monoLog('资金不足，无法接受还价', 'error'); return; }
         if (wantMoney > target.money) { monoLog('对方资金不足', 'error'); return; }
 
-        doExecuteTrade(targetIdx, giveCardVal, giveVehicleVal, giveMoney, wantCardVal, wantVehicleVal, wantMoney);
+        doExecuteTrade(targetIdx, givePropVal, giveCardVal, giveVehicleVal, giveMoney, wantPropVal, wantCardVal, wantVehicleVal, wantMoney);
         monoLog(`🤝 你接受了 ${target.nm} 的还价，交易达成！`, 'success');
         showToast(`✓ 交易成功`, 'success');
         tradeNegotiation = null;
         showMarketModal();
         saveMonopoly();
+        renderMonopoly();
     };
 
     window.rejectCounterOffer = function() {
@@ -9247,7 +9247,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9336 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9351 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9638,6 +9638,17 @@
             node = node.children[p];
         }
         return node;
+    }
+
+    function _bcosGetVFSNodeAndParent(rawPath) {
+        const resolved = _bcosResolvePath(rawPath);
+        const parts = resolved.replace(/^~\/?/, '').split('/').filter(Boolean);
+        if (parts.length === 0) return { parent: null, name: '', node: { type: 'dir', children: _bcosFS }, resolved };
+        const name = parts.pop();
+        const parentPath = parts.length === 0 ? '~' : '~/' + parts.join('/');
+        const parentNode = _bcosGetNodeAtPath(parentPath);
+        const targetNode = parentNode && parentNode.children ? parentNode.children[name] : null;
+        return { parent: parentNode, name, node: targetNode, resolved };
     }
 
     function _bcosGetPromptPath() {
@@ -10346,39 +10357,18 @@
                     _bcosPrint('<span class="bcos-dim">Usage: rm &lt;name&gt;</span>');
                     return;
                 }
-                const name = raw.replace(/^\.\//, '').replace(/\/$/, '');
-                const parts = name.split('/');
-                if (parts.length === 1) {
-                    if (_bcosFS[name]) {
-                        if (name === 'edit.lock' || name === 'edit_lock') {
-                            _bcosEggState.systemEditLock = false;
-                            _bcosEggState.eggTriggered = false;
-                            _bcosEggState.userCreatedEditLock = false;
-                        }
-                        delete _bcosFS[name];
-                        _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(name) + '</span>');
-                    } else {
-                        _bcosPrint('<span class="bcos-error">rm: ' + _bcosEscape(name) + ': No such file or directory</span>');
-                    }
-                } else {
-                    const fileName = parts.pop();
-                    let dir = _bcosFS;
-                    for (const p of parts) {
-                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
-                        dir = dir[p].children;
-                    }
-                    if (dir && dir[fileName]) {
-                        if (fileName === 'edit.lock' || fileName === 'edit_lock') {
-                            _bcosEggState.systemEditLock = false;
-                            _bcosEggState.eggTriggered = false;
-                            _bcosEggState.userCreatedEditLock = false;
-                        }
-                        delete dir[fileName];
-                        _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(name) + '</span>');
-                    } else {
-                        _bcosPrint('<span class="bcos-error">rm: ' + _bcosEscape(name) + ': No such file or directory</span>');
-                    }
+                const info = _bcosGetVFSNodeAndParent(raw);
+                if (!info.parent || !info.parent.children || !info.parent.children[info.name]) {
+                    _bcosPrint('<span class="bcos-error">rm: ' + _bcosEscape(raw) + ': No such file or directory</span>');
+                    return;
                 }
+                if (info.name === 'edit.lock' || info.name === 'edit_lock') {
+                    _bcosEggState.systemEditLock = false;
+                    _bcosEggState.eggTriggered = false;
+                    _bcosEggState.userCreatedEditLock = false;
+                }
+                delete info.parent.children[info.name];
+                _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(info.resolved.replace(/^~\/?/, '')) + '</span>');
             },
             mkdir: (args) => {
                 const raw = args.filter(a => !a.startsWith('-')).join(' ');
@@ -10387,39 +10377,20 @@
                     _bcosPrint('<span class="bcos-dim">Usage: mkdir &lt;name&gt;</span>');
                     return;
                 }
-                const name = raw.replace(/^\.\//, '').replace(/\/$/, '');
-                const parts = name.split('/');
-                if (parts.length === 1) {
-                    if (_bcosFS[name]) {
-                        _bcosPrint('<span class="bcos-error">mkdir: ' + _bcosEscape(name) + ': File exists</span>');
-                        return;
-                    }
-                    _bcosFS[name] = { type: 'dir', children: {} };
-                    if (name === 'edit.lock' || name === 'edit_lock') {
-                        _bcosEggState.userCreatedEditLock = true;
-                    }
-                    _bcosPrint('<span class="bcos-success">✓ Created directory: ' + _bcosEscape(name) + '</span>');
-                } else {
-                    const dirName = parts.pop();
-                    let dir = _bcosFS;
-                    for (const p of parts) {
-                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
-                        dir = dir[p].children;
-                    }
-                    if (!dir) {
-                        _bcosPrint('<span class="bcos-error">mkdir: cannot create directory \'' + _bcosEscape(name) + '\': No such file or directory</span>');
-                        return;
-                    }
-                    if (dir[dirName]) {
-                        _bcosPrint('<span class="bcos-error">mkdir: ' + _bcosEscape(name) + ': File exists</span>');
-                        return;
-                    }
-                    dir[dirName] = { type: 'dir', children: {} };
-                    if (dirName === 'edit.lock' || dirName === 'edit_lock') {
-                        _bcosEggState.userCreatedEditLock = true;
-                    }
-                    _bcosPrint('<span class="bcos-success">✓ Created directory: ' + _bcosEscape(name) + '</span>');
+                const info = _bcosGetVFSNodeAndParent(raw);
+                if (!info.parent || info.parent.type !== 'dir') {
+                    _bcosPrint('<span class="bcos-error">mkdir: cannot create directory \'' + _bcosEscape(raw) + '\': No such file or directory</span>');
+                    return;
                 }
+                if (info.parent.children[info.name]) {
+                    _bcosPrint('<span class="bcos-error">mkdir: ' + _bcosEscape(raw) + ': File exists</span>');
+                    return;
+                }
+                info.parent.children[info.name] = { type: 'dir', children: {} };
+                if (info.name === 'edit.lock' || info.name === 'edit_lock') {
+                    _bcosEggState.userCreatedEditLock = true;
+                }
+                _bcosPrint('<span class="bcos-success">✓ Created directory: ' + _bcosEscape(info.resolved.replace(/^~\/?/, '')) + '</span>');
             },
             mk: (args) => _bcosGetCommands().mkdir(args),
             touch: (args) => {
@@ -10429,35 +10400,18 @@
                     _bcosPrint('<span class="bcos-dim">Usage: touch &lt;name&gt;</span>');
                     return;
                 }
-                const name = raw.replace(/^\.\//, '').replace(/\/$/, '');
-                const parts = name.split('/');
-                if (parts.length === 1) {
-                    if (!_bcosFS[name]) {
-                        _bcosFS[name] = { type: 'file', content: '' };
-                        if (name === 'edit.lock' || name === 'edit_lock') {
-                            _bcosEggState.userCreatedEditLock = true;
-                        }
-                    }
-                    _bcosPrint('<span class="bcos-success">✓ Touched: ' + _bcosEscape(name) + '</span>');
-                } else {
-                    const fileName = parts.pop();
-                    let dir = _bcosFS;
-                    for (const p of parts) {
-                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
-                        dir = dir[p].children;
-                    }
-                    if (!dir) {
-                        _bcosPrint('<span class="bcos-error">touch: cannot touch \'' + _bcosEscape(name) + '\': No such file or directory</span>');
-                        return;
-                    }
-                    if (!dir[fileName]) {
-                        dir[fileName] = { type: 'file', content: '' };
-                        if (fileName === 'edit.lock' || fileName === 'edit_lock') {
-                            _bcosEggState.userCreatedEditLock = true;
-                        }
-                    }
-                    _bcosPrint('<span class="bcos-success">✓ Touched: ' + _bcosEscape(name) + '</span>');
+                const info = _bcosGetVFSNodeAndParent(raw);
+                if (!info.parent || info.parent.type !== 'dir') {
+                    _bcosPrint('<span class="bcos-error">touch: cannot touch \'' + _bcosEscape(raw) + '\': No such file or directory</span>');
+                    return;
                 }
+                if (!info.parent.children[info.name]) {
+                    info.parent.children[info.name] = { type: 'file', content: '' };
+                    if (info.name === 'edit.lock' || info.name === 'edit_lock') {
+                        _bcosEggState.userCreatedEditLock = true;
+                    }
+                }
+                _bcosPrint('<span class="bcos-success">✓ Touched: ' + _bcosEscape(info.resolved.replace(/^~\/?/, '')) + '</span>');
             },
             vim: () => _bcosPrint('<span class="bcos-dim">bcos: vim is not installed. Try \'echo\' instead.</span>'),
             nano: () => _bcosPrint('<span class="bcos-dim">bcos: nano is not installed. Try \'echo\' instead.</span>'),
@@ -11554,6 +11508,7 @@
         var winId = 'bcos-win-anni-edit';
         if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
         var container = document.getElementById('bcos-windows');
+        if (!container) return;
         var win = document.createElement('div');
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         var cx = 80+Math.random()*60, cy = 50+Math.random()*40;
@@ -11657,6 +11612,7 @@
         const winId = 'bcos-win-editlock';
         if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
         const container = document.getElementById('bcos-windows');
+        if (!container) return;
         const win = document.createElement('div');
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         const cx = 100+Math.random()*80, cy = 60+Math.random()*60;
@@ -15345,6 +15301,27 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9351', title:'bcos 全系统巡检 & Window Manager 空指针防御加固 & 全局版本升级', items:[
+            '🖥️ bcos 窗口管理器空指针防御：补全 _bcosEditAnniversary 与 _bcosOpenEditLockWindow 弹窗容器空指针防护 (if (!container) return;)，防止非 GUI 模式下渲染异常',
+            '🌐 bcos 浏览器与应用生命周期巡检：验证 bcos 浏览器、文件管理器、文本编辑器、终端与纪念日页面间的状态同步与闭环清理',
+            '🧹 进程与定时器生命周期闭环：全面确认 closeBcosOS 时对 _bcosMonitorTimer、_bcosAnniversaryTimer 及 _bcosTeHlTimer 的强行回收机制',
+        ]},
+        { ver:'v7.8.1.9350', title:'PWA Service Worker 离线网络防护 & 异常降级优化 & 全局版本升级', items:[
+            '🌐 PWA 离线防护增强：修复 Service Worker 资源请求在离线模式下的二次 fetch 捕获逻辑，避免极值网络环境下的 Uncaught Promise Rejection 报错',
+            '🔒 性能与稳健性提升：全面核验大富翁事件日志与玩家资金历史记录，确保所有动态数组均配备严格的 shift() 长度熔断',
+            '✨ 全局防跌落保障：完善 PWA 和网页各模块的开箱即用与跨设备离线适配',
+        ]},
+        { ver:'v7.8.1.9349', title:'bcos虚拟文件系统路径解析修复 & 终端命令相对路径支持 & 全局版本升级', items:[
+            '📁 bcos VFS 相对路径修复：新增 _bcosGetVFSNodeAndParent 节点解析器，全面修复 cd 子目录后 touch / mkdir / rm 在根目录误创误删的路径偏离 BUG',
+            '💻 终端路径感知增强：touch/mkdir/rm 等命令全面支持基于 _bcosCwd 当前工作目录的相对路径、父级路径 (..) 及波浪号 (~) 路径解析',
+            '⚡ 终端高频操作优化：改进 pathCmds 的 Tab 自动补全逻辑，在任何深度子目录下均能精准提示与补全文件名',
+        ]},
+        { ver:'v7.8.1.9348', title:'Monopoly租金叠加消除 & AI还价参数对齐 & 放弃购买公开竞拍 & 性能优化', items:[
+            '🛠️ 交易还价参数对齐：修复 AI 交易还价弹窗中 givePropVal / wantPropVal 参数传递与逻辑错位问题',
+            '💰 租金叠加消除：修正 calculateRent 与 triggerTile 之间重合乘算收租令/全息伪装的重复计算 BUG',
+            '🔨 放弃购买公开竞拍：玩家放弃买地 (skipBuy) 时自动触发全场公开拍卖，符合经典 Monopoly 竞拍规则',
+            '⚡ 性能渲染优化：优化 renderMonopolyPartial 批处理机制，减少不必要的全地图重绘与 DOM 抖动开销',
+        ]},
         { ver:'v7.8.1.9347', title:'安全加固 + Monitor性能优化 + 定时器泄漏修复 + 空指针防护', items:[
             '🛡️ 修复Markdown渲染器HTML模式XSS漏洞：未净化HTML直接渲染可导致脚本注入，现已剥离script标签和事件处理器',
             '⚡ System Monitor性能大幅优化：静态部分（仓库统计/语言分布/GPU信息）仅渲染一次，动态部分（CPU/内存/DOM节点）使用textContent定向更新',

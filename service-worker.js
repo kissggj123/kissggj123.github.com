@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.1.9347
-const CACHE_VERSION = 'v7.8.1.9347';
+// Service Worker - Bunny CC v7.8.1.9351
+const CACHE_VERSION = 'v7.8.1.9351';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 const CORE_ASSETS = [
@@ -13,6 +13,11 @@ const CORE_ASSETS = [
 
 // Old cache versions to force-purge (ensures icon refresh)
 const OLD_CACHE_PATTERNS = [
+    'bunny-cc-v7.8.1.9350', 'bunny-cc-runtime-v7.8.1.9350',
+    'bunny-cc-v7.8.1.9349', 'bunny-cc-runtime-v7.8.1.9349',
+    'bunny-cc-v7.8.1.9348', 'bunny-cc-runtime-v7.8.1.9348',
+    'bunny-cc-v7.8.1.9347', 'bunny-cc-runtime-v7.8.1.9347',
+    'bunny-cc-v7.8.0.9320', 'bunny-cc-runtime-v7.8.0.9320',
     'bunny-cc-v7.8.1.9346', 'bunny-cc-runtime-v7.8.1.9346',
     'bunny-cc-v7.8.0.9320', 'bunny-cc-runtime-v7.8.0.9320',
     'bunny-cc-v7.8.0.9321', 'bunny-cc-runtime-v7.8.0.9321',
@@ -118,7 +123,7 @@ self.addEventListener('fetch', (event) => {
                     caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
                 }
                 return resp;
-            }).catch(() => caches.match(req).then(r => r || fetch(req)))
+            }).catch(() => caches.match(req).then(r => r || new Response('', { status: 504, statusText: 'Gateway Timeout' })))
         );
         return;
     }
