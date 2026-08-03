@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9359 -->
+    <!-- VERSION: v7.8.1.9360 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9359</div>
+                <div class="subtitle">v7.8.1.9360</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9359</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9360</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9359',
+        VERSION: 'v7.8.1.9360',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2641,7 +2641,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9359 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9360 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -4624,13 +4624,18 @@
                 h += `<div style="font-size:.55rem;color:var(--accent);margin-top:.15rem;text-align:center;">自动交易·升级·用卡·掷骰·解禁</div>`;
             }
         } else if (mono.rolling) {
-            h += `<div style="color:var(--text2);margin-top:.3rem;">🎲 掷骰中...</div>`;
+            h += `<div style="color:var(--text2);margin-top:.3rem;text-align:center;">🎲 掷骰中...</div>`;
+            h += `<button class="btn btn-secondary btn-sm" style="margin-top:.4rem;width:100%;font-size:.68rem;padding:.3rem;" onclick="forceSkipCurrentPlayer()">⏭️ 强制恢复卡死回合</button>`;
         } else {
-            h += `<div style="color:var(--text2);margin-top:.3rem;">${cp?.ic} ${cp?.nm} 思考中...</div>`;
+            h += `<div style="color:var(--text2);margin-top:.3rem;text-align:center;">${cp?.ic} ${cp?.nm} 思考中...</div>`;
+            h += `<button class="btn btn-secondary btn-sm" style="margin-top:.4rem;width:100%;font-size:.68rem;padding:.3rem;" onclick="forceSkipCurrentPlayer()">⏭️ 跳过 ${cp?.nm} (恢复游戏)</button>`;
         }
-        // Auto-save indicator
+        // Auto-save indicator & manual skip recovery button
         if (mono.autoSaveTurn > 0) {
-            h += `<div style="font-size:.6rem;color:var(--text2);margin-top:.3rem;opacity:.7;">💾 已自动存档 (第${mono.autoSaveTurn}回合)</div>`;
+            h += `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;">
+                <span style="font-size:.6rem;color:var(--text2);opacity:.7;">💾 已自动存档 (第${mono.autoSaveTurn}回合)</span>
+                <button class="btn btn-sm btn-secondary" style="font-size:.55rem;padding:.1rem .3rem;" onclick="forceSkipCurrentPlayer()" title="跳过当前卡住的回合">⏭️ 跳过回合</button>
+            </div>`;
         }
         el.innerHTML = h;
     }
@@ -8666,21 +8671,39 @@
             _aiWatchdog = null;
             if (mono && mono.started) {
                 const p = mono.players[mono.currentPlayer];
-                if (p && !p.bankrupt) {
-                    mono.pendingAction = null;
-                    mono.rolling = false;
-                    mono.pendingTrade = false; // Clear trade state to prevent stuck
-                    closeModal();
-                    saveMonopoly();
-                    renderMonopoly();
-                    nextTurn();
-                }
+                const name = p ? `${p.ic} ${p.nm}` : 'AI';
+                monoLog(`🛡️ [看门狗救济] 检测到 ${name} 回合思考超时，已自动卡死修复恢复游戏`, 'warn');
+                if (typeof showToast === 'function') showToast(`🛡️ 看门狗已解锁 ${name} 超时卡死`, 'info');
+                mono.pendingAction = null;
+                mono.rolling = false;
+                mono.pendingTrade = false; // Clear trade state to prevent stuck
+                closeModal();
+                saveMonopoly();
+                renderMonopoly();
+                nextTurn();
             }
-        }, 12000); // 12s max for turn deadlock recovery
+        }, 8000); // 8s max for turn deadlock recovery (auto recovery)
     }
     function _clearWatchdog() {
         if (_aiWatchdog) { clearTimeout(_aiWatchdog); _aiWatchdog = null; }
     }
+
+    /* Manual emergency skip for stuck player turns */
+    window.forceSkipCurrentPlayer = function() {
+        if (!mono || !mono.started) return;
+        const cp = mono.players[mono.currentPlayer];
+        const name = cp ? `${cp.ic} ${cp.nm}` : '当前玩家';
+        _clearWatchdog();
+        mono.rolling = false;
+        mono.pendingAction = null;
+        mono.pendingTrade = false;
+        closeModal();
+        monoLog(`⚡ 手动强制跳过 ${name} 的回合`, 'warn');
+        if (typeof showToast === 'function') showToast(`⚡ 已强制跳过 ${name} 的回合`, 'info');
+        saveMonopoly();
+        renderMonopoly();
+        nextTurn();
+    };
 
     // Passive rent: each turn, property owners have a chance to collect small rent from NPC visitors
     // This addresses the issue where properties are rarely landed on with large maps
@@ -9167,6 +9190,11 @@
             clearInterval(_stockRefreshTimer);
             _stockRefreshTimer = null;
         }
+        // If AI trade modal was dismissed, unblock AI turn
+        if (mono && mono.started && mono.pendingTrade && mono.currentPlayer !== 0) {
+            mono.pendingTrade = false;
+            setTimeout(() => nextTurn(), 400);
+        }
     }
 
     // Bottom Sheet swipe-to-close for mobile
@@ -9326,7 +9354,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9359 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9360 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -15582,6 +15610,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9360', title:'AI 思考卡死手动跳过按钮 & 看门狗 8s 强制解除 & 交易弹窗关闭解锁救济', items:[
+            '⏭️ 新增手动跳过 AI 按钮：在 AI 思考与掷骰期间，控制面板显著位置新增「⏭️ 跳过 AI (恢复游戏)」与「⏭️ 跳过回合」按钮，玩家随时可以一键解除卡死',
+            '🛡️ Watchdog 8s 极速救济：看门狗超时调优至 8s，若 AI 或任何回合陷入超时等待，自动重置 rolling/pendingTrade 状态并流畅推进 nextTurn()',
+            '🤝 交易弹窗关闭解锁：修复 AI 发起交易弹窗被关闭时未清除 pendingTrade 标志导致的死锁，彻底解决 AI 思考概率卡死的问题',
+        ]},
         { ver:'v7.8.1.9359', title:'资金≤0破产资产全释放 & 动态租金倍率封顶20% & PC端手牌实时刷新 & 新增「✨ 双重强化」卡牌', items:[
             '☠️ 破产条件与资产全释放：金币降至 0 或负数 (且资产清算/紧急贷款后仍≤0) 时立即触发破产，名下所有地产 100% 释放归还公开市场 (owner=-1, level=0)，供其他玩家自由购买',
             '💰 动态价格与租金倍率上限：任何单笔租金/惩罚/价格倍率计算最高不超过场上最富裕活跃玩家金币的 20% (getMaxMoneyCap)，杜绝指数级通胀导致无辜瞬间破产',
