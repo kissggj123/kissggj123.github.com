@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9343 -->
+    <!-- VERSION: v7.8.1.9345 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9344',
+        VERSION: 'v7.8.1.9345',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -9691,7 +9691,38 @@
             if (matches.length === 1) input.value = matches[0] + ' ';
             else if (matches.length > 1) _bcosPrint('<span class="bcos-dim">' + matches.join('  ') + '</span>');
         } else {
+            const cmdName = parts[0].toLowerCase();
             const prefix = parts[parts.length - 1].toLowerCase();
+            // For path-based commands (cd, ls, cat, rm, touch, mkdir), complete from filesystem
+            const pathCmds = ['cd', 'ls', 'cat', 'rm', 'touch', 'mkdir', 'mk', 'open'];
+            if (pathCmds.indexOf(cmdName) !== -1) {
+                // Resolve the directory to search in
+                let searchDir, filePrefix;
+                const lastPart = parts[parts.length - 1];
+                if (lastPart.includes('/')) {
+                    const lastSlash = lastPart.lastIndexOf('/');
+                    const dirPart = lastPart.slice(0, lastSlash);
+                    filePrefix = lastPart.slice(lastSlash + 1).toLowerCase();
+                    const resolved = _bcosResolvePath(dirPart);
+                    searchDir = _bcosGetNodeAtPath(resolved);
+                } else {
+                    filePrefix = lastPart.toLowerCase();
+                    searchDir = _bcosGetNodeAtPath(_bcosCwd);
+                }
+                if (searchDir && searchDir.type === 'dir' && searchDir.children) {
+                    const childNames = Object.keys(searchDir.children).filter(n => n.toLowerCase().startsWith(filePrefix));
+                    if (childNames.length === 1) {
+                        const child = searchDir.children[childNames[0]];
+                        const suffix = child.type === 'dir' ? '/' : '';
+                        parts[parts.length - 1] = (lastPart.includes('/') ? lastPart.slice(0, lastPart.lastIndexOf('/') + 1) : '') + childNames[0] + suffix;
+                        input.value = parts.join(' ');
+                    } else if (childNames.length > 1 && childNames.length <= 20) {
+                        _bcosPrint('<span class="bcos-dim">' + childNames.join('  ') + '</span>');
+                    }
+                    return;
+                }
+            }
+            // Fallback: match repo names
             const matches = _bcosRepos.filter(r => r[0].toLowerCase().startsWith(prefix));
             if (matches.length === 1) { parts[parts.length - 1] = matches[0][0]; input.value = parts.join(' '); }
             else if (matches.length > 1 && matches.length <= 20) _bcosPrint('<span class="bcos-dim">' + matches.map(r => r[0]).join('  ') + '</span>');
@@ -10602,6 +10633,7 @@
         if (!ov) { ov = document.createElement('div'); ov.id = 'bcos-overlay'; document.body.appendChild(ov); }
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         _bcos.history = []; _bcos.histIdx = -1; _bcos.mode = 'boot'; _bcos.winZ = 100; _bcos.wins = {}; _bcos.activeWin = null;
+        _bcosInitMeFolder();
         _bcosBoot(ov);
     }
 
@@ -11728,11 +11760,31 @@
 
     // === Simple Markdown renderer for TextEditor Apply (non-egg mode) ===
     function _bcosSimpleMarkdown(md) {
-        let html = _bcosEscape(md);
-        // Code blocks (```...```)
-        html = html.replace(/```([\s\S]*?)```/g, '<pre style="background:#1a1a2e;border:1px solid #333;border-radius:4px;padding:.5rem;overflow:auto;font-family:monospace;font-size:12px;color:#00ff41;margin:.5rem 0;">$1</pre>');
-        // Inline code
-        html = html.replace(/`([^`]+)`/g, '<code style="background:#1a1a2e;padding:.1rem .3rem;border-radius:3px;font-family:monospace;font-size:.85em;color:#00ff41;">$1</code>');
+        // If content looks like HTML (starts with < or <!DOCTYPE), render directly
+        var trimmed = md.replace(/^\s+/, '');
+        if (trimmed.charAt(0) === '<' || /^<!DOCTYPE/i.test(trimmed)) {
+            return '<div style="font-family:sans-serif;padding:0;background:#0d1117;min-height:100%;">' + md + '</div>';
+        }
+        // Markdown mode: extract code blocks first to protect them from escaping
+        var codeBlocks = [];
+        var html = md.replace(/```([\s\S]*?)```/g, function(m, code) {
+            codeBlocks.push(code);
+            return '\x00CODEBLOCK' + (codeBlocks.length - 1) + '\x00';
+        });
+        var inlineCodes = [];
+        html = html.replace(/`([^`]+)`/g, function(m, code) {
+            inlineCodes.push(code);
+            return '\x00INLINECODE' + (inlineCodes.length - 1) + '\x00';
+        });
+        // Now escape HTML in the remaining text
+        html = _bcosEscape(html);
+        // Restore code blocks
+        html = html.replace(/\x00CODEBLOCK(\d+)\x00/g, function(m, i) {
+            return '<pre style="background:#1a1a2e;border:1px solid #333;border-radius:4px;padding:.5rem;overflow:auto;font-family:monospace;font-size:12px;color:#00ff41;margin:.5rem 0;">' + _bcosEscape(codeBlocks[parseInt(i)]) + '</pre>';
+        });
+        html = html.replace(/\x00INLINECODE(\d+)\x00/g, function(m, i) {
+            return '<code style="background:#1a1a2e;padding:.1rem .3rem;border-radius:3px;font-family:monospace;font-size:.85em;color:#00ff41;">' + _bcosEscape(inlineCodes[parseInt(i)]) + '</code>';
+        });
         // Headers
         html = html.replace(/^###### (.+)$/gm, '<h6 style="color:#a78bfa;margin:.3rem 0;">$1</h6>');
         html = html.replace(/^##### (.+)$/gm, '<h5 style="color:#a78bfa;margin:.3rem 0;">$1</h5>');
@@ -14963,6 +15015,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9345', title:'bcos终端ls修复 + Tab路径补全 + Markdown渲染修复', items:[
+            '🔧 修复ls在~/desktop/me目录下不显示文件：showBcosOS时预初始化me文件夹',
+            '⌨️ Tab补全增强：cd/ls/cat等路径命令支持文件系统目录名补全，不再只匹配仓库名',
+            '📝 修复Markdown渲染显示原始HTML：HTML内容直接渲染，Markdown内容先提取代码块再转义',
+        ]},
         { ver:'v7.8.1.9344', title:'bcos终端触发优化 + 安全修复 + 性能优化 + 内存泄漏修复', items:[
             '🔧 bcos终端命令执行优化：提取通用触发检查函数，终端命令也可触发系统文件生成',
             '🛡️ _bcosEscape安全加固：新增单引号和双引号转义，防止属性上下文XSS',
