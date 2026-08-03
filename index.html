@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9342 -->
+    <!-- VERSION: v7.8.1.9343 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9342',
+        VERSION: 'v7.8.1.9343',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -11663,7 +11663,8 @@
                 '</div>' +
                 '<button id="bcos-oobe-next" style="background:' + dt.accent + ';border:none;color:#fff;padding:.4rem 1.2rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:bold;">' + (isLast ? 'Start using bcos' : 'Next →') + '</button>' +
                 '</div>';
-            document.getElementById('bcos-oobe-next').onclick = () => {
+            var nextBtn = overlay.querySelector('#bcos-oobe-next');
+            if (nextBtn) nextBtn.onclick = () => {
                 _bcosOOBEStep++;
                 if (_bcosOOBEStep >= steps.length) {
                     safeSetItem('bcos_oobe_version', _BCOS_VER);
@@ -11673,8 +11674,8 @@
                 }
             };
         }
-        renderStep();
         ov.appendChild(overlay);
+        renderStep();
     }
 
     // Event log modal — shows all events triggered during the game
@@ -14836,6 +14837,10 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9343', title:'修复OOBE不显示bug', items:[
+            '🔧 修复OOBE覆盖层不显示：renderStep在overlay挂载到DOM前调用导致getElementById返回null',
+            '🔧 改用overlay.querySelector并先挂载再渲染，确保按钮事件正确绑定',
+        ]},
         { ver:'v7.8.1.9342', title:'彩蛋玩法重构 + 终端cd修复 + 编辑器文件选择 + 浏览器链接修复', items:[
             '🐰 彩蛋玩法重构：触发后打开readme显示真实页面源码，可编辑后Apply',
             '🖥️ Apply后iframe全屏预览：修改后的页面实时渲染，保留交互性，退出按钮关闭',
