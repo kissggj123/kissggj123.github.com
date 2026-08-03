@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9340 -->
+    <!-- VERSION: v7.8.1.9342 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9341',
+        VERSION: 'v7.8.1.9342',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -10005,9 +10005,11 @@
                     return;
                 }
                 _bcosCwd = resolved;
-                // Update prompt path in input line
+                // Update prompt path in all terminal instances
                 const promptPath = document.querySelector('#bcos-input-line .bcos-prompt-path');
                 if (promptPath) promptPath.textContent = _bcosGetPromptPath();
+                const mtPromptPath = document.getElementById('bcos-mt-prompt-path');
+                if (mtPromptPath) mtPromptPath.textContent = _bcosGetPromptPath();
             },
             tree: () => {
                 const lm = {}; _bcosRepos.forEach(r => { if (!lm[r[2]]) lm[r[2]] = []; lm[r[2]].push(r); });
@@ -10813,7 +10815,7 @@
 
     function _bcosRenderDesktopTerminal(content) {
         content.style.padding = '0';
-        content.innerHTML = `<div class="bcos-mini-terminal" id="bcos-mt-out" style="height:calc(100% - 32px);"></div><div style="display:flex;align-items:center;gap:2px;padding:.3rem;background:#0a0a0a;border-top:1px solid #222;"><span style="color:#00ff41;font-weight:bold;font-size:12px;">bcos@bunny:~$</span><input class="bcos-mini-terminal-input" id="bcos-mt-in" type="text" autocomplete="off" /></div>`;
+        content.innerHTML = `<div class="bcos-mini-terminal" id="bcos-mt-out" style="height:calc(100% - 32px);"></div><div style="display:flex;align-items:center;gap:2px;padding:.3rem;background:#0a0a0a;border-top:1px solid #222;"><span style="color:#00ff41;font-weight:bold;font-size:12px;">bcos@bunny:<span id="bcos-mt-prompt-path">${_bcosGetPromptPath()}</span>$</span><input class="bcos-mini-terminal-input" id="bcos-mt-in" type="text" autocomplete="off" /></div>`;
         const out = document.getElementById('bcos-mt-out');
         out.innerHTML = '<div style="color:#00ff41;">bcos ' + _BCOS_VER + ' Desktop Terminal</div><div style="color:#666;">Type \'help\' for commands.</div><br>';
         const input = document.getElementById('bcos-mt-in'); input.focus();
@@ -10822,7 +10824,7 @@
             if (e.key === 'Enter') {
                 const cmd = input.value; mh.push(cmd); if (mh.length > 50) mh.shift(); mi = mh.length;
                 const echoDiv = document.createElement('div');
-                echoDiv.innerHTML = '<span style="color:#00ff41;font-weight:bold;">bcos@bunny:~$</span> ' + _bcosEscape(cmd);
+                echoDiv.innerHTML = '<span style="color:#00ff41;font-weight:bold;">bcos@bunny:' + _bcosGetPromptPath() + '$</span> ' + _bcosEscape(cmd);
                 out.appendChild(echoDiv);
                 input.value = '';
                 if (!cmd.trim()) return;
@@ -11267,7 +11269,27 @@
             '</div>';
     }
     function _bcosGetEggReadme() {
-        return '<!DOCTYPE html>\n<html>\n<head>\n<style>\nbody{font-family:sans-serif;text-align:center;padding:2rem;background:linear-gradient(135deg,#1a1a2e,#0F3460);color:#fff;min-height:100vh;margin:0;}\nh1{color:#FF6B9D;font-size:2.5rem;}\np{color:#a78bfa;font-size:1.2rem;}\n.box{background:rgba(255,255,255,.1);border-radius:12px;padding:1.5rem;margin:1rem auto;max-width:350px;}\n</style>\n</head>\n<body>\n<h1>🐰 Bunny Kingdom 🐰</h1>\n<p>Welcome to the Angora Rabbit Kingdom</p>\n<div class="box">\n<p style="color:#00ff41;">A magical place where bunnies roam free</p>\n<p style="color:#ffaa00;">Established: 2014</p>\n<p style="color:#00aaff;">Population: 177 bunnies</p>\n</div>\n<p style="color:#888;font-size:.8rem;">Powered by bcos ' + _BCOS_VER + '</p>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    }
+    function _bcosEggPreview(html) {
+        _bcosCloseEggPreview();
+        var overlay = document.createElement('iframe');
+        overlay.id = 'bcos-egg-preview';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;border:none;z-index:999999;background:#fff;';
+        overlay.srcdoc = html;
+        document.body.appendChild(overlay);
+        var exitBtn = document.createElement('div');
+        exitBtn.id = 'bcos-egg-preview-exit';
+        exitBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:1000000;background:rgba(255,107,157,.9);color:#fff;padding:.4rem .8rem;border-radius:20px;cursor:pointer;font-size:13px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;';
+        exitBtn.textContent = '🐰 退出预览';
+        exitBtn.onclick = _bcosCloseEggPreview;
+        document.body.appendChild(exitBtn);
+    }
+    function _bcosCloseEggPreview() {
+        var iframe = document.getElementById('bcos-egg-preview');
+        if (iframe) iframe.remove();
+        var exitBtn = document.getElementById('bcos-egg-preview-exit');
+        if (exitBtn) exitBtn.remove();
     }
     function _bcosInitMeFolder() {
         if (!_bcosFS.me.children.readme_md && !_bcosFS.me.children['readme.md']) {
@@ -11287,7 +11309,23 @@
             '<div style="background:#222;padding:.2rem .3rem;border-bottom:1px solid #333;display:flex;gap:.2rem;overflow-x:auto;flex-wrap:nowrap;">' + bookmarksBar + '</div>' +
             '<div id="bcos-browser-view" style="height:calc(100% - 56px);overflow:auto;"></div>';
         const view = document.getElementById('bcos-browser-view');
-        if (view) view.innerHTML = _bcosBrowserHTML;
+        if (view) {
+            view.innerHTML = _bcosBrowserHTML;
+            // Intercept link clicks to prevent file:// navigation
+            view.addEventListener('click', function(e) {
+                var link = e.target.closest('a');
+                if (!link) return;
+                var href = link.getAttribute('href');
+                if (!href || href === '#') { e.preventDefault(); return; }
+                if (href.indexOf('bunny://') === 0) {
+                    e.preventDefault();
+                    _bcosBrowserNavigate(href, 'internal');
+                } else if (href.indexOf('http://') !== 0 && href.indexOf('https://') !== 0 && href.indexOf('mailto:') !== 0) {
+                    // Block relative/file:// links
+                    e.preventDefault();
+                }
+            });
+        }
     }
     var _bcosAnniversaryTimer = null;
     function _bcosBrowserNavigate(url, type) {
@@ -11437,12 +11475,29 @@
             '<div style="padding:.3rem;display:flex;gap:.3rem;align-items:center;border-bottom:1px solid #333;background:#1a1a1a;">' +
             '<span style="color:#888;font-size:10px;white-space:nowrap;">File:</span>' +
             '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. notes.txt, readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
+            '<select id="bcos-te-filelist" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .2rem;border-radius:3px;cursor:pointer;max-width:120px;"><option value="">📋 Files...</option></select>' +
             '</div>' +
             '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store."></textarea>';
         const ta = document.getElementById('bcos-te-textarea');
         const fnLabel = document.getElementById('bcos-te-filename');
         const openName = document.getElementById('bcos-te-openname');
         const statusLabel = document.getElementById('bcos-te-status');
+        // Populate file list dropdown
+        const fileListSel = document.getElementById('bcos-te-filelist');
+        if (fileListSel) {
+            const files = Object.keys(_bcosFS.me.children).filter(n => _bcosFS.me.children[n].type === 'file');
+            files.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name; opt.textContent = name;
+                fileListSel.appendChild(opt);
+            });
+            fileListSel.addEventListener('change', () => {
+                if (fileListSel.value) {
+                    openName.value = fileListSel.value;
+                    document.getElementById('bcos-te-open').click();
+                }
+            });
+        }
         function _teStatus(msg, color) {
             if (statusLabel) { statusLabel.textContent = msg; statusLabel.style.color = color || '#666'; }
             setTimeout(() => { if (statusLabel) statusLabel.textContent = ''; }, 3000);
@@ -11523,13 +11578,18 @@
             // Render content: if egg triggered, raw HTML; otherwise, simple markdown
             if (_bcosEggState.eggTriggered) {
                 _bcosBrowserHTML = ta.value;
+                _bcosBrowserCurrentURL = 'bunny://live-preview';
+                _bcosEggPreview(ta.value);
             } else {
                 _bcosBrowserHTML = _bcosSimpleMarkdown(raw);
+                _bcosBrowserCurrentURL = 'bunny://markdown-preview';
             }
+            var _urlBar = document.getElementById('bcos-url-bar');
+            if (_urlBar) _urlBar.textContent = _bcosBrowserCurrentURL;
             _bcosBrowserRefresh();
             if (!_bcos.wins['browser']) _bcosOpenApp('browser');
             else _bcosFocusWin('browser');
-            _teStatus(_bcosEggState.eggTriggered ? 'Applied to browser!' : 'Rendered as markdown', '#00aaff');
+            _teStatus(_bcosEggState.eggTriggered ? 'Applied to browser + live preview!' : 'Rendered as markdown', '#00aaff');
         };
         // Allow Enter in filename input to trigger Open
         openName.addEventListener('keydown', (e) => {
@@ -14776,6 +14836,14 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9342', title:'彩蛋玩法重构 + 终端cd修复 + 编辑器文件选择 + 浏览器链接修复', items:[
+            '🐰 彩蛋玩法重构：触发后打开readme显示真实页面源码，可编辑后Apply',
+            '🖥️ Apply后iframe全屏预览：修改后的页面实时渲染，保留交互性，退出按钮关闭',
+            '🔧 修复桌面终端cd后提示符不显示当前目录：动态更新bcos-mt-prompt-path',
+            '📂 TextEditor新增文件选择下拉框：列出me文件夹所有文件，点击直接打开',
+            '🔒 修复bcos浏览器链接file://前缀：拦截非http/https链接点击',
+            '🔄 修复浏览器地址栏Apply后不刷新：更新URL栏显示当前预览地址',
+        ]},
         { ver:'v7.8.1.9341', title:'bcos纪念日页面 + 窗体缩放 + 胡萝卜鼠标 + OOBE版本追踪 + Markdown渲染', items:[
             '💕 bcos浏览器新增纪念日收藏夹：实时天数计数器、时分秒倒计时、里程碑列表、下一纪念日倒计时',
             '📖 纪念日内容可编辑：高级模式下可编辑王国传承文本，localStorage持久化保存',
