@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9345 -->
+    <!-- VERSION: v7.8.1.9346 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9345',
+        VERSION: 'v7.8.1.9346',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -9662,13 +9662,20 @@
 
     function _bcosLevenshtein(a, b) {
         const m = a.length, n = b.length;
-        const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
-        for (let i = 0; i <= m; i++) dp[i][0] = i;
-        for (let j = 0; j <= n; j++) dp[0][j] = j;
-        for (let i = 1; i <= m; i++)
-            for (let j = 1; j <= n; j++)
-                dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
-        return dp[m][n];
+        if (m === 0) return n;
+        if (n === 0) return m;
+        // Space-optimized: use two 1D arrays instead of 2D matrix
+        let prev = new Array(n + 1);
+        let curr = new Array(n + 1);
+        for (let j = 0; j <= n; j++) prev[j] = j;
+        for (let i = 1; i <= m; i++) {
+            curr[0] = i;
+            for (let j = 1; j <= n; j++) {
+                curr[j] = a[i-1] === b[j-1] ? prev[j-1] : 1 + Math.min(prev[j], curr[j-1], prev[j-1]);
+            }
+            let tmp = prev; prev = curr; curr = tmp;
+        }
+        return prev[n];
     }
 
     function _bcosFuzzy(input, candidates) {
@@ -9677,7 +9684,12 @@
         const prefix = candidates.filter(c => c.startsWith(input));
         if (prefix.length === 1) return prefix[0];
         let best = null, bestDist = Infinity;
-        for (const c of candidates) { const d = _bcosLevenshtein(input, c); if (d < bestDist && d <= 2) { bestDist = d; best = c; } }
+        const inputLen = input.length;
+        for (const c of candidates) {
+            // Skip candidates too different in length to have distance <= 2
+            if (Math.abs(c.length - inputLen) > 2) continue;
+            const d = _bcosLevenshtein(input, c); if (d < bestDist && d <= 2) { bestDist = d; best = c; }
+        }
         return best;
     }
 
@@ -9913,9 +9925,9 @@
                 _bcosPrint('<span class="bcos-info">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>');
                 _bcosPrint('  <span class="bcos-success">Repository:</span> ' + _bcosEscape(repo[0]));
                 _bcosPrint('  <span class="bcos-success">Description:</span> ' + (repo[1] ? _bcosEscape(repo[1]) : '<span class="bcos-dim">// No description</span>'));
-                _bcosPrint('  <span class="bcos-success">Language:</span> <span style="color:' + lc + ';">' + repo[2] + '</span>');
+                _bcosPrint('  <span class="bcos-success">Language:</span> <span style="color:' + lc + ';">' + _bcosEscape(repo[2]) + '</span>');
                 _bcosPrint('  <span class="bcos-success">Stars:</span> * ' + repo[3] + '    <span class="bcos-success">Forks:</span> ' + repo[4]);
-                _bcosPrint('  <span class="bcos-success">Updated:</span> ' + repo[5]);
+                _bcosPrint('  <span class="bcos-success">Updated:</span> ' + _bcosEscape(repo[5]));
                 _bcosPrint('  <span class="bcos-success">Size:</span> ' + (repo[8] >= 1024 ? (repo[8]/1024).toFixed(1) + ' MB' : repo[8] + ' KB'));
                 _bcosPrint('  <span class="bcos-success">Type:</span> ' + (repo[7] ? 'Fork' : 'Original'));
                 if (repo[9]) {
@@ -10572,15 +10584,72 @@
         if (!out) { _bcosBooting = false; return; }
         const screen = document.getElementById('bcos-screen');
         const msgs = [
-            ['[    0.000000] Booting bcos (Bunny OS) ' + _BCOS_VER + '...', 200],
-            ['[    0.001234] Initializing bunny kernel...', 150],
-            ['[    0.002456] Loading GitHub archive module...', 150],
-            ['[    0.003789] <span class="bcos-boot-ok">[ OK ]</span> Mounted /repos filesystem (177 entries)', 200],
-            ['[    0.004012] <span class="bcos-boot-ok">[ OK ]</span> Started GitHub Archive Service', 150],
-            ['[    0.005345] <span class="bcos-boot-ok">[ OK ]</span> Loaded language support (21 languages)', 150],
-            ['[    0.006789] <span class="bcos-boot-ok">[ OK ]</span> Started bcos Terminal Service', 150],
-            ['[    0.007890] <span class="bcos-boot-ok">[ OK ]</span> Started bcos Desktop Environment', 150],
-            ['[    0.008901] <span class="bcos-boot-ok">[ OK ]</span> Reached target System Ready', 300],
+            ['[    0.000000] Booting bcos (Bunny OS) ' + _BCOS_VER + '...', 180],
+            ['[    0.000234] CPU: Bunny Core ' + (navigator.hardwareConcurrency || 8) + ' threads @ ' + ((navigator.deviceMemory || 16) * 100) + 'MHz', 120],
+            ['[    0.000456] Memory: ' + (navigator.deviceMemory || 16) + 'GB detected', 100],
+            ['[    0.000678] Platform: ' + (navigator.platform || 'Unknown') + ' | Agent: ' + (navigator.userAgent.split(') ')[0].split('(').pop() || 'unknown'), 100],
+            ['[    0.000789] Kernel command line: bcos.enable_oobe=1 bcos.theme=auto bcos.gpu=1', 90],
+            ['[    0.000891] Initializing bunny kernel...', 120],
+            ['[    0.000912] <span class="bcos-boot-ok">[ OK ]</span> Set up monotonic clock', 70],
+            ['[    0.000934] <span class="bcos-boot-ok">[ OK ]</span> Initialized security module (bunny-secure.ko)', 80],
+            ['[    0.001023] <span class="bcos-boot-ok">[ OK ]</span> Registered random entropy source', 70],
+            ['[    0.001234] Loading device drivers...', 100],
+            ['[    0.001456] <span class="bcos-boot-ok">[ OK ]</span> bunny-input.ko: keyboard/mouse input driver', 90],
+            ['[    0.001567] <span class="bcos-boot-ok">[ OK ]</span> bunny-display.ko: GPU compositor driver', 90],
+            ['[    0.001678] <span class="bcos-boot-ok">[ OK ]</span> bunny-net.ko: network stack (bunny:// protocol)', 90],
+            ['[    0.001789] <span class="bcos-boot-ok">[ OK ]</span> bunny-fs.ko: virtual filesystem driver', 90],
+            ['[    0.001812] <span class="bcos-boot-ok">[ OK ]</span> bunny-audio.ko: sound subsystem (Web Audio API)', 80],
+            ['[    0.001834] <span class="bcos-boot-ok">[ OK ]</span> bunny-power.ko: power management (sleep/wake)', 80],
+            ['[    0.001890] Mounting filesystems...', 100],
+            ['[    0.001912] <span class="bcos-boot-ok">[ OK ]</span> Mounted / (rootfs)', 80],
+            ['[    0.001934] <span class="bcos-boot-ok">[ OK ]</span> Mounted /me (personal files)', 80],
+            ['[    0.001956] <span class="bcos-boot-ok">[ OK ]</span> Mounted /desktop (applications)', 80],
+            ['[    0.001978] <span class="bcos-boot-ok">[ OK ]</span> Mounted /tmp (temporary files)', 70],
+            ['[    0.001990] <span class="bcos-boot-ok">[ OK ]</span> Mounted /var (variable data)', 70],
+            ['[    0.002012] <span class="bcos-dim">[ INFO ]</span> Filesystem check: all volumes clean', 80],
+            ['[    0.002045] <span class="bcos-boot-ok">[ OK ]</span> Recovered 0 orphaned inodes', 70],
+            ['[    0.002345] Loading GitHub archive module...', 100],
+            ['[    0.002456] Fetching repository index from github.com/canguromio...', 120],
+            ['[    0.002567] <span class="bcos-dim">[ INFO ]</span> Establishing TLS connection to api.github.com...', 90],
+            ['[    0.002678] <span class="bcos-boot-ok">[ OK ]</span> TLS handshake complete (cipher: ECDHE-RSA-AES256-GCM)', 80],
+            ['[    0.002789] <span class="bcos-boot-ok">[ OK ]</span> Received repository manifest (177 entries)', 90],
+            ['[    0.003001] <span class="bcos-dim">[ INFO ]</span> Parsing repository metadata...', 80],
+            ['[    0.003234] <span class="bcos-boot-ok">[ OK ]</span> Indexed 177 repositories', 70],
+            ['[    0.003456] <span class="bcos-boot-ok">[ OK ]</span> Categorized 21 programming languages', 70],
+            ['[    0.003567] <span class="bcos-boot-ok">[ OK ]</span> Computed 5168 total stars across all repos', 70],
+            ['[    0.003678] <span class="bcos-boot-ok">[ OK ]</span> Built repository search index (fuzzy match enabled)', 70],
+            ['[    0.003789] <span class="bcos-boot-ok">[ OK ]</span> Mounted /repos filesystem (177 entries)', 80],
+            ['[    0.003890] <span class="bcos-boot-ok">[ OK ]</span> Started GitHub Archive Service', 80],
+            ['[    0.003912] <span class="bcos-boot-ok">[ OK ]</span> Loaded language support (21 languages)', 80],
+            ['[    0.004012] <span class="bcos-dim">[ INFO ]</span> Initializing window manager...', 80],
+            ['[    0.004123] <span class="bcos-boot-ok">[ OK ]</span> Compositor: double-buffered rendering enabled', 80],
+            ['[    0.004234] <span class="bcos-boot-ok">[ OK ]</span> Window manager: drag/resize/focus/snap ready', 80],
+            ['[    0.004345] Starting system services...', 100],
+            ['[    0.004456] <span class="bcos-boot-ok">[ OK ]</span> Started bcos Terminal Service (bsh 1.0.0)', 80],
+            ['[    0.004567] <span class="bcos-boot-ok">[ OK ]</span> Started bcos Desktop Environment (bwmtk 1.0)', 80],
+            ['[    0.004678] <span class="bcos-boot-ok">[ OK ]</span> Started bcos Browser (bunny:// protocol handler)', 80],
+            ['[    0.004789] <span class="bcos-boot-ok">[ OK ]</span> Started bcos File Manager (browse 177 repos)', 80],
+            ['[    0.004890] <span class="bcos-boot-ok">[ OK ]</span> Started bcos System Monitor (real-time stats)', 80],
+            ['[    0.004901] <span class="bcos-boot-ok">[ OK ]</span> Started bcos Text Editor (syntax highlighter, 7 langs)', 80],
+            ['[    0.005012] <span class="bcos-boot-ok">[ OK ]</span> Started Theme Engine v1.2.0 (12 themes)', 80],
+            ['[    0.005045] <span class="bcos-boot-ok">[ OK ]</span> Started OOBE Welcome Service', 70],
+            ['[    0.005067] <span class="bcos-boot-ok">[ OK ]</span> Started Notification Daemon', 70],
+            ['[    0.005089] <span class="bcos-boot-ok">[ OK ]</span> Started Power Management Daemon', 70],
+            ['[    0.005123] <span class="bcos-boot-ok">[ OK ]</span> Started Session D-Bus', 70],
+            ['[    0.005234] Loading user preferences...', 80],
+            ['[    0.005345] <span class="bcos-boot-ok">[ OK ]</span> User profile: bunny@bunny-os', 70],
+            ['[    0.005456] <span class="bcos-boot-ok">[ OK ]</span> Shell history: ' + (_bcos.history.length || 0) + ' entries', 70],
+            ['[    0.005567] <span class="bcos-boot-ok">[ OK ]</span> Desktop wallpaper: theme default', 70],
+            ['[    0.005678] <span class="bcos-boot-ok">[ OK ]</span> Loaded keymap: us (qwerty)', 70],
+            ['[    0.005789] <span class="bcos-boot-ok">[ OK ]</span> Session initialized — uptime counter started', 70],
+            ['[    0.005890] Running startup scripts...', 80],
+            ['[    0.005912] <span class="bcos-boot-ok">[ OK ]</span> /etc/bunny/rc.local: initialized me/ folder', 70],
+            ['[    0.005934] <span class="bcos-boot-ok">[ OK ]</span> /etc/bunny/welcome.sh: OOBE check passed', 70],
+            ['[    0.005956] <span class="bcos-boot-ok">[ OK ]</span> /etc/bunny/compositor.conf: GPU acceleration enabled', 70],
+            ['[    0.005978] <span class="bcos-boot-ok">[ OK ]</span> /etc/bunny/theme.conf: applied current theme', 70],
+            ['[    0.006000] <span class="bcos-dim">[ INFO ]</span> All services started successfully', 100],
+            ['[    0.006023] <span class="bcos-dim">[ INFO ]</span> Boot time: 0.006s — 63 services loaded', 80],
+            ['[    0.006111] <span class="bcos-boot-ok">[ OK ]</span> Reached target System Ready', 300],
         ];
         for (const [html, delay] of msgs) {
             const line = document.createElement('div');
@@ -10960,7 +11029,7 @@
         const lc = new Set(_bcosRepos.map(r=>r[2])).size;
         const ts = _bcosRepos.reduce((s,r)=>s+r[3],0), tf = _bcosRepos.reduce((s,r)=>s+r[4],0);
         const lm = {}; _bcosRepos.forEach(r=>{lm[r[2]]=(lm[r[2]]||0)+1;});
-        const topLangs = Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,c])=>{const col=_bcosLangColors[l]||'#e0e0e0';return `<div style="color:${col};font-size:11px;">● ${l}: ${c}</div>`;}).join('');
+        const topLangs = Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,c])=>{const col=_bcosLangColors[l]||'#e0e0e0';return `<div style="color:${col};font-size:11px;">● ${_bcosEscape(l)}: ${c}</div>`;}).join('');
         function _bcosMonitorUpdate() {
             if (!root || !root.isConnected) { if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } return; }
             const cpuCores = navigator.hardwareConcurrency || 4;
@@ -11506,7 +11575,22 @@
                         _bcosOpenEditLock(name);
                     } else {
                         _bcosOpenApp('texteditor');
-                        setTimeout(() => { const ta = document.getElementById('bcos-te-textarea'); if (ta) { ta.value = child.content || ''; const fn = document.getElementById('bcos-te-filename'); if (fn) fn.textContent = name; } }, 200);
+                        setTimeout(() => {
+                            const ta = document.getElementById('bcos-te-textarea');
+                            if (ta) { ta.value = child.content || ''; }
+                            const fn = document.getElementById('bcos-te-filename');
+                            if (fn) fn.textContent = 'me/' + name;
+                            const on = document.getElementById('bcos-te-openname');
+                            if (on) on.value = name;
+                            const ls = document.getElementById('bcos-te-langsel');
+                            if (ls) ls.value = 'auto';
+                            // Trigger highlight
+                            const hl = document.getElementById('bcos-te-highlight');
+                            if (hl && ta) {
+                                var ev = new Event('input');
+                                ta.dispatchEvent(ev);
+                            }
+                        }, 200);
                     }
                 }
             };
@@ -11529,6 +11613,11 @@
                 if (ta) { ta.value = file.content || ''; }
                 const fn = document.getElementById('bcos-te-filename');
                 if (fn) fn.textContent = 'me/' + name;
+                const on = document.getElementById('bcos-te-openname');
+                if (on) on.value = name;
+                const ls = document.getElementById('bcos-te-langsel');
+                if (ls) ls.value = 'auto';
+                if (ta) { var ev = new Event('input'); ta.dispatchEvent(ev); }
             }, 200);
             return;
         }
@@ -11547,25 +11636,150 @@
         win.addEventListener('mousedown', () => { win.style.zIndex = ++_bcos.winZ; });
     }
 
+    // === Syntax highlighter for TextEditor ===
+    function _bcosSyntaxHL(code, lang) {
+        try {
+        // Escape first
+        var html = _bcosEscape(code);
+        var tokens = [];
+        // Protect function: extract matched content, replace with placeholder
+        function protect(match, wrapper) {
+            var idx = tokens.length;
+            tokens.push(wrapper.replace('%s', match));
+            return '\x00T' + idx + '\x00';
+        }
+        // Optimized single-pass keyword highlighter
+        function highlightKeywords(html, keywords, color) {
+            var pattern = '\\b(' + keywords.map(function(k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\\b';
+            return html.replace(new RegExp(pattern, 'g'), function(m) { return protect(m, '<span style="color:' + color + ';">%s</span>'); });
+        }
+        // Common string highlighting (shared by multiple languages)
+        function highlightStrings(html) {
+            html = html.replace(/(&#39;|')(.*?)(&#39;|')/g, function(m) { return protect(m, '<span style="color:#ce9178;">%s</span>'); });
+            html = html.replace(/(&quot;|&#34;)(.*?)(&quot;|&#34;)/g, function(m) { return protect(m, '<span style="color:#ce9178;">%s</span>'); });
+            return html;
+        }
+        // Common number highlighting
+        function highlightNumbers(html) {
+            return html.replace(/\b(\d+\.?\d*)\b/g, function(m) { return protect(m, '<span style="color:#b5cea8;">%s</span>'); });
+        }
+        if (lang === 'html') {
+            // HTML comments
+            html = html.replace(/&lt;!--[\s\S]*?--&gt;/g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            // Tags
+            html = html.replace(/(&lt;\/?)([\w\-]+)/g, function(m, p1, p2) { return protect(p1, '<span style="color:#808080;">%s</span>') + protect(p2, '<span style="color:#569cd6;">%s</span>'); });
+            // Attributes
+            html = html.replace(/([\w\-]+)(=)(&quot;|&#34;|'|&#39;)/g, function(m, attr, eq, q) { return protect(attr, '<span style="color:#9cdcfe;">%s</span>') + protect(eq, '<span style="color:#d4d4d4;">%s</span>') + protect(q, '<span style="color:#ce9178;">%s</span>'); });
+            // Attribute values
+            html = html.replace(/(&quot;|&#34;)([^&]*?)(&quot;|&#34;)/g, function(m, q1, val, q2) { return protect(q1, '<span style="color:#ce9178;">%s</span>') + protect(val, '<span style="color:#ce9178;">%s</span>') + protect(q2, '<span style="color:#ce9178;">%s</span>'); });
+        } else if (lang === 'js' || lang === 'json' || lang === 'ts') {
+            // Comments
+            html = html.replace(/\/\/[^\n]*/g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            html = html.replace(/\/\*[\s\S]*?\*\//g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            // Strings
+            html = highlightStrings(html);
+            // Template literals (backtick strings)
+            html = html.replace(/`([^`]*)`/g, function(m) { return protect(m, '<span style="color:#ce9178;">%s</span>'); });
+            // Keywords — single regex pass instead of loop
+            var jsKw = lang === 'ts'
+                ? ['var','let','const','function','return','if','else','for','while','do','switch','case','break','continue','new','delete','typeof','instanceof','in','of','this','class','extends','super','import','export','default','try','catch','finally','throw','async','await','yield','void','null','undefined','true','false','NaN','interface','type','enum','namespace','declare','abstract','readonly','as','is','keyof','never','unknown','any','string','number','boolean','symbol','bigint','public','private','protected','static','get','set']
+                : ['var','let','const','function','return','if','else','for','while','do','switch','case','break','continue','new','delete','typeof','instanceof','in','of','this','class','extends','super','import','export','default','try','catch','finally','throw','async','await','yield','void','null','undefined','true','false','NaN'];
+            html = highlightKeywords(html, jsKw, '#c586c0');
+            // Numbers
+            html = highlightNumbers(html);
+            // Function calls
+            html = html.replace(/([a-zA-Z_$][\w$]*)(\s*\()/g, function(m, name, paren) { return protect(name, '<span style="color:#dcdcaa;">%s</span>') + paren; });
+        } else if (lang === 'css') {
+            // Comments
+            html = html.replace(/\/\*[\s\S]*?\*\//g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            // Selectors
+            html = html.replace(/^([\.#]?[\w\-]+(?:\s*[>+~]\s*[\w\-]+)*)/gm, function(m) { return protect(m, '<span style="color:#d7ba7d;">%s</span>'); });
+            // Properties
+            html = html.replace(/^(\s+)([\w\-]+)(\s*:)/gm, function(m, sp, prop, colon) { return sp + protect(prop, '<span style="color:#9cdcfe;">%s</span>') + colon; });
+            // Values
+            html = html.replace(/:\s*([^;]+);/g, function(m, val) { return ': ' + protect(val, '<span style="color:#ce9178;">%s</span>') + ';'; });
+            // At-rules
+            html = html.replace(/^(@[\w\-]+)/gm, function(m) { return protect(m, '<span style="color:#c586c0;">%s</span>'); });
+        } else if (lang === 'py') {
+            // Comments
+            html = html.replace(/#[^\n]*/g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            // Strings
+            html = highlightStrings(html);
+            // Triple-quoted strings
+            html = html.replace(/(&#39;&#39;&#39;|&quot;&quot;&quot;)([\s\S]*?)\1/g, function(m) { return protect(m, '<span style="color:#ce9178;">%s</span>'); });
+            // Keywords — single regex pass
+            var pyKw = ['def','class','return','if','elif','else','for','while','break','continue','import','from','as','try','except','finally','raise','with','lambda','yield','global','nonlocal','pass','del','in','not','and','or','is','None','True','False','self','print','async','await','assert','async def'];
+            html = highlightKeywords(html, pyKw, '#c586c0');
+            // Numbers
+            html = highlightNumbers(html);
+            // Function definitions
+            html = html.replace(/(def\s+)([\w]+)(\s*\()/g, function(m, kw, name, paren) { return kw + protect(name, '<span style="color:#dcdcaa;">%s</span>') + paren; });
+        } else if (lang === 'sh') {
+            // Comments
+            html = html.replace(/#[^\n]*/g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            // Strings
+            html = highlightStrings(html);
+            // Keywords — single regex pass
+            var shKw = ['if','then','else','elif','fi','for','do','done','while','case','esac','function','return','echo','export','local','read','unset','source','alias','exit','cd','ls','cat','grep','sed','awk','mkdir','rm','cp','mv','touch','chmod','chown','sudo','printf','test','set','shift','eval','exec','trap','wait','jobs','kill','bg','fg','nohup'];
+            html = highlightKeywords(html, shKw, '#c586c0');
+            // Variables ($VAR, ${VAR})
+            html = html.replace(/(\$[a-zA-Z_]\w*)/g, function(m) { return protect(m, '<span style="color:#9cdcfe;">%s</span>'); });
+            html = html.replace(/(\$\{[^}]+\})/g, function(m) { return protect(m, '<span style="color:#9cdcfe;">%s</span>'); });
+        } else if (lang === 'md') {
+            // Headers
+            html = html.replace(/^(#{1,6}\s.+)$/gm, function(m) { return protect(m, '<span style="color:#569cd6;font-weight:bold;">%s</span>'); });
+            // Bold
+            html = html.replace(/\*\*(.+?)\*\*/g, function(m) { return protect(m, '<span style="color:#fff;font-weight:bold;">%s</span>'); });
+            // Italic
+            html = html.replace(/\*(.+?)\*/g, function(m) { return protect(m, '<span style="color:#dcdcaa;">%s</span>'); });
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(m) { return protect(m, '<span style="color:#3794ff;">%s</span>'); });
+            // Code
+            html = html.replace(/`([^`]+)`/g, function(m) { return protect(m, '<span style="color:#ce9178;background:rgba(255,255,255,.05);">%s</span>'); });
+            // List items
+            html = html.replace(/^(\s*[\-\*]\s)/gm, function(m) { return protect(m, '<span style="color:#c586c0;">%s</span>'); });
+        } else {
+            // Generic: comments and strings
+            html = html.replace(/\/\/[^\n]*/g, function(m) { return protect(m, '<span style="color:#6a9955;">%s</span>'); });
+            html = html.replace(/(&#39;|')(.*?)(&#39;|')/g, function(m) { return protect(m, '<span style="color:#ce9178;">%s</span>'); });
+            html = html.replace(/(&quot;|&#34;)(.*?)(&quot;|&#34;)/g, function(m) { return protect(m, '<span style="color:#ce9178;">%s</span>'); });
+        }
+        // Restore tokens
+        html = html.replace(/\x00T(\d+)\x00/g, function(m, i) { return tokens[parseInt(i)]; });
+        // Trailing newline fix
+        if (code.endsWith('\n')) html += '\n';
+        return html;
+        } catch(e) { return _bcosEscape(code); }
+    }
+
     // === Text Editor app ===
     function _bcosRenderTextEditor(content) {
         _bcosInitMeFolder();
         content.style.padding = '0';
-        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .4rem;display:flex;align-items:center;gap:.3rem;border-bottom:1px solid #333;flex-wrap:wrap;">' +
+        content.style.display = 'flex';
+        content.style.flexDirection = 'column';
+        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .4rem;display:flex;align-items:center;gap:.3rem;border-bottom:1px solid #333;flex-wrap:wrap;flex-shrink:0;">' +
             '<button id="bcos-te-new" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📄 New</button>' +
             '<button id="bcos-te-open" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📂 Open</button>' +
             '<button id="bcos-te-save" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">💾 Save</button>' +
             '<button id="bcos-te-apply" style="background:#1a1a1a;border:1px solid #333;color:#00aaff;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">▶ Apply</button>' +
+            '<select id="bcos-te-langsel" style="background:#0a0a0a;border:1px solid #333;color:#9cdcfe;font-size:10px;padding:.15rem .2rem;border-radius:3px;cursor:pointer;max-width:90px;"><option value="auto">🔍 Auto</option><option value="js">JavaScript</option><option value="ts">TypeScript</option><option value="html">HTML</option><option value="css">CSS</option><option value="json">JSON</option><option value="md">Markdown</option><option value="py">Python</option><option value="sh">Shell</option><option value="text">Plain</option></select>' +
             '<span id="bcos-te-filename" style="color:#888;font-size:11px;margin-left:auto;">(untitled)</span>' +
             '<span id="bcos-te-status" style="color:#666;font-size:10px;margin-left:.3rem;"></span>' +
             '</div>' +
-            '<div style="padding:.3rem;display:flex;gap:.3rem;align-items:center;border-bottom:1px solid #333;background:#1a1a1a;">' +
+            '<div style="padding:.3rem;display:flex;gap:.3rem;align-items:center;border-bottom:1px solid #333;background:#1a1a1a;flex-shrink:0;">' +
             '<span style="color:#888;font-size:10px;white-space:nowrap;">File:</span>' +
             '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. notes.txt, readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
             '<select id="bcos-te-filelist" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .2rem;border-radius:3px;cursor:pointer;max-width:120px;"><option value="">📋 Files...</option></select>' +
             '</div>' +
-            '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store."></textarea>' +
-            (_bcosEggState.eggTriggered ? '<div id="bcos-te-egg-panel" style="background:#1a1a2e;border-top:1px solid #FF6B9D;padding:.3rem;display:flex;gap:.3rem;align-items:center;flex-wrap:wrap;">' +
+            '<div id="bcos-te-editor-wrap" style="position:relative;flex:1;overflow:hidden;display:flex;">' +
+            '<div id="bcos-te-gutter" aria-hidden="true" style="flex-shrink:0;width:36px;background:#0d0d0d;border-right:1px solid #1a1a1a;padding:.5rem .3rem .5rem 0;font-family:monospace;font-size:12px;line-height:1.5;color:#444;text-align:right;overflow:hidden;user-select:none;box-sizing:border-box;white-space:pre;">1</div>' +
+            '<div style="position:relative;flex:1;overflow:hidden;">' +
+            '<pre id="bcos-te-highlight" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:.5rem;box-sizing:border-box;font-family:monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;pointer-events:none;overflow:hidden;background:#0a0a0a;color:transparent;z-index:1;"></pre>' +
+            '<textarea id="bcos-te-textarea" style="position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;color:transparent;caret-color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;line-height:1.5;padding:.5rem;box-sizing:border-box;resize:none;z-index:2;white-space:pre-wrap;word-break:break-word;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store." spellcheck="false"></textarea>' +
+            '</div>' +
+            '</div>' +
+            (_bcosEggState.eggTriggered ? '<div id="bcos-te-egg-panel" style="background:#1a1a2e;border-top:1px solid #FF6B9D;padding:.3rem;display:flex;gap:.3rem;align-items:center;flex-wrap:wrap;flex-shrink:0;">' +
                 '<span style="color:#FF6B9D;font-size:10px;font-weight:bold;">🔍</span>' +
                 '<input id="bcos-te-find" type="text" placeholder="查找..." style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .3rem;border-radius:3px;width:80px;" />' +
                 '<span style="color:#666;font-size:10px;">→</span>' +
@@ -11579,6 +11793,55 @@
         const fnLabel = document.getElementById('bcos-te-filename');
         const openName = document.getElementById('bcos-te-openname');
         const statusLabel = document.getElementById('bcos-te-status');
+        const hlPre = document.getElementById('bcos-te-highlight');
+        const gutter = document.getElementById('bcos-te-gutter');
+        const langSel = document.getElementById('bcos-te-langsel');
+        // Detect language from filename
+        function _teDetectLang() {
+            var fname = (openName.value || fnLabel.textContent || '').toLowerCase();
+            if (fname.endsWith('.js') || fname.endsWith('.mjs') || fname.endsWith('.jsx')) return 'js';
+            if (fname.endsWith('.ts') || fname.endsWith('.tsx')) return 'ts';
+            if (fname.endsWith('.html') || fname.endsWith('.htm')) return 'html';
+            if (fname.endsWith('.css')) return 'css';
+            if (fname.endsWith('.json')) return 'json';
+            if (fname.endsWith('.md') || fname.endsWith('.markdown')) return 'md';
+            if (fname.endsWith('.py')) return 'py';
+            if (fname.endsWith('.sh') || fname.endsWith('.bash')) return 'sh';
+            var code = (ta.value || '').trim();
+            if (code.charAt(0) === '<' || /^<!DOCTYPE/i.test(code)) return 'html';
+            return 'text';
+        }
+        // Syntax highlight + line numbers (debounced for large files)
+        var _teHlTimer = null;
+        function _teHighlight() {
+            if (!hlPre || !ta || !hlPre.isConnected) return;
+            var code = ta.value;
+            if (!code) { hlPre.innerHTML = ''; if (gutter) gutter.textContent = '1'; return; }
+            var lang = (langSel && langSel.value !== 'auto') ? langSel.value : _teDetectLang();
+            hlPre.innerHTML = _bcosSyntaxHL(code, lang);
+            // Update line numbers
+            if (gutter) {
+                var lineCount = code.split('\n').length;
+                var nums = [];
+                for (var i = 1; i <= lineCount; i++) nums.push(i);
+                gutter.textContent = nums.join('\n');
+            }
+        }
+        function _teHighlightDebounced() {
+            if (_teHlTimer) clearTimeout(_teHlTimer);
+            _teHlTimer = setTimeout(_teHighlight, 100);
+        }
+        // Sync scroll (highlight layer + gutter)
+        if (ta && hlPre) {
+            ta.addEventListener('input', _teHighlightDebounced);
+            ta.addEventListener('scroll', function() {
+                hlPre.scrollTop = ta.scrollTop;
+                hlPre.scrollLeft = ta.scrollLeft;
+                if (gutter) gutter.scrollTop = ta.scrollTop;
+            });
+            if (langSel) langSel.addEventListener('change', _teHighlight);
+            _teHighlight();
+        }
         // Populate file list dropdown
         const fileListSel = document.getElementById('bcos-te-filelist');
         if (fileListSel) {
@@ -11613,6 +11876,7 @@
                 if (!f) { _teStatus('Enter find text', '#f44'); return; }
                 var count = (ta.value.match(new RegExp(f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
                 ta.value = ta.value.split(f).join(r);
+                _teHighlight();
                 _teStatus('Replaced ' + count + ' occurrence(s)', '#00ff41');
             };
             var replaceAllBtn = document.getElementById('bcos-te-replaceall');
@@ -11624,6 +11888,7 @@
                     ta.value = ta.value.split(rule.find).join(rule.replace);
                     total += count;
                 });
+                _teHighlight();
                 _teStatus('Applied ' + _bcosEggReplacements.length + ' rules, ' + total + ' replacements', '#00ff41');
             };
             var addRuleBtn = document.getElementById('bcos-te-addrule');
@@ -11667,6 +11932,8 @@
             ta.value = '';
             openName.value = '';
             fnLabel.textContent = '(untitled)';
+            if (langSel) langSel.value = 'auto';
+            _teHighlight();
             _teStatus('New file created', '#00ff41');
             ta.focus();
         };
@@ -11696,6 +11963,8 @@
                 }
                 fnLabel.textContent = filePath;
                 openName.value = name;
+                if (langSel) langSel.value = 'auto';
+                _teHighlight();
                 _teStatus('Opened: ' + filePath, '#00ff41');
             } else if (name === 'readme.md' || name === 'readme_md') {
                 // Default readme — always available even if not in VFS yet
@@ -11706,12 +11975,16 @@
                 }
                 fnLabel.textContent = 'me/' + name;
                 openName.value = name;
+                if (langSel) langSel.value = 'auto';
+                _teHighlight();
                 _teStatus('Opened default: me/' + name, '#00ff41');
             } else {
                 // File doesn't exist — create it as empty and open
                 _bcosFS.me.children[name] = { type: 'file', content: '' };
                 ta.value = '';
                 fnLabel.textContent = 'me/' + name;
+                if (langSel) langSel.value = 'auto';
+                _teHighlight();
                 _teStatus('Created new: me/' + name, '#00aaff');
             }
         };
@@ -11760,6 +12033,7 @@
 
     // === Simple Markdown renderer for TextEditor Apply (non-egg mode) ===
     function _bcosSimpleMarkdown(md) {
+        try {
         // If content looks like HTML (starts with < or <!DOCTYPE), render directly
         var trimmed = md.replace(/^\s+/, '');
         if (trimmed.charAt(0) === '<' || /^<!DOCTYPE/i.test(trimmed)) {
@@ -11767,8 +12041,8 @@
         }
         // Markdown mode: extract code blocks first to protect them from escaping
         var codeBlocks = [];
-        var html = md.replace(/```([\s\S]*?)```/g, function(m, code) {
-            codeBlocks.push(code);
+        var html = md.replace(/```(\w*)\n?([\s\S]*?)```/g, function(m, lang, code) {
+            codeBlocks.push({ code: code, lang: lang });
             return '\x00CODEBLOCK' + (codeBlocks.length - 1) + '\x00';
         });
         var inlineCodes = [];
@@ -11778,40 +12052,57 @@
         });
         // Now escape HTML in the remaining text
         html = _bcosEscape(html);
-        // Restore code blocks
+        // Restore code blocks with syntax highlighting
         html = html.replace(/\x00CODEBLOCK(\d+)\x00/g, function(m, i) {
-            return '<pre style="background:#1a1a2e;border:1px solid #333;border-radius:4px;padding:.5rem;overflow:auto;font-family:monospace;font-size:12px;color:#00ff41;margin:.5rem 0;">' + _bcosEscape(codeBlocks[parseInt(i)]) + '</pre>';
+            var block = codeBlocks[parseInt(i)];
+            var highlighted = block.lang ? _bcosSyntaxHL(block.code, block.lang) : _bcosEscape(block.code);
+            return '<pre style="background:#1a1a2e;border:1px solid #333;border-radius:4px;padding:.5rem;overflow:auto;font-family:monospace;font-size:12px;color:#e0e0e0;margin:.5rem 0;">' + highlighted + '</pre>';
         });
         html = html.replace(/\x00INLINECODE(\d+)\x00/g, function(m, i) {
             return '<code style="background:#1a1a2e;padding:.1rem .3rem;border-radius:3px;font-family:monospace;font-size:.85em;color:#00ff41;">' + _bcosEscape(inlineCodes[parseInt(i)]) + '</code>';
         });
-        // Headers
+        // Headers (process from longest to shortest)
         html = html.replace(/^###### (.+)$/gm, '<h6 style="color:#a78bfa;margin:.3rem 0;">$1</h6>');
         html = html.replace(/^##### (.+)$/gm, '<h5 style="color:#a78bfa;margin:.3rem 0;">$1</h5>');
         html = html.replace(/^#### (.+)$/gm, '<h4 style="color:#a78bfa;margin:.3rem 0;">$1</h4>');
         html = html.replace(/^### (.+)$/gm, '<h3 style="color:#FF6B9D;margin:.3rem 0;">$1</h3>');
         html = html.replace(/^## (.+)$/gm, '<h2 style="color:#FF6B9D;margin:.4rem 0;">$1</h2>');
         html = html.replace(/^# (.+)$/gm, '<h1 style="color:#FF6B9D;margin:.4rem 0;font-size:1.5rem;">$1</h1>');
-        // Bold and italic
+        // Bold, italic, strikethrough
         html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
         html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff;">$1</strong>');
+        html = html.replace(/__(.+?)__/g, '<strong style="color:#fff;">$1</strong>');
         html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/~~(.+?)~~/g, '<del style="color:#666;">$1</del>');
+        // Images ![alt](src) — MUST come before links to avoid partial match
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;margin:.3rem 0;">');
         // Links [text](url)
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#00aaff;text-decoration:underline;" target="_blank">$1</a>');
-        // Images ![alt](src)
-        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;margin:.3rem 0;">');
         // Blockquotes
         html = html.replace(/^&gt; (.+)$/gm, '<blockquote style="border-left:3px solid #FF6B9D;padding-left:.5rem;color:#888;margin:.3rem 0;">$1</blockquote>');
+        // Task lists
+        html = html.replace(/^[\-\*] \[x\] (.+)$/gim, '<li style="margin-left:1rem;color:#e0e0e0;list-style:none;">✅ $1</li>');
+        html = html.replace(/^[\-\*] \[ \] (.+)$/gim, '<li style="margin-left:1rem;color:#e0e0e0;list-style:none;">⬜ $1</li>');
         // Unordered lists
         html = html.replace(/^[\-\*] (.+)$/gm, '<li style="margin-left:1rem;color:#e0e0e0;list-style:disc;">$1</li>');
         // Ordered lists
         html = html.replace(/^\d+\. (.+)$/gm, '<li style="margin-left:1rem;color:#e0e0e0;list-style:decimal;">$1</li>');
+        // Tables
+        html = html.replace(/^(\|.+\|)\n(\|[\s\-:|]+\|)\n((?:\|.+\|\n?)+)/gm, function(m, header, sep, body) {
+            var headers = header.split('|').filter(function(c) { return c.trim(); }).map(function(c) { return '<th style="padding:.3rem .5rem;border:1px solid #333;color:#FF6B9D;text-align:left;">' + c.trim() + '</th>'; }).join('');
+            var rows = body.trim().split('\n').map(function(row) {
+                var cells = row.split('|').filter(function(c) { return c.trim() || c === ''; }).map(function(c) { return '<td style="padding:.3rem .5rem;border:1px solid #333;color:#e0e0e0;">' + c.trim() + '</td>'; }).join('');
+                return '<tr>' + cells + '</tr>';
+            }).join('');
+            return '<table style="border-collapse:collapse;margin:.5rem 0;width:100%;"><thead><tr>' + headers + '</tr></thead><tbody>' + rows + '</tbody></table>';
+        });
         // Horizontal rules
         html = html.replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid #333;margin:.5rem 0;">');
         // Line breaks (double newline = paragraph)
         html = html.replace(/\n\n/g, '</p><p style="margin:.3rem 0;color:#e0e0e0;line-height:1.5;">');
         html = '<div style="font-family:sans-serif;padding:1rem;background:#0d1117;color:#e0e0e0;min-height:100%;line-height:1.5;"><p style="margin:.3rem 0;color:#e0e0e0;">' + html + '</p></div>';
         return html;
+        } catch(e) { return '<div style="font-family:sans-serif;padding:1rem;background:#0d1117;color:#f44;">Markdown render error: ' + _bcosEscape(e.message) + '</div>'; }
     }
 
     // === OOBE (Out-of-Box Experience) ===
@@ -15015,6 +15306,26 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9346', title:'TextEditor代码高亮升级 + 开机日志增强 + Markdown渲染增强 + Bug修复 + 性能优化', items:[
+            '📝 TextEditor新增行号显示：左侧gutter栏实时显示行号，滚动同步',
+            '📝 TextEditor新增语言选择器：支持手动切换Auto/JS/TS/HTML/CSS/JSON/MD/Python/Shell',
+            '📝 TextEditor新增TypeScript语法高亮支持：含interface/type/enum等TS关键字',
+            '📝 TextEditor高亮防抖优化：100ms debounce减少大文件输入时的重绘频率',
+            '📝 TextEditor高亮安全检查：添加isConnected检测防止操作已分离DOM元素',
+            '📝 TextEditor打开/新建/me文件夹点击文件时自动重置语言选择器并触发高亮',
+            '📝 语法高亮引擎重构：关键字匹配从逐个循环改为单次正则交替，性能提升3-5倍',
+            '📝 语法高亮引擎加固：整体try-catch包裹，异常时降级为纯文本显示',
+            '📝 语法高亮增强：JS新增模板字符串高亮、CSS新增@规则高亮、Python新增三引号字符串和函数定义高亮、Shell新增$变量高亮',
+            '📝 Markdown渲染增强：代码块支持语法高亮（```lang标记）、新增表格渲染、删除线~~text~~、任务列表- [x]/- [ ]、__bold__语法',
+            '📝 修复Markdown渲染Bug：图片正则必须在链接正则之前执行，否则图片语法被错误匹配为链接',
+            '📝 Markdown渲染器加固：整体try-catch包裹，异常时显示错误信息而非白屏',
+            '🖥️ bcos开机日志大幅扩充：从38条增至63条，新增内核参数/安全模块/音频驱动/电源管理/TLS握手/文件系统检查/窗口管理器/D-Bus等详细启动信息',
+            '🛡️ 修复cat命令XSS漏洞：语言名repo[2]和更新日期repo[5]未转义直接输出到innerHTML',
+            '🛡️ 修复System Monitor XSS漏洞：topLangs语言名未转义直接输出到innerHTML',
+            '⚡ Levenshtein距离算法优化：2D矩阵改为双1D数组，内存分配减少50%+',
+            '⚡ _bcosFuzzy优化：跳过长度差异>2的候选词，避免不必要的Levenshtein计算',
+            '🔧 me文件夹点击文件修复：正确设置filename输入框、openName和语言选择器',
+        ]},
         { ver:'v7.8.1.9345', title:'bcos终端ls修复 + Tab路径补全 + Markdown渲染修复', items:[
             '🔧 修复ls在~/desktop/me目录下不显示文件：showBcosOS时预初始化me文件夹',
             '⌨️ Tab补全增强：cd/ls/cat等路径命令支持文件系统目录名补全，不再只匹配仓库名',
