@@ -1590,7 +1590,7 @@
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
                         <div style="margin-top:.2rem;font-size:.7rem;color:var(--text2);opacity:.6;">点击查看更多信息</div>
                     </div>
-                    <button class="bcos-btn" onclick="showBcosOS()">👤 关于作者</button>
+                    <button class="bcos-btn" onclick="showBcosOS()"><svg width="14" height="14" viewBox="0 0 16 16" style="display:inline-block;vertical-align:middle;margin-right:.2rem;image-rendering:pixelated;"><!-- carrot body --><rect x="6" y="6" width="1" height="1" fill="#ff8c00"/><rect x="7" y="6" width="1" height="1" fill="#ff8c00"/><rect x="8" y="6" width="1" height="1" fill="#ff8c00"/><rect x="5" y="7" width="1" height="1" fill="#ff8c00"/><rect x="6" y="7" width="1" height="1" fill="#ff6600"/><rect x="7" y="7" width="1" height="1" fill="#ff8c00"/><rect x="8" y="7" width="1" height="1" fill="#ff6600"/><rect x="9" y="7" width="1" height="1" fill="#ff8c00"/><rect x="4" y="8" width="1" height="1" fill="#ff8c00"/><rect x="5" y="8" width="1" height="1" fill="#ff6600"/><rect x="6" y="8" width="1" height="1" fill="#ff8c00"/><rect x="7" y="8" width="1" height="1" fill="#cc6600"/><rect x="8" y="8" width="1" height="1" fill="#ff8c00"/><rect x="9" y="8" width="1" height="1" fill="#ff6600"/><rect x="10" y="8" width="1" height="1" fill="#ff8c00"/><rect x="5" y="9" width="1" height="1" fill="#ff6600"/><rect x="6" y="9" width="1" height="1" fill="#cc6600"/><rect x="7" y="9" width="1" height="1" fill="#ff8c00"/><rect x="8" y="9" width="1" height="1" fill="#ff6600"/><rect x="9" y="9" width="1" height="1" fill="#ff8c00"/><rect x="6" y="10" width="1" height="1" fill="#ff8c00"/><rect x="7" y="10" width="1" height="1" fill="#cc6600"/><rect x="8" y="10" width="1" height="1" fill="#ff8c00"/><rect x="7" y="11" width="1" height="1" fill="#cc6600"/><!-- green leaves --><rect x="5" y="3" width="1" height="1" fill="#228b22"/><rect x="6" y="3" width="1" height="1" fill="#32cd32"/><rect x="7" y="2" width="1" height="1" fill="#228b22"/><rect x="8" y="3" width="1" height="1" fill="#32cd32"/><rect x="9" y="3" width="1" height="1" fill="#228b22"/><rect x="4" y="4" width="1" height="1" fill="#228b22"/><rect x="5" y="4" width="1" height="1" fill="#32cd32"/><rect x="6" y="4" width="1" height="1" fill="#228b22"/><rect x="7" y="4" width="1" height="1" fill="#32cd32"/><rect x="8" y="4" width="1" height="1" fill="#228b22"/><rect x="9" y="4" width="1" height="1" fill="#32cd32"/><rect x="10" y="4" width="1" height="1" fill="#228b22"/><rect x="5" y="5" width="1" height="1" fill="#32cd32"/><rect x="6" y="5" width="1" height="1" fill="#228b22"/><rect x="7" y="5" width="1" height="1" fill="#32cd32"/><rect x="8" y="5" width="1" height="1" fill="#228b22"/><rect x="9" y="5" width="1" height="1" fill="#32cd32"/></svg>关于作者</button>
                 </div>
                 <div class="card">
                     <div class="card-title">📋 更新日志</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9343',
+        VERSION: 'v7.8.1.9344',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -10851,7 +10851,7 @@
                 if (out.isConnected) out.scrollTop = out.scrollHeight;
             } else if (e.key === 'ArrowUp') { e.preventDefault(); if (mi > 0) { mi--; input.value = mh[mi]; } }
             else if (e.key === 'ArrowDown') { e.preventDefault(); if (mi < mh.length-1) { mi++; input.value = mh[mi]; } else { mi = mh.length; input.value = ''; } }
-            else if (e.key === 'Tab') { e.preventDefault(); const v = input.value; const cs = Object.keys(_bcosGetCommands()).filter(c => c.startsWith(v.toLowerCase())); if (cs.length === 1) input.value = cs[0] + ' '; }
+            else if (e.key === 'Tab') { e.preventDefault(); _bcosAutocomplete(input); }
             else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); out.innerHTML = ''; }
         });
     }
@@ -11269,27 +11269,64 @@
             '</div>';
     }
     function _bcosGetEggReadme() {
-        return '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰</title>\n  <style>body{font-family:sans-serif;background:#FFF0F5;color:#333;margin:0;}\n  h1{color:#FF6B9D;}.nav a{color:#FF6B9D;text-decoration:none;margin:0 .5rem;}\n  .hero{text-align:center;padding:2rem;}.footer{text-align:center;padding:1rem;color:#999;font-size:.7rem;}\n  </style>\n</head>\n<body>\n  <header style="background:#FF6B9D;color:#fff;padding:.5rem 1rem;">\n    <h1>🐰 兔可可王国</h1>\n  </header>\n  <nav style="padding:.5rem 1rem;border-bottom:1px solid #FF6B9D;">\n    <a>🏠 首页</a><a>🎲 大富翁</a><a>💕 纪念日</a><a>⚙️ 设置</a><a>🖥️ bcos终端</a>\n  </nav>\n  <main>\n    <section class="hero">\n      <h2>棉花糖兔</h2>\n      <p>英系双血统安哥拉兔，扎根上海</p>\n      <p>兔可可 | CoCo | ココ</p>\n      <p>它的铲屎官 | Caretaker | お世話係です</p>\n    </section>\n    <section style="padding:1rem;">\n      <h3>💕 兔可可纪念日</h3>\n      <p>起始日期：2024/03/12</p>\n      <p>每一天都是值得纪念的日子</p>\n    </section>\n    <section style="padding:1rem;">\n      <h3>🎲 大富翁兔可可王国</h3>\n      <p>在虚拟纪元中建造你的兔可可王国</p>\n    </section>\n  </main>\n  <footer class="footer">\n    <p>Powered by Bunny CC ' + _BCOS_VER + '</p>\n    <p>© CanguroMIO | kissggj123</p>\n  </footer>\n</body>\n</html>';
     }
+    var _bcosEggReplacements = [];
     function _bcosEggPreview(html) {
-        _bcosCloseEggPreview();
-        var overlay = document.createElement('iframe');
-        overlay.id = 'bcos-egg-preview';
-        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;border:none;z-index:999999;background:#fff;';
-        overlay.srcdoc = html;
-        document.body.appendChild(overlay);
-        var exitBtn = document.createElement('div');
-        exitBtn.id = 'bcos-egg-preview-exit';
-        exitBtn.style.cssText = 'position:fixed;top:10px;right:10px;z-index:1000000;background:rgba(255,107,157,.9);color:#fff;padding:.4rem .8rem;border-radius:20px;cursor:pointer;font-size:13px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;';
-        exitBtn.textContent = '🐰 退出预览';
-        exitBtn.onclick = _bcosCloseEggPreview;
-        document.body.appendChild(exitBtn);
+        _bcosBrowserHTML = html;
+        _bcosBrowserCurrentURL = 'bunny://live-preview';
+        var _urlBar = document.getElementById('bcos-url-bar');
+        if (_urlBar) _urlBar.textContent = _bcosBrowserCurrentURL;
+        _bcosBrowserRefresh();
+        if (!_bcos.wins['browser']) _bcosOpenApp('browser');
+        else _bcosFocusWin('browser');
+        // Add "apply to real page" button to browser view
+        setTimeout(function() {
+            var view = document.getElementById('bcos-browser-view');
+            if (view) {
+                var applyBar = document.createElement('div');
+                applyBar.id = 'bcos-egg-applybar';
+                applyBar.style.cssText = 'position:sticky;bottom:0;left:0;right:0;background:rgba(26,26,46,.95);border-top:1px solid #FF6B9D;padding:.4rem;text-align:center;z-index:100;';
+                applyBar.innerHTML = '<button onclick="_bcosEggApplyReal()" style="background:#FF6B9D;color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:11px;font-family:sans-serif;">✨ 应用到真实页面</button>';
+                view.appendChild(applyBar);
+            }
+        }, 100);
+    }
+    function _bcosEggApplyReal() {
+        if (_bcosEggReplacements.length === 0) {
+            alert('没有替换规则。请先在编辑器中使用查找替换功能。');
+            return;
+        }
+        var count = 0;
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, null);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function(node) {
+            var text = node.textContent;
+            var changed = false;
+            _bcosEggReplacements.forEach(function(r) {
+                if (text.indexOf(r.find) !== -1) {
+                    text = text.split(r.find).join(r.replace);
+                    changed = true;
+                }
+            });
+            if (changed) { node.textContent = text; count++; }
+        });
+        // Also replace in input values and attributes
+        document.querySelectorAll('[placeholder]').forEach(function(el) {
+            _bcosEggReplacements.forEach(function(r) {
+                if (el.placeholder.indexOf(r.find) !== -1) {
+                    el.placeholder = el.placeholder.split(r.find).join(r.replace);
+                }
+            });
+        });
+        alert('已应用到真实页面！替换了 ' + count + ' 个文本节点。\n\n刷新页面可恢复原始内容。');
+        // Close bcos browser to show real page
+        if (_bcos.wins['browser']) _bcosCloseWin('browser');
     }
     function _bcosCloseEggPreview() {
-        var iframe = document.getElementById('bcos-egg-preview');
-        if (iframe) iframe.remove();
-        var exitBtn = document.getElementById('bcos-egg-preview-exit');
-        if (exitBtn) exitBtn.remove();
+        var applyBar = document.getElementById('bcos-egg-applybar');
+        if (applyBar) applyBar.remove();
     }
     function _bcosInitMeFolder() {
         if (!_bcosFS.me.children.readme_md && !_bcosFS.me.children['readme.md']) {
@@ -11477,7 +11514,17 @@
             '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. notes.txt, readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
             '<select id="bcos-te-filelist" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .2rem;border-radius:3px;cursor:pointer;max-width:120px;"><option value="">📋 Files...</option></select>' +
             '</div>' +
-            '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store."></textarea>';
+            '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store."></textarea>' +
+            (_bcosEggState.eggTriggered ? '<div id="bcos-te-egg-panel" style="background:#1a1a2e;border-top:1px solid #FF6B9D;padding:.3rem;display:flex;gap:.3rem;align-items:center;flex-wrap:wrap;">' +
+                '<span style="color:#FF6B9D;font-size:10px;font-weight:bold;">🔍</span>' +
+                '<input id="bcos-te-find" type="text" placeholder="查找..." style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .3rem;border-radius:3px;width:80px;" />' +
+                '<span style="color:#666;font-size:10px;">→</span>' +
+                '<input id="bcos-te-replace" type="text" placeholder="替换..." style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .3rem;border-radius:3px;width:80px;" />' +
+                '<button id="bcos-te-replacebtn" style="background:#FF6B9D;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">替换</button>' +
+                '<button id="bcos-te-replaceall" style="background:#a78bfa;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">一键全部</button>' +
+                '<button id="bcos-te-addrule" style="background:#00aaff;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">+规则</button>' +
+                '<div id="bcos-te-rules" style="font-size:9px;color:#888;max-height:30px;overflow-y:auto;width:100%;"></div>' +
+                '</div>' : '');
         const ta = document.getElementById('bcos-te-textarea');
         const fnLabel = document.getElementById('bcos-te-filename');
         const openName = document.getElementById('bcos-te-openname');
@@ -11495,6 +11542,69 @@
                 if (fileListSel.value) {
                     openName.value = fileListSel.value;
                     document.getElementById('bcos-te-open').click();
+                }
+            });
+        }
+        // Egg mode: find & replace handlers
+        if (_bcosEggState.eggTriggered) {
+            var findInput = document.getElementById('bcos-te-find');
+            var replaceInput = document.getElementById('bcos-te-replace');
+            var rulesDiv = document.getElementById('bcos-te-rules');
+            function _teUpdateRules() {
+                if (!rulesDiv) return;
+                rulesDiv.innerHTML = _bcosEggReplacements.map(function(r, i) {
+                    return '<span style="background:#1a1a2e;padding:.1rem .3rem;border-radius:2px;margin-right:.2rem;display:inline-block;">' + _bcosEscape(r.find) + ' → ' + _bcosEscape(r.replace) + ' <span style="color:#f44;cursor:pointer;" onclick="_bcosEggReplacements.splice(' + i + ',1);_teUpdateRules();">✕</span></span>';
+                }).join('') || '<span style="color:#555;">无规则</span>';
+            }
+            _teUpdateRules();
+            var replaceBtn = document.getElementById('bcos-te-replacebtn');
+            if (replaceBtn) replaceBtn.onclick = function() {
+                var f = findInput.value, r = replaceInput.value;
+                if (!f) { _teStatus('Enter find text', '#f44'); return; }
+                var count = (ta.value.match(new RegExp(f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+                ta.value = ta.value.split(f).join(r);
+                _teStatus('Replaced ' + count + ' occurrence(s)', '#00ff41');
+            };
+            var replaceAllBtn = document.getElementById('bcos-te-replaceall');
+            if (replaceAllBtn) replaceAllBtn.onclick = function() {
+                if (_bcosEggReplacements.length === 0) { _teStatus('No rules. Add rules first.', '#f44'); return; }
+                var total = 0;
+                _bcosEggReplacements.forEach(function(rule) {
+                    var count = (ta.value.match(new RegExp(rule.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+                    ta.value = ta.value.split(rule.find).join(rule.replace);
+                    total += count;
+                });
+                _teStatus('Applied ' + _bcosEggReplacements.length + ' rules, ' + total + ' replacements', '#00ff41');
+            };
+            var addRuleBtn = document.getElementById('bcos-te-addrule');
+            if (addRuleBtn) addRuleBtn.onclick = function() {
+                var f = findInput.value, r = replaceInput.value;
+                if (!f) { _teStatus('Enter find text first', '#f44'); return; }
+                _bcosEggReplacements.push({ find: f, replace: r || '' });
+                _teUpdateRules();
+                findInput.value = ''; replaceInput.value = '';
+                _teStatus('Rule added: ' + f + ' → ' + (r || '(empty)'), '#00aaff');
+            };
+            // Command-line: type :replace/old/new in textarea last line
+            ta.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && ta.value.startsWith(':')) {
+                    e.preventDefault();
+                    var cmd = ta.value.trim().slice(1);
+                    if (cmd.startsWith('replace/')) {
+                        var parts = cmd.slice(8).split('/');
+                        if (parts.length >= 2) {
+                            _bcosEggReplacements.push({ find: parts[0], replace: parts[1] });
+                            _teUpdateRules();
+                            ta.value = '';
+                            _teStatus('Rule added via command: ' + parts[0] + ' → ' + parts[1], '#00aaff');
+                        }
+                    } else if (cmd === 'rules') {
+                        _teStatus(_bcosEggReplacements.length + ' rules active', '#00ff41');
+                    } else if (cmd === 'clear') {
+                        _bcosEggReplacements = [];
+                        _teUpdateRules();
+                        _teStatus('All rules cleared', '#f44');
+                    }
                 }
             });
         }
@@ -11575,21 +11685,19 @@
         document.getElementById('bcos-te-apply').onclick = () => {
             const raw = ta.value.trim();
             if (!raw) { _teStatus('Nothing to apply — content is empty', '#f44'); return; }
-            // Render content: if egg triggered, raw HTML; otherwise, simple markdown
             if (_bcosEggState.eggTriggered) {
-                _bcosBrowserHTML = ta.value;
-                _bcosBrowserCurrentURL = 'bunny://live-preview';
                 _bcosEggPreview(ta.value);
+                _teStatus('Live preview in browser! Click ✨ to apply to real page', '#00ff41');
             } else {
                 _bcosBrowserHTML = _bcosSimpleMarkdown(raw);
                 _bcosBrowserCurrentURL = 'bunny://markdown-preview';
+                var _urlBar = document.getElementById('bcos-url-bar');
+                if (_urlBar) _urlBar.textContent = _bcosBrowserCurrentURL;
+                _bcosBrowserRefresh();
+                if (!_bcos.wins['browser']) _bcosOpenApp('browser');
+                else _bcosFocusWin('browser');
+                _teStatus('Rendered as markdown', '#00aaff');
             }
-            var _urlBar = document.getElementById('bcos-url-bar');
-            if (_urlBar) _urlBar.textContent = _bcosBrowserCurrentURL;
-            _bcosBrowserRefresh();
-            if (!_bcos.wins['browser']) _bcosOpenApp('browser');
-            else _bcosFocusWin('browser');
-            _teStatus(_bcosEggState.eggTriggered ? 'Applied to browser + live preview!' : 'Rendered as markdown', '#00aaff');
         };
         // Allow Enter in filename input to trigger Open
         openName.addEventListener('keydown', (e) => {
