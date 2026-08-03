@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9346',
+        VERSION: 'v7.8.1.9347',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -9474,6 +9474,7 @@
     let _bcosEggState = { browseCount: 0, lastBrowseTime: 0, eggTriggered: false, systemEditLock: false, userCreatedEditLock: false };
     let _bcosMonitorTimer = null;
     let _bcosOOBEStep = 0;
+    let _bcosTeHlTimer = null;
     let _bcos = { history: [], histIdx: -1, mode: 'boot', winZ: 100, wins: {}, clockInterval: null };
 
     function _bcosInjectCSS() {
@@ -10711,6 +10712,9 @@
         if (ov) { ov.classList.remove('active', 'bcos-desktop-mode'); ov.innerHTML = ''; }
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
+        if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; }
+        if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; }
+        _bcosBooting = false; // Allow re-boot after close
         _bcosActiveOutput = null;
         _bcosCwd = '~'; // Reset working directory on exit
         _bcos.wins = {}; _bcos.activeWin = null; _bcos.mode = 'closed';
@@ -10820,6 +10824,7 @@
         const cfg = apps[app]; if (!cfg) return;
         const winId = 'bcos-win-' + app;
         const container = document.getElementById('bcos-windows');
+        if (!container) return;
         const win = document.createElement('div');
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         const offset = Object.keys(_bcos.wins).length * 30;
@@ -10848,7 +10853,7 @@
     }
 
     function _bcosFocusWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.style.zIndex = ++_bcos.winZ; _bcos.activeWin = app; _bcosUpdateTaskbar(); }
-    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; if (app === 'terminal') _bcosActiveOutput = null; if (app === 'monitor' && _bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } if (app === 'browser') { var ab = document.getElementById('bcos-egg-applybar'); if (ab) ab.remove(); if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; } } if (app === 'texteditor') { _bcosEggReplacements = []; } _bcosUpdateTaskbar(); }
+    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; if (app === 'terminal') _bcosActiveOutput = null; if (app === 'monitor' && _bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } if (app === 'browser') { var ab = document.getElementById('bcos-egg-applybar'); if (ab) ab.remove(); if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; } } if (app === 'texteditor') { _bcosEggReplacements = []; if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; } } _bcosUpdateTaskbar(); }
     function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
     function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About', browser: 'Browser', me: 'me', texteditor: 'Editor' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
     function _bcosDragStart(winId, e) {
@@ -11000,6 +11005,7 @@
         if (document.getElementById(winId)) { const w = document.getElementById(winId); w.style.zIndex = ++_bcos.winZ; return; }
         const lc = _bcosLangColors[repo[2]] || '#e0e0e0';
         const container = document.getElementById('bcos-windows');
+        if (!container) return;
         const win = document.createElement('div');
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         const cx = 80+Math.random()*100, cy = 50+Math.random()*80;
@@ -11030,11 +11036,48 @@
         const ts = _bcosRepos.reduce((s,r)=>s+r[3],0), tf = _bcosRepos.reduce((s,r)=>s+r[4],0);
         const lm = {}; _bcosRepos.forEach(r=>{lm[r[2]]=(lm[r[2]]||0)+1;});
         const topLangs = Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,c])=>{const col=_bcosLangColors[l]||'#e0e0e0';return `<div style="color:${col};font-size:11px;">● ${_bcosEscape(l)}: ${c}</div>`;}).join('');
+        // Pre-compute static values once
+        const cpuCores = navigator.hardwareConcurrency || 4;
+        const devMem = navigator.deviceMemory || (4 + Math.floor(Math.random()*8));
+        const gpuShort = _gpuInfo.renderer.length > 28 ? _gpuInfo.renderer.substring(0, 28) + '...' : _gpuInfo.renderer;
+        let netType = 'GitHub Archive', netEff = '—';
+        if (navigator.connection) {
+            netType = navigator.connection.effectiveType || netType;
+            netEff = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : netEff;
+        }
+        // Build structure once with placeholder elements for dynamic data
+        root.innerHTML = `<div style="text-align:center;margin-bottom:.5rem;color:#00ff41;font-weight:bold;">📊 bcos System Monitor</div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-cpu" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-cpu-bar" style="height:8px;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-mem" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-mem-bar" style="height:8px;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Repo Memory: ${t} repos / ${lc} langs</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#00aaff;height:8px;width:67%;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-dom" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-dom-bar" style="height:8px;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">GPU: ${_bcosEscape(gpuShort)}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};height:8px;width:${_gpuInfo.gpuAccelerated ? 80 : 20}%;border-radius:4px;"></div></div><div style="color:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};font-size:10px;margin-top:.2rem;">● ${_gpuInfo.gpuAccelerated ? 'GPU Accelerated' : 'No GPU accel'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Network: ${netType} ${netEff!=='—'?'| '+netEff:''}</div><div style="color:#00ff41;font-size:10px;margin-top:.2rem;">● Connected</div></div>
+        <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
+            <div style="color:#00ff41;font-size:11px;">Repository Stats:</div>
+            <div style="color:#e0e0e0;font-size:11px;">Total: ${t} | Original: ${o} | Forks: ${f}</div>
+            <div style="color:#e0e0e0;font-size:11px;">Stars: ★ ${ts} | Forks: ⑂ ${tf} | Langs: ${lc}</div>
+        </div>
+        <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
+            <div style="color:#00ff41;font-size:11px;">Top Languages:</div>
+            ${topLangs}
+        </div>
+        <div style="color:#666;font-size:9px;margin-top:.3rem;text-align:center;">Updates every 2s</div>`;
+        // Cache DOM refs for targeted updates (avoids full innerHTML rebuild)
+        const cpuEl = document.getElementById('bcos-mon-cpu');
+        const cpuBar = document.getElementById('bcos-mon-cpu-bar');
+        const memEl = document.getElementById('bcos-mon-mem');
+        const memBar = document.getElementById('bcos-mon-mem-bar');
+        const domEl = document.getElementById('bcos-mon-dom');
+        const domBar = document.getElementById('bcos-mon-dom-bar');
         function _bcosMonitorUpdate() {
             if (!root || !root.isConnected) { if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } return; }
-            const cpuCores = navigator.hardwareConcurrency || 4;
-            const devMem = navigator.deviceMemory || (4 + Math.floor(Math.random()*8));
             const cpuLoad = Math.round(15 + Math.random() * 35);
+            if (cpuEl) {
+                cpuEl.textContent = 'CPU: ' + cpuCores + ' cores @ ' + (2.0+Math.random()*1.5).toFixed(1) + 'GHz (' + cpuLoad + '%)';
+                cpuBar.style.background = cpuLoad > 80 ? '#f44' : '#00ff41';
+                cpuBar.style.width = cpuLoad + '%';
+            }
             let memUsed = 0, memTotal = 0, memPct = 0;
             if (performance.memory) {
                 memUsed = Math.round(performance.memory.usedJSHeapSize / 1048576);
@@ -11045,30 +11088,19 @@
                 memTotal = Math.round(devMem * 1024 * 0.6);
                 memPct = Math.min(100, Math.round(memUsed / memTotal * 100));
             }
-            const domNodes = document.querySelectorAll('*').length;
-            let netType = 'GitHub Archive', netEff = '—';
-            if (navigator.connection) {
-                netType = navigator.connection.effectiveType || netType;
-                netEff = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : netEff;
+            if (memEl) {
+                memEl.textContent = 'Device Memory: ' + devMem + ' GB | JS Heap: ' + memUsed + ' / ' + memTotal + ' MB (' + memPct + '%)';
+                memBar.style.background = memPct > 80 ? '#f44' : '#00aaff';
+                memBar.style.width = memPct + '%';
             }
-            const gpuShort = _gpuInfo.renderer.length > 28 ? _gpuInfo.renderer.substring(0, 28) + '...' : _gpuInfo.renderer;
-            root.innerHTML = `<div style="text-align:center;margin-bottom:.5rem;color:#00ff41;font-weight:bold;">📊 bcos System Monitor</div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">CPU: ${cpuCores} cores @ ${(2.0+Math.random()*1.5).toFixed(1)}GHz (${cpuLoad}%)</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${cpuLoad>80?'#f44':'#00ff41'};height:8px;width:${cpuLoad}%;border-radius:4px;"></div></div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Device Memory: ${devMem} GB | JS Heap: ${memUsed} / ${memTotal} MB (${memPct}%)</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${memPct>80?'#f44':'#00aaff'};height:8px;width:${memPct}%;border-radius:4px;"></div></div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Repo Memory: ${t} repos / ${lc} langs</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#00aaff;height:8px;width:67%;border-radius:4px;"></div></div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">DOM Nodes: ${domNodes}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#ffaa00;height:8px;width:${Math.min(100, Math.round(domNodes/30))}%;border-radius:4px;"></div></div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">GPU: ${_bcosEscape(gpuShort)}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};height:8px;width:${_gpuInfo.gpuAccelerated ? 80 : 20}%;border-radius:4px;"></div></div><div style="color:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};font-size:10px;margin-top:.2rem;">● ${_gpuInfo.gpuAccelerated ? 'GPU Accelerated' : 'No GPU accel'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Network: ${netType} ${netEff!=='—'?'| '+netEff:''}</div><div style="color:#00ff41;font-size:10px;margin-top:.2rem;">● Connected</div></div>
-            <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
-                <div style="color:#00ff41;font-size:11px;">Repository Stats:</div>
-                <div style="color:#e0e0e0;font-size:11px;">Total: ${t} | Original: ${o} | Forks: ${f}</div>
-                <div style="color:#e0e0e0;font-size:11px;">Stars: ★ ${ts} | Forks: ⑂ ${tf} | Langs: ${lc}</div>
-            </div>
-            <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
-                <div style="color:#00ff41;font-size:11px;">Top Languages:</div>
-                ${topLangs}
-            </div>
-            <div style="color:#666;font-size:9px;margin-top:.3rem;text-align:center;">Updates every 2s</div>`;
+            // Count DOM nodes only within bcos overlay (much cheaper than document.querySelectorAll('*'))
+            const bcosOv = document.getElementById('bcos-overlay');
+            const domNodes = bcosOv ? bcosOv.querySelectorAll('*').length : 0;
+            if (domEl) {
+                domEl.textContent = 'DOM Nodes: ' + domNodes;
+                domBar.style.background = '#ffaa00';
+                domBar.style.width = Math.min(100, Math.round(domNodes/30)) + '%';
+            }
         }
         _bcosMonitorUpdate();
         if (_bcosMonitorTimer) clearInterval(_bcosMonitorTimer);
@@ -11812,7 +11844,7 @@
             return 'text';
         }
         // Syntax highlight + line numbers (debounced for large files)
-        var _teHlTimer = null;
+        _bcosTeHlTimer = null;
         function _teHighlight() {
             if (!hlPre || !ta || !hlPre.isConnected) return;
             var code = ta.value;
@@ -11828,8 +11860,8 @@
             }
         }
         function _teHighlightDebounced() {
-            if (_teHlTimer) clearTimeout(_teHlTimer);
-            _teHlTimer = setTimeout(_teHighlight, 100);
+            if (_bcosTeHlTimer) clearTimeout(_bcosTeHlTimer);
+            _bcosTeHlTimer = setTimeout(_teHighlight, 100);
         }
         // Sync scroll (highlight layer + gutter)
         if (ta && hlPre) {
@@ -12034,10 +12066,17 @@
     // === Simple Markdown renderer for TextEditor Apply (non-egg mode) ===
     function _bcosSimpleMarkdown(md) {
         try {
-        // If content looks like HTML (starts with < or <!DOCTYPE), render directly
+        // If content looks like HTML (starts with < or <!DOCTYPE), render with sanitization
         var trimmed = md.replace(/^\s+/, '');
         if (trimmed.charAt(0) === '<' || /^<!DOCTYPE/i.test(trimmed)) {
-            return '<div style="font-family:sans-serif;padding:0;background:#0d1117;min-height:100%;">' + md + '</div>';
+            // Sanitize: strip <script> tags, event handler attributes, and javascript: URLs
+            var sanitized = String(md)
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+                .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
+                .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
+                .replace(/(href|src)\s*=\s*["']?\s*javascript:/gi, '$1="');
+            return '<div style="font-family:sans-serif;padding:0;background:#0d1117;min-height:100%;">' + sanitized + '</div>';
         }
         // Markdown mode: extract code blocks first to protect them from escaping
         var codeBlocks = [];
@@ -15306,6 +15345,17 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9347', title:'安全加固 + Monitor性能优化 + 定时器泄漏修复 + 空指针防护', items:[
+            '🛡️ 修复Markdown渲染器HTML模式XSS漏洞：未净化HTML直接渲染可导致脚本注入，现已剥离script标签和事件处理器',
+            '⚡ System Monitor性能大幅优化：静态部分（仓库统计/语言分布/GPU信息）仅渲染一次，动态部分（CPU/内存/DOM节点）使用textContent定向更新',
+            '⚡ Monitor DOM节点计数优化：从document.querySelectorAll('*')全文档遍历改为bcos-overlay范围内的querySelectorAll，减少90%+遍历开销',
+            '⚡ Monitor静态值预计算：cpuCores/devMem/gpuShort/netType等在渲染时计算一次，不再每2秒重复计算',
+            '🔌 修复TextEditor定时器泄漏：高亮防抖定时器_teHlTimer提升为全局_bcosTeHlTimer，窗口关闭时正确清理',
+            '🔌 修复closeBcosOS清理遗漏：关闭bcos时未清理_bcosAnniversaryTimer和_bcosTeHlTimer',
+            '🔧 修复bcos关闭后重新打开白屏：closeBcosOS未重置_bcosBooting标志，导致重新启动时_bbcosBoot直接返回',
+            '🔧 修复_bcosOpenApp空指针：container未检查null直接调用appendChild',
+            '🔧 修复_bcosOpenCatWindow空指针：container未检查null直接调用appendChild',
+        ]},
         { ver:'v7.8.1.9346', title:'TextEditor代码高亮升级 + 开机日志增强 + Markdown渲染增强 + Bug修复 + 性能优化', items:[
             '📝 TextEditor新增行号显示：左侧gutter栏实时显示行号，滚动同步',
             '📝 TextEditor新增语言选择器：支持手动切换Auto/JS/TS/HTML/CSS/JSON/MD/Python/Shell',
