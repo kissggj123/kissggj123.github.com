@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9351 -->
+    <!-- VERSION: v7.8.1.9355 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9351</div>
+                <div class="subtitle">v7.8.1.9355</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9351</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9355</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9351',
+        VERSION: 'v7.8.1.9355',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2625,7 +2625,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9351 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9355 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -5660,6 +5660,15 @@
 
     function skipBuy() {
         closeModal();
+        const p = mono.players[mono.turn];
+        if (p && !p.bankrupt) {
+            const tile = mono.map[p.pos];
+            if (tile && tile.type === 'property' && !tile.owner && tile.price > 0) {
+                monoLog(`📢 ${p.nm} 放弃原价购买 [${tile.nm}]，发领地公开竞拍！`, 'info');
+                startEnhancedAuction(p.pos, mono.turn);
+                return;
+            }
+        }
         saveMonopoly();
         if (!checkGameOver()) nextTurn();
     }
@@ -9247,7 +9256,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9351 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9355 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9523,6 +9532,9 @@
             .bcos-desktop-wallpaper { flex: 1; position: relative; overflow: hidden; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); transform: translateZ(0); }
             .bcos-desktop-wallpaper::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px); background-size: 30px 30px; }
             .bcos-desktop-icons { position: absolute; top: 1rem; left: 1rem; display: flex; flex-direction: column; gap: 1rem; z-index: 1; }
+            #bcos-te-textarea::selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
+            #bcos-te-textarea::-moz-selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
+            #bcos-te-highlight { color: #d4d4d4 !important; }
             .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; gap: .3rem; cursor: pointer; width: 70px; padding: .5rem; border-radius: 4px; transition: background .15s, transform .1s; will-change: transform; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
             .bcos-desktop-icon:hover { background: rgba(0,0,0,.12); }
             .bcos-desktop-icon:active { transform: scale(0.92) translateZ(0); }
@@ -9605,6 +9617,9 @@
         }
         const out = document.getElementById('bcos-output');
         if (out) out.style.color = c2;
+        if (_bcos.mode === 'desktop') {
+            _bcosLaunchDesktop();
+        }
     }
 
     function _bcosEscape(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&#34;'); }
@@ -10733,7 +10748,8 @@
         </div>`;
         _bcosUpdateClock();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
-        document.getElementById('bcos-desktop-bg').addEventListener('click', () => { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show'); });
+        const bg = document.getElementById('bcos-desktop-bg');
+        if (bg) bg.addEventListener('click', () => { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show'); });
         _bcosBindEsc();
         _bcosShowOOBE(ov);
         setTimeout(() => _bcosOpenApp('terminal'), 300);
@@ -10807,7 +10823,7 @@
     }
 
     function _bcosFocusWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.style.zIndex = ++_bcos.winZ; _bcos.activeWin = app; _bcosUpdateTaskbar(); }
-    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; if (app === 'terminal') _bcosActiveOutput = null; if (app === 'monitor' && _bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } if (app === 'browser') { var ab = document.getElementById('bcos-egg-applybar'); if (ab) ab.remove(); if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; } } if (app === 'texteditor') { _bcosEggReplacements = []; if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; } } _bcosUpdateTaskbar(); }
+    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; if (app === 'terminal') _bcosActiveOutput = null; if (app === 'monitor' && _bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } if (app === 'browser') { var ab = document.getElementById('bcos-egg-applybar'); if (ab) ab.remove(); if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; } } if (app === 'texteditor') { if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; } } _bcosUpdateTaskbar(); }
     function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
     function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About', browser: 'Browser', me: 'me', texteditor: 'Editor' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
     function _bcosDragStart(winId, e) {
@@ -11362,9 +11378,28 @@
             '</div>';
     }
     function _bcosGetEggReadme() {
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰</title>\n  <style>body{font-family:sans-serif;background:#FFF0F5;color:#333;margin:0;}\n  h1{color:#FF6B9D;}.nav a{color:#FF6B9D;text-decoration:none;margin:0 .5rem;}\n  .hero{text-align:center;padding:2rem;}.footer{text-align:center;padding:1rem;color:#999;font-size:.7rem;}\n  </style>\n</head>\n<body>\n  <header style="background:#FF6B9D;color:#fff;padding:.5rem 1rem;">\n    <h1>🐰 兔可可王国</h1>\n  </header>\n  <nav style="padding:.5rem 1rem;border-bottom:1px solid #FF6B9D;">\n    <a>🏠 首页</a><a>🎲 大富翁</a><a>💕 纪念日</a><a>⚙️ 设置</a><a>🖥️ bcos终端</a>\n  </nav>\n  <main>\n    <section class="hero">\n      <h2>棉花糖兔</h2>\n      <p>英系双血统安哥拉兔，扎根上海</p>\n      <p>兔可可 | CoCo | ココ</p>\n      <p>它的铲屎官 | Caretaker | お世話係です</p>\n    </section>\n    <section style="padding:1rem;">\n      <h3>💕 兔可可纪念日</h3>\n      <p>起始日期：2024/03/12</p>\n      <p>每一天都是值得纪念的日子</p>\n    </section>\n    <section style="padding:1rem;">\n      <h3>🎲 大富翁兔可可王国</h3>\n      <p>在虚拟纪元中建造你的兔可可王国</p>\n    </section>\n  </main>\n  <footer class="footer">\n    <p>Powered by Bunny CC ' + _BCOS_VER + '</p>\n    <p>© CanguroMIO | kissggj123</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    nav a{color:#58a6ff;text-decoration:none;font-size:.85rem;font-weight:600;padding:.3rem .6rem;border-radius:6px;background:rgba(88,166,255,0.1);}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  <nav>\n    <a id="nav-home">🏠 首页</a>\n    <a id="nav-monopoly">🎲 大富翁</a>\n    <a id="nav-anniversary">💕 纪念日</a>\n    <a id="nav-settings">⚙️ 设置</a>\n    <a id="nav-logs">📜 日志</a>\n    <a id="nav-bcos">🖥️ bcos终端</a>\n    <a id="nav-desktop">🖥️ bcos桌面</a>\n  </nav>\n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label>兔可可 | CoCo | ココ</div>\n        <div class="item"><label>居住地点</label>扎根上海</div>\n        <div class="item"><label>守护铲屎官</label>Caretaker | お世話係です</div>\n        <div class="item"><label>起始日期</label>2024/03/12</div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心选项与功能</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label>环形岛屿 · 6区域1248格超大地图</div>\n        <div class="item"><label>地产交易</label>全功能地产交易系统 (地产+卡牌+载具+现金)</div>\n        <div class="item"><label>AI 智能</label>智能 AI 引擎 (集套打压与抢拍评估)</div>\n        <div class="item"><label>清算救济</label>阶梯式资产清算救济 (股票/拆房/抵押/载具)</div>\n        <div class="item"><label>卡牌系统</label>4张强制移动卡牌 + 预警护盾 + 镜像反射</div>\n        <div class="item"><label>特色玩法</label>赌场老虎机与轮盘 + 股市做多做空</div>\n      </div>\n    </section>\n    <section class="card">\n      <h2 class="card-title">⚙️ 系统设置与界面选项</h2>\n      <div class="grid">\n        <div class="item"><label>主题风格</label>兔可可粉 · 森林绿 · 深海蓝 · 星空紫 · 赛博金</div>\n        <div class="item"><label>系统偏好</label>字体缩放 · 像素字体 · 侧边栏锁定 · 萝卜光标</div>\n        <div class="item"><label>其他设置</label>开启通知 · 自定义头像 · 上帝模式入口</div>\n      </div>\n    </section>\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.1 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.1 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
+    function _bcosExtractDiffRules(defaultHtml, currentHtml) {
+        if (!defaultHtml || !currentHtml || defaultHtml === currentHtml) return [];
+        try {
+            var d1 = document.createElement('div'); d1.innerHTML = defaultHtml;
+            var d2 = document.createElement('div'); d2.innerHTML = currentHtml;
+            var w1 = document.createTreeWalker(d1, NodeFilter.SHOW_TEXT, null, false);
+            var w2 = document.createTreeWalker(d2, NodeFilter.SHOW_TEXT, null, false);
+            var t1 = [], t2 = [];
+            while (w1.nextNode()) { var txt = w1.currentNode.textContent.trim(); if (txt) t1.push(txt); }
+            while (w2.nextNode()) { var txt = w2.currentNode.textContent.trim(); if (txt) t2.push(txt); }
+            var rules = [];
+            for (var i = 0; i < Math.min(t1.length, t2.length); i++) {
+                if (t1[i] && t2[i] && t1[i] !== t2[i] && t1[i].length >= 2) {
+                    rules.push({ find: t1[i], replace: t2[i] });
+                }
+            }
+            return rules;
+        } catch(e) { return []; }
+    }
     function _bcosEggPreview(html) {
         _bcosBrowserHTML = html;
         _bcosBrowserCurrentURL = 'bunny://live-preview';
@@ -11388,8 +11423,28 @@
         }, 100);
     }
     function _bcosEggApplyReal() {
+        // Auto-pull find/replace input values if present
+        var findInput = document.getElementById('bcos-te-find');
+        var replaceInput = document.getElementById('bcos-te-replace');
+        if (findInput && findInput.value.trim()) {
+            var f = findInput.value.trim();
+            var r = replaceInput ? replaceInput.value : '';
+            if (!_bcosEggReplacements.some(function(rule) { return rule.find === f; })) {
+                _bcosEggReplacements.push({ find: f, replace: r });
+            }
+        }
+        // Auto-extract diff rules between default pseudo-code and current texteditor content / browser preview
+        var ta = document.getElementById('bcos-te-textarea');
+        var currentCode = (ta && ta.value) ? ta.value : (_bcosBrowserHTML || '');
+        var diffRules = _bcosExtractDiffRules(_bcosGetEggReadme(), currentCode);
+        diffRules.forEach(function(dr) {
+            if (!_bcosEggReplacements.some(function(rule) { return rule.find === dr.find; })) {
+                _bcosEggReplacements.push(dr);
+            }
+        });
+
         if (_bcosEggReplacements.length === 0) {
-            alert('没有替换规则。请先在编辑器中使用查找替换功能。');
+            alert('没有检测到文本修改或替换规则。请在伪代码中直接修改任意文字，或使用查找/替换框。');
             return;
         }
         let count = 0;
@@ -11411,7 +11466,7 @@
             let text = node.textContent;
             let changed = false;
             _bcosEggReplacements.forEach(function(r) {
-                if (text.indexOf(r.find) !== -1) {
+                if (r.find && text.indexOf(r.find) !== -1) {
                     text = text.split(r.find).join(r.replace);
                     changed = true;
                 }
@@ -11419,17 +11474,22 @@
             if (changed) { node.textContent = text; count++; }
         });
         // Also replace in input values and attributes
-        document.querySelectorAll('[placeholder]').forEach(function(el) {
+        document.querySelectorAll('[placeholder], [title], [aria-label]').forEach(function(el) {
             if (bcosOverlay && bcosOverlay.contains(el)) return;
             _bcosEggReplacements.forEach(function(r) {
-                if (el.placeholder.indexOf(r.find) !== -1) {
+                if (!r.find) return;
+                if (el.placeholder && el.placeholder.indexOf(r.find) !== -1) {
                     el.placeholder = el.placeholder.split(r.find).join(r.replace);
+                }
+                if (el.title && el.title.indexOf(r.find) !== -1) {
+                    el.title = el.title.split(r.find).join(r.replace);
                 }
             });
         });
-        alert('已应用到真实页面！替换了 ' + count + ' 个文本节点。\n\n刷新页面可恢复原始内容。');
-        // Close bcos browser to show real page
+        alert('已成功应用到真实页面！更新了 ' + count + ' 个 DOM 文本节点。\n\n刷新页面可恢复原始内容。');
+        // Close bcos browser & overlay to show real page
         if (_bcos.wins['browser']) _bcosCloseWin('browser');
+        closeBcosOS();
     }
     function _bcosInitMeFolder() {
         if (!_bcosFS.me.children.readme_md && !_bcosFS.me.children['readme.md']) {
@@ -11763,7 +11823,7 @@
             '<div id="bcos-te-editor-wrap" style="position:relative;flex:1;overflow:hidden;display:flex;">' +
             '<div id="bcos-te-gutter" aria-hidden="true" style="flex-shrink:0;width:36px;background:#0d0d0d;border-right:1px solid #1a1a1a;padding:.5rem .3rem .5rem 0;font-family:monospace;font-size:12px;line-height:1.5;color:#444;text-align:right;overflow:hidden;user-select:none;box-sizing:border-box;white-space:pre;">1</div>' +
             '<div style="position:relative;flex:1;overflow:hidden;">' +
-            '<pre id="bcos-te-highlight" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:.5rem;box-sizing:border-box;font-family:monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;pointer-events:none;overflow:hidden;background:#0a0a0a;color:transparent;z-index:1;"></pre>' +
+            '<pre id="bcos-te-highlight" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:.5rem;box-sizing:border-box;font-family:monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;pointer-events:none;overflow:hidden;background:#0a0a0a;color:#d4d4d4;z-index:1;"></pre>' +
             '<textarea id="bcos-te-textarea" style="position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;color:transparent;caret-color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;line-height:1.5;padding:.5rem;box-sizing:border-box;resize:none;z-index:2;white-space:pre-wrap;word-break:break-word;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store." spellcheck="false"></textarea>' +
             '</div>' +
             '</div>' +
@@ -11862,6 +11922,10 @@
             if (replaceBtn) replaceBtn.onclick = function() {
                 var f = findInput.value, r = replaceInput.value;
                 if (!f) { _teStatus('Enter find text', '#f44'); return; }
+                if (!_bcosEggReplacements.some(function(rule) { return rule.find === f; })) {
+                    _bcosEggReplacements.push({ find: f, replace: r || '' });
+                    _teUpdateRules();
+                }
                 var count = (ta.value.match(new RegExp(f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
                 ta.value = ta.value.split(f).join(r);
                 _teHighlight();
@@ -15301,6 +15365,23 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9355', title:'bcos 终端 theme 命令实时响应与 GUI 桌面实时重绘 & 全局版本升级', items:[
+            '✨ bcos 终端主题命令响应：在 bcos 终端或 GUI 模式中执行 theme <id> 命令时，触发 _bcosApplyThemeStyle 实时刷新当前终端输出色、桌面壁纸渐变、Accent 强调色与 Emoji 图标套件',
+            '🌐 状态全自动同步：实现 bcos 内置终端与外层真实网页 DOM data-theme 的无缝实时双向同步',
+        ]},
+        { ver:'v7.8.1.9354', title:'bcos 桌面背景监听空指针防护 & 大富翁放弃购买自动竞拍规则增强 & 全局版本升级', items:[
+            '🏠 大富翁经典规则补全：玩家/AI放弃原价购买地产时，自动触发 startEnhancedAuction 全员竞拍机制，提升资源争夺趣味性与规则严密度',
+            '🛡️ bcos 桌面空指针防护：加固 _bcosLaunchDesktop 对 bcos-desktop-bg DOM 元素的挂载判空防护，彻底消除可能存在的事件监听 null 异常',
+        ]},
+        { ver:'v7.8.1.9353', title:'bcos 伪代码全量真实选项扩充 & F12 级 DOM 差异提取应用引擎 & UI美化 & 全局版本升级', items:[
+            '💻 F12 开发者工具级伪代码修改：全面重构 _bcosGetEggReadme 伪代码 HTML，完整收录真实网页的首页、导航选项、大富翁玩法、卡牌模式、系统设置、主题皮肤及作者版权信息',
+            '⚡ 自动文本 Diff 提取引擎：新增 _bcosExtractDiffRules 差异解析函数，用户在 TextEditor 中像 Chrome DevTools 一样修改任何标签文字，点击「✨ 应用到真实页面」即可自动识别差异并同步更新真实 DOM 文本',
+            '🎨 伪代码 UI 视觉设计大跃升：引入 Cyberpunk / Modern Dark 玻璃拟态设计，配齐柔和渐变、高精边框卡片与 Badge 徽章，完美重塑 Live Preview 浏览体验',
+        ]},
+        { ver:'v7.8.1.9352', title:'bcos彩蛋文本全黑不可见修复 & 替换规则持久化与自动提取 & 离线适配 & 全局版本升级', items:[
+            '👁️ TextEditor 彩蛋全黑文本修复：修正高亮层 #bcos-te-highlight 的默认 color 为 #d4d4d4，并配置 #bcos-te-textarea::selection 选区半透明高亮，彻底修复触发彩蛋/代码高亮后文本全黑不可见的 BUG',
+            '✨ 替换规则自动提取与持久化：在「✨ 应用到真实页面」时自动抓取查找/替换框内容，移除关闭编辑器时对 _bcosEggReplacements 的误清空，并且应用后自动退出 bcos 呈现真实页面',
+        ]},
         { ver:'v7.8.1.9351', title:'bcos 全系统巡检 & Window Manager 空指针防御加固 & 全局版本升级', items:[
             '🖥️ bcos 窗口管理器空指针防御：补全 _bcosEditAnniversary 与 _bcosOpenEditLockWindow 弹窗容器空指针防护 (if (!container) return;)，防止非 GUI 模式下渲染异常',
             '🌐 bcos 浏览器与应用生命周期巡检：验证 bcos 浏览器、文件管理器、文本编辑器、终端与纪念日页面间的状态同步与闭环清理',
