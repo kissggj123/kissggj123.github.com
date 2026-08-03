@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9357 -->
+    <!-- VERSION: v7.8.1.9358 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1291,7 +1291,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9357</div>
+                <div class="subtitle">v7.8.1.9358</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1584,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9357</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9358</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9357',
+        VERSION: 'v7.8.1.9358',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2625,7 +2625,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9357 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9358 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -4557,7 +4557,12 @@
             h += `<div style="color:var(--good);font-weight:800;margin-top:.5rem;">🏆 ${winner?.ic} ${winner?.nm} 获胜！</div>`;
         } else if (isHumanTurn) {
             if (cp.jailTurns > 0) {
-                h += `<div style="color:var(--bad);font-weight:700;margin-top:.3rem;">🔒 在监狱中，暂停一回合</div>`;
+                h += `<div style="color:var(--bad);font-weight:700;margin-top:.3rem;text-align:center;">🔒 处于监禁受罚中 (剩余 ${cp.jailTurns} 回合)</div>`;
+                h += `<button class="btn btn-primary" style="margin-top:.4rem;width:100%;" onclick="showJailOptionsModal()">⚖️ 应对监狱处分 (保释/出狱卡/越狱/放弃)</button>`;
+            } else if (cp.banned > 0 || cp.hospital > 0) {
+                const statusName = cp.banned > 0 ? `🚫 处于封印中 (剩 ${cp.banned} 回合)` : `🏥 在医院治疗中 (剩 ${cp.hospital} 回合)`;
+                h += `<div style="color:var(--bad);font-weight:700;margin-top:.3rem;text-align:center;">${statusName}</div>`;
+                h += `<button class="btn btn-secondary" style="margin-top:.4rem;width:100%;" onclick="rollDice()">⏳ 结束受罚回合 (等待解禁)</button>`;
             } else {
                 // Dice multiplier selector (2x/3x/4x with risk)
                 const curMult = cp.diceMultiplier || 1;
@@ -4582,13 +4587,13 @@
                 if (cp.consecutiveDoubles > 0) {
                     h += `<div style="font-size:.6rem;color:#e8a838;margin-top:.2rem;text-align:center;">🎲 连续双数：${cp.consecutiveDoubles}/3（再出双数进监狱！）</div>`;
                 }
-                h += `<button class="btn btn-primary" style="margin-top:.5rem;" onclick="rollDice()">🎲 掷骰子${curMult > 1 ? ` (×${curMult})` : ''}</button>`;
-                // Auto-pilot toggle button
-                const apOn = mono.autoPilot === true;
-                h += `<button class="btn ${apOn ? 'btn-primary' : 'btn-secondary'}" style="margin-top:.3rem;font-size:.7rem;" onclick="toggleAutoPilot()">${apOn ? '🤖 托管中... (点击关闭)' : '🤖 开启全自动托管'}</button>`;
-                if (apOn) {
-                    h += `<div style="font-size:.55rem;color:var(--accent);margin-top:.15rem;text-align:center;">自动交易·升级·用卡·掷骰</div>`;
-                }
+                h += `<button class="btn btn-primary" style="margin-top:.5rem;width:100%;" onclick="rollDice()">🎲 掷骰子${curMult > 1 ? ` (×${curMult})` : ''}</button>`;
+            }
+            // Auto-pilot toggle button ALWAYS rendered so player can control autopilot anytime
+            const apOn = mono.autoPilot === true;
+            h += `<button class="btn ${apOn ? 'btn-primary' : 'btn-secondary'}" style="margin-top:.3rem;font-size:.7rem;width:100%;" onclick="toggleAutoPilot()">${apOn ? '🤖 托管中... (点击关闭)' : '🤖 开启全自动托管'}</button>`;
+            if (apOn) {
+                h += `<div style="font-size:.55rem;color:var(--accent);margin-top:.15rem;text-align:center;">自动交易·升级·用卡·掷骰·解禁</div>`;
             }
         } else if (mono.rolling) {
             h += `<div style="color:var(--text2);margin-top:.3rem;">🎲 掷骰中...</div>`;
@@ -4633,6 +4638,18 @@
         if (!mono || !mono.autoPilot || mono.currentPlayer !== 0 || mono.rolling) return;
         const p = mono.players[0];
         if (!p || p.bankrupt) { mono.autoPilot = false; return; }
+
+        // Auto-handle jail for player 0 in AutoPilot
+        if (p.jailTurns > 0) {
+            if (p.jailFree) {
+                useJailCardAndRoll();
+            } else if (p.money >= 500) {
+                payBailAndRoll();
+            } else {
+                tryDoubleEscape();
+            }
+            return;
+        }
 
         // Step 1: Auto-use strategic cards
         if (p.cards.length > 0) {
@@ -4780,6 +4797,12 @@
     function autoPilotHandleModal() {
         if (!mono || !mono.autoPilot || mono.currentPlayer !== 0) return false;
         const p = mono.players[0];
+        if (p.jailTurns > 0) {
+            if (p.jailFree) useJailCardAndRoll();
+            else if (p.money >= 500) payBailAndRoll();
+            else tryDoubleEscape();
+            return true;
+        }
         const tile = mono.tiles[p.pos];
         if (!tile) return false;
 
@@ -5034,8 +5057,8 @@
             const total = mono.dice[0] + mono.dice[1];
             movePlayer(0, total);
         } else {
-            p.jailTurns--;
-            monoLog(`🔒 未能掷出双数 [${mono.dice[0]},${mono.dice[1]}]，越狱失败，暂停一回合`, 'error');
+            p.jailTurns = Math.max(0, p.jailTurns - 1);
+            monoLog(`🔒 未能掷出双数 [${mono.dice[0]},${mono.dice[1]}]，越狱失败，暂停一回合（剩${p.jailTurns}回合）`, 'error');
             showToast('越狱失败！未掷出双数', 'error');
             mono.rolling = false;
             saveMonopoly();
@@ -5046,7 +5069,7 @@
 
     window.stayInJailPass = function() {
         const p = mono.players[0];
-        p.jailTurns--;
+        p.jailTurns = Math.max(0, p.jailTurns - 1);
         monoLog(`🔒 ${p.nm} 在监狱中，暂停一回合（剩${p.jailTurns}回合）`, 'error');
         closeModal();
         saveMonopoly();
@@ -8599,22 +8622,21 @@
     function _startWatchdog() {
         _clearWatchdog();
         _aiWatchdog = setTimeout(() => {
-            console.warn('[Watchdog] AI turn stuck detected — forcing nextTurn()');
+            console.warn('[Watchdog] Turn stuck detected — forcing recovery to nextTurn()');
             _aiWatchdog = null;
-            if (mono.started && mono.currentPlayer !== 0) {
+            if (mono && mono.started) {
                 const p = mono.players[mono.currentPlayer];
                 if (p && !p.bankrupt) {
                     mono.pendingAction = null;
                     mono.rolling = false;
                     mono.pendingTrade = false; // Clear trade state to prevent stuck
-                    // Close any stuck modals
                     closeModal();
                     saveMonopoly();
                     renderMonopoly();
                     nextTurn();
                 }
             }
-        }, 10000); // 10s max for AI turn
+        }, 12000); // 12s max for turn deadlock recovery
     }
     function _clearWatchdog() {
         if (_aiWatchdog) { clearTimeout(_aiWatchdog); _aiWatchdog = null; }
@@ -8740,10 +8762,18 @@
         saveInventory();
         renderMonopoly();
 
-        // Push notification when it becomes the human player's turn
+        // Push notification & auto-prompt when it becomes the human player's turn
         if (mono.currentPlayer === 0 && mono.started) {
             notifyMyTurn();
-            if (mono.autoPilot) { setTimeout(() => executeAutoPilot(), 800); }
+            if (mono.players[0].jailTurns > 0) {
+                if (mono.autoPilot) {
+                    setTimeout(() => executeAutoPilot(), 600);
+                } else {
+                    setTimeout(() => showJailOptionsModal(), 500);
+                }
+            } else if (mono.autoPilot) {
+                setTimeout(() => executeAutoPilot(), 800);
+            }
         }
 
         if (mono.currentPlayer !== 0 && mono.started) {
@@ -9256,7 +9286,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9357 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9358 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -15512,6 +15542,11 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9358', title:'玩家入狱死局 Bug 彻底修复 & 监禁应对面板自动弹出 & AutoPilot 自动解禁 & 看门狗防卡死加固', items:[
+            '🐛 玩家入狱死局修复：彻底修复 playerIdx===0 监禁状态下 UI 隐藏操作按钮导致游戏卡死无响应的严重缺陷，现在将渲染「⚖️ 应对监狱处分」按钮，并在回合开始时自动弹出解禁选择弹窗',
+            '🤖 AutoPilot 智能解禁：为全自动托管模式集成入狱决策（优先出狱卡 → 其次保释金 → 尝试掷双数越狱），彻底消除了托管状态下进监狱导致卡死的缺陷',
+            '🛡️ 看门狗与全状态防死局：针对封印 (banned)、住院 (hospital)、混乱及长时间未响应回合加固 Watchdog 救济机制，确保游戏永远流畅循环',
+        ]},
         { ver:'v7.8.1.9357', title:'TextEditor 独立纯查找 (Find) 增强 & 关键词高亮 & Ctrl+F 快捷键 & 全局版本升级', items:[
             '🔍 独立纯查找功能：TextEditor 底部面板新增专属「🔍 查找」按钮与「▲/▼」上一个/下一个遍历控件，不填写替换词时即可进行纯文本查找',
             '✨ 全局金色高亮与计数：输入查找词时，编辑器自动将全文所有匹配项亮黄色高亮，并实时显示匹配计数指示器 (例如 (1/5))',
