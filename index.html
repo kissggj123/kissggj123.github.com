@@ -1651,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9340',
+        VERSION: 'v7.8.1.9341',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -9528,6 +9528,10 @@
             .bcos-desktop-icon-emoji { font-size: 2rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
             .bcos-desktop-icon-label { font-size: 11px; color: #fff; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.7); font-weight: 600; }
             .bcos-window { position: absolute; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; box-shadow: 0 8px 32px rgba(0,0,0,.5); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; will-change: transform; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+            .bcos-window.maximized { width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important; transform: none !important; border-radius: 0; border: none; }
+            .bcos-window-resize { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 10; }
+            .bcos-window-resize::after { content: ''; position: absolute; right: 2px; bottom: 2px; width: 8px; height: 8px; border-right: 2px solid #666; border-bottom: 2px solid #666; }
+            .bcos-window-resize:hover::after { border-color: #aaa; }
             .bcos-window-titlebar { background: #2a2a2a; padding: .4rem .6rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid #333; border-radius: 4px 4px 0 0; user-select: none; -webkit-user-select: none; }
             .bcos-window-title { font-size: 12px; color: #e0e0e0; font-weight: bold; }
             .bcos-window-controls { display: flex; gap: .3rem; }
@@ -9558,6 +9562,30 @@
                 .bcos-desktop-icon { width: 60px; }
                 .bcos-desktop-icon-emoji { font-size: 1.5rem; }
                 .bcos-window { min-width: 240px; }
+            }
+            /* Carrot cursor for bcos desktop mode — force override all third-party cursors */
+            #bcos-overlay.bcos-desktop-mode,
+            #bcos-overlay.bcos-desktop-mode *,
+            #bcos-overlay.bcos-desktop-mode .bcos-window,
+            #bcos-overlay.bcos-desktop-mode .bcos-window-titlebar,
+            #bcos-overlay.bcos-desktop-mode .bcos-window-content,
+            #bcos-overlay.bcos-desktop-mode .bcos-desktop-icon,
+            #bcos-overlay.bcos-desktop-mode .bcos-taskbar,
+            #bcos-overlay.bcos-desktop-mode .bcos-start-menu,
+            #bcos-overlay.bcos-desktop-mode button,
+            #bcos-overlay.bcos-desktop-mode input,
+            #bcos-overlay.bcos-desktop-mode a,
+            #bcos-overlay.bcos-desktop-mode span,
+            #bcos-overlay.bcos-desktop-mode div {
+                cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3C!-- Carrot body --%3E%3Cpath d='M10 4 L12 2 L14 4 L13 7 L16 10 L20 14 L24 18 L26 22 L24 26 L20 24 L16 20 L12 16 L9 13 L6 14 L4 12 L6 10 L8 8 Z' fill='%23ff8c00' stroke='%23cc6600' stroke-width='0.5'/%3E%3C!-- Carrot ridges --%3E%3Cpath d='M12 6 L14 8 M14 9 L16 11 M16 12 L18 14 M18 15 L20 17 M20 18 L22 20' stroke='%23cc6600' stroke-width='0.8' fill='none'/%3E%3C!-- Carrot leaves --%3E%3Cpath d='M10 4 Q8 0 6 1 Q9 2 10 4' fill='%23228b22'/%3E%3Cpath d='M12 2 Q11 -1 9 0 Q11 1 12 2' fill='%23228b22'/%3E%3Cpath d='M14 4 Q16 0 18 1 Q15 2 14 4' fill='%23228b22'/%3E%3Cpath d='M10 4 Q7 1 5 2 Q8 3 10 4' fill='%2332cd32'/%3E%3C/svg%3E") 2 2, default !important;
+            }
+            #bcos-overlay.bcos-desktop-mode .bcos-window-btn,
+            #bcos-overlay.bcos-desktop-mode .bcos-start-btn,
+            #bcos-overlay.bcos-desktop-mode .bcos-taskbar-item,
+            #bcos-overlay.bcos-desktop-mode .bcos-desktop-icon,
+            #bcos-overlay.bcos-desktop-mode .bcos-bm-btn,
+            #bcos-overlay.bcos-desktop-mode .bcos-link {
+                cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M10 4 L12 2 L14 4 L13 7 L16 10 L20 14 L24 18 L26 22 L24 26 L20 24 L16 20 L12 16 L9 13 L6 14 L4 12 L6 10 L8 8 Z' fill='%23ff8c00' stroke='%23cc6600' stroke-width='0.5'/%3E%3Cpath d='M12 6 L14 8 M14 9 L16 11 M16 12 L18 14 M18 15 L20 17 M20 18 L22 20' stroke='%23cc6600' stroke-width='0.8' fill='none'/%3E%3Cpath d='M10 4 Q8 0 6 1 Q9 2 10 4' fill='%23228b22'/%3E%3Cpath d='M12 2 Q11 -1 9 0 Q11 1 12 2' fill='%23228b22'/%3E%3Cpath d='M14 4 Q16 0 18 1 Q15 2 14 4' fill='%23228b22'/%3E%3Cpath d='M10 4 Q7 1 5 2 Q8 3 10 4' fill='%2332cd32'/%3E%3C/svg%3E") 2 2, pointer !important;
             }
         `;
         document.head.appendChild(style);
@@ -10541,6 +10569,8 @@
             screen._bcosClickBound = true;
             screen.addEventListener('click', () => { if (_bcos.mode === 'terminal') { const inp = document.getElementById('bcos-input'); if (inp) inp.focus(); } });
         }
+        // Show OOBE on first access / version update (terminal mode)
+        _bcosShowOOBE(ov);
         } catch(err) { console.error('bcos boot error:', err); }
         finally { _bcosBooting = false; }
     }
@@ -10573,7 +10603,7 @@
 
     function closeBcosOS() {
         const ov = document.getElementById('bcos-overlay');
-        if (ov) { ov.classList.remove('active'); ov.innerHTML = ''; }
+        if (ov) { ov.classList.remove('active', 'bcos-desktop-mode'); ov.innerHTML = ''; }
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
         _bcosActiveOutput = null;
@@ -10606,6 +10636,7 @@
         if (_bcos.clockInterval) clearInterval(_bcos.clockInterval);
         _bcos.mode = 'desktop';
         const ov = document.getElementById('bcos-overlay');
+        ov.classList.add('bcos-desktop-mode'); // Enable carrot cursor
         const dt = _bcosGetDesktopTheme();
         const meX = 60 + Math.random() * 80;
         const meY = 40 + Math.random() * 60;
@@ -10654,6 +10685,7 @@
         _bcosActiveOutput = null; // Clear stale desktop terminal reference
         const ov = document.getElementById('bcos-overlay');
         if (!ov) return;
+        ov.classList.remove('bcos-desktop-mode'); // Disable carrot cursor
         // Lightweight switch: restore terminal UI without replaying boot sequence
         // Preserve command history and output if terminal was previously active
         const prevHistory = _bcos.history || [];
@@ -10688,7 +10720,8 @@
         const offset = Object.keys(_bcos.wins).length * 30;
         win.style.cssText += `left:0;top:0;width:${cfg.w}px;height:${cfg.h}px;transform:translate3d(${50+offset}px, ${30+offset}px, 0);`;
         win._bcosTX = 50 + offset; win._bcosTY = 30 + offset;
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><span class="bcos-window-title">${cfg.t}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseWin('${app}')"></button></div></div><div class="bcos-window-content" id="${winId}-content"></div>`;
+        win._bcosOrigW = cfg.w; win._bcosOrigH = cfg.h;
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><span class="bcos-window-title">${cfg.t}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseWin('${app}')"></button></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
         container.appendChild(win);
         _bcos.wins[app] = winId;
         _bcos.activeWin = app;
@@ -10739,6 +10772,43 @@
         function mv(ev) { if (!ev.touches[0]) return; win._bcosTX = ev.touches[0].clientX - ox; win._bcosTY = ev.touches[0].clientY - oy; win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`; }
         function up() { document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up); }
         document.addEventListener('touchmove',mv,{passive:false}); document.addEventListener('touchend',up); e.preventDefault();
+    }
+
+    // === Window maximize/restore on double-click titlebar ===
+    function _bcosToggleMaximize(winId, e) {
+        if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
+        const win = document.getElementById(winId); if (!win) return;
+        if (win.classList.contains('maximized')) {
+            // Restore
+            win.classList.remove('maximized');
+            win.style.width = win._bcosOrigW + 'px';
+            win.style.height = win._bcosOrigH + 'px';
+            win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
+        } else {
+            // Save current position before maximizing
+            const r = win.getBoundingClientRect();
+            win._bcosTX = r.left; win._bcosTY = r.top;
+            win._bcosOrigW = r.width; win._bcosOrigH = r.height;
+            win.classList.add('maximized');
+        }
+    }
+
+    // === Window resize via bottom-right handle ===
+    function _bcosResizeStart(winId, e) {
+        const win = document.getElementById(winId); if (!win) return;
+        e.stopPropagation(); e.preventDefault();
+        const r = win.getBoundingClientRect();
+        const startX = e.clientX, startY = e.clientY;
+        const startW = r.width, startH = r.height;
+        function mv(ev) {
+            let nw = Math.max(280, startW + (ev.clientX - startX));
+            let nh = Math.max(180, startH + (ev.clientY - startY));
+            win.style.width = nw + 'px';
+            win.style.height = nh + 'px';
+            win._bcosOrigW = nw; win._bcosOrigH = nh;
+        }
+        function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
+        document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
     }
 
     function _bcosRenderDesktopTerminal(content) {
@@ -10915,6 +10985,7 @@
     let _bcosBrowserCurrentURL = 'bunny://kingdom';
     const _bcosBookmarks = [
         { name: '🐰 Kingdom', url: 'bunny://kingdom', type: 'internal' },
+        { name: '💕 Anniversary', url: 'bunny://anniversary', type: 'internal' },
         { name: '🐙 GitHub', url: 'bunny://github', type: 'internal' },
         { name: '🔍 BunnySearch', url: 'bunny://search', type: 'internal' },
         { name: '📖 BunnyWiki', url: 'bunny://wiki', type: 'internal' },
@@ -11040,7 +11111,7 @@
                 '<div style="border-bottom:1px solid #333;padding-bottom:.8rem;margin-bottom:.8rem;">' +
                 '<div style="color:#888;font-size:10px;">' + newsDate + ' | 💻 Tech</div>' +
                 '<h2 style="color:#00aaff;font-size:.95rem;margin:.3rem 0;">bcos OS Reaches Version ' + _BCOS_VER + '</h2>' +
-                '<p style="color:#a0a0a0;font-size:12px;line-height:1.5;">The browser-based operating system bcos has been updated with new features including a virtual file system, browser app, and easter eggs. 177 repositories are now archived.</p>' +
+                '<p style="color:#a0a0a0;font-size:12px;line-height:1.5;">The browser-based operating system bcos has been updated with new features including a virtual file system, browser app, and more. 177 repositories are now archived.</p>' +
                 '</div>' +
                 '<div style="border-bottom:1px solid #333;padding-bottom:.8rem;margin-bottom:.8rem;">' +
                 '<div style="color:#888;font-size:10px;">' + newsDate + ' | 🏆 Achievement</div>' +
@@ -11066,6 +11137,79 @@
                 '<div onclick="alert(\'🎵 Bunny Music!\\n\\n🎵 Now playing: Sweet Bunny Dreams\\n🎶 🐰💤\');" style="background:#161b22;border:1px solid #a78bfa;border-radius:8px;padding:1rem;cursor:pointer;"><div style="font-size:2rem;">🎵</div><div style="color:#a78bfa;font-size:11px;margin-top:.3rem;">Bunny Music</div></div>' +
                 '</div>' +
                 '<div style="margin-top:1.5rem;color:#666;font-size:.65rem;">🎮 BunnyPlay — Play with bunnies anytime</div>' +
+                '</div>';
+        }
+        if (url === 'bunny://anniversary') {
+            var anniStart = new Date(CONFIG.START_DATE);
+            var anniNow = new Date();
+            var anniDiff = anniNow - anniStart;
+            var anniDays = Math.floor(anniDiff / 86400000);
+            var anniHours = Math.floor((anniDiff % 86400000) / 3600000);
+            var anniMins = Math.floor((anniDiff % 3600000) / 60000);
+            var anniSecs = Math.floor((anniDiff % 60000) / 1000);
+
+            var anniDefaultText = '在虚拟纪元的曙光中，兔可可王国从一片数字草原上崛起。这不是现实中的城市，而是一座由爱与想象构筑的永恒之国。\n兔可可是这个王国的灵魂化身——一位超越了现实边界的安哥拉兔，从像素中诞生，在数据中成长，最终成为万民爱戴的永恒市长。\n每一栋建筑都是一段记忆，每一位市民都是一个故事，而兔可可的温柔与柔软绒毛，是这座虚拟王国最真实的魔法。';
+
+            var anniSavedContent = safeGetItem('bcos_anniversary_content', '');
+            var anniDisplayContent = _bcosEggState.eggTriggered && anniSavedContent ? anniSavedContent : anniDefaultText;
+
+            var anniMilestonesHTML = MILESTONES.map(function(m) {
+                var md = new Date(anniStart.getTime() + m.days * 86400000);
+                var mdStr = md.getFullYear() + '/' + String(md.getMonth() + 1).padStart(2, '0') + '/' + String(md.getDate()).padStart(2, '0');
+                var reached = anniDays >= m.days;
+                var remain = m.days - anniDays;
+                return '<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05);">' +
+                    '<div style="width:8px;height:8px;border-radius:50%;background:' + (reached ? '#00ff41' : '#333') + ';flex-shrink:0;"></div>' +
+                    '<div style="flex:1;">' +
+                    '<div style="color:' + (reached ? '#00ff41' : '#aaa') + ';font-size:11px;">' + m.label + '</div>' +
+                    '<div style="color:#666;font-size:10px;">' + mdStr + '</div>' +
+                    '</div>' +
+                    '<div style="font-size:10px;color:' + (reached ? '#00ff41' : '#666') + ';">' + (reached ? '✅' : remain + ' 天') + '</div>' +
+                    '</div>';
+            }).join('');
+
+            var anniNext = MILESTONES.find(function(m) { return anniDays < m.days; });
+            var anniNextHTML = '';
+            if (anniNext) {
+                var nd = new Date(anniStart.getTime() + anniNext.days * 86400000);
+                var nr = anniNext.days - anniDays;
+                anniNextHTML = '<div style="background:rgba(255,107,157,.1);border:1px solid rgba(255,107,157,.3);border-radius:8px;padding:.6rem;margin:.5rem 0;text-align:center;">' +
+                    '<div style="color:#888;font-size:10px;">下一个纪念日</div>' +
+                    '<div style="color:#FF6B9D;font-size:13px;font-weight:bold;margin:.2rem 0;">' + anniNext.label + '</div>' +
+                    '<div style="color:#666;font-size:10px;">' + nd.getFullYear() + '/' + String(nd.getMonth() + 1).padStart(2, '0') + '/' + String(nd.getDate()).padStart(2, '0') + '</div>' +
+                    '<div style="color:#00ff41;font-size:12px;font-weight:bold;margin-top:.2rem;">还有 ' + nr + ' 天</div>' +
+                    '</div>';
+            } else {
+                anniNextHTML = '<div style="background:rgba(0,255,65,.1);border:1px solid rgba(0,255,65,.3);border-radius:8px;padding:.6rem;text-align:center;">' +
+                    '<div style="color:#00ff41;font-size:13px;font-weight:bold;">🏆 所有里程碑已达成！</div>' +
+                    '</div>';
+            }
+
+            var anniEditBtn = _bcosEggState.eggTriggered ?
+                '<button onclick="_bcosEditAnniversary()" style="background:#FF6B9D;color:#fff;border:none;padding:.4rem 1rem;border-radius:4px;cursor:pointer;font-size:11px;margin-top:.5rem;">✏️ 编辑纪念日内容</button>' : '';
+
+            var anniContentHTML = _bcosEscape(anniDisplayContent).replace(/\n/g, '<br>');
+
+            return '<div style="font-family:sans-serif;padding:1.5rem;background:linear-gradient(135deg,#1a1a2e,#16213E);color:#e0e0e0;min-height:100%;">' +
+                '<h1 style="color:#FF6B9D;font-size:1.4rem;text-align:center;margin-bottom:.5rem;">💕 兔可可纪念日</h1>' +
+                '<div style="text-align:center;margin:1rem 0;">' +
+                '<div style="color:#888;font-size:11px;margin-bottom:.3rem;">🐰 兔可可已经到来</div>' +
+                '<div id="bcos-anni-days" style="font-size:2.5rem;font-weight:800;color:#00ff41;line-height:1;">' + anniDays + '</div>' +
+                '<div style="color:#888;font-size:.8rem;">天</div>' +
+                '<div id="bcos-anni-time" style="font-size:1rem;font-weight:700;color:#a78bfa;margin-top:.5rem;">' + anniHours + ' 时 ' + anniMins + ' 分 ' + anniSecs + ' 秒</div>' +
+                '<div style="color:#666;font-size:.7rem;margin-top:.3rem;">起始日期：2024/03/12</div>' +
+                '</div>' +
+                anniNextHTML +
+                '<div style="background:rgba(255,255,255,.05);border-radius:8px;padding:.8rem;margin:.5rem 0;">' +
+                '<div style="color:#FF6B9D;font-size:12px;font-weight:bold;margin-bottom:.5rem;">🎯 里程碑</div>' +
+                anniMilestonesHTML +
+                '</div>' +
+                '<div style="background:rgba(255,255,255,.05);border-radius:8px;padding:.8rem;margin:.5rem 0;">' +
+                '<div style="color:#FF6B9D;font-size:12px;font-weight:bold;margin-bottom:.5rem;">📖 兔可可王国传承</div>' +
+                '<div id="bcos-anni-content" style="color:#aaa;font-size:11px;line-height:1.8;">' + anniContentHTML + '</div>' +
+                anniEditBtn +
+                '</div>' +
+                '<div style="text-align:center;color:#666;font-size:.65rem;margin-top:1rem;">💕 Bunny Kingdom Anniversary | bcos ' + _BCOS_VER + '</div>' +
                 '</div>';
         }
         return _bcosGetDefaultBrowserContent();
@@ -11145,7 +11289,9 @@
         const view = document.getElementById('bcos-browser-view');
         if (view) view.innerHTML = _bcosBrowserHTML;
     }
+    var _bcosAnniversaryTimer = null;
     function _bcosBrowserNavigate(url, type) {
+        if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; }
         _bcosBrowserCurrentURL = url;
         var urlBar = document.getElementById('bcos-url-bar');
         if (urlBar) urlBar.textContent = url;
@@ -11155,6 +11301,57 @@
             _bcosBrowserHTML = _bcosGetBookmarkPage(url);
         }
         _bcosBrowserRefresh();
+        if (url === 'bunny://anniversary') _bcosStartAnniversaryTimer();
+    }
+    function _bcosStartAnniversaryTimer() {
+        if (_bcosAnniversaryTimer) clearInterval(_bcosAnniversaryTimer);
+        _bcosAnniversaryTimer = setInterval(function() {
+            var daysEl = document.getElementById('bcos-anni-days');
+            if (!daysEl) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; return; }
+            var start = new Date(CONFIG.START_DATE);
+            var now = new Date();
+            var diff = now - start;
+            var d = Math.floor(diff / 86400000);
+            var h = Math.floor((diff % 86400000) / 3600000);
+            var m = Math.floor((diff % 3600000) / 60000);
+            var s = Math.floor((diff % 60000) / 1000);
+            daysEl.textContent = d;
+            var timeEl = document.getElementById('bcos-anni-time');
+            if (timeEl) timeEl.textContent = h + ' 时 ' + m + ' 分 ' + s + ' 秒';
+        }, 1000);
+    }
+    function _bcosEditAnniversary() {
+        var current = safeGetItem('bcos_anniversary_content', '');
+        if (!current) {
+            current = '在虚拟纪元的曙光中，兔可可王国从一片数字草原上崛起。这不是现实中的城市，而是一座由爱与想象构筑的永恒之国。\n兔可可是这个王国的灵魂化身——一位超越了现实边界的安哥拉兔，从像素中诞生，在数据中成长，最终成为万民爱戴的永恒市长。\n每一栋建筑都是一段记忆，每一位市民都是一个故事，而兔可可的温柔与柔软绒毛，是这座虚拟王国最真实的魔法。';
+        }
+        var winId = 'bcos-win-anni-edit';
+        if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
+        var container = document.getElementById('bcos-windows');
+        var win = document.createElement('div');
+        win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
+        var cx = 80+Math.random()*60, cy = 50+Math.random()*40;
+        win.style.cssText += 'left:0;top:0;width:380px;height:320px;transform:translate3d(' + cx + 'px,' + cy + 'px,0);';
+        win._bcosTX = cx; win._bcosTY = cy;
+        win.innerHTML = '<div class="bcos-window-titlebar" onmousedown="_bcosDragStart(\'' + winId + '\',event)" ondblclick="_bcosToggleMaximize(\'' + winId + '\',event)" ontouchstart="_bcosTouchDragStart(\'' + winId + '\',event)"><span class="bcos-window-title">✏️ 编辑纪念日内容</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseCatWin(\'' + winId + '\')"></button></div></div>' +
+            '<div class="bcos-window-content" style="padding:.5rem;display:flex;flex-direction:column;height:calc(100% - 32px);">' +
+            '<textarea id="bcos-anni-edit-textarea" style="flex:1;background:#1a1a2e;color:#e0e0e0;border:1px solid #333;border-radius:4px;padding:.5rem;font-size:12px;line-height:1.6;resize:none;outline:none;font-family:sans-serif;">' + _bcosEscape(current) + '</textarea>' +
+            '<div style="display:flex;gap:.4rem;margin-top:.4rem;justify-content:flex-end;">' +
+            '<button onclick="_bcosSaveAnniversary()" style="background:#FF6B9D;color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:11px;">保存</button>' +
+            '<button onclick="_bcosCloseCatWin(\'' + winId + '\')" style="background:#333;color:#aaa;border:1px solid #444;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:11px;">取消</button>' +
+            '</div></div>';
+        container.appendChild(win);
+        win.addEventListener('mousedown', function() { win.style.zIndex = ++_bcos.winZ; });
+    }
+    function _bcosSaveAnniversary() {
+        var ta = document.getElementById('bcos-anni-edit-textarea');
+        if (!ta) return;
+        var content = ta.value.trim();
+        if (!content) { content = ''; }
+        safeSetItem('bcos_anniversary_content', content);
+        var win = document.getElementById('bcos-win-anni-edit');
+        if (win) _bcosCloseCatWin('bcos-win-anni-edit');
+        _bcosBrowserNavigate('bunny://anniversary', 'internal');
     }
     function _bcosBrowserRefresh() {
         const view = document.getElementById('bcos-browser-view');
@@ -11319,17 +11516,20 @@
             fnLabel.textContent = 'me/' + name;
             _teStatus('Saved: me/' + name + ' (' + ta.value.length + ' chars)', '#00ff41');
         };
-        // Apply: push content to browser (easter egg feature)
+        // Apply: push content to browser — renders as markdown/HTML
         document.getElementById('bcos-te-apply').onclick = () => {
-            if (!_bcosEggState.eggTriggered) {
-                _teStatus('Apply requires easter egg to be active', '#f44');
-                return;
+            const raw = ta.value.trim();
+            if (!raw) { _teStatus('Nothing to apply — content is empty', '#f44'); return; }
+            // Render content: if egg triggered, raw HTML; otherwise, simple markdown
+            if (_bcosEggState.eggTriggered) {
+                _bcosBrowserHTML = ta.value;
+            } else {
+                _bcosBrowserHTML = _bcosSimpleMarkdown(raw);
             }
-            _bcosBrowserHTML = ta.value;
             _bcosBrowserRefresh();
             if (!_bcos.wins['browser']) _bcosOpenApp('browser');
             else _bcosFocusWin('browser');
-            _teStatus('Applied to browser!', '#00aaff');
+            _teStatus(_bcosEggState.eggTriggered ? 'Applied to browser!' : 'Rendered as markdown', '#00aaff');
         };
         // Allow Enter in filename input to trigger Open
         openName.addEventListener('keydown', (e) => {
@@ -11340,9 +11540,47 @@
         });
     }
 
+    // === Simple Markdown renderer for TextEditor Apply (non-egg mode) ===
+    function _bcosSimpleMarkdown(md) {
+        let html = _bcosEscape(md);
+        // Code blocks (```...```)
+        html = html.replace(/```([\s\S]*?)```/g, '<pre style="background:#1a1a2e;border:1px solid #333;border-radius:4px;padding:.5rem;overflow:auto;font-family:monospace;font-size:12px;color:#00ff41;margin:.5rem 0;">$1</pre>');
+        // Inline code
+        html = html.replace(/`([^`]+)`/g, '<code style="background:#1a1a2e;padding:.1rem .3rem;border-radius:3px;font-family:monospace;font-size:.85em;color:#00ff41;">$1</code>');
+        // Headers
+        html = html.replace(/^###### (.+)$/gm, '<h6 style="color:#a78bfa;margin:.3rem 0;">$1</h6>');
+        html = html.replace(/^##### (.+)$/gm, '<h5 style="color:#a78bfa;margin:.3rem 0;">$1</h5>');
+        html = html.replace(/^#### (.+)$/gm, '<h4 style="color:#a78bfa;margin:.3rem 0;">$1</h4>');
+        html = html.replace(/^### (.+)$/gm, '<h3 style="color:#FF6B9D;margin:.3rem 0;">$1</h3>');
+        html = html.replace(/^## (.+)$/gm, '<h2 style="color:#FF6B9D;margin:.4rem 0;">$1</h2>');
+        html = html.replace(/^# (.+)$/gm, '<h1 style="color:#FF6B9D;margin:.4rem 0;font-size:1.5rem;">$1</h1>');
+        // Bold and italic
+        html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff;">$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        // Links [text](url)
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#00aaff;text-decoration:underline;" target="_blank">$1</a>');
+        // Images ![alt](src)
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;margin:.3rem 0;">');
+        // Blockquotes
+        html = html.replace(/^&gt; (.+)$/gm, '<blockquote style="border-left:3px solid #FF6B9D;padding-left:.5rem;color:#888;margin:.3rem 0;">$1</blockquote>');
+        // Unordered lists
+        html = html.replace(/^[\-\*] (.+)$/gm, '<li style="margin-left:1rem;color:#e0e0e0;list-style:disc;">$1</li>');
+        // Ordered lists
+        html = html.replace(/^\d+\. (.+)$/gm, '<li style="margin-left:1rem;color:#e0e0e0;list-style:decimal;">$1</li>');
+        // Horizontal rules
+        html = html.replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid #333;margin:.5rem 0;">');
+        // Line breaks (double newline = paragraph)
+        html = html.replace(/\n\n/g, '</p><p style="margin:.3rem 0;color:#e0e0e0;line-height:1.5;">');
+        html = '<div style="font-family:sans-serif;padding:1rem;background:#0d1117;color:#e0e0e0;min-height:100%;line-height:1.5;"><p style="margin:.3rem 0;color:#e0e0e0;">' + html + '</p></div>';
+        return html;
+    }
+
     // === OOBE (Out-of-Box Experience) ===
+    // Version-tracked: shows OOBE whenever bcos version changes
     function _bcosShowOOBE(ov) {
-        if (safeGetItem('bcos_oobe_done', '') === '1') return;
+        const lastOOBEVersion = safeGetItem('bcos_oobe_version', '');
+        if (lastOOBEVersion === _BCOS_VER) return; // Already seen this version
         const dt = _bcosGetDesktopTheme();
         const steps = [
             { title: '🐰 Welcome to bcos', body: 'You are now running <b style="color:' + dt.accent + ';">Bunny OS</b> ' + _BCOS_VER + '.<br><br>A Linux-style operating system running entirely in your browser.<br><br>Let\'s take a quick tour!' },
@@ -11368,7 +11606,7 @@
             document.getElementById('bcos-oobe-next').onclick = () => {
                 _bcosOOBEStep++;
                 if (_bcosOOBEStep >= steps.length) {
-                    safeSetItem('bcos_oobe_done', '1');
+                    safeSetItem('bcos_oobe_version', _BCOS_VER);
                     overlay.remove();
                 } else {
                     renderStep();
@@ -14538,6 +14776,16 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9341', title:'bcos纪念日页面 + 窗体缩放 + 胡萝卜鼠标 + OOBE版本追踪 + Markdown渲染', items:[
+            '💕 bcos浏览器新增纪念日收藏夹：实时天数计数器、时分秒倒计时、里程碑列表、下一纪念日倒计时',
+            '📖 纪念日内容可编辑：高级模式下可编辑王国传承文本，localStorage持久化保存',
+            '📝 TextEditor Apply普通模式渲染Markdown：支持标题/代码块/链接/列表/引用/粗体斜体等',
+            '🖥️ bcos窗体自适应缩放：支持拖拽调整窗口大小',
+            '🔲 bcos双击标题栏放大/还原窗口：保存原始位置和尺寸',
+            '🥕 bcos桌面模式胡萝卜鼠标：SVG光标强制覆盖第三方鼠标，解决闪烁问题',
+            '🔄 bcos OOBE版本追踪：每次版本更新后自动显示引导（含首次访问页面）',
+            '📰 bcos新闻页面文本修正',
+        ]},
         { ver:'v7.8.1.9340', title:'bcos终端cd命令 + 侧边栏折叠bug修复 + 更新日志清理', items:[
             '📂 bcos终端新增cd命令：支持 cd me, cd desktop, cd .., cd ~ 等目录导航',
             '📁 bcos终端ls增强：根据当前目录显示内容，desktop目录显示可执行应用列表',
