@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9337 -->
+    <!-- VERSION: v7.8.1.9338 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -2624,7 +2624,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9337 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9338 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -10515,7 +10515,6 @@
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">${dt.icons.monitor}</div><div class="bcos-desktop-icon-label">Monitor</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('browser')"><div class="bcos-desktop-icon-emoji">${dt.icons.browser}</div><div class="bcos-desktop-icon-label">Browser</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">${dt.icons.about}</div><div class="bcos-desktop-icon-label">About</div></div>
-                    <div class="bcos-desktop-icon" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')"><div class="bcos-desktop-icon-emoji">${dt.icons.github}</div><div class="bcos-desktop-icon-label">GitHub</div></div>
                 </div>
                 <div class="bcos-desktop-icon" style="position:absolute;right:${meX}px;top:${meY}px;" onclick="_bcosOpenApp('me')"><div class="bcos-desktop-icon-emoji">${dt.icons.me}</div><div class="bcos-desktop-icon-label">me</div></div>
                 <div id="bcos-windows"></div>
@@ -10811,6 +10810,117 @@
 
     // === Browser app ===
     let _bcosBrowserHTML = null;
+    let _bcosBrowserCurrentURL = 'bunny://kingdom';
+    const _bcosBookmarks = [
+        { name: '🐰 Kingdom', url: 'bunny://kingdom', type: 'internal' },
+        { name: '🐙 GitHub', url: 'https://github.com/kissggj123?tab=repositories', type: 'external' },
+        { name: '🔍 BunnySearch', url: 'bunny://search', type: 'internal' },
+        { name: '📖 BunnyWiki', url: 'bunny://wiki', type: 'internal' },
+        { name: '🛒 BunnyShop', url: 'bunny://shop', type: 'internal' },
+        { name: '📰 BunnyNews', url: 'bunny://news', type: 'internal' },
+        { name: '🎮 BunnyPlay', url: 'bunny://play', type: 'internal' },
+    ];
+    function _bcosGetBookmarkPage(url) {
+        if (url === 'bunny://search') {
+            return '<div style="font-family:sans-serif;text-align:center;padding:2rem;background:linear-gradient(135deg,#1a1a2e,#16213E);color:#fff;min-height:100%;">' +
+                '<h1 style="color:#FF6B9D;font-size:1.8rem;margin-bottom:1rem;">🔍 BunnySearch</h1>' +
+                '<div style="max-width:320px;margin:0 auto 1rem;"><div style="display:flex;gap:.3rem;">' +
+                '<input type="text" placeholder="Search bunny stuff..." style="flex:1;background:#1a1a1a;border:1px solid #333;color:#fff;padding:.5rem .8rem;border-radius:20px;font-size:13px;outline:none;" onkeydown="if(event.key===\'Enter\'){var r=document.getElementById(\'bs-result\');r.style.display=\'block\';r.innerHTML=\'<div style=\\\'color:#00ff41;margin-top:1rem;\\\'>&gt; Searching for: \'+this.value+\'</div><div style=\\\'color:#a78bfa;margin-top:.5rem;\\\'>&gt; Found 3 results about \'+this.value+\'</div><div style=\\\'color:#888;font-size:12px;margin-top:.3rem;\\\'>&gt; 🐰 Bunny Kingdom has info about \'+this.value+\'</div><div style=\\\'color:#888;font-size:12px;\\\'>&gt; 📖 BunnyWiki article: \'+this.value+\'</div><div style=\\\'color:#888;font-size:12px;\\\'>&gt; 🛒 BunnyShop products matching \'+this.value+\'</div>\';}" />' +
+                '<button onclick="var r=document.getElementById(\'bs-result\');r.style.display=\'block\';var i=this.previousElementSibling;r.innerHTML=\'<div style=\\\'color:#00ff41;margin-top:1rem;\\\'>&gt; Searching for: \'+i.value+\'</div><div style=\\\'color:#a78bfa;margin-top:.5rem;\\\'>&gt; Found 3 results</div>\';" style="background:#FF6B9D;border:none;color:#fff;padding:.5rem 1rem;border-radius:20px;cursor:pointer;font-size:13px;">Search</button>' +
+                '</div></div>' +
+                '<div id="bs-result" style="display:none;text-align:left;max-width:320px;margin:0 auto;"></div>' +
+                '<div style="margin-top:2rem;color:#666;font-size:.7rem;">🐰 The bunny search engine | Powered by bcos</div>' +
+                '</div>';
+        }
+        if (url === 'bunny://wiki') {
+            return '<div style="font-family:sans-serif;padding:1.5rem;background:linear-gradient(135deg,#0d1117,#161b22);color:#e0e0e0;min-height:100%;">' +
+                '<h1 style="color:#FF6B9D;font-size:1.4rem;text-align:center;margin-bottom:1rem;">📖 BunnyWiki</h1>' +
+                '<div style="background:#161b22;border:1px solid #333;border-radius:6px;padding:1rem;margin-bottom:.8rem;">' +
+                '<h2 style="color:#00ff41;font-size:1rem;cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">🐰 Angora Rabbit (Tap to expand)</h2>' +
+                '<div style="display:none;color:#a0a0a0;font-size:12px;line-height:1.6;margin-top:.5rem;">The Angora rabbit is a variety of domestic rabbit bred for its long, soft wool. The British Angora is one of the oldest breeds, known for its compact body and silky fur. 兔可可 is a British-derived Angora rabbit with dual pedigree, born on 2024.3.12.</div>' +
+                '</div>' +
+                '<div style="background:#161b22;border:1px solid #333;border-radius:6px;padding:1rem;margin-bottom:.8rem;">' +
+                '<h2 style="color:#00aaff;font-size:1rem;cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">🌿 Bunny Diet (Tap to expand)</h2>' +
+                '<div style="display:none;color:#a0a0a0;font-size:12px;line-height:1.6;margin-top:.5rem;">A healthy bunny diet consists of 80% hay, 10% fresh vegetables, 5% pellets, and 5% treats. Always provide fresh water. Avoid chocolate, onions, and avocado.</div>' +
+                '</div>' +
+                '<div style="background:#161b22;border:1px solid #333;border-radius:6px;padding:1rem;margin-bottom:.8rem;">' +
+                '<h2 style="color:#ffaa00;font-size:1rem;cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">🏠 Bunny Housing (Tap to expand)</h2>' +
+                '<div style="display:none;color:#a0a0a0;font-size:12px;line-height:1.6;margin-top:.5rem;">Bunnies need at least 12 square feet of floor space. They should be kept indoors with plenty of ventilation. Provide hiding spots, toys, and a litter box.</div>' +
+                '</div>' +
+                '<div style="background:#161b22;border:1px solid #333;border-radius:6px;padding:1rem;margin-bottom:.8rem;">' +
+                '<h2 style="color:#a78bfa;font-size:1rem;cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">💻 bcos OS (Tap to expand)</h2>' +
+                '<div style="display:none;color:#a0a0a0;font-size:12px;line-height:1.6;margin-top:.5rem;">bcos (Bunny OS) is a Linux-style terminal operating system running entirely in the browser. It features 30+ commands, a desktop environment, 12 theme-adaptive wallpapers, and an archive of 177 GitHub repositories.</div>' +
+                '</div>' +
+                '<p style="color:#666;font-size:.65rem;text-align:center;margin-top:1rem;">📖 BunnyWiki — The Free Bunny Encyclopedia</p>' +
+                '</div>';
+        }
+        if (url === 'bunny://shop') {
+            return '<div style="font-family:sans-serif;padding:1.5rem;background:linear-gradient(135deg,#FFF0F5,#FFE4E1);color:#333;min-height:100%;">' +
+                '<h1 style="color:#FF6B9D;font-size:1.4rem;text-align:center;margin-bottom:1rem;">🛒 BunnyShop</h1>' +
+                '<p style="text-align:center;color:#888;font-size:12px;margin-bottom:1rem;">Premium supplies for your furry friend</p>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;max-width:300px;margin:0 auto;">' +
+                '<div style="background:#fff;border-radius:8px;padding:.8rem;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.1);">' +
+                '<div style="font-size:2rem;">🐰</div><div style="color:#333;font-size:11px;font-weight:bold;">Angora Plush</div><div style="color:#FF6B9D;font-size:13px;font-weight:bold;">¥128</div>' +
+                '<button onclick="this.textContent=\'✓ Added!\';this.style.background=\'#4CAF50\';" style="background:#FF6B9D;color:#fff;border:none;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:10px;margin-top:.3rem;">Add to Cart</button>' +
+                '</div>' +
+                '<div style="background:#fff;border-radius:8px;padding:.8rem;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.1);">' +
+                '<div style="font-size:2rem;">🥕</div><div style="color:#333;font-size:11px;font-weight:bold;">Organic Carrots</div><div style="color:#FF6B9D;font-size:13px;font-weight:bold;">¥38</div>' +
+                '<button onclick="this.textContent=\'✓ Added!\';this.style.background=\'#4CAF50\';" style="background:#FF6B9D;color:#fff;border:none;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:10px;margin-top:.3rem;">Add to Cart</button>' +
+                '</div>' +
+                '<div style="background:#fff;border-radius:8px;padding:.8rem;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.1);">' +
+                '<div style="font-size:2rem;">🏡</div><div style="color:#333;font-size:11px;font-weight:bold;">Bunny House XL</div><div style="color:#FF6B9D;font-size:13px;font-weight:bold;">¥468</div>' +
+                '<button onclick="this.textContent=\'✓ Added!\';this.style.background=\'#4CAF50\';" style="background:#FF6B9D;color:#fff;border:none;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:10px;margin-top:.3rem;">Add to Cart</button>' +
+                '</div>' +
+                '<div style="background:#fff;border-radius:8px;padding:.8rem;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.1);">' +
+                '<div style="font-size:2rem;">🧸</div><div style="color:#333;font-size:11px;font-weight:bold;">Chew Toy Set</div><div style="color:#FF6B9D;font-size:13px;font-weight:bold;">¥68</div>' +
+                '<button onclick="this.textContent=\'✓ Added!\';this.style.background=\'#4CAF50\';" style="background:#FF6B9D;color:#fff;border:none;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:10px;margin-top:.3rem;">Add to Cart</button>' +
+                '</div>' +
+                '</div>' +
+                '<p style="color:#888;font-size:.65rem;text-align:center;margin-top:1rem;">🛒 Free shipping on orders over ¥99 | BunnyShop</p>' +
+                '</div>';
+        }
+        if (url === 'bunny://news') {
+            var newsDate = new Date().toLocaleDateString('en-US');
+            return '<div style="font-family:sans-serif;padding:1.5rem;background:linear-gradient(135deg,#0d1117,#161b22);color:#e0e0e0;min-height:100%;">' +
+                '<h1 style="color:#FF6B9D;font-size:1.4rem;text-align:center;margin-bottom:1rem;">📰 BunnyNews</h1>' +
+                '<div style="border-bottom:1px solid #333;padding-bottom:.8rem;margin-bottom:.8rem;">' +
+                '<div style="color:#888;font-size:10px;">' + newsDate + ' | 🐰 Kingdom</div>' +
+                '<h2 style="color:#00ff41;font-size:.95rem;margin:.3rem 0;">兔可可 Celebrates Another Beautiful Day</h2>' +
+                '<p style="color:#a0a0a0;font-size:12px;line-height:1.5;">The star Angora rabbit of the kingdom, 兔可可 (CoCo), was spotted enjoying fresh hay and binkying around the garden. "Another perfect day," said the happy caretaker.</p>' +
+                '</div>' +
+                '<div style="border-bottom:1px solid #333;padding-bottom:.8rem;margin-bottom:.8rem;">' +
+                '<div style="color:#888;font-size:10px;">' + newsDate + ' | 💻 Tech</div>' +
+                '<h2 style="color:#00aaff;font-size:.95rem;margin:.3rem 0;">bcos OS Reaches Version ' + _BCOS_VER + '</h2>' +
+                '<p style="color:#a0a0a0;font-size:12px;line-height:1.5;">The browser-based operating system bcos has been updated with new features including a virtual file system, browser app, and easter eggs. 177 repositories are now archived.</p>' +
+                '</div>' +
+                '<div style="border-bottom:1px solid #333;padding-bottom:.8rem;margin-bottom:.8rem;">' +
+                '<div style="color:#888;font-size:10px;">' + newsDate + ' | 🏆 Achievement</div>' +
+                '<h2 style="color:#ffaa00;font-size:.95rem;margin:.3rem 0;">GitHub Profile Reaches 177 Repositories</h2>' +
+                '<p style="color:#a0a0a0;font-size:12px;line-height:1.5;">CanguroMIO\'s GitHub profile has reached an impressive 177 repositories spanning multiple languages including C#, Python, Swift, and more.</p>' +
+                '</div>' +
+                '<div style="padding-bottom:.8rem;">' +
+                '<div style="color:#888;font-size:10px;">' + newsDate + ' | 🌿 Lifestyle</div>' +
+                '<h2 style="color:#a78bfa;font-size:.95rem;margin:.3rem 0;">Top 5 Bunny Care Tips for Summer</h2>' +
+                '<p style="color:#a0a0a0;font-size:12px;line-height:1.5;">1. Keep them cool 2. Fresh water always 3. Groom regularly 4. Provide shade 5. Watch for heat stress. Stay fluffy, stay safe!</p>' +
+                '</div>' +
+                '<p style="color:#666;font-size:.65rem;text-align:center;margin-top:1rem;">📰 BunnyNews — Daily fluff, daily news</p>' +
+                '</div>';
+        }
+        if (url === 'bunny://play') {
+            return '<div style="font-family:sans-serif;padding:1.5rem;background:linear-gradient(135deg,#1a0B2E,#0c0a1d);color:#e0e0e0;min-height:100%;text-align:center;">' +
+                '<h1 style="color:#fbbf24;font-size:1.4rem;margin-bottom:1rem;">🎮 BunnyPlay</h1>' +
+                '<p style="color:#888;font-size:12px;margin-bottom:1.5rem;">Mini games for bunny lovers</p>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;max-width:280px;margin:0 auto;">' +
+                '<div onclick="alert(\'🐰 Catch the Bunny!\\n\\nA bunny appears! You caught it! 🥕+10\');" style="background:#161b22;border:1px solid #fbbf24;border-radius:8px;padding:1rem;cursor:pointer;"><div style="font-size:2rem;">🐰</div><div style="color:#fbbf24;font-size:11px;margin-top:.3rem;">Catch Bunny</div></div>' +
+                '<div onclick="alert(\'🥕 Feed the Bunny!\\n\\nYou fed CoCo a carrot! Happiness +20 🐰\');" style="background:#161b22;border:1px solid #00ff41;border-radius:8px;padding:1rem;cursor:pointer;"><div style="font-size:2rem;">🥕</div><div style="color:#00ff41;font-size:11px;margin-top:.3rem;">Feed Bunny</div></div>' +
+                '<div onclick="alert=\'🏡 Bunny Race!\\n\\nReady... Set... Go!\\n\\n🐰 CoCo wins! 🏆\');" style="background:#161b22;border:1px solid #00aaff;border-radius:8px;padding:1rem;cursor:pointer;"><div style="font-size:2rem;">🏎️</div><div style="color:#00aaff;font-size:11px;margin-top:.3rem;">Bunny Race</div></div>' +
+                '<div onclick="alert(\'🎵 Bunny Music!\\n\\n🎵 Now playing: Sweet Bunny Dreams\\n🎶 🐰💤\');" style="background:#161b22;border:1px solid #a78bfa;border-radius:8px;padding:1rem;cursor:pointer;"><div style="font-size:2rem;">🎵</div><div style="color:#a78bfa;font-size:11px;margin-top:.3rem;">Bunny Music</div></div>' +
+                '</div>' +
+                '<div style="margin-top:1.5rem;color:#666;font-size:.65rem;">🎮 BunnyPlay — Play with bunnies anytime</div>' +
+                '</div>';
+        }
+        return _bcosGetDefaultBrowserContent();
+    }
     function _bcosGetDefaultBrowserContent() {
         return '<div style="text-align:center;padding:2rem;font-family:sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213E);color:#fff;min-height:100%;">' +
             '<h1 style="color:#FF6B9D;font-size:2rem;margin-bottom:.5rem;">🐰 Bunny Kingdom 🐰</h1>' +
@@ -10824,7 +10934,44 @@
             '</div>';
     }
     function _bcosGetDefaultReadme() {
-        return '# Bunny OS\n\nWelcome to **Bunny OS** (bcos) — a Linux-style terminal operating system.\n\n## Features\n\n- Terminal with 30+ commands\n- Desktop environment with window manager\n- 12 theme-adaptive wallpapers\n- GitHub repository archive (177 repos)\n- System monitor with real-time stats\n- File manager and browser\n\n## Version\n\n' + _BCOS_VER + '\n\n## Author\n\nkissggj123\n\n© 2014-' + new Date().getFullYear() + ' kissggj123';
+        return '<div style="font-family:sans-serif;text-align:center;padding:1.5rem;color:#e0e0e0;background:linear-gradient(135deg,#0d1117,#161b22);min-height:100%;">' +
+            '<h1 style="color:#FF6B9D;font-size:1.6rem;margin-bottom:.3rem;">Hi 🐰, I\'m CanguroMIO</h1>' +
+            '<h3 style="color:#a78bfa;font-size:.85rem;font-weight:normal;line-height:1.6;margin-bottom:1rem;">🐰2024.3.12<br>有一只英系双血统安哥拉兔 | 英系の二重血統のアンゴラウサギ | A British-derived Angora rabbit with dual pedigree<br>兔可可 | CoCo | ココ |<br>它的铲屎官 | Caretaker | お世話係です</h3>' +
+            '<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:.8rem;margin:.5rem auto;max-width:280px;">' +
+            '<p style="color:#00ff41;font-size:.75rem;">👁️ Profile views: loading...</p>' +
+            '<p style="color:#ffaa00;font-size:.75rem;">🏆 GitHub trophies: loading...</p>' +
+            '<p style="color:#00aaff;font-size:.75rem;">🐦 Twitter: @menglolitabd</p>' +
+            '</div>' +
+            '<h3 style="color:#FF6B9D;font-size:.9rem;margin:.8rem 0 .3rem;">Connect with me:</h3>' +
+            '<p style="color:#00aaff;font-size:.75rem;">🐦 Twitter @menglolitabd</p>' +
+            '<h3 style="color:#FF6B9D;font-size:.9rem;margin:.8rem 0 .3rem;">Languages and Tools:</h3>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;max-width:300px;margin:0 auto .8rem;">' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#58a6ff;">Arduino</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#ff9900;">AWS</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#008ad7;">Azure</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#4eaa25;">Bash</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#178600;">C#</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#2496ed;">Docker</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#512bd4;">.NET</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#4285f4;">GCP</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#f05032;">Git</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#e34f26;">HTML5</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#000;">IFTTT</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#fcc624;">Linux</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#4479a1;">MySQL</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#777bb4;">PHP</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#3776ab;">Python</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#ee4c2c;">PyTorch</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#f7b500;">Sketch</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#f05138;">Swift</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#0e1128;">Unreal</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#42b883;">Vue.js</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#000;">wxWidgets</span>' +
+            '<span style="background:#1a1a2e;border:1px solid #333;border-radius:3px;padding:.15rem .4rem;font-size:.65rem;color:#3498db;">Xamarin</span>' +
+            '</div>' +
+            '<p style="color:#888;font-size:.65rem;margin-top:.8rem;">📄 GitHub Stats: 177 repos | ⭐ Total stars | 📊 Top languages</p>' +
+            '<p style="color:#666;font-size:.6rem;margin-top:.3rem;">Source: github.com/kissggj123 | bcos ' + _BCOS_VER + '</p>' +
+            '</div>';
     }
     function _bcosGetEggReadme() {
         return '<!DOCTYPE html>\n<html>\n<head>\n<style>\nbody{font-family:sans-serif;text-align:center;padding:2rem;background:linear-gradient(135deg,#1a1a2e,#0F3460);color:#fff;min-height:100vh;margin:0;}\nh1{color:#FF6B9D;font-size:2.5rem;}\np{color:#a78bfa;font-size:1.2rem;}\n.box{background:rgba(255,255,255,.1);border-radius:12px;padding:1.5rem;margin:1rem auto;max-width:350px;}\n</style>\n</head>\n<body>\n<h1>🐰 Bunny Kingdom 🐰</h1>\n<p>Welcome to the Angora Rabbit Kingdom</p>\n<div class="box">\n<p style="color:#00ff41;">A magical place where bunnies roam free</p>\n<p style="color:#ffaa00;">Established: 2014</p>\n<p style="color:#00aaff;">Population: 177 bunnies</p>\n</div>\n<p style="color:#888;font-size:.8rem;">Powered by bcos ' + _BCOS_VER + '</p>\n</body>\n</html>';
@@ -10837,12 +10984,32 @@
     function _bcosRenderBrowser(content) {
         content.style.padding = '0';
         if (!_bcosBrowserHTML) _bcosBrowserHTML = _bcosGetDefaultBrowserContent();
+        var bookmarksBar = _bcosBookmarks.map(function(bm) {
+            return '<button class="bcos-bm-btn" data-url="' + bm.url + '" data-type="' + bm.type + '" style="background:#1a1a1a;border:1px solid #333;color:#aaa;cursor:pointer;font-size:10px;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background=\'#2a2a2a\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'#1a1a1a\';this.style.color=\'#aaa\';" onclick="_bcosBrowserNavigate(\'' + bm.url + '\',\'' + bm.type + '\')">' + bm.name + '</button>';
+        }).join('');
         content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .5rem;font-size:11px;color:#888;border-bottom:1px solid #333;display:flex;align-items:center;gap:.3rem;">' +
-            '<span style="color:#00ff41;">🔒</span><span style="flex:1;background:#1a1a1a;padding:.2rem .4rem;border-radius:3px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">bunny://kingdom</span>' +
+            '<span style="color:#00ff41;">🔒</span><span id="bcos-url-bar" style="flex:1;background:#1a1a1a;padding:.2rem .4rem;border-radius:3px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _bcosBrowserCurrentURL + '</span>' +
             '<button onclick="_bcosBrowserRefresh()" style="background:#1a1a1a;border:1px solid #333;color:#888;cursor:pointer;font-size:11px;padding:.1rem .3rem;border-radius:3px;">⟳</button>' +
-            '</div><div id="bcos-browser-view" style="height:calc(100% - 30px);overflow:auto;"></div>';
+            '</div>' +
+            '<div style="background:#222;padding:.2rem .3rem;border-bottom:1px solid #333;display:flex;gap:.2rem;overflow-x:auto;flex-wrap:nowrap;">' + bookmarksBar + '</div>' +
+            '<div id="bcos-browser-view" style="height:calc(100% - 56px);overflow:auto;"></div>';
         const view = document.getElementById('bcos-browser-view');
         if (view) view.innerHTML = _bcosBrowserHTML;
+    }
+    function _bcosBrowserNavigate(url, type) {
+        _bcosBrowserCurrentURL = url;
+        var urlBar = document.getElementById('bcos-url-bar');
+        if (urlBar) urlBar.textContent = url;
+        if (type === 'external') {
+            window.open(url, '_blank');
+            return;
+        }
+        if (url === 'bunny://kingdom') {
+            _bcosBrowserHTML = _bcosGetDefaultBrowserContent();
+        } else {
+            _bcosBrowserHTML = _bcosGetBookmarkPage(url);
+        }
+        _bcosBrowserRefresh();
     }
     function _bcosBrowserRefresh() {
         const view = document.getElementById('bcos-browser-view');
@@ -14172,6 +14339,18 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9338', title:'bcos浏览器收藏夹 + README内容更新 + 桌面GitHub图标移除', items:[
+            '📖 README内容更新：me文件夹的readme.md现在显示GitHub Profile README的完整内容（CanguroMIO介绍、语言工具标签、社交链接等）',
+            '❌ 桌面移除GitHub图标：GitHub入口改为浏览器收藏夹中的真实链接',
+            '🌐 浏览器新增收藏夹栏：7个书签（Kingdom/GitHub/BunnySearch/BunnyWiki/BunnyShop/BunnyNews/BunnyPlay）',
+            '🔍 BunnySearch：虚构搜索引擎，输入关键词显示模拟搜索结果',
+            '📖 BunnyWiki：虚构百科，可展开的安哥拉兔/饮食/住房/bcos百科条目',
+            '🛒 BunnyShop：虚构商店，4个商品可加入购物车（Add to Cart交互）',
+            '📰 BunnyNews：虚构新闻站，4条每日兔兔新闻（日期实时显示）',
+            '🎮 BunnyPlay：虚构游戏站，4个迷你互动游戏（弹窗反馈）',
+            '🐙 GitHub收藏夹：唯一真实链接，点击在新窗口打开GitHub仓库页',
+            '🔒 地址栏实时更新：点击收藏夹后URL栏显示当前bunny://地址',
+        ]},
         { ver:'v7.8.1.9337', title:'bcos彩蛋修复: touch命令 + edit.lock终端创建无效 + cat虚拟文件支持', items:[
             '📝 新增touch命令：创建空文件，支持多级路径（如 touch me/edit.lock）',
             '🔒 edit.lock终端创建无效修复：easter egg触发条件增加userCreatedEditLock检查，终端创建后浏览7+项目不再触发彩蛋',
