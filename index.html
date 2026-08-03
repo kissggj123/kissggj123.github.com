@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9338 -->
+    <!-- VERSION: v7.8.1.9339 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1290,7 +1290,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9337</div>
+                <div class="subtitle">v7.8.1.9339</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1583,7 +1583,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9337</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9339</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1650,7 +1650,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9337',
+        VERSION: 'v7.8.1.9339',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2624,7 +2624,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9338 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9339 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -10813,7 +10813,7 @@
     let _bcosBrowserCurrentURL = 'bunny://kingdom';
     const _bcosBookmarks = [
         { name: '🐰 Kingdom', url: 'bunny://kingdom', type: 'internal' },
-        { name: '🐙 GitHub', url: 'https://github.com/kissggj123?tab=repositories', type: 'external' },
+        { name: '🐙 GitHub', url: 'bunny://github', type: 'internal' },
         { name: '🔍 BunnySearch', url: 'bunny://search', type: 'internal' },
         { name: '📖 BunnyWiki', url: 'bunny://wiki', type: 'internal' },
         { name: '🛒 BunnyShop', url: 'bunny://shop', type: 'internal' },
@@ -10821,6 +10821,53 @@
         { name: '🎮 BunnyPlay', url: 'bunny://play', type: 'internal' },
     ];
     function _bcosGetBookmarkPage(url) {
+        if (url === 'bunny://github') {
+            var topRepos = _bcosRepos.slice().sort((a,b) => b[3] - a[3]).slice(0, 6);
+            var repoList = topRepos.map(r => {
+                var lc = _bcosLangColors[r[2]] || '#e0e0e0';
+                var safeName = _bcosEscape(r[0]);
+                var safeDesc = r[1] ? _bcosEscape(r[1].substring(0,60)) : '<span style="color:#666;">No description</span>';
+                var safeUrl = _bcosEscape(r[6]).replace(/'/g, '&#39;');
+                return '<div style="border:1px solid #30363d;border-radius:6px;padding:.6rem;margin-bottom:.4rem;background:#0d1117;">' +
+                    '<div style="display:flex;align-items:center;gap:.3rem;">' +
+                    '<span style="color:#58a6ff;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;" onclick="window.open(\'' + safeUrl + '\',\'_blank\')">' + safeName + '</span>' +
+                    '<span style="color:#8b949e;font-size:10px;border:1px solid #30363d;border-radius:12px;padding:0 .4rem;">' + (r[7] ? 'fork' : 'public') + '</span>' +
+                    '</div>' +
+                    '<div style="color:#8b949e;font-size:11px;margin:.2rem 0;">' + safeDesc + '</div>' +
+                    '<div style="display:flex;align-items:center;gap:.6rem;font-size:10px;color:#8b949e;">' +
+                    '<span style="color:' + lc + ';">● ' + _bcosEscape(r[2]) + '</span>' +
+                    (r[3] > 0 ? '<span>★ ' + r[3] + '</span>' : '') +
+                    (r[4] > 0 ? '<span>⑂ ' + r[4] + '</span>' : '') +
+                    '<span>' + _bcosEscape(r[5]) + '</span>' +
+                    '</div></div>';
+            }).join('');
+            return '<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;background:#0d1117;color:#c9d1d9;min-height:100%;">' +
+                '<div style="background:#161b22;border-bottom:1px solid #30363d;padding:.5rem .8rem;display:flex;align-items:center;gap:.5rem;">' +
+                '<span style="font-size:16px;">🐙</span>' +
+                '<span style="color:#58a6ff;font-size:13px;font-weight:600;">kissggj123</span>' +
+                '<span style="color:#8b949e;font-size:12px;">/ Repositories</span>' +
+                '<span style="margin-left:auto;background:#238636;color:#fff;font-size:10px;padding:.15rem .5rem;border-radius:4px;cursor:pointer;" onclick="window.open(\'https://github.com/kissggj123?tab=repositories\',\'_blank\')">Open real GitHub ↗</span>' +
+                '</div>' +
+                '<div style="display:flex;padding:.8rem;gap:.8rem;">' +
+                '<div style="width:120px;flex-shrink:0;text-align:center;">' +
+                '<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#FF6B9D,#a78bfa);margin:0 auto .3rem;display:flex;align-items:center;justify-content:center;font-size:24px;">🐰</div>' +
+                '<div style="color:#58a6ff;font-size:12px;font-weight:600;">CanguroMIO</div>' +
+                '<div style="color:#8b949e;font-size:10px;">kissggj123</div>' +
+                '<div style="color:#8b949e;font-size:10px;margin-top:.3rem;">🐰 Angora Rabbit Caretaker</div>' +
+                '</div>' +
+                '<div style="flex:1;min-width:0;">' +
+                '<div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;">' +
+                '<span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:.1rem .5rem;font-size:10px;color:#8b949e;">📦 ' + _bcosRepos.length + ' repos</span>' +
+                '<span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:.1rem .5rem;font-size:10px;color:#8b949e;">★ ' + _bcosRepos.reduce((s,r)=>s+r[3],0) + ' stars</span>' +
+                '<span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:.1rem .5rem;font-size:10px;color:#8b949e;">⑂ ' + _bcosRepos.reduce((s,r)=>s+r[4],0) + ' forks</span>' +
+                '</div>' +
+                '<div style="color:#8b949e;font-size:10px;margin-bottom:.5rem;">Top repositories by stars:</div>' +
+                repoList +
+                '<div style="text-align:center;margin-top:.5rem;"><span style="color:#58a6ff;font-size:10px;cursor:pointer;text-decoration:underline;" onclick="window.open(\'https://github.com/kissggj123?tab=repositories\',\'_blank\')">View all ' + _bcosRepos.length + ' repositories on GitHub ↗</span></div>' +
+                '</div></div>' +
+                '<div style="text-align:center;padding:.5rem;color:#484f58;font-size:9px;border-top:1px solid #30363d;">Simulated GitHub page | Data from GitHub API | Click repo names to visit real GitHub</div>' +
+                '</div>';
+        }
         if (url === 'bunny://search') {
             return '<div style="font-family:sans-serif;text-align:center;padding:2rem;background:linear-gradient(135deg,#1a1a2e,#16213E);color:#fff;min-height:100%;">' +
                 '<h1 style="color:#FF6B9D;font-size:1.8rem;margin-bottom:1rem;">🔍 BunnySearch</h1>' +
@@ -11000,10 +11047,6 @@
         _bcosBrowserCurrentURL = url;
         var urlBar = document.getElementById('bcos-url-bar');
         if (urlBar) urlBar.textContent = url;
-        if (type === 'external') {
-            window.open(url, '_blank');
-            return;
-        }
         if (url === 'bunny://kingdom') {
             _bcosBrowserHTML = _bcosGetDefaultBrowserContent();
         } else {
@@ -11084,21 +11127,43 @@
     function _bcosRenderTextEditor(content) {
         _bcosInitMeFolder();
         content.style.padding = '0';
-        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .4rem;display:flex;align-items:center;gap:.3rem;border-bottom:1px solid #333;">' +
+        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .4rem;display:flex;align-items:center;gap:.3rem;border-bottom:1px solid #333;flex-wrap:wrap;">' +
+            '<button id="bcos-te-new" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📄 New</button>' +
             '<button id="bcos-te-open" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📂 Open</button>' +
             '<button id="bcos-te-save" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">💾 Save</button>' +
             '<button id="bcos-te-apply" style="background:#1a1a1a;border:1px solid #333;color:#00aaff;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">▶ Apply</button>' +
             '<span id="bcos-te-filename" style="color:#888;font-size:11px;margin-left:auto;">(untitled)</span>' +
+            '<span id="bcos-te-status" style="color:#666;font-size:10px;margin-left:.3rem;"></span>' +
             '</div>' +
             '<div style="padding:.3rem;display:flex;gap:.3rem;align-items:center;border-bottom:1px solid #333;background:#1a1a1a;">' +
-            '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
+            '<span style="color:#888;font-size:10px;white-space:nowrap;">File:</span>' +
+            '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. notes.txt, readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
             '</div>' +
-            '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type or open a file..."></textarea>';
+            '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store."></textarea>';
         const ta = document.getElementById('bcos-te-textarea');
         const fnLabel = document.getElementById('bcos-te-filename');
         const openName = document.getElementById('bcos-te-openname');
+        const statusLabel = document.getElementById('bcos-te-status');
+        function _teStatus(msg, color) {
+            if (statusLabel) { statusLabel.textContent = msg; statusLabel.style.color = color || '#666'; }
+            setTimeout(() => { if (statusLabel) statusLabel.textContent = ''; }, 3000);
+        }
+        // New: create blank file
+        document.getElementById('bcos-te-new').onclick = () => {
+            ta.value = '';
+            openName.value = '';
+            fnLabel.textContent = '(untitled)';
+            _teStatus('New file created', '#00ff41');
+            ta.focus();
+        };
+        // Open: load file from VFS (create if doesn't exist)
         document.getElementById('bcos-te-open').onclick = () => {
-            const name = (openName.value || '').trim() || 'readme.md';
+            const name = (openName.value || '').trim();
+            if (!name) {
+                _teStatus('Enter a filename first', '#f44');
+                openName.focus();
+                return;
+            }
             _bcosInitMeFolder();
             // Check in me/ directory first
             let file = _bcosFS.me.children[name];
@@ -11117,8 +11182,9 @@
                 }
                 fnLabel.textContent = filePath;
                 openName.value = name;
+                _teStatus('Opened: ' + filePath, '#00ff41');
             } else if (name === 'readme.md' || name === 'readme_md') {
-                // Default readme
+                // Default readme — always available even if not in VFS yet
                 if (_bcosEggState.eggTriggered) {
                     ta.value = _bcosGetEggReadme();
                 } else {
@@ -11126,27 +11192,50 @@
                 }
                 fnLabel.textContent = 'me/' + name;
                 openName.value = name;
+                _teStatus('Opened default: me/' + name, '#00ff41');
             } else {
-                fnLabel.textContent = name + ' (not found)';
+                // File doesn't exist — create it as empty and open
+                _bcosFS.me.children[name] = { type: 'file', content: '' };
+                ta.value = '';
+                fnLabel.textContent = 'me/' + name;
+                _teStatus('Created new: me/' + name, '#00aaff');
             }
         };
+        // Save: save file to VFS
         document.getElementById('bcos-te-save').onclick = () => {
-            const name = (openName.value || '').trim() || 'untitled.txt';
+            const name = (openName.value || '').trim();
+            if (!name) {
+                _teStatus('Enter a filename first', '#f44');
+                openName.focus();
+                return;
+            }
             _bcosInitMeFolder();
             if (!_bcosFS.me.children[name]) {
                 _bcosFS.me.children[name] = { type: 'file', content: '' };
             }
             _bcosFS.me.children[name].content = ta.value;
             fnLabel.textContent = 'me/' + name;
+            _teStatus('Saved: me/' + name + ' (' + ta.value.length + ' chars)', '#00ff41');
         };
+        // Apply: push content to browser (easter egg feature)
         document.getElementById('bcos-te-apply').onclick = () => {
+            if (!_bcosEggState.eggTriggered) {
+                _teStatus('Apply requires easter egg to be active', '#f44');
+                return;
+            }
             _bcosBrowserHTML = ta.value;
-            // Try to refresh browser if open
             _bcosBrowserRefresh();
-            // If browser not open, open it
             if (!_bcos.wins['browser']) _bcosOpenApp('browser');
             else _bcosFocusWin('browser');
+            _teStatus('Applied to browser!', '#00aaff');
         };
+        // Allow Enter in filename input to trigger Open
+        openName.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('bcos-te-open').click();
+            }
+        });
     }
 
     // === OOBE (Out-of-Box Experience) ===
@@ -14339,6 +14428,16 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9339', title:'bcos GitHub页面内置显示 + TextEditor优化', items:[
+            '🐙 GitHub收藏夹改为内置页面：在bcos浏览器内显示模拟GitHub页面（GitHub无法iframe嵌入因X-Frame-Options）',
+            '📊 GitHub页面显示：用户头像、177仓库统计、按star排序的Top6仓库列表、语言标签颜色、可点击仓库名跳转真实GitHub',
+            '📄 TextEditor新增New按钮：创建空白文件，清空编辑器',
+            '📂 TextEditor Open优化：文件不存在时自动创建空文件并打开，不再显示not found',
+            '💾 TextEditor Save优化：需要输入文件名，保存后显示字符数确认',
+            '▶ TextEditor Apply保护：彩蛋未触发时Apply按钮提示需要激活彩蛋，防止误操作',
+            '⌨️ TextEditor Enter键支持：在文件名输入框按Enter直接打开文件',
+            '📋 TextEditor状态栏：所有操作有3秒状态反馈（Opened/Saved/Created等）',
+        ]},
         { ver:'v7.8.1.9338', title:'bcos浏览器收藏夹 + README内容更新 + 桌面GitHub图标移除', items:[
             '📖 README内容更新：me文件夹的readme.md现在显示GitHub Profile README的完整内容（CanguroMIO介绍、语言工具标签、社交链接等）',
             '❌ 桌面移除GitHub图标：GitHub入口改为浏览器收藏夹中的真实链接',
