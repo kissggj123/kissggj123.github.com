@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9339 -->
+    <!-- VERSION: v7.8.1.9340 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -308,6 +308,7 @@
         .sidebar-footer { margin-top: auto; text-align: center; font-size: .7rem; color: var(--text2); }
         /* Sidebar collapse — robust centering at any font scale */
         .sidebar { transition: width var(--transition); position: relative; }
+        .sidebar.no-transition { transition: none !important; }
         .sidebar.collapsed { width: 64px; padding: .75rem .25rem; }
         .sidebar.collapsed .nav-item .label,
         .sidebar.collapsed .sidebar-logo .title,
@@ -1290,8 +1291,8 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9339</div>
-                <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
+                <div class="subtitle">v7.8.1.9340</div>
+                <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
             <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
@@ -1583,7 +1584,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9339</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9340</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1650,7 +1651,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9339',
+        VERSION: 'v7.8.1.9340',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2624,7 +2625,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9339 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9340 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9457,8 +9458,19 @@
    "_     _"`;
     let _bcosFS = {
         'me': { type: 'dir', children: {} },
-        'repos': { type: 'dir', children: {} }
+        'repos': { type: 'dir', children: {} },
+        'desktop': { type: 'dir', children: {
+            'texteditor': { type: 'file', content: 'ELF 64-bit executable', executable: true },
+            'browser': { type: 'file', content: 'ELF 64-bit executable', executable: true },
+            'files': { type: 'file', content: 'ELF 64-bit executable', executable: true },
+            'monitor': { type: 'file', content: 'ELF 64-bit executable', executable: true },
+            'about': { type: 'file', content: 'ELF 64-bit executable', executable: true },
+            'terminal': { type: 'file', content: 'ELF 64-bit executable', executable: true },
+        }}
     };
+    // desktop/me references the same me folder
+    _bcosFS.desktop.children.me = _bcosFS.me;
+    let _bcosCwd = '~'; // Current working directory for cd command
     let _bcosEggState = { browseCount: 0, lastBrowseTime: 0, eggTriggered: false, systemEditLock: false, userCreatedEditLock: false };
     let _bcosMonitorTimer = null;
     let _bcosOOBEStep = 0;
@@ -9568,6 +9580,43 @@
 
     function _bcosEscape(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    // ===== Path resolution for cd/ls/pwd commands =====
+    function _bcosResolvePath(path) {
+        if (!path || path === '~' || path === '') return '~';
+        if (path === '/') return '~';
+        // Normalize: remove leading ~, handle relative paths
+        let base = _bcosCwd === '~' ? '' : _bcosCwd.replace(/^~\/?/, '');
+        let target;
+        if (path.startsWith('~/')) target = path.slice(2);
+        else if (path.startsWith('~')) target = path.slice(1);
+        else if (path.startsWith('/')) target = path.slice(1);
+        else target = (base ? base + '/' : '') + path;
+        // Resolve . and ..
+        const parts = target.split('/').filter(p => p && p !== '.');
+        const resolved = [];
+        for (const p of parts) {
+            if (p === '..') { resolved.pop(); continue; }
+            resolved.push(p);
+        }
+        return resolved.length === 0 ? '~' : '~/' + resolved.join('/');
+    }
+
+    function _bcosGetNodeAtPath(path) {
+        const parts = path.replace(/^~\/?/, '').split('/').filter(Boolean);
+        let node = { type: 'dir', children: _bcosFS };
+        for (const p of parts) {
+            if (!node.children || !node.children[p]) return null;
+            node = node.children[p];
+        }
+        return node;
+    }
+
+    function _bcosGetPromptPath() {
+        if (_bcosCwd === '~') return '~';
+        // Show shortened path for prompt
+        return _bcosCwd;
+    }
+
     let _bcosActiveOutput = null;
 
     function _bcosPrint(html) {
@@ -9625,7 +9674,7 @@
             help: () => {
                 _bcosPrint('<span class="bcos-info">bcos ' + _BCOS_VER + ' — Available Commands:</span>');
                 _bcosPrint('  <span class="bcos-success">help</span>          Show this help message');
-                _bcosPrint('  <span class="bcos-success">ls [lang]</span>     List repositories (optionally by language)');
+                _bcosPrint('  <span class="bcos-success">ls [path|lang]</span> List directory contents or repos by language');
                 _bcosPrint('  <span class="bcos-success">cat &lt;repo&gt;</span>     Show repository details');
                 _bcosPrint('  <span class="bcos-success">open &lt;repo&gt;</span>    Open repository on GitHub');
                 _bcosPrint('  <span class="bcos-success">search &lt;query&gt;</span> Search repositories');
@@ -9646,6 +9695,7 @@
                 _bcosPrint('  <span class="bcos-success">date</span>          Current date/time');
                 _bcosPrint('  <span class="bcos-success">echo &lt;text&gt;</span>   Print text');
                 _bcosPrint('  <span class="bcos-success">pwd</span>           Print working directory');
+                _bcosPrint('  <span class="bcos-success">cd &lt;dir&gt;</span>      Change directory (e.g. cd me, cd desktop, cd ..)');
                 _bcosPrint('  <span class="bcos-success">exit</span>          Exit bcos');
                 _bcosPrint('<span class="bcos-info">─── File System ───</span>');
                 _bcosPrint('  <span class="bcos-success">mkdir &lt;name&gt;</span>  Create a directory in virtual FS');
@@ -9654,7 +9704,7 @@
                 _bcosPrint('  <span class="bcos-success">rm &lt;name&gt;</span>     Remove a file or directory');
                 _bcosPrint('  <span class="bcos-success">cat &lt;path&gt;</span>    Show file content or repository details');
                 _bcosPrint('  <span class="bcos-success">./&lt;app&gt;</span>       Run desktop app (e.g. ./texteditor)');
-                _bcosPrint('  <span class="bcos-success">ls [path|lang]</span> List virtual FS or repos by language');
+                _bcosPrint('  <span class="bcos-success">ls [path|lang]</span> List directory, virtual FS, or repos by language');
                 _bcosPrint('<span class="bcos-info">─── System Control ───</span>');
                 _bcosPrint('  <span class="bcos-success">theme [id]</span>    Switch theme (no arg = list)');
                 _bcosPrint('  <span class="bcos-success">font [80-200|pixel]</span> Set font scale or toggle pixel font');
@@ -9684,27 +9734,54 @@
                 _bcosPrint('<span class="bcos-dim">Tip: TAB=autocomplete | Up/Down=history | Ctrl+L=clear</span>');
             },
             ls: (args) => {
-                // Check if arg is a virtual FS path (e.g. me/, me, repos/)
                 const arg = args[0] || '';
-                if (arg && (arg.endsWith('/') || arg in _bcosFS)) {
-                    const path = arg.replace(/\/$/, '');
-                    const node = _bcosFS[path];
-                    if (!node) { _bcosPrint('<span class="bcos-error">ls: ' + _bcosEscape(arg) + ': No such file or directory</span>'); return; }
-                    if (node.type === 'file') { _bcosPrint('<span class="bcos-repo-name">' + _bcosEscape(path) + '</span>'); return; }
+                // Helper: list a directory node's children
+                function listDir(node) {
+                    if (node.type === 'file') { _bcosPrint('<span class="bcos-repo-name">' + _bcosEscape(arg || _bcosCwd) + '</span>'); return; }
                     const children = Object.keys(node.children);
                     if (children.length === 0) { _bcosPrint('<span class="bcos-info">total 0</span>'); _bcosPrint('<span class="bcos-dim">(empty)</span>'); return; }
                     _bcosPrint('<span class="bcos-info">total ' + children.length + '</span>');
                     children.forEach(name => {
                         const child = node.children[name];
-                        const icon = child.type === 'dir' ? '📁' : '📄';
-                        const color = child.type === 'dir' ? '#00aaff' : '#e0e0e0';
-                        _bcosPrint(icon + ' <span style="color:' + color + ';">' + _bcosEscape(name) + '</span>' + (child.type === 'dir' ? '/' : ''));
+                        const isExec = child.executable;
+                        const icon = child.type === 'dir' ? '📁' : (isExec ? '⚙️' : '📄');
+                        const color = child.type === 'dir' ? '#00aaff' : (isExec ? '#00ff41' : '#e0e0e0');
+                        const suffix = child.type === 'dir' ? '/' : (isExec ? '*' : '');
+                        _bcosPrint(icon + ' <span style="color:' + color + ';">' + _bcosEscape(name) + '</span>' + suffix);
                     });
-                    return;
                 }
-                // Show virtual FS contents first
+                // If arg provided, try path resolution first, then language filter
+                if (arg) {
+                    if (arg === '--all' || arg === '-a') {
+                        // Show everything at root
+                    } else {
+                        const resolved = _bcosResolvePath(arg);
+                        const node = _bcosGetNodeAtPath(resolved);
+                        if (node) { listDir(node); return; }
+                        // Not a path — try language filter
+                        let repos = [..._bcosRepos].filter(r => r[2].toLowerCase() === arg.toLowerCase());
+                        if (repos.length > 0) {
+                            _bcosPrint('<span class="bcos-info">── Repositories (' + repos.length + ') ──</span>');
+                            repos.forEach(r => {
+                                const lc = _bcosLangColors[r[2]] || '#e0e0e0';
+                                const fb = r[7] ? ' <span class="bcos-repo-fork">[fork]</span>' : '';
+                                const st = r[3] > 0 ? ' <span class="bcos-repo-stars">*' + r[3] + '</span>' : '';
+                                _bcosPrint('<span class="bcos-repo-name">' + _bcosEscape(r[0]) + '</span>' + fb + ' — <span style="color:' + lc + ';">' + _bcosEscape(r[2]) + '</span>' + st + ' <span class="bcos-repo-date">' + _bcosEscape(r[5]) + '</span>');
+                            });
+                            return;
+                        }
+                        _bcosPrint('<span class="bcos-warn">No repositories found for: ' + _bcosEscape(arg) + '</span>');
+                        return;
+                    }
+                }
+                // No arg (or --all): list cwd if not root, otherwise show FS + repos
+                if (_bcosCwd !== '~' && !arg) {
+                    const node = _bcosGetNodeAtPath(_bcosCwd);
+                    if (node) { listDir(node); return; }
+                }
+                // Root: show virtual FS + repos
                 const fsEntries = Object.keys(_bcosFS);
-                if (fsEntries.length > 0 && !arg) {
+                if (fsEntries.length > 0) {
                     _bcosPrint('<span class="bcos-info">── Virtual File System ──</span>');
                     fsEntries.forEach(name => {
                         const node = _bcosFS[name];
@@ -9715,10 +9792,6 @@
                     });
                 }
                 let repos = [..._bcosRepos];
-                if (arg && arg !== '--all' && arg !== '-a') {
-                    repos = repos.filter(r => r[2].toLowerCase() === arg.toLowerCase());
-                }
-                if (repos.length === 0) { _bcosPrint('<span class="bcos-warn">No repositories found' + (arg ? ' for: ' + _bcosEscape(arg) : '') + '</span>'); return; }
                 _bcosPrint('<span class="bcos-info">── Repositories (' + repos.length + ') ──</span>');
                 repos.forEach(r => {
                     const lc = _bcosLangColors[r[2]] || '#e0e0e0';
@@ -9731,19 +9804,28 @@
                 if (!args[0]) { _bcosPrint('<span class="bcos-error">cat: missing operand</span>'); _bcosPrint('<span class="bcos-dim">Usage: cat &lt;repository-name | file-path&gt;</span>'); return; }
                 // Check virtual FS files first (e.g. me/readme.md, me/edit.lock)
                 const rawName = args[0].replace(/^\.\//, '');
-                const parts = rawName.split('/');
+                // Try cwd-aware path resolution first
                 let vfsFile = null;
-                if (parts.length === 1 && _bcosFS[parts[0]] && _bcosFS[parts[0]].type === 'file') {
-                    vfsFile = _bcosFS[parts[0]];
-                } else if (parts.length > 1) {
-                    const fileName = parts.pop();
-                    let dir = _bcosFS;
-                    for (const p of parts) {
-                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
-                        dir = dir[p].children;
-                    }
-                    if (dir && dir[fileName] && dir[fileName].type === 'file') {
-                        vfsFile = dir[fileName];
+                const resolved = _bcosResolvePath(rawName);
+                const resolvedNode = _bcosGetNodeAtPath(resolved);
+                if (resolvedNode && resolvedNode.type === 'file') {
+                    vfsFile = resolvedNode;
+                }
+                // Fallback: try root-relative path (backward compat)
+                if (!vfsFile) {
+                    const parts = rawName.split('/');
+                    if (parts.length === 1 && _bcosFS[parts[0]] && _bcosFS[parts[0]].type === 'file') {
+                        vfsFile = _bcosFS[parts[0]];
+                    } else if (parts.length > 1) {
+                        const fileName = parts.pop();
+                        let dir = _bcosFS;
+                        for (const p of parts) {
+                            if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
+                            dir = dir[p].children;
+                        }
+                        if (dir && dir[fileName] && dir[fileName].type === 'file') {
+                            vfsFile = dir[fileName];
+                        }
                     }
                 }
                 if (vfsFile) {
@@ -9867,7 +9949,7 @@
                 if (!args[0]) { _bcosPrint('<span class="bcos-error">man: What manual page do you want?</span>'); return; }
                 const mans = {
                     help: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    help - show available commands\n\nSYNOPSIS\n    help</span>',
-                    ls: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    ls - list repositories\n\nSYNOPSIS\n    ls [LANGUAGE]\n\nDESCRIPTION\n    List all repos. Optionally filter by language.\n\nEXAMPLES\n    ls          List all\n    ls C#       List C# repos\n    ls Python   List Python repos</span>',
+                    ls: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    ls - list directory contents\n\nSYNOPSIS\n    ls [PATH|LANGUAGE]\n\nDESCRIPTION\n    List contents of current directory or specified path.\n    At root (~), also lists all repositories.\n    Can filter repos by language.\n\nEXAMPLES\n    ls              List current directory\n    ls me           List me/ folder contents\n    ls desktop      List desktop apps\n    ls C#           Filter repos by language</span>',
                     cat: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    cat - show file content or repository details\n\nSYNOPSIS\n    cat &lt;REPO_NAME | FILE_PATH&gt;\n\nEXAMPLES\n    cat YumikoToys         Show repo details\n    cat me/readme.md       Show file content\n    cat me/edit.lock       Show edit.lock content</span>',
                     open: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    open - open repo on GitHub\n\nSYNOPSIS\n    open &lt;REPO_NAME&gt;</span>',
                     search: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    search - search repositories\n\nSYNOPSIS\n    search &lt;QUERY&gt;</span>',
@@ -9876,10 +9958,29 @@
                     touch: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    touch - create an empty file\n\nSYNOPSIS\n    touch &lt;FILENAME&gt;\n\nDESCRIPTION\n    Create an empty file in the virtual file system.\n    Supports multi-level paths.\n\nEXAMPLES\n    touch notes.txt       Create file in root\n    touch me/readme.md    Create file in me/ folder</span>',
                     mkdir: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    mkdir - create a directory\n\nSYNOPSIS\n    mkdir &lt;DIRNAME&gt;\n\nDESCRIPTION\n    Create a directory in the virtual file system.\n    Supports multi-level paths.\n\nEXAMPLES\n    mkdir projects        Create dir in root\n    mkdir me/notes        Create dir in me/ folder</span>',
                     rm: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    rm - remove a file or directory\n\nSYNOPSIS\n    rm &lt;NAME&gt;\n\nDESCRIPTION\n    Remove a file or directory from the virtual FS.\n    Use rm -rf / at your own risk.</span>',
+                    cd: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    cd - change directory\n\nSYNOPSIS\n    cd [DIR]\n\nDESCRIPTION\n    Change the current working directory.\n    Uses ~ as home directory shorthand.\n\nEXAMPLES\n    cd              Go to home\n    cd me           Go to me/ folder\n    cd desktop      Go to desktop/ folder\n    cd ..           Go up one level\n    cd ~/repos      Go to repos/ from anywhere</span>',
+                    pwd: '<span class="bcos-info">BCOS(1)  bcos Manual  BCOS(1)\n\nNAME\n    pwd - print working directory\n\nSYNOPSIS\n    pwd</span>',
                 };
                 if (mans[args[0]]) _bcosPrint(mans[args[0]]); else _bcosPrint('<span class="bcos-error">man: No manual entry for ' + _bcosEscape(args[0]) + '</span>');
             },
-            pwd: () => _bcosPrint('/home/bunny'),
+            pwd: () => _bcosPrint(_bcosCwd === '~' ? '/home/bunny' : '/home/bunny/' + _bcosCwd.replace(/^~\/?/, '')),
+            cd: (args) => {
+                const target = args[0] || '~';
+                const resolved = _bcosResolvePath(target);
+                const node = _bcosGetNodeAtPath(resolved);
+                if (!node) {
+                    _bcosPrint('<span class="bcos-error">cd: ' + _bcosEscape(target) + ': No such file or directory</span>');
+                    return;
+                }
+                if (node.type !== 'dir') {
+                    _bcosPrint('<span class="bcos-error">cd: ' + _bcosEscape(target) + ': Not a directory</span>');
+                    return;
+                }
+                _bcosCwd = resolved;
+                // Update prompt path in input line
+                const promptPath = document.querySelector('#bcos-input-line .bcos-prompt-path');
+                if (promptPath) promptPath.textContent = _bcosGetPromptPath();
+            },
             tree: () => {
                 const lm = {}; _bcosRepos.forEach(r => { if (!lm[r[2]]) lm[r[2]] = []; lm[r[2]].push(r); });
                 _bcosPrint('<span class="bcos-info">.</span>');
@@ -10386,7 +10487,7 @@
             _bcos.history.push(cmd);
             if (_bcos.history.length > 100) _bcos.history.shift();
             _bcos.histIdx = _bcos.history.length;
-            _bcosPrint('<span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">~</span><span class="bcos-prompt-symbol">$</span> ' + _bcosEscape(cmd));
+            _bcosPrint('<span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">' + _bcosGetPromptPath() + '</span><span class="bcos-prompt-symbol">$</span> ' + _bcosEscape(cmd));
             input.value = '';
             if (cmd.trim()) _bcosExec(cmd.trim());
         } else if (e.key === 'ArrowUp') { e.preventDefault(); if (_bcos.histIdx > 0) { _bcos.histIdx--; input.value = _bcos.history[_bcos.histIdx]; } }
@@ -10402,7 +10503,7 @@
         _bcosBooting = true;
         try {
         ov.classList.add('active');
-        ov.innerHTML = '<div id="bcos-screen"><div id="bcos-output"></div><div id="bcos-input-line" style="display:none;"><span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">~</span><span class="bcos-prompt-symbol">$&nbsp;</span><input id="bcos-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div></div>';
+        ov.innerHTML = '<div id="bcos-screen"><div id="bcos-output"></div><div id="bcos-input-line" style="display:none;"><span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">' + _bcosGetPromptPath() + '</span><span class="bcos-prompt-symbol">$&nbsp;</span><input id="bcos-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div></div>';
         _bcos.mode = 'terminal';
         const out = document.getElementById('bcos-output');
         if (!out) { _bcosBooting = false; return; }
@@ -10476,6 +10577,7 @@
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
         _bcosActiveOutput = null;
+        _bcosCwd = '~'; // Reset working directory on exit
         _bcos.wins = {}; _bcos.activeWin = null; _bcos.mode = 'closed';
         _bcosUnbindEsc();
     }
@@ -10555,7 +10657,7 @@
         // Lightweight switch: restore terminal UI without replaying boot sequence
         // Preserve command history and output if terminal was previously active
         const prevHistory = _bcos.history || [];
-        ov.innerHTML = '<div id="bcos-screen"><div id="bcos-output"></div><div id="bcos-input-line" style="display:flex;"><span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">~</span><span class="bcos-prompt-symbol">$&nbsp;</span><input id="bcos-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div></div>';
+        ov.innerHTML = '<div id="bcos-screen"><div id="bcos-output"></div><div id="bcos-input-line" style="display:flex;"><span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">' + _bcosGetPromptPath() + '</span><span class="bcos-prompt-symbol">$&nbsp;</span><input id="bcos-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div></div>';
         const out = document.getElementById('bcos-output');
         if (out) {
             out.innerHTML = '<pre class="bcos-logo">' + _BCOS_BUNNY_ART + '</pre><div class="bcos-welcome">Welcome back to bcos ' + _BCOS_VER + ' (Bunny OS)</div><div class="bcos-welcome">GitHub Repository Archive — 177 repositories loaded</div><div class="bcos-dim">Type \'help\' for commands, \'desktop\' for GUI mode.</div><br>';
@@ -11983,7 +12085,15 @@
                 checkFontScaleCollapse();
             };
         }
+        // Apply initial mode without transition to prevent layout shift on page load
+        sidebar.classList.add('no-transition');
         applyMode();
+        // Force reflow to apply the collapsed state immediately
+        void sidebar.offsetHeight;
+        // Re-enable transitions on next frame
+        requestAnimationFrame(function() {
+            sidebar.classList.remove('no-transition');
+        });
     }
 
     function toggleSidebarPin() {
@@ -14428,13 +14538,23 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9340', title:'bcos终端cd命令 + 侧边栏折叠bug修复 + 更新日志清理', items:[
+            '📂 bcos终端新增cd命令：支持 cd me, cd desktop, cd .., cd ~ 等目录导航',
+            '📁 bcos终端ls增强：根据当前目录显示内容，desktop目录显示可执行应用列表',
+            '🔤 bcos终端pwd增强：显示当前工作目录路径',
+            '🔤 bcos终端cat增强：支持基于当前目录的相对路径文件查看',
+            '🖥️ bcos虚拟文件系统新增desktop目录：包含texteditor/browser/files/monitor/about/terminal应用',
+            '⚡ 终端prompt实时显示当前目录：cd后提示符路径立即更新',
+            '🔧 修复侧边栏始终折叠时首次点击跳回首页：初始化时禁用transition避免布局抖动',
+            '🔧 修复侧边栏pin按钮点击触发logo导航：添加event.stopPropagation防止事件冒泡',
+            '📝 更新日志清理：移除所有不必要的内部实现说明',
+        ]},
         { ver:'v7.8.1.9339', title:'bcos GitHub页面内置显示 + TextEditor优化', items:[
             '🐙 GitHub收藏夹改为内置页面：在bcos浏览器内显示模拟GitHub页面（GitHub无法iframe嵌入因X-Frame-Options）',
             '📊 GitHub页面显示：用户头像、177仓库统计、按star排序的Top6仓库列表、语言标签颜色、可点击仓库名跳转真实GitHub',
             '📄 TextEditor新增New按钮：创建空白文件，清空编辑器',
             '📂 TextEditor Open优化：文件不存在时自动创建空文件并打开，不再显示not found',
             '💾 TextEditor Save优化：需要输入文件名，保存后显示字符数确认',
-            '▶ TextEditor Apply保护：彩蛋未触发时Apply按钮提示需要激活彩蛋，防止误操作',
             '⌨️ TextEditor Enter键支持：在文件名输入框按Enter直接打开文件',
             '📋 TextEditor状态栏：所有操作有3秒状态反馈（Opened/Saved/Created等）',
         ]},
@@ -14450,17 +14570,13 @@
             '🐙 GitHub收藏夹：唯一真实链接，点击在新窗口打开GitHub仓库页',
             '🔒 地址栏实时更新：点击收藏夹后URL栏显示当前bunny://地址',
         ]},
-        { ver:'v7.8.1.9337', title:'bcos彩蛋修复: touch命令 + edit.lock终端创建无效 + cat虚拟文件支持', items:[
-            '📝 新增touch命令：创建空文件，支持多级路径（如 touch me/edit.lock）',
-            '🔒 edit.lock终端创建无效修复：easter egg触发条件增加userCreatedEditLock检查，终端创建后浏览7+项目不再触发彩蛋',
-            '🔒 edit.lock系统创建防覆盖：系统触发彩蛋时检查me文件夹是否已存在edit.lock，避免覆盖用户创建的文件',
-            '🔒 _bcosOpenEditLock区分系统/用户创建：终端创建的edit.lock在桌面打开时显示正常内容而非乱码',
-            '📂 rm删除edit.lock时同时重置userCreatedEditLock：删除后可重新触发彩蛋',
-            '📖 cat命令支持虚拟文件系统：可直接cat me/readme.md或cat me/edit.lock查看文件内容',
+        { ver:'v7.8.1.9337', title:'bcos文件系统增强: touch命令 + cat虚拟文件支持 + ./前缀', items:[
+            '📝 新增touch命令：创建空文件，支持多级路径（如 touch me/notes.txt）',
+            '📖 cat命令支持虚拟文件系统：可直接cat me/readme.md查看文件内容',
             '🏃 新增./前缀支持：终端输入./texteditor等可直接启动桌面应用',
             '❓ help文本新增touch命令说明',
         ]},
-        { ver:'v7.8.1.9336', title:'bcos系统大改版: Angora rabbit art + Browser + OOBE + TextEditor + Easter Egg', items:[
+        { ver:'v7.8.1.9336', title:'bcos系统大改版: Angora rabbit art + Browser + OOBE + TextEditor', items:[
             '🐰 终端字符画替换为安哥拉兔ASCII art（终端启动/返回/桌面About共用）',
             '🌐 终端中文文本全部移除改为英文，Bunny可可系统→Bunny OS',
             '📌 bcos版本号跟随全局CONFIG.VERSION，不再硬编码1.0.0',
@@ -14471,8 +14587,6 @@
             '🖥️ 新增OOBE开机引导：4步功能介绍（Welcome→Terminal→Files→Desktop），localStorage记录不再重复',
             '📂 桌面右侧随机位置新增me文件夹：含readme.md和texteditor应用',
             '📝 TextEditor应用：空白启动，支持Open/Save/Apply，可编辑文件并实时应用到浏览器',
-            '🥚 彩蛋系统：Files浏览7+项目（间隔>2.34s）→系统创建edit.lock→TextEditor打开readme显示伪网站源码→修改Apply后浏览器实时显示',
-            '🔒 edit.lock终端创建无效：通过mkdir/mk创建的edit.lock只是普通文件不触发彩蛋，rm可正常删除',
         ]},
         { ver:'v7.8.1.9335', title:'bcos安全加固 & 性能优化 & 错误处理', items:[
             '🛡️ 修复bcos终端XSS漏洞：cat/ls/recent/popular/tree命令未转义语言名和日期字段，文件管理器窗口未转义URL和语言',
@@ -14517,7 +14631,6 @@
             '🛡️ 修复checkBankruptcy空引用：添加p参数null guard',
             '🪟 修复bcosOpenCatWindow关闭按钮DOM残留：新增_bcosCloseCatWin函数清理窗口引用',
             '📱 修复文件管理器双击不适用于移动端：添加touch长按(600ms)打开GitHub功能',
-            '⚡ 优化彩蛋pointerdown事件：20+次closest()调用合并为单次选择器查询',
             '⚡ 优化终端命令历史：主终端100条上限，桌面终端50条上限，防止无界增长',
             '🔄 bcos update添加try-catch错误处理：失败时仍强制reload并提供错误反馈',
         ]},
@@ -14528,7 +14641,6 @@
             '🎲 新增dice命令：设置骰子倍数(1x/2x/3x/4x)，含风险提示',
             '🔧 修复sidebar命令读取错误localStorage键名(sidebarMode→sidebarCollapsed)',
             '🔧 修复settings命令中sidebar参数读取错误键名',
-            '🔧 修复egg命令默认值不一致(eggClickTrigger默认应为1)',
             '🔧 修复bcos update保留键名错误(sidebarMode→sidebarCollapsed)，补全12个缺失设置键',
             '⚡ 新增setting(单数)别名，输入setting或settings均可查看全部参数',
         ]},
@@ -14624,12 +14736,11 @@
             '🎒 背包满时替换：抽卡10张在背包满时有50%概率随机替换旧卡而非直接丢弃',
             '🖱️ 双击选中文本修复：.inventory-grid添加user-select:none',
             '🐰 emoji头像修复：非被动pointerdown+selectstart事件彻底阻止emoji选中',
-            '🎮 连点彩蛋修复：排除背包容器/弹窗/玩家面板/标签按钮等UI元素',
             '⚔️ 骇客道具赛系统：新增停电/数据劫持/EMP脉冲/全息伪装等全局技能卡',
             '🏷️ 载具折扣修复：购买载具时自动抵扣折扣，商店界面显示可用折扣',
             '📡 AI信号干扰修复：AI玩家受信号干扰时无法交易股票',
         ]},
-        { ver:'v7.7.2.9303', title:'UI响应优化 & Buff栏 & 彩蛋修复 & 机制缺陷修复', items:[
+        { ver:'v7.7.2.9303', title:'UI响应优化 & Buff栏 & 机制缺陷修复', items:[
             '⚡ UI响应延迟优化：平台检测(PC/移动端) + FPS自适应，动态调整modal锁、click guard、动画速度',
             '⚡ 低性能模式：FPS<30时自动降级（禁用粒子、缩短动画、隐藏装饰背景），FPS>50恢复',
             '⚔️ ACT风格Buff栏：骰子区域上方显示活跃卡牌效果图标和剩余回合数',
