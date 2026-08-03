@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9335 -->
+    <!-- VERSION: v7.8.1.9336 -->
     <title>兔可可王国 🐰</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=7.6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/icon/32.png?v=7.6.0">
@@ -1290,7 +1290,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.1.9335</div>
+                <div class="subtitle">v7.8.1.9336</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1583,13 +1583,13 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9335</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.1.9336</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
                         <div style="margin-top:.2rem;font-size:.7rem;color:var(--text2);opacity:.6;">点击查看更多信息</div>
                     </div>
-                    <button class="bcos-btn" onclick="showBcosOS()">🖥️ bcos — Bunny可可系统</button>
+                    <button class="bcos-btn" onclick="showBcosOS()">👤 关于作者</button>
                 </div>
                 <div class="card">
                     <div class="card-title">📋 更新日志</div>
@@ -1650,7 +1650,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9335',
+        VERSION: 'v7.8.1.9336',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2624,7 +2624,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.1.9335 已启动', 'info');
+        logEvent('兔可可王国 v7.8.1.9336 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9246,7 +9246,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.1.9335 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.1.9336 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9255,8 +9255,8 @@
         document.getElementById('modal-overlay').classList.add('show');
     }
 
-    // === BCOS (Bunny可可系统) — Linux-style OS ===
-    // === BCOS (Bunny可可系统) — Linux-style OS Terminal ===
+    // === BCOS (Bunny OS) — Linux-style OS ===
+    // === BCOS (Bunny OS) — Linux-style OS Terminal ===
     const _bcosRepos = [
   ['YumikoToys','一款现代化的 macOS 桌面宠物与 AI 助手应用 | A modern macOS desktop pet & AI assistant app','Swift',0,0,'2026-07-31','https://github.com/kissggj123/YumikoToys',false,43488,''],
   ['kissggj123.github.com','兔可可纪念日','HTML',0,0,'2026-07-30','https://github.com/kissggj123/kissggj123.github.com',false,109279,'https://so.menglolita.com/'],
@@ -9444,6 +9444,24 @@
         'TeX': '#3D6117', 'Smarty': '#f0c040', 'MATLAB': '#e16737', 'Batchfile': '#C1F12E',
         'N/A': '#00ff41'
     };
+    const _BCOS_VER = CONFIG.VERSION;
+    const _BCOS_BUNNY_ART = `    /\\___/\\
+   (  o o  )
+   (  =^=  )
+   /       \\
+  /  ANGORA  \\
+ /    RABBIT   \\
+/_______________\\
+   ||     ||
+   ||     ||
+   "_     _"`;
+    let _bcosFS = {
+        'me': { type: 'dir', children: {} },
+        'repos': { type: 'dir', children: {} }
+    };
+    let _bcosEggState = { browseCount: 0, lastBrowseTime: 0, eggTriggered: false, systemEditLock: false, userCreatedEditLock: false };
+    let _bcosMonitorTimer = null;
+    let _bcosOOBEStep = 0;
     let _bcos = { history: [], histIdx: -1, mode: 'boot', winZ: 100, wins: {}, clockInterval: null };
 
     function _bcosInjectCSS() {
@@ -9605,7 +9623,7 @@
     function _bcosGetCommands() {
         return {
             help: () => {
-                _bcosPrint('<span class="bcos-info">bcos 1.0.0 — Available Commands:</span>');
+                _bcosPrint('<span class="bcos-info">bcos ' + _BCOS_VER + ' — Available Commands:</span>');
                 _bcosPrint('  <span class="bcos-success">help</span>          Show this help message');
                 _bcosPrint('  <span class="bcos-success">ls [lang]</span>     List repositories (optionally by language)');
                 _bcosPrint('  <span class="bcos-success">cat &lt;repo&gt;</span>     Show repository details');
@@ -9629,6 +9647,11 @@
                 _bcosPrint('  <span class="bcos-success">echo &lt;text&gt;</span>   Print text');
                 _bcosPrint('  <span class="bcos-success">pwd</span>           Print working directory');
                 _bcosPrint('  <span class="bcos-success">exit</span>          Exit bcos');
+                _bcosPrint('<span class="bcos-info">─── File System ───</span>');
+                _bcosPrint('  <span class="bcos-success">mkdir &lt;name&gt;</span>  Create a directory in virtual FS');
+                _bcosPrint('  <span class="bcos-success">mk &lt;name&gt;</span>     Alias for mkdir');
+                _bcosPrint('  <span class="bcos-success">rm &lt;name&gt;</span>     Remove a file or directory');
+                _bcosPrint('  <span class="bcos-success">ls [path|lang]</span> List virtual FS or repos by language');
                 _bcosPrint('<span class="bcos-info">─── System Control ───</span>');
                 _bcosPrint('  <span class="bcos-success">theme [id]</span>    Switch theme (no arg = list)');
                 _bcosPrint('  <span class="bcos-success">font [80-200|pixel]</span> Set font scale or toggle pixel font');
@@ -9658,12 +9681,42 @@
                 _bcosPrint('<span class="bcos-dim">Tip: TAB=autocomplete | Up/Down=history | Ctrl+L=clear</span>');
             },
             ls: (args) => {
-                let repos = [..._bcosRepos];
-                if (args[0] && args[0] !== '--all' && args[0] !== '-a') {
-                    repos = repos.filter(r => r[2].toLowerCase() === args[0].toLowerCase());
+                // Check if arg is a virtual FS path (e.g. me/, me, repos/)
+                const arg = args[0] || '';
+                if (arg && (arg.endsWith('/') || arg in _bcosFS)) {
+                    const path = arg.replace(/\/$/, '');
+                    const node = _bcosFS[path];
+                    if (!node) { _bcosPrint('<span class="bcos-error">ls: ' + _bcosEscape(arg) + ': No such file or directory</span>'); return; }
+                    if (node.type === 'file') { _bcosPrint('<span class="bcos-repo-name">' + _bcosEscape(path) + '</span>'); return; }
+                    const children = Object.keys(node.children);
+                    if (children.length === 0) { _bcosPrint('<span class="bcos-info">total 0</span>'); _bcosPrint('<span class="bcos-dim">(empty)</span>'); return; }
+                    _bcosPrint('<span class="bcos-info">total ' + children.length + '</span>');
+                    children.forEach(name => {
+                        const child = node.children[name];
+                        const icon = child.type === 'dir' ? '📁' : '📄';
+                        const color = child.type === 'dir' ? '#00aaff' : '#e0e0e0';
+                        _bcosPrint(icon + ' <span style="color:' + color + ';">' + _bcosEscape(name) + '</span>' + (child.type === 'dir' ? '/' : ''));
+                    });
+                    return;
                 }
-                if (repos.length === 0) { _bcosPrint('<span class="bcos-warn">No repositories found' + (args[0] ? ' for: ' + _bcosEscape(args[0]) : '') + '</span>'); return; }
-                _bcosPrint('<span class="bcos-info">total ' + repos.length + '</span>');
+                // Show virtual FS contents first
+                const fsEntries = Object.keys(_bcosFS);
+                if (fsEntries.length > 0 && !arg) {
+                    _bcosPrint('<span class="bcos-info">── Virtual File System ──</span>');
+                    fsEntries.forEach(name => {
+                        const node = _bcosFS[name];
+                        const icon = node.type === 'dir' ? '📁' : '📄';
+                        const color = node.type === 'dir' ? '#00aaff' : '#e0e0e0';
+                        const childCount = node.type === 'dir' ? Object.keys(node.children).length : 0;
+                        _bcosPrint(icon + ' <span style="color:' + color + ';">' + _bcosEscape(name) + '/</span> <span class="bcos-dim">' + childCount + ' item(s)</span>');
+                    });
+                }
+                let repos = [..._bcosRepos];
+                if (arg && arg !== '--all' && arg !== '-a') {
+                    repos = repos.filter(r => r[2].toLowerCase() === arg.toLowerCase());
+                }
+                if (repos.length === 0) { _bcosPrint('<span class="bcos-warn">No repositories found' + (arg ? ' for: ' + _bcosEscape(arg) : '') + '</span>'); return; }
+                _bcosPrint('<span class="bcos-info">── Repositories (' + repos.length + ') ──</span>');
                 repos.forEach(r => {
                     const lc = _bcosLangColors[r[2]] || '#e0e0e0';
                     const fb = r[7] ? ' <span class="bcos-repo-fork">[fork]</span>' : '';
@@ -9752,7 +9805,7 @@
                 _bcosPrint('<pre style="color:#00ff41;font-size:13px;line-height:1.3;">' +
 '     (\\(\\     <span style="color:#00aaff;">bcos@bunny</span>\n' +
 '    ( -.-)    <span style="color:#e0e0e0;">-----------</span>\n' +
-'    /&gt;🐰&gt;     <span style="color:#e0e0e0;">OS:</span> bcos 1.0.0 (Bunny可可系统)\n' +
+'    /&gt;🐰&gt;     <span style="color:#e0e0e0;">OS:</span> bcos ' + _BCOS_VER + ' (Bunny OS)\n' +
 '              <span style="color:#e0e0e0;">Host:</span> GitHub Archive Edition\n' +
 '              <span style="color:#e0e0e0;">Kernel:</span> 177.0-repo\n' +
 '              <span style="color:#e0e0e0;">Shell:</span> bsh 1.0.0\n' +
@@ -9773,7 +9826,7 @@
             exit: () => closeBcosOS(),
             logout: () => closeBcosOS(),
             whoami: () => _bcosPrint('bunny'),
-            uname: (args) => { _bcosPrint(args[0] === '-a' ? 'bcos 1.0.0 (Bunny可可系统) #177 SMP ' + new Date().toString() + ' x86_64 GNU/Bunny' : 'bcos'); },
+            uname: (args) => { _bcosPrint(args[0] === '-a' ? 'bcos ' + _BCOS_VER + ' (Bunny OS) #177 SMP ' + new Date().toString() + ' x86_64 GNU/Bunny' : 'bcos'); },
             date: () => _bcosPrint(new Date().toString()),
             echo: (args) => _bcosPrint(_bcosEscape(args.join(' '))),
             history: () => { _bcos.history.forEach((c, i) => _bcosPrint('  ' + String(i+1).padStart(3) + '  ' + _bcosEscape(c))); },
@@ -9998,7 +10051,7 @@
             bcos: (args) => {
                 const sub = args[0]?.toLowerCase();
                 if (!sub) {
-                    _bcosPrint('<span class="bcos-info">bcos — Bunny可可系统 Package Manager</span>');
+                    _bcosPrint('<span class="bcos-info">bcos — Bunny OS Package Manager</span>');
                     _bcosPrint('  <span class="bcos-success">bcos update</span>     Refresh browser storage (clear cache & reload)');
                     _bcosPrint('  <span class="bcos-success">bcos upgrade</span>    View all installed module packages');
                     _bcosPrint('  <span class="bcos-success">bcos version</span>    Show bcos version info');
@@ -10038,18 +10091,18 @@
                 }
                 if (sub === 'upgrade' || sub === 'packages' || sub === 'modules') {
                     const modules = [
-                        { name: 'bcos-core',        ver: '1.0.0', desc: 'Core system kernel & shell' },
-                        { name: 'bcos-terminal',     ver: '1.0.0', desc: 'Terminal emulator with fuzzy matching' },
-                        { name: 'bcos-desktop',      ver: '1.0.0', desc: 'Desktop environment & window manager' },
+                        { name: 'bcos-core',        ver: _BCOS_VER, desc: 'Core system kernel & shell' },
+                        { name: 'bcos-terminal',     ver: _BCOS_VER, desc: 'Terminal emulator with fuzzy matching' },
+                        { name: 'bcos-desktop',      ver: _BCOS_VER, desc: 'Desktop environment & window manager' },
                         { name: 'bcos-repos',        ver: '177.0', desc: 'GitHub repository archive (177 repos)' },
                         { name: 'bcos-theme',        ver: '1.2.0', desc: '12 theme-adaptive desktop wallpapers & icons' },
-                        { name: 'bcos-files',        ver: '1.0.0', desc: 'File manager for repository browsing' },
-                        { name: 'bcos-monitor',      ver: '1.0.0', desc: 'System performance monitor' },
+                        { name: 'bcos-files',        ver: _BCOS_VER, desc: 'File manager for repository browsing' },
+                        { name: 'bcos-monitor',      ver: _BCOS_VER, desc: 'System performance monitor' },
                         { name: 'bcos-commands',     ver: '1.1.0', desc: 'System control commands (theme/font/save/etc)' },
-                        { name: 'bcos-defaultview',  ver: '1.0.0', desc: 'Default page on visit configuration' },
-                        { name: 'bcos-help',         ver: '1.0.0', desc: 'Help system & manual pages' },
-                        { name: 'bcos-boot',         ver: '1.0.0', desc: 'Boot sequence & logo renderer' },
-                        { name: 'bcos-windowmgr',    ver: '1.0.0', desc: 'Window drag, focus, z-index management' },
+                        { name: 'bcos-defaultview',  ver: _BCOS_VER, desc: 'Default page on visit configuration' },
+                        { name: 'bcos-help',         ver: _BCOS_VER, desc: 'Help system & manual pages' },
+                        { name: 'bcos-boot',         ver: _BCOS_VER, desc: 'Boot sequence & logo renderer' },
+                        { name: 'bcos-windowmgr',    ver: _BCOS_VER, desc: 'Window drag, focus, z-index management' },
                     ];
                     _bcosPrint('<span class="bcos-info">===== bcos Installed Modules (' + modules.length + ') =====</span>');
                     modules.forEach(m => {
@@ -10059,7 +10112,7 @@
                     return;
                 }
                 if (sub === 'version' || sub === 'ver' || sub === '-v') {
-                    _bcosPrint('bcos 1.0.0 (Bunny可可系统)');
+                    _bcosPrint('bcos ' + _BCOS_VER + ' (Bunny OS)');
                     _bcosPrint('Kernel: 177.0-repo | Shell: bsh 1.0.0');
                     _bcosPrint('Theme engine: v1.2.0 (12 themes)');
                     _bcosPrint('Build: ' + CONFIG.VERSION);
@@ -10069,7 +10122,91 @@
                 _bcosPrint('<span class="bcos-dim">Usage: bcos &lt;update|upgrade|version&gt;</span>');
             },
             sudo: () => _bcosPrint('<span class="bcos-warn">bcos: bunny is not in the sudoers file. This incident will be reported.</span>'),
-            rm: (args) => { _bcosPrint(args[0] === '-rf' && (args[1] === '/' || args[1] === '/*') ? '<span class="bcos-warn">bcos: Nice try! The bunny prevented destruction.</span>' : '<span class="bcos-warn">bcos: rm: operation not permitted. The bunny protects all files.</span>'); },
+            rm: (args) => {
+                if (args[0] === '-rf' && (args[1] === '/' || args[1] === '/*')) {
+                    _bcosPrint('<span class="bcos-warn">bcos: Nice try! The bunny prevented destruction.</span>');
+                    return;
+                }
+                const raw = args.filter(a => !a.startsWith('-')).join(' ');
+                if (!raw) {
+                    _bcosPrint('<span class="bcos-error">rm: missing operand</span>');
+                    _bcosPrint('<span class="bcos-dim">Usage: rm &lt;name&gt;</span>');
+                    return;
+                }
+                const name = raw.replace(/^\.\//, '').replace(/\/$/, '');
+                const parts = name.split('/');
+                if (parts.length === 1) {
+                    if (_bcosFS[name]) {
+                        if (name === 'edit.lock' || name === 'edit_lock') {
+                            _bcosEggState.systemEditLock = false;
+                            _bcosEggState.eggTriggered = false;
+                        }
+                        delete _bcosFS[name];
+                        _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(name) + '</span>');
+                    } else {
+                        _bcosPrint('<span class="bcos-error">rm: ' + _bcosEscape(name) + ': No such file or directory</span>');
+                    }
+                } else {
+                    const fileName = parts.pop();
+                    let dir = _bcosFS;
+                    for (const p of parts) {
+                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
+                        dir = dir[p].children;
+                    }
+                    if (dir && dir[fileName]) {
+                        if (fileName === 'edit.lock' || fileName === 'edit_lock') {
+                            _bcosEggState.systemEditLock = false;
+                            _bcosEggState.eggTriggered = false;
+                        }
+                        delete dir[fileName];
+                        _bcosPrint('<span class="bcos-success">✓ Removed: ' + _bcosEscape(name) + '</span>');
+                    } else {
+                        _bcosPrint('<span class="bcos-error">rm: ' + _bcosEscape(name) + ': No such file or directory</span>');
+                    }
+                }
+            },
+            mkdir: (args) => {
+                const raw = args.filter(a => !a.startsWith('-')).join(' ');
+                if (!raw) {
+                    _bcosPrint('<span class="bcos-error">mkdir: missing operand</span>');
+                    _bcosPrint('<span class="bcos-dim">Usage: mkdir &lt;name&gt;</span>');
+                    return;
+                }
+                const name = raw.replace(/^\.\//, '').replace(/\/$/, '');
+                const parts = name.split('/');
+                if (parts.length === 1) {
+                    if (_bcosFS[name]) {
+                        _bcosPrint('<span class="bcos-error">mkdir: ' + _bcosEscape(name) + ': File exists</span>');
+                        return;
+                    }
+                    _bcosFS[name] = { type: 'dir', children: {} };
+                    if (name === 'edit.lock' || name === 'edit_lock') {
+                        _bcosEggState.userCreatedEditLock = true;
+                    }
+                    _bcosPrint('<span class="bcos-success">✓ Created directory: ' + _bcosEscape(name) + '</span>');
+                } else {
+                    const dirName = parts.pop();
+                    let dir = _bcosFS;
+                    for (const p of parts) {
+                        if (!dir[p] || dir[p].type !== 'dir') { dir = null; break; }
+                        dir = dir[p].children;
+                    }
+                    if (!dir) {
+                        _bcosPrint('<span class="bcos-error">mkdir: cannot create directory \'' + _bcosEscape(name) + '\': No such file or directory</span>');
+                        return;
+                    }
+                    if (dir[dirName]) {
+                        _bcosPrint('<span class="bcos-error">mkdir: ' + _bcosEscape(name) + ': File exists</span>');
+                        return;
+                    }
+                    dir[dirName] = { type: 'dir', children: {} };
+                    if (dirName === 'edit.lock' || dirName === 'edit_lock') {
+                        _bcosEggState.userCreatedEditLock = true;
+                    }
+                    _bcosPrint('<span class="bcos-success">✓ Created directory: ' + _bcosEscape(name) + '</span>');
+                }
+            },
+            mk: (args) => _bcosGetCommands().mkdir(args),
             vim: () => _bcosPrint('<span class="bcos-dim">bcos: vim is not installed. Try \'echo\' instead.</span>'),
             nano: () => _bcosPrint('<span class="bcos-dim">bcos: nano is not installed. Try \'echo\' instead.</span>'),
             apt: (args) => _bcosPrint(args[0] === 'install' || args[0] === 'update' ? '<span class="bcos-dim">bcos: All 177 packages are already installed!</span>' : '<span class="bcos-dim">bcos: apt 1.0.0 | Usage: apt [install|update|search]</span>'),
@@ -10177,7 +10314,7 @@
         if (!out) { _bcosBooting = false; return; }
         const screen = document.getElementById('bcos-screen');
         const msgs = [
-            ['[    0.000000] Booting bcos (Bunny可可系统) 1.0.0...', 200],
+            ['[    0.000000] Booting bcos (Bunny OS) ' + _BCOS_VER + '...', 200],
             ['[    0.001234] Initializing bunny kernel...', 150],
             ['[    0.002456] Loading GitHub archive module...', 150],
             ['[    0.003789] <span class="bcos-boot-ok">[ OK ]</span> Mounted /repos filesystem (177 entries)', 200],
@@ -10196,7 +10333,7 @@
             await new Promise(r => setTimeout(r, delay));
         }
         await new Promise(r => setTimeout(r, 300));
-        out.innerHTML = '<pre class="bcos-logo"> ____  ____    _    ____  \n| __ )| __ )  / \\  |  _ \\ \n|  _ \\|  _ \\/ _ \\ | |_) |\n| |_) | |_) / ___ \\|  _ < \n|____/|____/_/   \\_\\_| \\_\\</pre><div class="bcos-welcome">Welcome to bcos 1.0.0 (Bunny可可系统)</div><div class="bcos-welcome">GitHub Repository Archive — 177 repositories loaded</div><div class="bcos-last-login">Last login: ' + new Date().toLocaleString('en-US') + '</div><div class="bcos-dim">Type \'help\' for commands, \'desktop\' for GUI mode.</div><br>';
+        out.innerHTML = '<pre class="bcos-logo">' + _BCOS_BUNNY_ART + '</pre><div class="bcos-welcome">Welcome to bcos ' + _BCOS_VER + ' (Bunny OS)</div><div class="bcos-welcome">GitHub Repository Archive — 177 repositories loaded</div><div class="bcos-last-login">Last login: ' + new Date().toLocaleString('en-US') + '</div><div class="bcos-dim">Type \'help\' for commands, \'desktop\' for GUI mode.</div><br>';
         if (screen) screen.scrollTop = screen.scrollHeight;
         const inputLine = document.getElementById('bcos-input-line');
         const input = document.getElementById('bcos-input');
@@ -10243,24 +10380,25 @@
         const ov = document.getElementById('bcos-overlay');
         if (ov) { ov.classList.remove('active'); ov.innerHTML = ''; }
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
+        if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
         _bcosActiveOutput = null;
         _bcos.wins = {}; _bcos.activeWin = null; _bcos.mode = 'closed';
         _bcosUnbindEsc();
     }
 
     const _bcosThemeDesktop = {
-        bunny:    { wallpaper: 'linear-gradient(135deg,#FFF0F5 0%,#FFB5BA 50%,#FF6B9D 100%)', grid: 'rgba(255,107,157,.06)', accent: '#FF6B9D', icons: { terminal: '🐰', files: '🌸', monitor: '💖', about: '🎀', github: '🌐' }, taskbarBg: '#FF6B9D', label: '棉花糖兔' },
-        forest:   { wallpaper: 'linear-gradient(135deg,#F0F7EE 0%,#A5D6A7 50%,#4CAF50 100%)', grid: 'rgba(76,175,80,.06)', accent: '#4CAF50', icons: { terminal: '🌿', files: '🍃', monitor: '🌳', about: '🦌', github: '🌐' }, taskbarBg: '#2E7D32', label: '森林兔窝' },
-        ocean:    { wallpaper: 'linear-gradient(135deg,#E8F4FD 0%,#7DD3FC 50%,#0EA5E9 100%)', grid: 'rgba(14,165,233,.06)', accent: '#0EA5E9', icons: { terminal: '🐚', files: '🌊', monitor: '🐬', about: '🐟', github: '🌐' }, taskbarBg: '#0284C7', label: '海洋蓝' },
-        starlight:{ wallpaper: 'linear-gradient(135deg,#1a1a2e 0%,#16213E 50%,#0F3460 100%)', grid: 'rgba(167,139,250,.08)', accent: '#a78bfa', icons: { terminal: '⭐', files: '🌌', monitor: '🔮', about: '🌙', github: '🌐' }, taskbarBg: '#0F0F23', label: '星空紫' },
-        cyber:    { wallpaper: 'linear-gradient(135deg,#0c0a1d 0%,#1a0B2E 50%,#0c0a1d 100%)', grid: 'rgba(251,191,36,.06)', accent: '#fbbf24', icons: { terminal: '⚡', files: '💾', monitor: '🔥', about: '🤖', github: '🌐' }, taskbarBg: '#0c0a1d', label: '赛博朋克' },
-        sunset:   { wallpaper: 'linear-gradient(135deg,#FFF3E0 0%,#FFB74D 50%,#FF6B35 100%)', grid: 'rgba(255,107,53,.06)', accent: '#FF6B35', icons: { terminal: '🌅', files: '🌵', monitor: '🔥', about: '🏜️', github: '🌐' }, taskbarBg: '#E55100', label: '日落橙' },
-        mint:     { wallpaper: 'linear-gradient(135deg,#E8F5E9 0%,#80CBC4 50%,#26A69A 100%)', grid: 'rgba(38,166,154,.06)', accent: '#26A69A', icons: { terminal: '🍵', files: '🌱', monitor: '🫧', about: '🍃', github: '🌐' }, taskbarBg: '#00695C', label: '薄荷绿' },
-        rose:     { wallpaper: 'linear-gradient(135deg,#FCE4EC 0%,#F48FB1 50%,#E91E63 100%)', grid: 'rgba(233,30,99,.06)', accent: '#E91E63', icons: { terminal: '🌹', files: '💝', monitor: '💎', about: '🦩', github: '🌐' }, taskbarBg: '#AD1457', label: '玫瑰金' },
-        aurora:   { wallpaper: 'linear-gradient(135deg,#0B1026 0%,#1a2a4a 50%,#0B1026 100%)', grid: 'rgba(6,255,165,.08)', accent: '#06FFA5', icons: { terminal: '🌌', files: '✨', monitor: '🛸', about: '🦊', github: '🌐' }, taskbarBg: '#0B1026', label: '极光绿' },
-        galaxy:   { wallpaper: 'linear-gradient(135deg,#0F0C29 0%,#302B63 50%,#24243E 100%)', grid: 'rgba(192,132,252,.08)', accent: '#C084FC', icons: { terminal: '🌠', files: '🪐', monitor: '🔭', about: '🌑', github: '🌐' }, taskbarBg: '#0F0C29', label: '银河紫' },
-        candy:    { wallpaper: 'linear-gradient(135deg,#FFF8E7 0%,#FFD740 50%,#FF4081 100%)', grid: 'rgba(255,64,129,.06)', accent: '#FF4081', icons: { terminal: '🍬', files: '🍭', monitor: '🧁', about: '🍰', github: '🌐' }, taskbarBg: '#C2185B', label: '糖果粉' },
-        matrix:   { wallpaper: 'linear-gradient(135deg,#000000 0%,#001500 50%,#000000 100%)', grid: 'rgba(0,255,65,.08)', accent: '#00FF41', icons: { terminal: '💻', files: '📡', monitor: '📟', about: '🟢', github: '🌐' }, taskbarBg: '#000000', label: '矩阵绿' },
+        bunny:    { wallpaper: 'linear-gradient(135deg,#FFF0F5 0%,#FFB5BA 50%,#FF6B9D 100%)', grid: 'rgba(255,107,157,.06)', accent: '#FF6B9D', icons: { terminal: '🐰', files: '🌸', monitor: '💖', about: '🎀', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#FF6B9D', label: '棉花糖兔' },
+        forest:   { wallpaper: 'linear-gradient(135deg,#F0F7EE 0%,#A5D6A7 50%,#4CAF50 100%)', grid: 'rgba(76,175,80,.06)', accent: '#4CAF50', icons: { terminal: '🌿', files: '🍃', monitor: '🌳', about: '🦌', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#2E7D32', label: '森林兔窝' },
+        ocean:    { wallpaper: 'linear-gradient(135deg,#E8F4FD 0%,#7DD3FC 50%,#0EA5E9 100%)', grid: 'rgba(14,165,233,.06)', accent: '#0EA5E9', icons: { terminal: '🐚', files: '🌊', monitor: '🐬', about: '🐟', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#0284C7', label: '海洋蓝' },
+        starlight:{ wallpaper: 'linear-gradient(135deg,#1a1a2e 0%,#16213E 50%,#0F3460 100%)', grid: 'rgba(167,139,250,.08)', accent: '#a78bfa', icons: { terminal: '⭐', files: '🌌', monitor: '🔮', about: '🌙', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#0F0F23', label: '星空紫' },
+        cyber:    { wallpaper: 'linear-gradient(135deg,#0c0a1d 0%,#1a0B2E 50%,#0c0a1d 100%)', grid: 'rgba(251,191,36,.06)', accent: '#fbbf24', icons: { terminal: '⚡', files: '💾', monitor: '🔥', about: '🤖', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#0c0a1d', label: '赛博朋克' },
+        sunset:   { wallpaper: 'linear-gradient(135deg,#FFF3E0 0%,#FFB74D 50%,#FF6B35 100%)', grid: 'rgba(255,107,53,.06)', accent: '#FF6B35', icons: { terminal: '🌅', files: '🌵', monitor: '🔥', about: '🏜️', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#E55100', label: '日落橙' },
+        mint:     { wallpaper: 'linear-gradient(135deg,#E8F5E9 0%,#80CBC4 50%,#26A69A 100%)', grid: 'rgba(38,166,154,.06)', accent: '#26A69A', icons: { terminal: '🍵', files: '🌱', monitor: '🫧', about: '🍃', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#00695C', label: '薄荷绿' },
+        rose:     { wallpaper: 'linear-gradient(135deg,#FCE4EC 0%,#F48FB1 50%,#E91E63 100%)', grid: 'rgba(233,30,99,.06)', accent: '#E91E63', icons: { terminal: '🌹', files: '💝', monitor: '💎', about: '🦩', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#AD1457', label: '玫瑰金' },
+        aurora:   { wallpaper: 'linear-gradient(135deg,#0B1026 0%,#1a2a4a 50%,#0B1026 100%)', grid: 'rgba(6,255,165,.08)', accent: '#06FFA5', icons: { terminal: '🌌', files: '✨', monitor: '🛸', about: '🦊', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#0B1026', label: '极光绿' },
+        galaxy:   { wallpaper: 'linear-gradient(135deg,#0F0C29 0%,#302B63 50%,#24243E 100%)', grid: 'rgba(192,132,252,.08)', accent: '#C084FC', icons: { terminal: '🌠', files: '🪐', monitor: '🔭', about: '🌑', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#0F0C29', label: '银河紫' },
+        candy:    { wallpaper: 'linear-gradient(135deg,#FFF8E7 0%,#FFD740 50%,#FF4081 100%)', grid: 'rgba(255,64,129,.06)', accent: '#FF4081', icons: { terminal: '🍬', files: '🍭', monitor: '🧁', about: '🍰', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#C2185B', label: '糖果粉' },
+        matrix:   { wallpaper: 'linear-gradient(135deg,#000000 0%,#001500 50%,#000000 100%)', grid: 'rgba(0,255,65,.08)', accent: '#00FF41', icons: { terminal: '💻', files: '📡', monitor: '📟', about: '🟢', github: '🌐', browser: '🌐', me: '📁', editor: '📝' }, taskbarBg: '#000000', label: '矩阵绿' },
     };
 
     function _bcosGetDesktopTheme() {
@@ -10273,15 +10411,19 @@
         _bcos.mode = 'desktop';
         const ov = document.getElementById('bcos-overlay');
         const dt = _bcosGetDesktopTheme();
+        const meX = 60 + Math.random() * 80;
+        const meY = 40 + Math.random() * 60;
         ov.innerHTML = `<div id="bcos-desktop">
             <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">${dt.icons.files}</div><div class="bcos-desktop-icon-label">Files</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">${dt.icons.monitor}</div><div class="bcos-desktop-icon-label">Monitor</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('browser')"><div class="bcos-desktop-icon-emoji">${dt.icons.browser}</div><div class="bcos-desktop-icon-label">Browser</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">${dt.icons.about}</div><div class="bcos-desktop-icon-label">About</div></div>
                     <div class="bcos-desktop-icon" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')"><div class="bcos-desktop-icon-emoji">${dt.icons.github}</div><div class="bcos-desktop-icon-label">GitHub</div></div>
                 </div>
+                <div class="bcos-desktop-icon" style="position:absolute;right:${meX}px;top:${meY}px;" onclick="_bcosOpenApp('me')"><div class="bcos-desktop-icon-emoji">${dt.icons.me}</div><div class="bcos-desktop-icon-label">me</div></div>
                 <div id="bcos-windows"></div>
             </div>
             <div class="bcos-taskbar" style="background:${dt.taskbarBg};">
@@ -10293,6 +10435,7 @@
                 <div class="bcos-start-menu-item" onclick="_bcosOpenApp('terminal');_bcosToggleStartMenu()">${dt.icons.terminal} Terminal</div>
                 <div class="bcos-start-menu-item" onclick="_bcosOpenApp('files');_bcosToggleStartMenu()">${dt.icons.files} File Manager</div>
                 <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monitor');_bcosToggleStartMenu()">${dt.icons.monitor} System Monitor</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('browser');_bcosToggleStartMenu()">${dt.icons.browser} Browser</div>
                 <div class="bcos-start-menu-item" onclick="_bcosOpenApp('about');_bcosToggleStartMenu()">${dt.icons.about} About bcos</div>
                 <div class="bcos-start-menu-separator"></div>
                 <div class="bcos-start-menu-item" onclick="_bcosBackToTerminal();_bcosToggleStartMenu()">⌨️ Back to Terminal</div>
@@ -10303,6 +10446,7 @@
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
         document.getElementById('bcos-desktop-bg').addEventListener('click', () => { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show'); });
         _bcosBindEsc();
+        _bcosShowOOBE(ov);
         setTimeout(() => _bcosOpenApp('terminal'), 300);
     }
 
@@ -10310,6 +10454,7 @@
     function _bcosToggleStartMenu() { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.toggle('show'); }
     function _bcosBackToTerminal() {
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
+        if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
         _bcos.wins = {}; _bcos.activeWin = null; _bcos.mode = 'terminal';
         _bcosActiveOutput = null; // Clear stale desktop terminal reference
         const ov = document.getElementById('bcos-overlay');
@@ -10320,7 +10465,7 @@
         ov.innerHTML = '<div id="bcos-screen"><div id="bcos-output"></div><div id="bcos-input-line" style="display:flex;"><span class="bcos-prompt-user">bcos</span><span class="bcos-prompt-symbol">@</span><span class="bcos-prompt-host">bunny</span><span class="bcos-prompt-symbol">:</span><span class="bcos-prompt-path">~</span><span class="bcos-prompt-symbol">$&nbsp;</span><input id="bcos-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div></div>';
         const out = document.getElementById('bcos-output');
         if (out) {
-            out.innerHTML = '<pre class="bcos-logo"> ____  ____    _    ____  \n| __ )| __ )  / \\  |  _ \\ \n|  _ \\|  _ \\/ _ \\ | |_) |\n| |_) | |_) / ___ \\|  _ < \n|____/|____/_/   \\_\\_| \\_\\</pre><div class="bcos-welcome">Welcome back to bcos 1.0.0 (Bunny可可系统)</div><div class="bcos-welcome">GitHub Repository Archive — 177 repositories loaded</div><div class="bcos-dim">Type \'help\' for commands, \'desktop\' for GUI mode.</div><br>';
+            out.innerHTML = '<pre class="bcos-logo">' + _BCOS_BUNNY_ART + '</pre><div class="bcos-welcome">Welcome back to bcos ' + _BCOS_VER + ' (Bunny OS)</div><div class="bcos-welcome">GitHub Repository Archive — 177 repositories loaded</div><div class="bcos-dim">Type \'help\' for commands, \'desktop\' for GUI mode.</div><br>';
         }
         const input = document.getElementById('bcos-input');
         const screen = document.getElementById('bcos-screen');
@@ -10339,7 +10484,7 @@
 
     function _bcosOpenApp(app) {
         if (_bcos.wins[app]) { _bcosFocusWin(app); return; }
-        const apps = { terminal: { t: 'Terminal — bcos@bunny', w: 480, h: 320 }, files: { t: 'File Manager', w: 480, h: 380 }, monitor: { t: 'System Monitor', w: 420, h: 340 }, about: { t: 'About bcos', w: 380, h: 340 } };
+        const apps = { terminal: { t: 'Terminal — bcos@bunny', w: 480, h: 320 }, files: { t: 'File Manager', w: 480, h: 380 }, monitor: { t: 'System Monitor', w: 420, h: 340 }, about: { t: 'About bcos', w: 380, h: 340 }, browser: { t: 'Browser — bcos', w: 520, h: 380 }, me: { t: 'me — File Explorer', w: 360, h: 300 }, texteditor: { t: 'Text Editor — bcos', w: 520, h: 400 } };
         const cfg = apps[app]; if (!cfg) return;
         const winId = 'bcos-win-' + app;
         const container = document.getElementById('bcos-windows');
@@ -10359,6 +10504,9 @@
             else if (app === 'files') _bcosRenderFileManager(content);
             else if (app === 'monitor') _bcosRenderMonitor(content);
             else if (app === 'about') _bcosRenderAbout(content);
+            else if (app === 'browser') _bcosRenderBrowser(content);
+            else if (app === 'me') _bcosRenderMeFolder(content);
+            else if (app === 'texteditor') _bcosRenderTextEditor(content);
         } catch(err) {
             if (content) content.innerHTML = '<div style="color:#f44;padding:.5rem;font-size:12px;">Error loading app: ' + _bcosEscape(err.message) + '</div>';
             console.error('bcos app render error:', err);
@@ -10367,9 +10515,9 @@
     }
 
     function _bcosFocusWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.style.zIndex = ++_bcos.winZ; _bcos.activeWin = app; _bcosUpdateTaskbar(); }
-    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; if (app === 'terminal') _bcosActiveOutput = null; _bcosUpdateTaskbar(); }
+    function _bcosCloseWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.remove(); delete _bcos.wins[app]; if (_bcos.activeWin === app) _bcos.activeWin = null; if (app === 'terminal') _bcosActiveOutput = null; if (app === 'monitor' && _bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } _bcosUpdateTaskbar(); }
     function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
-    function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
+    function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About', browser: 'Browser', me: 'me', texteditor: 'Editor' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
     function _bcosDragStart(winId, e) {
         // Don't start drag if clicking on window controls (close button)
         if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
@@ -10402,7 +10550,7 @@
         content.style.padding = '0';
         content.innerHTML = `<div class="bcos-mini-terminal" id="bcos-mt-out" style="height:calc(100% - 32px);"></div><div style="display:flex;align-items:center;gap:2px;padding:.3rem;background:#0a0a0a;border-top:1px solid #222;"><span style="color:#00ff41;font-weight:bold;font-size:12px;">bcos@bunny:~$</span><input class="bcos-mini-terminal-input" id="bcos-mt-in" type="text" autocomplete="off" /></div>`;
         const out = document.getElementById('bcos-mt-out');
-        out.innerHTML = '<div style="color:#00ff41;">bcos 1.0.0 Desktop Terminal</div><div style="color:#666;">Type \'help\' for commands.</div><br>';
+        out.innerHTML = '<div style="color:#00ff41;">bcos ' + _BCOS_VER + ' Desktop Terminal</div><div style="color:#666;">Type \'help\' for commands.</div><br>';
         const input = document.getElementById('bcos-mt-in'); input.focus();
         let mh = [], mi = -1;
         input.addEventListener('keydown', (e) => {
@@ -10461,6 +10609,17 @@
     }
 
     function _bcosOpenCatWindow(repo) {
+        // Easter egg: browse counter
+        const now = Date.now();
+        if (now - _bcosEggState.lastBrowseTime > 2340) {
+            _bcosEggState.browseCount++;
+        }
+        _bcosEggState.lastBrowseTime = now;
+        if (_bcosEggState.browseCount >= 7 && !_bcosEggState.eggTriggered) {
+            _bcosEggState.eggTriggered = true;
+            _bcosEggState.systemEditLock = true;
+            _bcosFS.me.children.edit_lock = { type: 'file', content: '0x' + Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join(''), systemCreated: true };
+        }
         const winId = 'bcos-win-cat-' + repo[0].replace(/[^a-zA-Z0-9]/g,'');
         if (document.getElementById(winId)) { const w = document.getElementById(winId); w.style.zIndex = ++_bcos.winZ; return; }
         const lc = _bcosLangColors[repo[2]] || '#e0e0e0';
@@ -10487,29 +10646,43 @@
     }
 
     function _bcosRenderMonitor(content) {
+        content.style.padding = '.5rem';
+        content.innerHTML = '<div id="bcos-monitor-root" style="font-size:12px;color:#e0e0e0;"></div>';
+        const root = document.getElementById('bcos-monitor-root');
         const t = _bcosRepos.length, o = _bcosRepos.filter(r=>!r[7]).length, f = t-o;
         const lc = new Set(_bcosRepos.map(r=>r[2])).size;
         const ts = _bcosRepos.reduce((s,r)=>s+r[3],0), tf = _bcosRepos.reduce((s,r)=>s+r[4],0);
         const lm = {}; _bcosRepos.forEach(r=>{lm[r[2]]=(lm[r[2]]||0)+1;});
         const topLangs = Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,c])=>{const col=_bcosLangColors[l]||'#e0e0e0';return `<div style="color:${col};font-size:11px;">● ${l}: ${c}</div>`;}).join('');
-        // Real memory info if available (Chrome/Edge)
-        let memHtml = '';
-        if (performance.memory) {
-            const used = Math.round(performance.memory.usedJSHeapSize / 1048576);
-            const total = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
-            const pct = Math.min(100, Math.round(used / total * 100));
-            memHtml = `<div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">JS Heap: ${used} / ${total} MB (${pct}%)</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${pct>80?'#f44':'#00aaff'};height:8px;width:${pct}%;border-radius:4px;"></div></div></div>`;
-        }
-        const domNodes = document.querySelectorAll('*').length;
-        content.style.padding = '.5rem';
-        content.innerHTML = `<div style="font-size:12px;color:#e0e0e0;">
-            <div style="text-align:center;margin-bottom:.5rem;color:#00ff41;font-weight:bold;">📊 bcos System Monitor</div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">CPU: Bunny Core (4) @ 2.8GHz</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#00ff41;height:8px;width:23%;border-radius:4px;"></div></div></div>
-            ${memHtml}
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Memory: ${t} repos / ${lc} langs</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#00aaff;height:8px;width:67%;border-radius:4px;"></div></div></div>
+        function _bcosMonitorUpdate() {
+            if (!root || !root.isConnected) { if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } return; }
+            const cpuCores = navigator.hardwareConcurrency || 4;
+            const devMem = navigator.deviceMemory || (4 + Math.floor(Math.random()*8));
+            const cpuLoad = Math.round(15 + Math.random() * 35);
+            let memUsed = 0, memTotal = 0, memPct = 0;
+            if (performance.memory) {
+                memUsed = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                memTotal = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
+                memPct = Math.min(100, Math.round(memUsed / memTotal * 100));
+            } else {
+                memUsed = Math.round(50 + Math.random() * 200);
+                memTotal = Math.round(devMem * 1024 * 0.6);
+                memPct = Math.min(100, Math.round(memUsed / memTotal * 100));
+            }
+            const domNodes = document.querySelectorAll('*').length;
+            let netType = 'GitHub Archive', netEff = '—';
+            if (navigator.connection) {
+                netType = navigator.connection.effectiveType || netType;
+                netEff = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : netEff;
+            }
+            const gpuShort = _gpuInfo.renderer.length > 28 ? _gpuInfo.renderer.substring(0, 28) + '...' : _gpuInfo.renderer;
+            root.innerHTML = `<div style="text-align:center;margin-bottom:.5rem;color:#00ff41;font-weight:bold;">📊 bcos System Monitor</div>
+            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">CPU: ${cpuCores} cores @ ${(2.0+Math.random()*1.5).toFixed(1)}GHz (${cpuLoad}%)</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${cpuLoad>80?'#f44':'#00ff41'};height:8px;width:${cpuLoad}%;border-radius:4px;"></div></div></div>
+            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Device Memory: ${devMem} GB | JS Heap: ${memUsed} / ${memTotal} MB (${memPct}%)</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${memPct>80?'#f44':'#00aaff'};height:8px;width:${memPct}%;border-radius:4px;"></div></div></div>
+            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Repo Memory: ${t} repos / ${lc} langs</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#00aaff;height:8px;width:67%;border-radius:4px;"></div></div></div>
             <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">DOM Nodes: ${domNodes}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#ffaa00;height:8px;width:${Math.min(100, Math.round(domNodes/30))}%;border-radius:4px;"></div></div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">GPU: ${_bcosEscape(_gpuInfo.renderer.length > 28 ? _gpuInfo.renderer.substring(0, 28) + '...' : _gpuInfo.renderer)}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};height:8px;width:${_gpuInfo.gpuAccelerated ? 80 : 20}%;border-radius:4px;"></div></div><div style="color:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};font-size:10px;margin-top:.2rem;">● ${_gpuInfo.gpuAccelerated ? 'GPU Accelerated' : 'No GPU accel'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div></div>
-            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Network: GitHub Archive</div><div style="color:#00ff41;font-size:10px;margin-top:.2rem;">● Connected</div></div>
+            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">GPU: ${_bcosEscape(gpuShort)}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};height:8px;width:${_gpuInfo.gpuAccelerated ? 80 : 20}%;border-radius:4px;"></div></div><div style="color:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};font-size:10px;margin-top:.2rem;">● ${_gpuInfo.gpuAccelerated ? 'GPU Accelerated' : 'No GPU accel'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div></div>
+            <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Network: ${netType} ${netEff!=='—'?'| '+netEff:''}</div><div style="color:#00ff41;font-size:10px;margin-top:.2rem;">● Connected</div></div>
             <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
                 <div style="color:#00ff41;font-size:11px;">Repository Stats:</div>
                 <div style="color:#e0e0e0;font-size:11px;">Total: ${t} | Original: ${o} | Forks: ${f}</div>
@@ -10519,25 +10692,224 @@
                 <div style="color:#00ff41;font-size:11px;">Top Languages:</div>
                 ${topLangs}
             </div>
-        </div>`;
+            <div style="color:#666;font-size:9px;margin-top:.3rem;text-align:center;">Updates every 2s</div>`;
+        }
+        _bcosMonitorUpdate();
+        if (_bcosMonitorTimer) clearInterval(_bcosMonitorTimer);
+        _bcosMonitorTimer = setInterval(_bcosMonitorUpdate, 2000);
     }
 
     function _bcosRenderAbout(content) {
         content.style.padding = '.6rem';
         content.innerHTML = `<div style="font-size:12px;color:#e0e0e0;text-align:center;">
-            <pre style="color:#00ff41;font-size:10px;line-height:1.2;"> ____  ____    _    ____  
-| __ )| __ )  / \\  |  _ \\ 
-|  _ \\|  _ \\/ _ \\ | |_) |
-| |_) | |_) / ___ \\|  _ < 
-|____/|____/_/   \\_\\_| \\_\\</pre>
-            <div style="margin-top:.5rem;color:#00ff41;font-weight:bold;">bcos 1.0.0</div>
-            <div style="color:#888;">Bunny可可系统</div>
+            <pre style="color:#00ff41;font-size:10px;line-height:1.2;">${_BCOS_BUNNY_ART}</pre>
+            <div style="margin-top:.5rem;color:#00ff41;font-weight:bold;">bcos ${_BCOS_VER}</div>
+            <div style="color:#888;">Bunny OS</div>
             <div style="margin-top:.5rem;">GitHub Repository Archive</div>
             <div>${_bcosRepos.length} repositories | ${new Set(_bcosRepos.map(r=>r[2])).size} languages</div>
             <div style="margin-top:.5rem;color:#666;">Powered by Bunny Core</div>
             <div style="color:#666;">© 2014-${new Date().getFullYear()} kissggj123</div>
             <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')">🌐 View on GitHub</button></div>
         </div>`;
+    }
+
+    // === Browser app ===
+    let _bcosBrowserHTML = null;
+    function _bcosGetDefaultBrowserContent() {
+        return '<div style="text-align:center;padding:2rem;font-family:sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213E);color:#fff;min-height:100%;">' +
+            '<h1 style="color:#FF6B9D;font-size:2rem;margin-bottom:.5rem;">🐰 Bunny Kingdom 🐰</h1>' +
+            '<p style="color:#a78bfa;font-size:1.1rem;">Welcome to the Angora Rabbit Kingdom</p>' +
+            '<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:1rem;margin:1rem auto;max-width:300px;">' +
+            '<p style="color:#00ff41;">A magical place where bunnies roam free</p>' +
+            '<p style="color:#ffaa00;">Established: 2014</p>' +
+            '<p style="color:#00aaff;">Population: 177 bunnies</p>' +
+            '</div>' +
+            '<p style="color:#888;font-size:.8rem;">Powered by bcos ' + _BCOS_VER + '</p>' +
+            '</div>';
+    }
+    function _bcosGetDefaultReadme() {
+        return '# Bunny OS\n\nWelcome to **Bunny OS** (bcos) — a Linux-style terminal operating system.\n\n## Features\n\n- Terminal with 30+ commands\n- Desktop environment with window manager\n- 12 theme-adaptive wallpapers\n- GitHub repository archive (177 repos)\n- System monitor with real-time stats\n- File manager and browser\n\n## Version\n\n' + _BCOS_VER + '\n\n## Author\n\nkissggj123\n\n© 2014-' + new Date().getFullYear() + ' kissggj123';
+    }
+    function _bcosGetEggReadme() {
+        return '<!DOCTYPE html>\n<html>\n<head>\n<style>\nbody{font-family:sans-serif;text-align:center;padding:2rem;background:linear-gradient(135deg,#1a1a2e,#0F3460);color:#fff;min-height:100vh;margin:0;}\nh1{color:#FF6B9D;font-size:2.5rem;}\np{color:#a78bfa;font-size:1.2rem;}\n.box{background:rgba(255,255,255,.1);border-radius:12px;padding:1.5rem;margin:1rem auto;max-width:350px;}\n</style>\n</head>\n<body>\n<h1>🐰 Bunny Kingdom 🐰</h1>\n<p>Welcome to the Angora Rabbit Kingdom</p>\n<div class="box">\n<p style="color:#00ff41;">A magical place where bunnies roam free</p>\n<p style="color:#ffaa00;">Established: 2014</p>\n<p style="color:#00aaff;">Population: 177 bunnies</p>\n</div>\n<p style="color:#888;font-size:.8rem;">Powered by bcos ' + _BCOS_VER + '</p>\n</body>\n</html>';
+    }
+    function _bcosInitMeFolder() {
+        if (!_bcosFS.me.children.readme_md && !_bcosFS.me.children['readme.md']) {
+            _bcosFS.me.children['readme.md'] = { type: 'file', content: _bcosGetDefaultReadme() };
+        }
+    }
+    function _bcosRenderBrowser(content) {
+        content.style.padding = '0';
+        if (!_bcosBrowserHTML) _bcosBrowserHTML = _bcosGetDefaultBrowserContent();
+        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .5rem;font-size:11px;color:#888;border-bottom:1px solid #333;display:flex;align-items:center;gap:.3rem;">' +
+            '<span style="color:#00ff41;">🔒</span><span style="flex:1;background:#1a1a1a;padding:.2rem .4rem;border-radius:3px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">bunny://kingdom</span>' +
+            '<button onclick="_bcosBrowserRefresh()" style="background:#1a1a1a;border:1px solid #333;color:#888;cursor:pointer;font-size:11px;padding:.1rem .3rem;border-radius:3px;">⟳</button>' +
+            '</div><div id="bcos-browser-view" style="height:calc(100% - 30px);overflow:auto;"></div>';
+        const view = document.getElementById('bcos-browser-view');
+        if (view) view.innerHTML = _bcosBrowserHTML;
+    }
+    function _bcosBrowserRefresh() {
+        const view = document.getElementById('bcos-browser-view');
+        if (view) view.innerHTML = _bcosBrowserHTML || _bcosGetDefaultBrowserContent();
+    }
+
+    // === Me folder app ===
+    function _bcosRenderMeFolder(content) {
+        _bcosInitMeFolder();
+        content.style.padding = '0';
+        content.innerHTML = '<div style="background:#1a1a1a;padding:.3rem;font-size:12px;color:#888;border-bottom:1px solid #333;">📁 /home/bunny/me</div><div id="bcos-me-list" style="overflow-y:auto;height:calc(100% - 30px);"></div>';
+        const list = document.getElementById('bcos-me-list');
+        const dt = _bcosGetDesktopTheme();
+        const children = Object.keys(_bcosFS.me.children);
+        if (children.length === 0) {
+            list.innerHTML = '<div style="color:#666;padding:1rem;text-align:center;font-size:12px;">(empty folder)</div>';
+        }
+        children.forEach(name => {
+            const child = _bcosFS.me.children[name];
+            const item = document.createElement('div');
+            item.className = 'bcos-file-item';
+            const icon = child.type === 'dir' ? '📁' : '📄';
+            item.innerHTML = '<span>' + icon + '</span><span class="bcos-file-name">' + _bcosEscape(name) + '</span><span class="bcos-file-meta">' + (child.type === 'dir' ? 'dir' : 'file') + '</span>';
+            item.onclick = () => {
+                if (child.type === 'file') {
+                    if (name === 'edit.lock' || name === 'edit_lock') {
+                        _bcosOpenEditLock(name);
+                    } else {
+                        _bcosOpenApp('texteditor');
+                        setTimeout(() => { const ta = document.getElementById('bcos-te-textarea'); if (ta) { ta.value = child.content || ''; const fn = document.getElementById('bcos-te-filename'); if (fn) fn.textContent = name; } }, 200);
+                    }
+                }
+            };
+            list.appendChild(item);
+        });
+        // Add text editor shortcut
+        const teItem = document.createElement('div');
+        teItem.className = 'bcos-file-item';
+        teItem.innerHTML = '<span>' + dt.icons.editor + '</span><span class="bcos-file-name">texteditor</span><span class="bcos-file-meta">app</span>';
+        teItem.onclick = () => _bcosOpenApp('texteditor');
+        list.appendChild(teItem);
+    }
+    function _bcosOpenEditLock(name) {
+        const winId = 'bcos-win-editlock';
+        if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
+        const container = document.getElementById('bcos-windows');
+        const win = document.createElement('div');
+        win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
+        const cx = 100+Math.random()*80, cy = 60+Math.random()*60;
+        win.style.cssText += 'left:0;top:0;width:360px;height:240px;transform:translate3d(' + cx + 'px,' + cy + 'px,0);';
+        win._bcosTX = cx; win._bcosTY = cy;
+        const garbage = Array.from({length: 12}, () => Array.from({length: 32}, () => String.fromCharCode(33 + Math.floor(Math.random() * 94))).join('')).join('\n');
+        win.innerHTML = '<div class="bcos-window-titlebar" onmousedown="_bcosDragStart(\'' + winId + '\',event)" ontouchstart="_bcosTouchDragStart(\'' + winId + '\',event)"><span class="bcos-window-title">🔒 ' + _bcosEscape(name) + '</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseCatWin(\'' + winId + '\')"></button></div></div><div class="bcos-window-content" style="padding:.5rem;font-family:monospace;font-size:10px;color:#f44;overflow:auto;word-break:break-all;">' + _bcosEscape(garbage) + '</div>';
+        container.appendChild(win);
+        win.addEventListener('mousedown', () => { win.style.zIndex = ++_bcos.winZ; });
+    }
+
+    // === Text Editor app ===
+    function _bcosRenderTextEditor(content) {
+        _bcosInitMeFolder();
+        content.style.padding = '0';
+        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .4rem;display:flex;align-items:center;gap:.3rem;border-bottom:1px solid #333;">' +
+            '<button id="bcos-te-open" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📂 Open</button>' +
+            '<button id="bcos-te-save" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">💾 Save</button>' +
+            '<button id="bcos-te-apply" style="background:#1a1a1a;border:1px solid #333;color:#00aaff;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">▶ Apply</button>' +
+            '<span id="bcos-te-filename" style="color:#888;font-size:11px;margin-left:auto;">(untitled)</span>' +
+            '</div>' +
+            '<div style="padding:.3rem;display:flex;gap:.3rem;align-items:center;border-bottom:1px solid #333;background:#1a1a1a;">' +
+            '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
+            '</div>' +
+            '<textarea id="bcos-te-textarea" style="width:100%;height:calc(100% - 70px);background:#0a0a0a;color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;padding:.5rem;box-sizing:border-box;resize:none;" placeholder="Type or open a file..."></textarea>';
+        const ta = document.getElementById('bcos-te-textarea');
+        const fnLabel = document.getElementById('bcos-te-filename');
+        const openName = document.getElementById('bcos-te-openname');
+        document.getElementById('bcos-te-open').onclick = () => {
+            const name = (openName.value || '').trim() || 'readme.md';
+            _bcosInitMeFolder();
+            // Check in me/ directory first
+            let file = _bcosFS.me.children[name];
+            let filePath = 'me/' + name;
+            if (!file) {
+                // Check top-level
+                file = _bcosFS[name];
+                filePath = name;
+            }
+            if (file && file.type === 'file') {
+                // If egg triggered and opening readme.md, show egg content
+                if (_bcosEggState.eggTriggered && (name === 'readme.md' || name === 'readme_md')) {
+                    ta.value = _bcosGetEggReadme();
+                } else {
+                    ta.value = file.content || '';
+                }
+                fnLabel.textContent = filePath;
+                openName.value = name;
+            } else if (name === 'readme.md' || name === 'readme_md') {
+                // Default readme
+                if (_bcosEggState.eggTriggered) {
+                    ta.value = _bcosGetEggReadme();
+                } else {
+                    ta.value = _bcosGetDefaultReadme();
+                }
+                fnLabel.textContent = 'me/' + name;
+                openName.value = name;
+            } else {
+                fnLabel.textContent = name + ' (not found)';
+            }
+        };
+        document.getElementById('bcos-te-save').onclick = () => {
+            const name = (openName.value || '').trim() || 'untitled.txt';
+            _bcosInitMeFolder();
+            if (!_bcosFS.me.children[name]) {
+                _bcosFS.me.children[name] = { type: 'file', content: '' };
+            }
+            _bcosFS.me.children[name].content = ta.value;
+            fnLabel.textContent = 'me/' + name;
+        };
+        document.getElementById('bcos-te-apply').onclick = () => {
+            _bcosBrowserHTML = ta.value;
+            // Try to refresh browser if open
+            _bcosBrowserRefresh();
+            // If browser not open, open it
+            if (!_bcos.wins['browser']) _bcosOpenApp('browser');
+            else _bcosFocusWin('browser');
+        };
+    }
+
+    // === OOBE (Out-of-Box Experience) ===
+    function _bcosShowOOBE(ov) {
+        if (safeGetItem('bcos_oobe_done', '') === '1') return;
+        const dt = _bcosGetDesktopTheme();
+        const steps = [
+            { title: '🐰 Welcome to bcos', body: 'You are now running <b style="color:' + dt.accent + ';">Bunny OS</b> ' + _BCOS_VER + '.<br><br>A Linux-style operating system running entirely in your browser.<br><br>Let\'s take a quick tour!' },
+            { title: '⌨️ Terminal', body: 'The <b style="color:#00ff41;">Terminal</b> is your command center.<br><br>Type <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">help</code> to see all available commands.<br><br>Try <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">ls</code>, <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">neofetch</code>, or <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">cat YumikoToys</code>.' },
+            { title: '📁 Files', body: 'The <b style="color:#00ff41;">File Manager</b> lets you browse 177 GitHub repositories.<br><br>Click any repo to see details, or double-click to open it on GitHub.<br><br>You can also use <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">ls</code> in the terminal.' },
+            { title: '🖥️ Desktop', body: 'Your desktop has apps:<br><br>🐰 Terminal &nbsp; 🌸 Files &nbsp; 💖 Monitor<br>🌐 Browser &nbsp; 🎀 About<br><br>Use the <b style="color:' + dt.accent + ';">🐰 bcos</b> button in the taskbar to open the start menu.' },
+        ];
+        _bcosOOBEStep = 0;
+        const overlay = document.createElement('div');
+        overlay.id = 'bcos-oobe-overlay';
+        overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        function renderStep() {
+            const s = steps[_bcosOOBEStep];
+            const isLast = _bcosOOBEStep === steps.length - 1;
+            overlay.innerHTML = '<div style="background:#1a1a1a;border:1px solid ' + dt.accent + ';border-radius:8px;padding:1.5rem;max-width:340px;text-align:center;color:#e0e0e0;font-family:inherit;">' +
+                '<h2 style="color:' + dt.accent + ';margin:0 0 .8rem;font-size:1.1rem;">' + s.title + '</h2>' +
+                '<div style="font-size:13px;line-height:1.6;margin-bottom:1rem;">' + s.body + '</div>' +
+                '<div style="display:flex;gap:.3rem;justify-content:center;margin-bottom:.5rem;">' +
+                steps.map((_, i) => '<div style="width:8px;height:8px;border-radius:50%;background:' + (i === _bcosOOBEStep ? dt.accent : '#333') + ';"></div>').join('') +
+                '</div>' +
+                '<button id="bcos-oobe-next" style="background:' + dt.accent + ';border:none;color:#fff;padding:.4rem 1.2rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:bold;">' + (isLast ? 'Start using bcos' : 'Next →') + '</button>' +
+                '</div>';
+            document.getElementById('bcos-oobe-next').onclick = () => {
+                _bcosOOBEStep++;
+                if (_bcosOOBEStep >= steps.length) {
+                    safeSetItem('bcos_oobe_done', '1');
+                    overlay.remove();
+                } else {
+                    renderStep();
+                }
+            };
+        }
+        renderStep();
+        ov.appendChild(overlay);
     }
 
     // Event log modal — shows all events triggered during the game
@@ -13691,6 +14063,20 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.1.9336', title:'bcos系统大改版: Angora rabbit art + Browser + OOBE + TextEditor + Easter Egg', items:[
+            '🐰 终端字符画替换为安哥拉兔ASCII art（终端启动/返回/桌面About共用）',
+            '🌐 终端中文文本全部移除改为英文，Bunny可可系统→Bunny OS',
+            '📌 bcos版本号跟随全局CONFIG.VERSION，不再硬编码1.0.0',
+            '👤 设置按钮文本改为"关于作者"',
+            '📁 新增mkdir/mk/rm命令和虚拟文件系统，支持多级路径操作',
+            '🌐 新增浏览器应用：默认显示伪兔可可王国网页，可被TextEditor实时修改',
+            '📊 Monitor增强：使用navigator.hardwareConcurrency/deviceMemory/performance.memory/connection获取真实系统信息，获取不到时动态随机显示',
+            '🖥️ 新增OOBE开机引导：4步功能介绍（Welcome→Terminal→Files→Desktop），localStorage记录不再重复',
+            '📂 桌面右侧随机位置新增me文件夹：含readme.md和texteditor应用',
+            '📝 TextEditor应用：空白启动，支持Open/Save/Apply，可编辑文件并实时应用到浏览器',
+            '🥚 彩蛋系统：Files浏览7+项目（间隔>2.34s）→系统创建edit.lock→TextEditor打开readme显示伪网站源码→修改Apply后浏览器实时显示',
+            '🔒 edit.lock终端创建无效：通过mkdir/mk创建的edit.lock只是普通文件不触发彩蛋，rm可正常删除',
+        ]},
         { ver:'v7.8.1.9335', title:'bcos安全加固 & 性能优化 & 错误处理', items:[
             '🛡️ 修复bcos终端XSS漏洞：cat/ls/recent/popular/tree命令未转义语言名和日期字段，文件管理器窗口未转义URL和语言',
             '🛡️ cat命令Homepage/URL的onclick handler未转义单引号，可能导致HTML注入',
