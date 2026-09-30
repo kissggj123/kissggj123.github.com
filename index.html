@@ -12373,18 +12373,40 @@
         _carCurrentThemeIdx = tIdx !== -1 ? tIdx : 0;
         el.className = _CAR_THEMES[_carCurrentThemeIdx].id;
 
+        const currentWp = _bcosGetActiveWallpaper();
+        const curSoc = safeGetItem('car_soc', '88');
+        const curRange = safeGetItem('car_range', '535');
+        const curMode = safeGetItem('car_drive_mode', '🌱 标准节能');
+        const curTemp = safeGetItem('car_cabin_temp', '22');
+
         el.innerHTML = `
-            <div class="car-drift-wrap">
+            <div id="bcos-car-wp-layer" style="position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0.65;z-index:0;transition:opacity .8s ease, background-image .6s ease;background-image:url('${currentWp.file}');"></div>
+            <div style="position:absolute;inset:0;background:rgba(5,8,17,0.45);backdrop-filter:blur(1px);z-index:1;pointer-events:none;"></div>
+
+            <div class="car-drift-wrap" style="position:relative;z-index:2;">
+                <!-- Clean Cockpit Top Status Bar (Top buttons hidden by default) -->
                 <div class="car-top-dock" id="car-top-dock">
-                    <div style="display:flex;align-items:center;gap:.6rem;font-weight:700;color:var(--c-acc);">
+                    <div style="display:flex;align-items:center;gap:.6rem;font-weight:700;color:var(--c-acc);flex-wrap:wrap;">
                         <span>🐰 BCOS COCKPIT</span>
                         <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc2);" id="car-theme-tag">${_CAR_THEMES[_carCurrentThemeIdx].name}</span>
+                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);">🅿️ 驻车 P</span>
+                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);cursor:pointer;" onclick="_promptEditCarBattery()" title="点击修改车机续航与电量">
+                            🔋 <span id="bcos-car-soc-top">${curSoc}% · ${curRange} km</span>
+                        </span>
                         <span style="background:rgba(0,255,65,.1);border:1px solid rgba(0,255,65,.3);color:#00ff41;padding:.15rem .5rem;border-radius:12px;font-size:.75rem;">💡 常亮激活</span>
                     </div>
-                    <div style="display:flex;align-items:center;gap:.4rem;">
-                        <button class="bcos-anni-btn" onclick="_carCycleTheme()">🎨 主题</button>
-                        <button class="bcos-anni-btn" onclick="toggleFullscreen()">⛶ 全屏</button>
-                        <button class="bcos-anni-btn" onclick="copyCarScreenUrl()">📋 复制链接</button>
+
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.2rem .6rem;border-radius:12px;font-size:.75rem;color:var(--car-text);cursor:pointer;" onclick="_carCycleWallpaper()" id="bcos-wp-name-pill" title="点击切换壁纸">
+                            🖼️ ${currentWp.name}
+                        </span>
+                        <button class="bcos-anni-btn" onclick="_toggleBcosCarTopActions()" title="显示/隐藏顶部按键">⚙️ 菜单</button>
+                        <div id="bcos-car-top-actions" style="display:none;align-items:center;gap:.4rem;">
+                            <button class="bcos-anni-btn" onclick="_carCycleTheme()">🎨 主题</button>
+                            <button class="bcos-anni-btn" onclick="_promptEditCarBattery()">⚡ 续航设定</button>
+                            <button class="bcos-anni-btn" onclick="toggleFullscreen()">⛶ 全屏</button>
+                            <button class="bcos-anni-btn" onclick="copyCarScreenUrl()">📋 复制链接</button>
+                        </div>
                         <button class="bcos-anni-btn" onclick="closeBcosCarLockscreen()" style="border-color:rgba(255,80,80,.4);color:#ff8080;">✕ 解锁</button>
                     </div>
                 </div>
@@ -12426,19 +12448,38 @@
                             </div>
                         </div>
 
-                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:1rem 1.2rem;backdrop-filter:blur(10px);">
+                        <!-- EV Battery and Range Telemetry Card -->
+                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:1rem 1.2rem;backdrop-filter:blur(10px);cursor:pointer;" onclick="_promptEditCarBattery()" title="点击手动修改电量和续航里程">
                             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;font-size:.8rem;color:#8899aa;font-weight:700;">
-                                <span style="color:var(--c-acc);">⚡ 座舱生态状态</span>
-                                <span style="color:#00ff41;">Online 就绪</span>
+                                <span style="color:var(--c-acc);">⚡ 车辆动力与能耗状态</span>
+                                <span style="color:var(--c-acc);font-size:.7rem;">✏️ 点击修改</span>
                             </div>
+
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0 .6rem 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:.6rem;">
+                                <div style="display:flex;align-items:center;gap:.8rem;">
+                                    <div style="width:50px;height:24px;border:2px solid var(--c-acc);border-radius:5px;padding:2px;position:relative;background:rgba(0,0,0,.4);">
+                                        <div id="bcos-car-soc-fill" style="height:100%;width:${curSoc}%;background:linear-gradient(90deg,var(--c-acc2),var(--c-acc));border-radius:2px;"></div>
+                                        <div style="position:absolute;right:-4px;top:6px;width:3px;height:8px;background:var(--c-acc);border-radius:0 2px 2px 0;"></div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:1.6rem;font-weight:900;font-family:monospace;color:var(--c-acc);line-height:1;"><span id="bcos-car-soc-val">${curSoc}</span><span style="font-size:.8rem;color:#8899aa;">%</span></div>
+                                        <div style="font-size:.65rem;color:#8899aa;">剩余电量</div>
+                                    </div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="font-size:1.3rem;font-weight:900;font-family:monospace;color:var(--c-acc2);line-height:1;"><span id="bcos-car-range-val">${curRange}</span> <span style="font-size:.75rem;color:#8899aa;">km</span></div>
+                                    <div style="font-size:.65rem;color:#8899aa;">预估续航</div>
+                                </div>
+                            </div>
+
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.75rem;">
                                 <div style="background:rgba(0,0,0,.25);border-radius:6px;padding:.4rem .6rem;">
-                                    <div style="font-size:.65rem;color:#8899aa;">COMPANION POWER</div>
-                                    <div style="color:var(--c-acc);font-weight:700;">⚡ 100% 满能量</div>
+                                    <div style="font-size:.65rem;color:#8899aa;">DRIVE MODE</div>
+                                    <div style="color:var(--c-acc);font-weight:700;" id="bcos-car-mode-val">${curMode}</div>
                                 </div>
                                 <div style="background:rgba(0,0,0,.25);border-radius:6px;padding:.4rem .6rem;">
-                                    <div style="font-size:.65rem;color:#8899aa;">SYSTEM STATUS</div>
-                                    <div style="color:var(--c-acc2);font-weight:700;">💻 bcos v7.8 Ready</div>
+                                    <div style="font-size:.65rem;color:#8899aa;">CABIN TEMP</div>
+                                    <div style="color:var(--c-acc2);font-weight:700;" id="bcos-car-temp-val">🌤️ ${curTemp}°C / 舒适</div>
                                 </div>
                             </div>
                         </div>
@@ -12462,6 +12503,64 @@
         _carStartDisplayTicker();
         _carInitLockSlider();
         _carInitAutoFade();
+    }
+
+    const _BCOS_WALLPAPERS = [
+        { id: 'starlight', name: '星空原野', file: 'wallpaper/Starlight210128.jpg' },
+        { id: 'illustration', name: '梦幻插画', file: 'wallpaper/1126942.jpg' },
+        { id: 'bunny_snow', name: '兔可可纯白', file: 'wallpaper/IMG_2833.PNG' }
+    ];
+    let _bcosWpIdx = 0;
+
+    function _bcosGetActiveWallpaper() {
+        const saved = parseInt(safeGetItem('car_wp_current_idx', '0'), 10) || 0;
+        _bcosWpIdx = saved % _BCOS_WALLPAPERS.length;
+        return _BCOS_WALLPAPERS[_bcosWpIdx];
+    }
+
+    function _carCycleWallpaper() {
+        _bcosWpIdx = (_bcosWpIdx + 1) % _BCOS_WALLPAPERS.length;
+        safeSetItem('car_wp_current_idx', _bcosWpIdx);
+        const cur = _BCOS_WALLPAPERS[_bcosWpIdx];
+        const layer = document.getElementById('bcos-car-wp-layer');
+        if (layer) layer.style.backgroundImage = `url('${cur.file}')`;
+        const pill = document.getElementById('bcos-wp-name-pill');
+        if (pill) pill.textContent = `🖼️ ${cur.name}`;
+        showToast('已切换壁纸: ' + cur.name);
+    }
+
+    function _toggleBcosCarTopActions() {
+        const el = document.getElementById('bcos-car-top-actions');
+        if (el) {
+            el.style.display = (el.style.display === 'none' || !el.style.display) ? 'inline-flex' : 'none';
+        }
+    }
+
+    function _promptEditCarBattery() {
+        const curSoc = safeGetItem('car_soc', '88');
+        const curRange = safeGetItem('car_range', '535');
+        const newSoc = prompt('请输入当前电池剩余电量百分比 (0 - 100 %):', curSoc);
+        if (newSoc === null) return;
+        const socNum = Math.max(0, Math.min(100, parseInt(newSoc, 10) || 0));
+
+        const newRange = prompt('请输入预估剩余续航里程 (km):', curRange);
+        if (newRange === null) return;
+        const rangeNum = Math.max(0, parseInt(newRange, 10) || 0);
+
+        safeSetItem('car_soc', socNum);
+        safeSetItem('car_range', rangeNum);
+
+        // Update displays
+        const topEl = document.getElementById('bcos-car-soc-top');
+        if (topEl) topEl.textContent = `${socNum}% · ${rangeNum} km`;
+        const valEl = document.getElementById('bcos-car-soc-val');
+        if (valEl) valEl.textContent = socNum;
+        const fillEl = document.getElementById('bcos-car-soc-fill');
+        if (fillEl) fillEl.style.width = socNum + '%';
+        const rngEl = document.getElementById('bcos-car-range-val');
+        if (rngEl) rngEl.textContent = rangeNum;
+
+        showToast(`✓ 续航电量已设定为: ${socNum}% (${rangeNum} km)`);
     }
 
     function _carCycleTheme() {

@@ -37,6 +37,31 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Generate Wallpaper Manifest
+        run: |
+          python3 -c "
+          import os, json, datetime
+          wp_dir = 'wallpaper'
+          valid_exts = ('.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif', '.svg')
+          files = []
+          if os.path.exists(wp_dir):
+              for f in sorted(os.listdir(wp_dir)):
+                  if f.lower().endswith(valid_exts):
+                      name = os.path.splitext(f)[0]
+                      files.append({
+                          'id': name,
+                          'name': name,
+                          'file': f'wallpaper/{f}'
+                      })
+          manifest = {
+              'wallpapers': files,
+              'updatedAt': datetime.datetime.utcnow().isoformat() + 'Z'
+          }
+          with open(os.path.join(wp_dir, 'manifest.json'), 'w', encoding='utf-8') as out:
+              json.dump(manifest, out, ensure_ascii=False, indent=2)
+          print(f'Generated wallpaper manifest with {len(files)} wallpapers.')
+          "
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -15,6 +15,7 @@ const RELATIVE_CORE_ASSETS = [
     'icon/72.png', 'icon/96.png', 'icon/128.png', 'icon/144.png',
     'icon/192.png', 'icon/256.png', 'icon/300.png', 'icon/512.png',
     'icon/1024.png', 'icon/icon.png',
+    'wallpaper/manifest.json',
     'dist/Bunny%20CC_Profile.JPG'
 ];
 const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).href);
