@@ -1,18 +1,27 @@
-// Service Worker - Bunny CC v7.8.1.9364
-const CACHE_VERSION = 'v7.8.1.9364';
+// Service Worker - Bunny CC v7.8.1.9365 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.1.9365';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
-const CORE_ASSETS = [
-    '/', '/index.html', '/manifest.json', '/favicon.ico',
-    '/icon/16.png', '/icon/32.png', '/icon/48.png', '/icon/64.png',
-    '/icon/72.png', '/icon/96.png', '/icon/128.png', '/icon/144.png',
-    '/icon/192.png', '/icon/256.png', '/icon/300.png', '/icon/512.png',
-    '/icon/1024.png', '/icon/icon.png',
-    '/dist/Bunny%20CC_Profile.JPG'
-];
 
-// Old cache versions to force-purge (ensures icon refresh)
+// GitHub Pages scope resolution (supports custom domains, github.io root, and repo subpaths)
+const SCOPE_BASE = self.registration ? self.registration.scope : self.location.href.replace(/service-worker\.js.*$/, '');
+const RELATIVE_CORE_ASSETS = [
+    '',
+    'index.html',
+    'car.html',
+    'manifest.json',
+    'favicon.ico',
+    'icon/16.png', 'icon/32.png', 'icon/48.png', 'icon/64.png',
+    'icon/72.png', 'icon/96.png', 'icon/128.png', 'icon/144.png',
+    'icon/192.png', 'icon/256.png', 'icon/300.png', 'icon/512.png',
+    'icon/1024.png', 'icon/icon.png',
+    'dist/Bunny%20CC_Profile.JPG'
+];
+const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).href);
+
+// Old cache versions to force-purge (ensures icon refresh & cache invalidation)
 const OLD_CACHE_PATTERNS = [
+    'bunny-cc-v7.8.1.9364', 'bunny-cc-runtime-v7.8.1.9364',
     'bunny-cc-v7.8.1.9363', 'bunny-cc-runtime-v7.8.1.9363',
     'bunny-cc-v7.8.1.9362', 'bunny-cc-runtime-v7.8.1.9362',
     'bunny-cc-v7.8.1.9361', 'bunny-cc-runtime-v7.8.1.9361',
@@ -127,8 +136,9 @@ self.addEventListener('fetch', (event) => {
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
     if (url.origin !== self.location.origin) return;
 
-    // Force network-first for icon files (bypass cache to ensure fresh icons)
-    if (url.pathname.startsWith('/icon/') || url.pathname === '/favicon.ico' || url.pathname === '/manifest.json') {
+    // Force network-first for icon files, manifest and favicon (bypass cache to ensure fresh icons)
+    const pathname = url.pathname;
+    if (pathname.includes('/icon/') || pathname.endsWith('/favicon.ico') || pathname.endsWith('/manifest.json')) {
         event.respondWith(
             fetch(req).then(resp => {
                 if (resp && resp.status === 200) {
@@ -148,7 +158,16 @@ self.addEventListener('fetch', (event) => {
                 const clone = resp.clone();
                 caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
                 return resp;
-            }).catch(() => caches.match(req).then(r => r || caches.match('/index.html')))
+            }).catch(() => {
+                return caches.match(req).then(r => {
+                    if (r) return r;
+                    if (pathname.endsWith('car.html') || pathname.includes('/car')) {
+                        return caches.match(new URL('car.html', SCOPE_BASE).href);
+                    }
+                    return caches.match(new URL('index.html', SCOPE_BASE).href)
+                        .then(fallback => fallback || caches.match(SCOPE_BASE));
+                });
+            })
         );
         return;
     }
@@ -185,14 +204,16 @@ self.addEventListener('push', (event) => {
     } catch(e) {
         if (event.data) data.body = event.data.text();
     }
+    const iconUrl = new URL('icon/192.png', SCOPE_BASE).href;
+    const badgeUrl = new URL('icon/96.png', SCOPE_BASE).href;
     event.waitUntil(
         self.registration.showNotification(data.title || '🐰 兔可可王国', {
             body: data.body,
-            icon: '/icon/192.png',
-            badge: '/icon/96.png',
+            icon: iconUrl,
+            badge: badgeUrl,
             tag: data.tag || 'bunny-cc-push',
             vibrate: [200, 100, 200],
-            data: { url: data.url || '/' },
+            data: { url: data.url ? new URL(data.url, SCOPE_BASE).href : SCOPE_BASE },
         })
     );
 });
@@ -200,7 +221,7 @@ self.addEventListener('push', (event) => {
 // === Notification click — focus or open the app ===
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+    const targetUrl = (event.notification.data && event.notification.data.url) || SCOPE_BASE;
     event.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
             // Focus existing window if found
