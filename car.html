@@ -995,20 +995,17 @@
                         </div>
                     </div>
 
-                    <!-- EV Vehicle Telemetry & Battery Range Card (Interactive) -->
-                    <div class="car-widget-card" onclick="openBatteryModal()" style="cursor:pointer;" title="点击手动修改电量和续航里程">
+                    <!-- EV Vehicle Telemetry & Battery Range Card -->
+                    <div class="car-widget-card" title="车辆动力与能耗状态">
                         <div class="car-widget-header">
                             <span class="title">⚡ 车辆动力与能耗状态</span>
-                            <div style="display:flex;align-items:center;gap:.6rem;">
-                                <div class="car-eq-container" title="座舱氛围律动">
-                                    <div class="car-eq-bar"></div>
-                                    <div class="car-eq-bar"></div>
-                                    <div class="car-eq-bar"></div>
-                                    <div class="car-eq-bar"></div>
-                                    <div class="car-eq-bar"></div>
-                                    <div class="car-eq-bar"></div>
-                                </div>
-                                <span class="car-battery-edit-btn">✏️ 点击修改</span>
+                            <div class="car-eq-container" title="座舱氛围律动">
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
                             </div>
                         </div>
 
@@ -1028,7 +1025,7 @@
                             </div>
                             <div class="car-battery-right">
                                 <div class="car-battery-range-val"><span id="car-range-num">535</span><span class="unit">km</span></div>
-                                <div style="font-size:.65rem;color:var(--car-text-dim);">CLTC 预估续航</div>
+                                <div style="font-size:.65rem;color:var(--car-text-dim);" id="car-range-type-label">WLTP 预估续航</div>
                             </div>
                         </div>
 
@@ -1097,9 +1094,9 @@
                     <span class="icon">🏰</span>
                     <span>兔可可王国主页</span>
                 </a>
-                <button class="car-modal-btn" onclick="openBatteryModal()">
+                <button class="car-modal-btn" onclick="openBatteryModal()" style="border-color:var(--car-accent);background:rgba(0,234,255,0.08);">
                     <span class="icon">⚡</span>
-                    <span>手动设置续航电量</span>
+                    <span style="color:var(--car-accent);font-weight:700;">修改续航与电量 (WLTP/实估)</span>
                 </button>
                 <button class="car-modal-btn" onclick="openWallpaperModal()">
                     <span class="icon">🖼️</span>
@@ -1142,7 +1139,7 @@
                 <span>⚡ 车辆动力与能耗设置</span>
                 <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeBatteryModal()">✕</span>
             </div>
-            <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">可手动输入你当前车辆的真实电量和剩余里程，锁屏将实时同步展示：</p>
+            <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">可手动输入你当前车辆的真实电量和剩余里程，支持选择 WLTP 或 实估 标准：</p>
 
             <div style="margin:1rem 0;display:flex;flex-direction:column;gap:.9rem;">
                 <!-- Battery SoC Input -->
@@ -1164,11 +1161,24 @@
                     </div>
                 </div>
 
+                <!-- Range Standard Selector (Only WLTP and 实估) -->
+                <div class="car-input-group">
+                    <label class="car-input-label">续航里程预估标准</label>
+                    <div style="display:flex;gap:.5rem;">
+                        <button type="button" class="car-icon-btn range-type-btn" id="range-type-wltp" onclick="selectRangeStandard('WLTP')" style="flex:1;justify-content:center;padding:.5rem;">
+                            ⚡ WLTP 标准
+                        </button>
+                        <button type="button" class="car-icon-btn range-type-btn" id="range-type-est" onclick="selectRangeStandard('实估')" style="flex:1;justify-content:center;padding:.5rem;">
+                            🎯 动态实估
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Range Input -->
                 <div class="car-input-group">
                     <div class="car-input-label">
                         <span>🛣️ 预估剩余续航里程 (km)</span>
-                        <span id="range-display-preview" style="color:var(--car-accent2);font-weight:700;">535 km</span>
+                        <span id="range-display-preview" style="color:var(--car-accent2);font-weight:700;">535 km (WLTP)</span>
                     </div>
                     <input type="number" id="input-car-range" min="0" max="1500" value="535" class="car-input-control" oninput="updateRangePreview(this.value)">
                     <div class="car-tag-row">
@@ -1176,8 +1186,9 @@
                         <span class="car-quick-tag" onclick="stepRange(-10)">-10 km</span>
                         <span class="car-quick-tag" onclick="stepRange(10)">+10 km</span>
                         <span class="car-quick-tag" onclick="stepRange(50)">+50 km</span>
-                        <span class="car-quick-tag" onclick="quickSetRange(620)">620 km</span>
-                        <span class="car-quick-tag" onclick="quickSetRange(702)">702 km</span>
+                        <span class="car-quick-tag" onclick="quickSetRange(480)">480 km</span>
+                        <span class="car-quick-tag" onclick="quickSetRange(550)">550 km</span>
+                        <span class="car-quick-tag" onclick="quickSetRange(600)">600 km</span>
                     </div>
                 </div>
 
@@ -1416,6 +1427,7 @@
         let carBatteryData = {
             soc: 88,
             range: 535,
+            standard: 'WLTP', // 'WLTP' or '实估' (Only these two options)
             mode: '🌱 标准节能',
             temp: 22
         };
@@ -1426,6 +1438,8 @@
                 if (s !== null) carBatteryData.soc = Math.max(0, Math.min(100, parseInt(s, 10)));
                 const r = localStorage.getItem('car_range');
                 if (r !== null) carBatteryData.range = Math.max(0, parseInt(r, 10));
+                const std = localStorage.getItem('car_range_standard');
+                if (std === 'WLTP' || std === '实估') carBatteryData.standard = std;
                 const m = localStorage.getItem('car_drive_mode');
                 if (m) carBatteryData.mode = m;
                 const t = localStorage.getItem('car_cabin_temp');
@@ -1442,10 +1456,12 @@
             const fillEl = document.getElementById('car-battery-fill');
             const modeEl = document.getElementById('car-drive-mode');
             const tempEl = document.getElementById('car-temp-status');
+            const rangeTypeEl = document.getElementById('car-range-type-label');
 
             if (socEl) socEl.textContent = carBatteryData.soc;
             if (rangeEl) rangeEl.textContent = carBatteryData.range;
-            if (topBatEl) topBatEl.textContent = `🔋 ${carBatteryData.soc}% · ${carBatteryData.range} km`;
+            if (rangeTypeEl) rangeTypeEl.textContent = `${carBatteryData.standard} 预估续航`;
+            if (topBatEl) topBatEl.textContent = `🔋 ${carBatteryData.soc}% · ${carBatteryData.range} km (${carBatteryData.standard})`;
             if (modeEl) modeEl.textContent = carBatteryData.mode;
             if (tempEl) tempEl.textContent = `🌤️ ${carBatteryData.temp}°C / 舒适`;
 
@@ -1463,14 +1479,34 @@
             document.getElementById('slider-car-soc').value = carBatteryData.soc;
             document.getElementById('battery-slider-val').textContent = carBatteryData.soc + '%';
             document.getElementById('input-car-range').value = carBatteryData.range;
-            document.getElementById('range-display-preview').textContent = carBatteryData.range + ' km';
+            document.getElementById('range-display-preview').textContent = `${carBatteryData.range} km (${carBatteryData.standard})`;
             document.getElementById('select-car-mode').value = carBatteryData.mode;
             document.getElementById('input-car-temp').value = carBatteryData.temp;
+            updateRangeStandardButtons(carBatteryData.standard);
             document.getElementById('car-battery-modal').classList.add('active');
         }
 
         function closeBatteryModal() {
             document.getElementById('car-battery-modal').classList.remove('active');
+        }
+
+        function selectRangeStandard(std) {
+            carBatteryData.standard = (std === '实估') ? '实估' : 'WLTP';
+            updateRangeStandardButtons(carBatteryData.standard);
+            updateRangePreview(document.getElementById('input-car-range').value);
+        }
+
+        function updateRangeStandardButtons(std) {
+            document.querySelectorAll('.range-type-btn').forEach(btn => {
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                btn.style.color = 'var(--car-text)';
+            });
+            const activeId = (std === '实估') ? 'range-type-est' : 'range-type-wltp';
+            const active = document.getElementById(activeId);
+            if (active) {
+                active.style.borderColor = 'var(--car-accent)';
+                active.style.color = 'var(--car-accent)';
+            }
         }
 
         function syncBatterySlider(val) {
@@ -1490,7 +1526,7 @@
         }
 
         function updateRangePreview(val) {
-            document.getElementById('range-display-preview').textContent = (val || 0) + ' km';
+            document.getElementById('range-display-preview').textContent = `${val || 0} km (${carBatteryData.standard})`;
         }
 
         function stepRange(delta) {
@@ -1513,15 +1549,22 @@
             const mode = document.getElementById('select-car-mode').value;
             const temp = parseInt(document.getElementById('input-car-temp').value, 10) || 22;
 
-            carBatteryData = { soc, range, mode, temp };
+            carBatteryData = {
+                soc,
+                range,
+                standard: carBatteryData.standard,
+                mode,
+                temp
+            };
             localStorage.setItem('car_soc', soc);
             localStorage.setItem('car_range', range);
+            localStorage.setItem('car_range_standard', carBatteryData.standard);
             localStorage.setItem('car_drive_mode', mode);
             localStorage.setItem('car_cabin_temp', temp);
 
             renderBatteryUI();
             closeBatteryModal();
-            showToast('✓ 车辆动力能耗已更新！');
+            showToast(`✓ 车辆动力能耗已更新 (${carBatteryData.standard} 标准)！`);
         }
 
         // --- Wallpaper Engine ---

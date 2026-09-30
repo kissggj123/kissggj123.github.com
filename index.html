@@ -12376,6 +12376,7 @@
         const currentWp = _bcosGetActiveWallpaper();
         const curSoc = safeGetItem('car_soc', '88');
         const curRange = safeGetItem('car_range', '535');
+        const curStd = safeGetItem('car_range_standard', 'WLTP');
         const curMode = safeGetItem('car_drive_mode', '🌱 标准节能');
         const curTemp = safeGetItem('car_cabin_temp', '22');
 
@@ -12390,8 +12391,8 @@
                         <span>🐰 BCOS COCKPIT</span>
                         <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc2);" id="car-theme-tag">${_CAR_THEMES[_carCurrentThemeIdx].name}</span>
                         <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);">🅿️ 驻车 P</span>
-                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);cursor:pointer;" onclick="_promptEditCarBattery()" title="点击修改车机续航与电量">
-                            🔋 <span id="bcos-car-soc-top">${curSoc}% · ${curRange} km</span>
+                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);">
+                            🔋 <span id="bcos-car-soc-top">${curSoc}% · ${curRange} km (${curStd})</span>
                         </span>
                         <span style="background:rgba(0,255,65,.1);border:1px solid rgba(0,255,65,.3);color:#00ff41;padding:.15rem .5rem;border-radius:12px;font-size:.75rem;">💡 常亮激活</span>
                     </div>
@@ -12400,10 +12401,10 @@
                         <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.2rem .6rem;border-radius:12px;font-size:.75rem;color:var(--car-text);cursor:pointer;" onclick="_carCycleWallpaper()" id="bcos-wp-name-pill" title="点击切换壁纸">
                             🖼️ ${currentWp.name}
                         </span>
-                        <button class="bcos-anni-btn" onclick="_toggleBcosCarTopActions()" title="显示/隐藏顶部按键">⚙️ 菜单</button>
+                        <button class="bcos-anni-btn" onclick="_toggleBcosCarTopActions()" title="显示/隐藏顶部设置按键">⚙️ 导航设置</button>
                         <div id="bcos-car-top-actions" style="display:none;align-items:center;gap:.4rem;">
+                            <button class="bcos-anni-btn" onclick="_promptEditCarBattery()" style="border-color:var(--c-acc);color:var(--c-acc);">⚡ 修改续航与电量</button>
                             <button class="bcos-anni-btn" onclick="_carCycleTheme()">🎨 主题</button>
-                            <button class="bcos-anni-btn" onclick="_promptEditCarBattery()">⚡ 续航设定</button>
                             <button class="bcos-anni-btn" onclick="toggleFullscreen()">⛶ 全屏</button>
                             <button class="bcos-anni-btn" onclick="copyCarScreenUrl()">📋 复制链接</button>
                         </div>
@@ -12449,10 +12450,9 @@
                         </div>
 
                         <!-- EV Battery and Range Telemetry Card -->
-                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:1rem 1.2rem;backdrop-filter:blur(10px);cursor:pointer;" onclick="_promptEditCarBattery()" title="点击手动修改电量和续航里程">
+                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:1rem 1.2rem;backdrop-filter:blur(10px);">
                             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;font-size:.8rem;color:#8899aa;font-weight:700;">
                                 <span style="color:var(--c-acc);">⚡ 车辆动力与能耗状态</span>
-                                <span style="color:var(--c-acc);font-size:.7rem;">✏️ 点击修改</span>
                             </div>
 
                             <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0 .6rem 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:.6rem;">
@@ -12468,7 +12468,7 @@
                                 </div>
                                 <div style="text-align:right;">
                                     <div style="font-size:1.3rem;font-weight:900;font-family:monospace;color:var(--c-acc2);line-height:1;"><span id="bcos-car-range-val">${curRange}</span> <span style="font-size:.75rem;color:#8899aa;">km</span></div>
-                                    <div style="font-size:.65rem;color:#8899aa;">预估续航</div>
+                                    <div style="font-size:.65rem;color:#8899aa;"><span id="bcos-car-range-type">${curStd}</span> 预估续航</div>
                                 </div>
                             </div>
 
@@ -12539,6 +12539,8 @@
     function _promptEditCarBattery() {
         const curSoc = safeGetItem('car_soc', '88');
         const curRange = safeGetItem('car_range', '535');
+        const curStd = safeGetItem('car_range_standard', 'WLTP');
+
         const newSoc = prompt('请输入当前电池剩余电量百分比 (0 - 100 %):', curSoc);
         if (newSoc === null) return;
         const socNum = Math.max(0, Math.min(100, parseInt(newSoc, 10) || 0));
@@ -12547,20 +12549,26 @@
         if (newRange === null) return;
         const rangeNum = Math.max(0, parseInt(newRange, 10) || 0);
 
+        const stdChoice = prompt('请选择续航里程标准 (输入 1 选择 WLTP, 输入 2 选择 实估):', curStd === '实估' ? '2' : '1');
+        const stdVal = (stdChoice === '2' || stdChoice === '实估') ? '实估' : 'WLTP';
+
         safeSetItem('car_soc', socNum);
         safeSetItem('car_range', rangeNum);
+        safeSetItem('car_range_standard', stdVal);
 
         // Update displays
         const topEl = document.getElementById('bcos-car-soc-top');
-        if (topEl) topEl.textContent = `${socNum}% · ${rangeNum} km`;
+        if (topEl) topEl.textContent = `${socNum}% · ${rangeNum} km (${stdVal})`;
         const valEl = document.getElementById('bcos-car-soc-val');
         if (valEl) valEl.textContent = socNum;
         const fillEl = document.getElementById('bcos-car-soc-fill');
         if (fillEl) fillEl.style.width = socNum + '%';
         const rngEl = document.getElementById('bcos-car-range-val');
         if (rngEl) rngEl.textContent = rangeNum;
+        const typeEl = document.getElementById('bcos-car-range-type');
+        if (typeEl) typeEl.textContent = stdVal;
 
-        showToast(`✓ 续航电量已设定为: ${socNum}% (${rangeNum} km)`);
+        showToast(`✓ 续航电量已设定为: ${socNum}% (${rangeNum} km ${stdVal})`);
     }
 
     function _carCycleTheme() {
