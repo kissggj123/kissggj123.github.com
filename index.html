@@ -12503,14 +12503,31 @@
         _carStartDisplayTicker();
         _carInitLockSlider();
         _carInitAutoFade();
+        _bcosFetchWallpaperManifest();
     }
 
-    const _BCOS_WALLPAPERS = [
+    let _BCOS_WALLPAPERS = [
         { id: 'starlight', name: '星空原野', file: 'wallpaper/Starlight210128.jpg' },
         { id: 'illustration', name: '梦幻插画', file: 'wallpaper/1126942.jpg' },
         { id: 'bunny_snow', name: '兔可可纯白', file: 'wallpaper/IMG_2833.PNG' }
     ];
     let _bcosWpIdx = 0;
+
+    function _bcosFetchWallpaperManifest() {
+        fetch('wallpaper/manifest.json?t=' + Date.now())
+            .then(r => r.json())
+            .then(data => {
+                if (data && Array.isArray(data.wallpapers) && data.wallpapers.length > 0) {
+                    _BCOS_WALLPAPERS = data.wallpapers;
+                    const pill = document.getElementById('bcos-wp-name-pill');
+                    const layer = document.getElementById('bcos-car-wp-layer');
+                    const cur = _bcosGetActiveWallpaper();
+                    if (pill && cur) pill.textContent = `🖼️ ${cur.name}`;
+                    if (layer && cur) layer.style.backgroundImage = `url('${cur.file}')`;
+                }
+            })
+            .catch(() => {});
+    }
 
     function _bcosGetActiveWallpaper() {
         const saved = parseInt(safeGetItem('car_wp_current_idx', '0'), 10) || 0;
