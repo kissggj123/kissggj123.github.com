@@ -17,6 +17,7 @@ const RELATIVE_CORE_ASSETS = [
     'icon/192.png', 'icon/256.png', 'icon/300.png', 'icon/512.png',
     'icon/1024.png', 'icon/icon.png',
     'wallpaper/manifest.json',
+    'wallpaper/placeholders.json',
     'wallpaper/Starlight210128.min.b64.p1',
     'wallpaper/Starlight210128.min.b64.p2',
     'wallpaper/Starlight210128.min.b64.p3',
@@ -24,6 +25,17 @@ const RELATIVE_CORE_ASSETS = [
     'wallpaper/IMG_2833.min.b64.p1',
     'wallpaper/IMG_2833.min.b64.p2',
     'wallpaper/IMG_2833.min.b64.p3',
+    'wallpaper/1204143.opt.jpg',
+    'wallpaper/177002252600796.opt.jpg',
+    'wallpaper/177002254500-200.opt.jpg',
+    'wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg',
+    'wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg',
+    'wallpaper/61b5bd7f37541.opt.jpg',
+    'wallpaper/61b5bd7f375412.opt.jpg',
+    'wallpaper/8736.opt.jpg',
+    'wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg',
+    'wallpaper/hollow_knight.opt.jpg',
+    'wallpaper/hollow_knight_2.opt.jpg',
 ];
 const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).href);
 

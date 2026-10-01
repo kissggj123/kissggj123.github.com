@@ -33,7 +33,14 @@
     <link rel="apple-touch-icon" href="./icon/512.png">
     <link rel="apple-touch-icon" sizes="180x180" href="./icon/256.png">
     <link rel="apple-touch-icon" sizes="192x192" href="./icon/192.png">
-    <link rel="manifest" href="./manifest.json">
+    <script>
+        if (location.protocol !== 'file:') {
+            const mLink = document.createElement('link');
+            mLink.rel = 'manifest';
+            mLink.href = './manifest.json';
+            document.head.appendChild(mLink);
+        }
+    </script>
     <script>
         // Apply saved theme IMMEDIATELY before any rendering to prevent flash
         (function(){
@@ -2522,6 +2529,26 @@
     })();
 
     /* ==================== Init ==================== */
+    function tryAutoFullscreen() {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (req && !document.fullscreenElement && !document.webkitFullscreenElement) {
+            try {
+                const p = req.call(el);
+                if (p && typeof p.catch === 'function') p.catch(() => {});
+            } catch(e) {}
+        }
+    }
+    const enterFsOnFirstGesture = () => {
+        tryAutoFullscreen();
+        window.removeEventListener('click', enterFsOnFirstGesture);
+        window.removeEventListener('touchstart', enterFsOnFirstGesture);
+        window.removeEventListener('keydown', enterFsOnFirstGesture);
+    };
+    window.addEventListener('click', enterFsOnFirstGesture, { once: true, passive: true });
+    window.addEventListener('touchstart', enterFsOnFirstGesture, { once: true, passive: true });
+    window.addEventListener('keydown', enterFsOnFirstGesture, { once: true, passive: true });
+
     window.onload = () => {
         const safe = (fn) => { try { fn(); } catch(e) { console.error(e); } };
         safe(loadFontScale);
@@ -2538,20 +2565,29 @@
         safe(startLoop);
         safe(() => {
             const sp = new URLSearchParams(window.location.search);
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || sp.get('pwa') === '1';
-            if (sp.has('car') || sp.get('mode') === 'car' || sp.has('lock') || sp.has('lockscreen') || sp.get('bcos') === 'car') {
-                setTimeout(() => showBcosCarLockscreen(), 150);
-            } else if (isStandalone || sp.get('bcos') === 'desktop' || sp.get('mode') === 'desktop') {
+            const isClassic = sp.get('view') === 'classic' || sp.has('classic');
+            const isCar = sp.has('car') || sp.get('mode') === 'car' || sp.has('lock') || sp.has('lockscreen') || sp.get('bcos') === 'car';
+            const isTerminal = sp.get('bcos') === 'terminal' || sp.get('mode') === 'terminal';
+
+            // Auto enter fullscreen on supported browsers / devices
+            tryAutoFullscreen();
+
+            if (isCar) {
+                setTimeout(() => showBcosCarLockscreen(), 100);
+            } else if (isClassic) {
+                applyDefaultView();
+            } else if (isTerminal) {
+                setTimeout(() => showBcosOS(), 100);
+            } else {
+                // Default: Direct Boot into Full-Screen bcos Operating System Desktop
                 setTimeout(() => {
                     showBcosOS();
-                    setTimeout(() => { if (_bcos.mode === 'terminal' || _bcos.mode === 'boot') _bcosLaunchDesktop(); }, 500);
-                }, 100);
-            } else if (sp.has('bcos')) {
-                setTimeout(() => showBcosOS(), 150);
-            } else if (sp.get('view') === 'anniversary' || sp.has('anniversary')) {
-                navigateTo('anniversary');
-            } else {
-                applyDefaultView();
+                    setTimeout(() => {
+                        if (_bcos.mode === 'terminal' || _bcos.mode === 'boot') {
+                            _bcosLaunchDesktop();
+                        }
+                    }, 250);
+                }, 80);
             }
         });
     };
@@ -9363,7 +9399,8 @@
 
     function closeModal(e) {
         if (e && e.target !== e.currentTarget) return;
-        document.getElementById('modal-overlay').classList.remove('show');
+        const ov = document.getElementById('modal-overlay');
+        if (ov) ov.classList.remove('show');
         _modalLockUntil = 0; // Clear lock immediately so next modal can open without delay
         // Reset modal transform (from bottom-sheet swipe)
         const modal = document.getElementById('modal-content');
@@ -9815,7 +9852,13 @@
             #bcos-desktop { height: 100%; display: flex; flex-direction: column; background: #1a1a2e; }
             .bcos-desktop-wallpaper { flex: 1; position: relative; overflow: hidden; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); transform: translateZ(0); }
             .bcos-desktop-wallpaper::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px); background-size: 30px 30px; }
-            .bcos-desktop-icons { position: absolute; top: 1rem; left: 1rem; display: flex; flex-direction: column; gap: 1rem; z-index: 1; }
+            .bcos-desktop-icons { position: absolute; top: 1rem; left: 1rem; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; max-height: calc(100% - 2.5rem); gap: 0.7rem; z-index: 1; }
+            .bcos-win-btn-close { background: #ff5f56; }
+            .bcos-win-btn-close:hover { background: #ff7b73; transform: scale(1.15) translateZ(0); }
+            .bcos-win-btn-min { background: #ffbd2e; }
+            .bcos-win-btn-min:hover { background: #ffd066; transform: scale(1.15) translateZ(0); }
+            .bcos-win-btn-max { background: #27c93f; }
+            .bcos-win-btn-max:hover { background: #3be055; transform: scale(1.15) translateZ(0); }
             #bcos-te-textarea::selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
             #bcos-te-textarea::-moz-selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
             #bcos-te-highlight { color: #d4d4d4 !important; }
@@ -11217,6 +11260,11 @@
             <div class="bcos-taskbar" style="background:${dt.taskbarBg};">
                 <button class="bcos-start-btn" style="border-color:${dt.accent};color:${dt.accent};" onclick="_bcosToggleStartMenu()">🐰 bcos</button>
                 <div class="bcos-taskbar-items" id="bcos-taskbar-items"></div>
+                <div class="bcos-taskbar-tray" style="display:flex;align-items:center;gap:8px;margin-right:8px;">
+                    <span id="bcos-taskbar-fs" style="cursor:pointer;font-size:12px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,0.08);color:#fff;" onclick="toggleFullscreen()" title="切换全屏">⛶</span>
+                    <span style="cursor:pointer;font-size:12px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,0.08);color:#fff;" onclick="showBcosCarLockscreen()" title="进入座舱锁屏">🚗</span>
+                    <span id="bcos-taskbar-battery" style="font-size:11px;color:#00e5ff;cursor:pointer;padding:2px 4px;" onclick="_bcosOpenApp('settings')" title="车辆与电池状态">⚡ 88%</span>
+                </div>
                 <div class="bcos-taskbar-clock" id="bcos-clock">--:--</div>
             </div>
             <div class="bcos-start-menu" id="bcos-start-menu">
@@ -11246,7 +11294,18 @@
         setTimeout(() => _bcosOpenApp('terminal'), 300);
     }
 
-    function _bcosUpdateClock() { const c = document.getElementById('bcos-clock'); if (c) { const n = new Date(); c.textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0'); } }
+    function _bcosUpdateClock() {
+        const c = document.getElementById('bcos-clock');
+        if (c) {
+            const n = new Date();
+            c.textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+        }
+        const b = document.getElementById('bcos-taskbar-battery');
+        if (b) {
+            const soc = localStorage.getItem('car_soc') || '88';
+            b.textContent = '⚡ ' + soc + '%';
+        }
+    }
     function _bcosToggleStartMenu() { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.toggle('show'); }
     function _bcosBackToTerminal() {
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
@@ -11312,7 +11371,7 @@
         win.style.cssText += `left:0;top:0;width:${maxW}px;height:${maxH}px;transform:translate3d(${leftX}px, ${topY}px, 0);`;
         win._bcosTX = leftX; win._bcosTY = topY;
         win._bcosOrigW = maxW; win._bcosOrigH = maxH;
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><span class="bcos-window-title">${cfg.t}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseWin('${app}')"></button></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-win-btn-close" title="关闭" onclick="_bcosCloseWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-min" title="最小化" onclick="_bcosMinimizeWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-max" title="最大化" onclick="_bcosToggleMaximize('${winId}',event)"></button></div><span class="bcos-window-title">${cfg.t}</span><div style="width:42px;"></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
         container.appendChild(win);
         _bcos.wins[app] = winId;
         _bcos.activeWin = app;
@@ -11337,7 +11396,30 @@
         _bcosUpdateTaskbar();
     }
 
-    function _bcosFocusWin(app) { const w = document.getElementById(_bcos.wins[app]); if (w) w.style.zIndex = ++_bcos.winZ; _bcos.activeWin = app; _bcosUpdateTaskbar(); }
+    function _bcosFocusWin(app) {
+        const w = document.getElementById(_bcos.wins[app]);
+        if (!w) return;
+        if (w.style.display === 'none') w.style.display = 'flex';
+        w.style.zIndex = ++_bcos.winZ;
+        _bcos.activeWin = app;
+        _bcosUpdateTaskbar();
+    }
+    function _bcosMinimizeWin(app) {
+        const w = document.getElementById(_bcos.wins[app]);
+        if (!w) return;
+        w.style.display = 'none';
+        if (_bcos.activeWin === app) _bcos.activeWin = null;
+        _bcosUpdateTaskbar();
+    }
+    function _bcosClickTaskbarItem(app) {
+        const w = document.getElementById(_bcos.wins[app]);
+        if (!w) return;
+        if (_bcos.activeWin === app && w.style.display !== 'none') {
+            _bcosMinimizeWin(app);
+        } else {
+            _bcosFocusWin(app);
+        }
+    }
     function _bcosCloseWin(app) {
         const w = document.getElementById(_bcos.wins[app]);
         if (w) w.remove();
@@ -11389,7 +11471,7 @@
             browser: 'Browser', me: 'me', texteditor: 'Editor', anniversary: '纪念日',
             monopoly: '大富翁', settings: '设置', logs: '日志'
         };
-        b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join('');
+        b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosClickTaskbarItem('${a}')">${labels[a]||a}</div>`).join('');
     }
 
     function _bcosRenderMonopolyApp(content) {
@@ -12782,10 +12864,108 @@ const START_DATE = '2024/03/12 00:00:00';
         // --- Wallpaper Engine ---
         // b64+parts: 壁纸以 base64 文本分片存储(绕开二进制上传限制), 前端并行下载分片后解码显示
         const BUILTIN_WALLPAPERS = [
-            { id: 'starlight', name: '星空原野 · 银河漫步', file: 'wallpaper/Starlight210128.min.b64', b64: true, parts: 3, size: 296020 },
-            { id: 'illustration', name: '梦幻插画 · 浪漫次元', file: 'wallpaper/1126942.min.b64', b64: true, parts: 1, size: 111336 },
-            { id: 'bunny_snow', name: '兔可可 · 纯真雪白', file: 'wallpaper/IMG_2833.min.b64', b64: true, parts: 3, size: 334780 },
-        ];
+        {
+                "id": "starlight",
+                "name": "星空原野 · 银河漫步",
+                "file": "wallpaper/Starlight210128.min.b64",
+                "b64": true,
+                "parts": 3,
+                "size": 296020
+        },
+        {
+                "id": "illustration",
+                "name": "梦幻插画 · 浪漫次元",
+                "file": "wallpaper/1126942.min.b64",
+                "b64": true,
+                "parts": 1,
+                "size": 111336
+        },
+        {
+                "id": "bunny_snow",
+                "name": "兔可可 · 纯真雪白",
+                "file": "wallpaper/IMG_2833.min.b64",
+                "b64": true,
+                "parts": 3,
+                "size": 334780
+        },
+        {
+                "id": "wp_1204143",
+                "name": "原野星辉 · 宁静之夜",
+                "file": "wallpaper/1204143.opt.jpg",
+                "b64": false,
+                "size": 117458
+        },
+        {
+                "id": "wp_1770022526",
+                "name": "相伴日常 · 甜蜜时光",
+                "file": "wallpaper/177002252600796.opt.jpg",
+                "b64": false,
+                "size": 556279
+        },
+        {
+                "id": "wp_1770022545",
+                "name": "温暖守候 · 兔兔温情",
+                "file": "wallpaper/177002254500-200.opt.jpg",
+                "b64": false,
+                "size": 448212
+        },
+        {
+                "id": "it_takes_two_1",
+                "name": "双人成行 · 奇幻冒险",
+                "file": "wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg",
+                "b64": false,
+                "size": 195249
+        },
+        {
+                "id": "it_takes_two_2",
+                "name": "双人成行 · 携手同行",
+                "file": "wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg",
+                "b64": false,
+                "size": 308397
+        },
+        {
+                "id": "wp_61b5bd7f",
+                "name": "唯美意境 · 梦幻霞光",
+                "file": "wallpaper/61b5bd7f37541.opt.jpg",
+                "b64": false,
+                "size": 322570
+        },
+        {
+                "id": "wp_61b5bd7f2",
+                "name": "绚丽晨曦 · 光影随行",
+                "file": "wallpaper/61b5bd7f375412.opt.jpg",
+                "b64": false,
+                "size": 183401
+        },
+        {
+                "id": "wp_8736",
+                "name": "旅途风景 · 旷野纪行",
+                "file": "wallpaper/8736.opt.jpg",
+                "b64": false,
+                "size": 538256
+        },
+        {
+                "id": "wp_9f794a",
+                "name": "深邃星云 · 苍穹之境",
+                "file": "wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg",
+                "b64": false,
+                "size": 162765
+        },
+        {
+                "id": "hollow_knight_1",
+                "name": "空洞骑士 · 圣巢幽光",
+                "file": "wallpaper/hollow_knight.opt.jpg",
+                "b64": false,
+                "size": 711444
+        },
+        {
+                "id": "hollow_knight_2",
+                "name": "空洞骑士 · 泪水之城",
+                "file": "wallpaper/hollow_knight_2.opt.jpg",
+                "b64": false,
+                "size": 237050
+        }
+];
 
         let allWallpapers = [...BUILTIN_WALLPAPERS];
         let currentWallpaperIdx = 0;
@@ -12838,7 +13018,7 @@ const START_DATE = '2024/03/12 00:00:00';
             allWallpapers = Array.from(map.values());
         }
         // 模糊占位图 (blur-up): 弱网下先显示低清模糊图, 避免黑屏
-        const WP_PLACEHOLDER = {"wallpaper/Starlight210128.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAgADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCaCcqQrlmz05q6DxWVuAA3gfhUySvglXJ59c1cZ23IcS9nFNaVFDbmA2jLZ7Cq/wBqxywGPUVl6hdQzxlWmDMucBQR+B9a0UkyGmjVgu1cKWYASMRH7gVKxrn9MOZgkgACguMDlTn1raMgJwDQtA3M6O5Q4AHOCMbc8+tSZAZgxKk88L1P0qKOPZ+8jbBx/F6+lPMrFDuRSPp0+tc6ZqAcurKrMpztPGMe9ZUttLbfOdrpuxuU5OPWtWGKQyCNlOAuS2/8qZLBJuCIy4z9zPOKpStsJpPcqacdzu2eQOOeaveYSdo5Y8BehpyRDzWRwN4PBI68VDuIVgqsWT7uDkihtt3BKysf/9k=", "wallpaper/1126942.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlweanjjyeRUAx9amWaSMDAXB4ya1uZs2dNSzSOUXEQldj8nGccVHqq2bGNbWHy2XO/jFZ8Ny0chI3DPJGcZqeW/dkPykOD1Y54qb6hZlNgyZxkVEWqWSYyDhcLjknuahbFUC8x8KZ5q8sAkQqMcjg1Utq3dHRXm+YA01sQ7tmJOs8rvK0bYAAJC4HHFJAWMmxUYs429M1o6qSb51ydqjgelWdNjR1V3XLKflPpWUnY6aUPaXM+S2KHyyuCOBz1qjcQtC5VwQR2Nad3M86yea27Y5VeMYGKi1EBrC0kIy7ZBPr0q73MbcrP//Z", "wallpaper/IMG_2833.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDm43ZVAJNXbd9zEljkdAKWC2RpDnzHUHgRr1H1pxsZNxZUKAHjcaTV0BuaDNI0M4ZwwQ5Jqgy+c8rICSCSfQCn2QvLRH8hlAY/MCM5qSzQpKxKhycgZHIzUy1SQ0QBBGhkZTHEOSx6n8KkW1M2VjwcdiR0Ipt6kzXHzIzQoQQCeD7YqhdR3Czu6CUB2JUdMDNNJJaA3qXkVnxIHcJ/efgH6DqamM6KOFdjjktjP4elVkdmUFiSaCTmk433C5OtwAG+WXHXDEU1Z/lJAYH2bFLHyGB9Krr1o5UFywb8AKHiLAf3iDmnxXFu453REHorcVnygZz61CeDx6UKNth3P//Z"};
+        const WP_PLACEHOLDER = {"wallpaper/Starlight210128.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAgADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCaCcqQrlmz05q6DxWVuAA3gfhUySvglXJ59c1cZ23IcS9nFNaVFDbmA2jLZ7Cq/wBqxywGPUVl6hdQzxlWmDMucBQR+B9a0UkyGmjVgu1cKWYASMRH7gVKxrn9MOZgkgACguMDlTn1raMgJwDQtA3M6O5Q4AHOCMbc8+tSZAZgxKk88L1P0qKOPZ+8jbBx/F6+lPMrFDuRSPp0+tc6ZqAcurKrMpztPGMe9ZUttLbfOdrpuxuU5OPWtWGKQyCNlOAuS2/8qZLBJuCIy4z9zPOKpStsJpPcqacdzu2eQOOeaveYSdo5Y8BehpyRDzWRwN4PBI68VDuIVgqsWT7uDkihtt3BKysf/9k=", "wallpaper/1126942.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwClweanjjyeRUAx9amWaSMDAXB4ya1uZs2dNSzSOUXEQldj8nGccVHqq2bGNbWHy2XO/jFZ8Ny0chI3DPJGcZqeW/dkPykOD1Y54qb6hZlNgyZxkVEWqWSYyDhcLjknuahbFUC8x8KZ5q8sAkQqMcjg1Utq3dHRXm+YA01sQ7tmJOs8rvK0bYAAJC4HHFJAWMmxUYs429M1o6qSb51ydqjgelWdNjR1V3XLKflPpWUnY6aUPaXM+S2KHyyuCOBz1qjcQtC5VwQR2Nad3M86yea27Y5VeMYGKi1EBrC0kIy7ZBPr0q73MbcrP//Z", "wallpaper/IMG_2833.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDm43ZVAJNXbd9zEljkdAKWC2RpDnzHUHgRr1H1pxsZNxZUKAHjcaTV0BuaDNI0M4ZwwQ5Jqgy+c8rICSCSfQCn2QvLRH8hlAY/MCM5qSzQpKxKhycgZHIzUy1SQ0QBBGhkZTHEOSx6n8KkW1M2VjwcdiR0Ipt6kzXHzIzQoQQCeD7YqhdR3Czu6CUB2JUdMDNNJJaA3qXkVnxIHcJ/efgH6DqamM6KOFdjjktjP4elVkdmUFiSaCTmk433C5OtwAG+WXHXDEU1Z/lJAYH2bFLHyGB9Krr1o5UFywb8AKHiLAf3iDmnxXFu453REHorcVnygZz61CeDx6UKNth3P//Z", "wallpaper/1204143.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzW3hM0gXoK7XQPC1ndWfnTxlySwHP91Cxz+n51zWkPAGAaEO/+2xx+Qwf1rs7bXpdN0t7SCFAJy2Aqk4BXB5z16fka0SXLcErszJ/D9nJbmRLfYN2AVY579vwrmdV05tPlj+YPHKm9CPTJH8wRXc6Vr32C48ybyfs5KrJvGQnIyeP4sE4+tct4q1CLU75roTKzthQiKQoAHbPQdT+NEtipJJ2MFWKnKkgjuKvRavfRqFEuQOm4ZooqEShlzqV1c/61x26DHSqhOTk0UUMD//Z", "wallpaper/1204143.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzW3hM0gXoK7XQPC1ndWfnTxlySwHP91Cxz+n51zWkPAGAaEO/+2xx+Qwf1rs7bXpdN0t7SCFAJy2Aqk4BXB5z16fka0SXLcErszJ/D9nJbmRLfYN2AVY579vwrmdV05tPlj+YPHKm9CPTJH8wRXc6Vr32C48ybyfs5KrJvGQnIyeP4sE4+tct4q1CLU75roTKzthQiKQoAHbPQdT+NEtipJJ2MFWKnKkgjuKvRavfRqFEuQOm4ZooqEShlzqV1c/61x26DHSqhOTk0UUMD//Z", "wallpaper/177002252600796.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwClp8UkDPHKQ4IyCvNW4rWSO2mKK5DyESK+SMk/Lj27fWtqGwjhQMkbF3OGYjG0025dI0yHCxk4cjrkdeP89609k2tyufU4xyLa4uVhAMPmHy1zyv8A9aoonKyF5CQWHA6it+90aP7KJYcq+0MVbkEE+vfoPyouLK3aEQvGrFRk7RypPP8AWpdNoOZM6dmMlyxYnIxjnp9KxdTcyRMW6BxhR0x0x9KKK06CLlmAbSSFwHWOAMpbkjNN0Kyiu3uWmLkiRlB3dhgD9KKKio/dYluf/9k=", "wallpaper/177002252600796.JPG": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwClp8UkDPHKQ4IyCvNW4rWSO2mKK5DyESK+SMk/Lj27fWtqGwjhQMkbF3OGYjG0025dI0yHCxk4cjrkdeP89609k2tyufU4xyLa4uVhAMPmHy1zyv8A9aoonKyF5CQWHA6it+90aP7KJYcq+0MVbkEE+vfoPyouLK3aEQvGrFRk7RypPP8AWpdNoOZM6dmMlyxYnIxjnp9KxdTcyRMW6BxhR0x0x9KKK06CLlmAbSSFwHWOAMpbkjNN0Kyiu3uWmLkiRlB3dhgD9KKKio/dYluf/9k=", "wallpaper/177002254500-200.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDFfTm2vDv8xHBC4OSO4q/qdqjWvlupNuwBWQjBPTkjsa3NPtM2SXcsGZmUZzwADUt6sRt/Km2NESVfcOAQB0H5Voqd1e5XP0ORtGldPJRfNdOhB5IzxnNGI4HzM5eVs5jU5C1vPpga1S5s2MbMSSuFXj0yBVCextpcIFB4+ZQAGRs88gVLg0HMmdW2ZriNGJAGAMHGO/FZN45uPkcAKZApA44OR/TNFFaLYT3LMZMdlsUn5TtBPXHNQeHLaGezLzKXaR3Jyx4+Y0UVFVvlEtz/2Q==", "wallpaper/177002254500-200.JPG": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDFfTm2vDv8xHBC4OSO4q/qdqjWvlupNuwBWQjBPTkjsa3NPtM2SXcsGZmUZzwADUt6sRt/Km2NESVfcOAQB0H5Voqd1e5XP0ORtGldPJRfNdOhB5IzxnNGI4HzM5eVs5jU5C1vPpga1S5s2MbMSSuFXj0yBVCextpcIFB4+ZQAGRs88gVLg0HMmdW2ZriNGJAGAMHGO/FZN45uPkcAKZApA44OR/TNFFaLYT3LMZMdlsUn5TtBPXHNQeHLaGezLzKXaR3Jyx4+Y0UVFVvlEtz/2Q==", "wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDhJLTDO5JIz2rovDVrE9p5rIDiTa2eeBz/AFNR3toItO2LcLIxkykagMXA6nPUdaseGpnispoSAPnyQRyK4a0r07nfFK5qT2tiIPMe1hOTjiMetUjpFq58/bCI/wC7uxVx2iaEpLChjXLAAdD6isrTNQNxO0I2LIMCHJ2g9tpOD9c+tRQlFphUTeqMPSLiVtTALcc11QduKKK3rLYij1H7iAB61jzW0UGp2zovMkuWGeOooorngrS0NJH/2Q==", "wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDhJLTDO5JIz2rovDVrE9p5rIDiTa2eeBz/AFNR3toItO2LcLIxkykagMXA6nPUdaseGpnispoSAPnyQRyK4a0r07nfFK5qT2tiIPMe1hOTjiMetUjpFq58/bCI/wC7uxVx2iaEpLChjXLAAdD6isrTNQNxO0I2LIMCHJ2g9tpOD9c+tRQlFphUTeqMPSLiVtTALcc11QduKKK3rLYij1H7iAB61jzW0UGp2zovMkuWGeOooorngrS0NJH/2Q==", "wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDKa5uZJ22JCmeioMD9aRpbkZJSMnPOTVOGVjMAM5JxyP0qw/l+aczpgkDJ9f8ACuWTXU2iyNpblSzBU45OKs2F9NEfMJjLHgDHSq0ktvbWxL7nmlz8vTC9PSqaiSNfNDYjbnHp7f8A16d1YNtToI4UZQxUcdto5qJreAYKwopPcDFFFYLctBKphO5WY567vmz+dWYnLJDHwAynkdeKKKbM5n//2Q==", "wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDKa5uZJ22JCmeioMD9aRpbkZJSMnPOTVOGVjMAM5JxyP0qw/l+aczpgkDJ9f8ACuWTXU2iyNpblSzBU45OKs2F9NEfMJjLHgDHSq0ktvbWxL7nmlz8vTC9PSqaiSNfNDYjbnHp7f8A16d1YNtToI4UZQxUcdto5qJreAYKwopPcDFFFYLctBKphO5WY567vmz+dWYnLJDHwAynkdeKKKbM5n//2Q==", "wallpaper/61b5bd7f37541.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDLlup3kQRpCuFx8oxn601pbkdUjJ9zVBJyXU8gj2q3IEEnzTIDwDnsa5ZNdTaLImmuU3MFTjrjtV6y1CWKIg+Wxcc8VRnlgt7bDBnllGSvQAdu3sfzqoPMgAy+Q33eKd00GxvQwoycgDb6KP8ACmyQQZyIUBJ6gYoorDqWhsoMWdrEhhzu5z+J5q2WMgKn5fkB4+lFFNrUzluf/9k=", "wallpaper/61b5bd7f37541.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDLlup3kQRpCuFx8oxn601pbkdUjJ9zVBJyXU8gj2q3IEEnzTIDwDnsa5ZNdTaLImmuU3MFTjrjtV6y1CWKIg+Wxcc8VRnlgt7bDBnllGSvQAdu3sfzqoPMgAy+Q33eKd00GxvQwoycgDb6KP8ACmyQQZyIUBJ6gYoorDqWhsoMWdrEhhzu5z+J5q2WMgKn5fkB4+lFFNrUzluf/9k=", "wallpaper/61b5bd7f375412.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwClJPM7oESJcLj5RjP1pGknycpGSOuaoJdZZTzke1TSPGLnc0yjgKcnoa5pNdTaINLOhJCr747VetL2SKFgfLJcc8VmXdzDbwBfmeWQZI6ADt2+v51AJHiUfNww44p3QtjUhhRk6AbfQCkeCHOREgJPUDFFFYdSxsw8onaxIYc7uf51bJMgKnj5AePpRRTe5Etz/9k=", "wallpaper/61b5bd7f375412.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwClJPM7oESJcLj5RjP1pGknycpGSOuaoJdZZTzke1TSPGLnc0yjgKcnoa5pNdTaINLOhJCr747VetL2SKFgfLJcc8VmXdzDbwBfmeWQZI6ADt2+v51AJHiUfNww44p3QtjUhhRk6AbfQCkeCHOREgJPUDFFFYdSxsw8onaxIYc7uf51bJMgKnj5AePpRRTe5Etz/9k=", "wallpaper/8736.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC8sNxL85KTJ947JP5mpkLI4XITOSTnOKbZLbylRKseSeSF5/TpVq8t4ohFKrsUVx1POKqTfKVFK9x9ndwybUyx4J34yOD61uWKRxIZBKpDDqDXKq/lXBZH4PAGegzUpkXkMoIPJrNNtWZq4K90V7eNMZxUt27G2cZ4oorR7GC+IrFiqNjsMjPbij7yBj1oorM3if/Z", "wallpaper/8736.JPG": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC8sNxL85KTJ947JP5mpkLI4XITOSTnOKbZLbylRKseSeSF5/TpVq8t4ohFKrsUVx1POKqTfKVFK9x9ndwybUyx4J34yOD61uWKRxIZBKpDDqDXKq/lXBZH4PAGegzUpkXkMoIPJrNNtWZq4K90V7eNMZxUt27G2cZ4oorR7GC+IrFiqNjsMjPbij7yBj1oorM3if/Z", "wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDgLeM5GRVvbjtVa3uASAI8knAyasySSJtbbtYHIIPT9adxNF/TNAfWWDh9iJnJxnPp/KrOpeFpbGHzgRLGPvEDBFT+Gf7cKgaalo2UbCynqBg+vWqF54x1UrNaXEdvySrYQ5B/OuRupKfuvQ7YqEY+8tTDyY4wE4yavIcpzzx3+tFFdZxrc0bdmhUNEShB4KnGK5q7YvdSO5JYuxJPU80UVktzefwo/9k=", "wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDgLeM5GRVvbjtVa3uASAI8knAyasySSJtbbtYHIIPT9adxNF/TNAfWWDh9iJnJxnPp/KrOpeFpbGHzgRLGPvEDBFT+Gf7cKgaalo2UbCynqBg+vWqF54x1UrNaXEdvySrYQ5B/OuRupKfuvQ7YqEY+8tTDyY4wE4yavIcpzzx3+tFFdZxrc0bdmhUNEShB4KnGK5q7YvdSO5JYuxJPU80UVktzefwo/9k=", "wallpaper/hollow_knight.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDGuBOlzNO0gbzGZSH3Ej5sA+nf9K6HR9R8q2mEkpuIkAkXn5snGeTjHQ8VhvtubiWISAKz5YMSFHOPc+nP1p6ahJb2iwqomijyPmXiQHJ5A6AcVT1GkWvEN9HdJbpbIwEQJaTaSF3HPXOMcd/f0qm1wji28mSRHjIX5pMbzxzgen+cVHPfNqMpYx+RbEhF2p/DnPGe55H1qO2hgj1CyiZgpklyQ54C54yuevH61Imal3p8YaXE0wBmbgEcc9uOOlVv7Lh3HEswzxwwHHp09qKKBkkumQsqKHkUFSeCPUnuPamW+mIt3Bi4uMl1bJYeo9vaiil0A//Z", "wallpaper/hollow_knight.jpeg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDGuBOlzNO0gbzGZSH3Ej5sA+nf9K6HR9R8q2mEkpuIkAkXn5snGeTjHQ8VhvtubiWISAKz5YMSFHOPc+nP1p6ahJb2iwqomijyPmXiQHJ5A6AcVT1GkWvEN9HdJbpbIwEQJaTaSF3HPXOMcd/f0qm1wji28mSRHjIX5pMbzxzgen+cVHPfNqMpYx+RbEhF2p/DnPGe55H1qO2hgj1CyiZgpklyQ54C54yuevH61Imal3p8YaXE0wBmbgEcc9uOOlVv7Lh3HEswzxwwHHp09qKKBkkumQsqKHkUFSeCPUnuPamW+mIt3Bi4uMl1bJYeo9vaiil0A//Z", "wallpaper/hollow_knight_2.opt.jpg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDjtLtUupDEDGs/WMSfcf1U+nsf/wBYTWrBLK7UQ42SIG2hg3lt/EmRwcHIquqlcOhKnuCKn8z7UQjOFYHC59PT2rK51pJ7kVnCsoO8DG4c/gatvaW6RE7QR645q9Hot3EuRCeoOMgfzPvTZLSaOLy7qFgTyAjAkj9azdRPqaxpW6FBhsQ47cjIHFW9LjheYhoUzknOMEUUUp7BSV5I6u1maOIcK4+7hxnim6wDFB5qMQwV2XPO0hc9Tzz70UVx/aR0VNHof//Z", "wallpaper/hollow_knight_2.jpeg": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUACADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDjtLtUupDEDGs/WMSfcf1U+nsf/wBYTWrBLK7UQ42SIG2hg3lt/EmRwcHIquqlcOhKnuCKn8z7UQjOFYHC59PT2rK51pJ7kVnCsoO8DG4c/gatvaW6RE7QR645q9Hot3EuRCeoOMgfzPvTZLSaOLy7qFgTyAjAkj9azdRPqaxpW6FBhsQ47cjIHFW9LjheYhoUzknOMEUUUp7BSV5I6u1maOIcK4+7hxnim6wDFB5qMQwV2XPO0hc9Tzz70UVx/aR0VNHof//Z"};
         // --- High-Speed Wallpaper Engine with IndexedDB Local Caching (Optimized for China Network) ---
         const WP_DB_NAME = 'bcos_wp_cache_v2';
         const WP_STORE = 'blobs';
@@ -13250,7 +13430,15 @@ const START_DATE = '2024/03/12 00:00:00';
             const inp = document.getElementById('file-upload-wp');
             if (inp) {
                 inp.value = '';
-                inp.click();
+                try {
+                    if (inp.showPicker) {
+                        inp.showPicker();
+                    } else {
+                        inp.click();
+                    }
+                } catch(e) {
+                    inp.click();
+                }
             }
         }
 
@@ -13637,7 +13825,9 @@ const START_DATE = '2024/03/12 00:00:00';
 
         // Double-click/tap background to toggle unlock or quick switch
         let lastTap = 0;
-        document.getElementById('car-root').addEventListener('click', (e) => {
+        document.addEventListener('click', (e) => {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root || !root.contains(e.target)) return;
             if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('#car-track') || e.target.closest('.car-modal') || e.target.closest('.clickable')) return;
             const now = Date.now();
             if (now - lastTap < 350) {
@@ -13649,7 +13839,10 @@ const START_DATE = '2024/03/12 00:00:00';
 
         // ESC key to unlock
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') unlockScreen();
+            if (e.key === 'Escape') {
+                const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+                if (root) unlockScreen();
+            }
         });
 
         // --- Modals ---
@@ -14102,10 +14295,10 @@ const START_DATE = '2024/03/12 00:00:00';
                         <label class="car-input-label">添加本地或在线图片</label>
                         <div style="display:flex;gap:.4rem;">
                             <div style="position:relative;flex:1;display:flex;">
-                                <button type="button" class="car-icon-btn" onclick="triggerWallpaperFileInput()" style="width:100%;justify-content:center;cursor:pointer;">
+                                <label for="file-upload-wp" class="car-icon-btn" style="width:100%;justify-content:center;cursor:pointer;display:inline-flex;align-items:center;margin:0;">
                                     📤 上传图片
-                                </button>
-                                <input type="file" id="file-upload-wp" accept="image/*" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.0001;cursor:pointer;z-index:5;" onchange="handleWallpaperUpload(event)">
+                                    <input type="file" id="file-upload-wp" accept="image/jpeg,image/png,image/webp,image/*" style="display:none;" onchange="handleWallpaperUpload(event)">
+                                </label>
                             </div>
                             <button type="button" class="car-icon-btn" onclick="promptAddWallpaperUrl()" title="输入在线图片 URL">🔗 链接</button>
                         </div>
@@ -14155,7 +14348,7 @@ const START_DATE = '2024/03/12 00:00:00';
     <div class="car-toast" id="car-toast"></div>`;
 
         initSlider();
-        initAutoFade();
+        resetAutoFade();
         startDisplayTicker();
         applySavedTheme(savedTheme);
         applySavedBatterySettings();
@@ -14906,7 +15099,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 '</div>' +
                 '<button id="bcos-oobe-next" style="background:' + dt.accent + ';border:none;color:#fff;padding:.4rem 1.2rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:bold;">' + (isLast ? 'Start using bcos' : 'Next →') + '</button>' +
                 '</div>';
-            var nextBtn = overlay.querySelector('#bcos-oobe-next');
+            var nextBtn = overlay && overlay.querySelector ? overlay.querySelector('#bcos-oobe-next') : null;
             if (nextBtn) nextBtn.onclick = () => {
                 _bcosOOBEStep++;
                 if (_bcosOOBEStep >= steps.length) {
@@ -17852,7 +18045,7 @@ const START_DATE = '2024/03/12 00:00:00';
     let _deferredPrompt = null;
 
     function initPWA() {
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
             navigator.serviceWorker.register('./service-worker.js').catch(() => {});
             // Listen for SW updates and force reload to clear stale cache
             navigator.serviceWorker.addEventListener('message', (event) => {
@@ -18088,12 +18281,14 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.2.9370', title:'bcos 全屏桌面与 PWA 深度重构 · 车机锁屏全功能同步与国内壁纸离线极速缓存', items:[
-            '🖥️ bcos 全屏桌面与 PWA 深度重构：启动 PWA 即刻直达全屏 bcos 桌面操作系统！桌面与开始菜单全面集成【终端 Terminal、文件管理 Files、性能监视 Monitor、系统浏览器 Browser、大富翁 Monopoly、纪念日 Anniversary、系统设置 Settings、运行日志 Logs、车机锁屏 Car Lockscreen、工作区 me、代码文本编辑器 Text Editor、关于 About】，所有模块均以 Linux 风格窗口化多任务独立运行！',
-            '🚗 智能座舱锁屏同款界面与功能完整同步：将 car.html 最新智能座舱界面深度移植同步到主系统，支持电量/续航 (WLTP/实估双标准) 手动与预估调节、动态 EQ 律动、5 套座舱氛围主题、手势滑动解锁与导航中心',
-            '⚡ 国内网络壁纸 IndexedDB 离线极速缓存：针对国内直连慢的问题，引入微占位图先行 (blur-up)、分片并行下载与弱网自动重试，解码 Blob 永久存储于本地 IndexedDB (bcos_wp_cache_v2)，秒开零黑屏且彻底支持离线轮播',
-            '📱 安卓车机浏览器与 WebView 深度兼容：修复车机与安卓端因合成点击限制导致壁纸上传无法唤醒文件管理器的顽疾，采用透明原生覆盖层 + 同步交互触发，内置 HTML5 Canvas 1440px 自适应轻量化压缩，防止 LocalStorage 超限',
-            '💡 车机级防熄屏与防手势冲突：升级 micro-canvas 心跳保活与 WakeLock API 双重容灾，添加 overscroll-behavior: none 防拉动刷新，优化触摸滑块 { passive: false } 拦截，防止车机屏幕横滑手势干扰'
+        { ver:'v7.8.2.9370', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
+            '🖥️ 网页与PWA直接启动全屏 bcos 操作系统：无论是普通网页直接访问、本地 file:// 访问还是 PWA 桌面应用，均默认直开现代化 bcos 桌面操作系统并自动进入全屏！全新 macOS/Linux 红黄绿三色窗口控制、窗口最小化与任务栏恢复、右下角系统托盘（实时电池电量 ⚡ 88%、⛶ 全屏切换、🚗 车机锁屏一键直达），支持 11 款窗口化多任务独立运行！',
+            '🛠️ 彻底修复空指针中断与 TDZ 连锁报错：重构座舱锁屏后台事件绑定与 DOM 检测，彻底根除 `#car-root` 空指针导致整段脚本执行中断的致命异常，彻底解决 `_fontScaleRafId`、`textSelectDisabled`、`CHANGELOG`、`trailCanvas`、`MILESTONES`、`SAVE_SLOTS` 等变量因 Temporal Dead Zone 未初始化报错的问题',
+            '🌐 本地与跨域访问安全加固：智能检测当前运行环境，修复本地 `file:///` 协议加载 manifest.json 及 ServiceWorker 注册引发的 CORS origin null 拦截报错，保障本地双击离线直接可用与线上 HTTPS 完美运作',
+            '🖼️ 14款座舱壁纸全面优化与模糊占位 (Blur-up)：新增 11 款精美壁纸（双人成行、空洞骑士、原野星辉、深邃星云等），全面完成 1920px 渐进式 JPEG 压缩 (体积压缩85%+) 并生成 0 秒 blur-up 微占位图，结合 IndexedDB 永久本地缓存，国内网络无加速下秒开不黑屏',
+            '🤖 GitHub Actions 自动化部署流水线：新增 `.github/workflows/deploy-wallpapers.yml`，在 GitHub 网页版或 Git 提交上传新壁纸到 `wallpaper/` 目录时，云端自动触发 Pillow 渐进式无损压缩、占位图生成与 manifest 自动部署',
+            '📱 安卓车机浏览器与文件管理器唤醒：锁屏上传壁纸按键采用标准 W3C `<label>` 与 `showPicker()` 结合，完美兼容小鹏/蔚来/特斯拉/比亚迪等车机浏览器与各类安卓系统，点击必出文件管理/相册选择',
+            '🚗 智能座舱锁屏同款界面与功能完整同步：car.html 与 index.html 锁屏界面 100% 同步，支持电量/续航 (WLTP/实估双标准) 手动与预估调节、动态 EQ 律动、5 套座舱氛围主题、手势滑动解锁与导航中心'
         ]},
         { ver:'v7.8.1.9365', title:'bcos 纪念日系统深度集成 & 智能座舱车机锁屏 (car.html) 全新上线', items:[
             '💕 bcos 纪念日系统深度融合：bcos 操作系统全面支持纪念日体系！新增桌面图标与开始菜单【💕 纪念日】GUI 应用、终端命令 `anniversary` / `anni`、虚拟文件系统 `/me/anniversary.txt` 与 `/desktop/anniversary`，实时计算兔可可相伴精准天数与里程碑倒计时',
