@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9375 -->
+    <!-- VERSION: v7.8.3.9376 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1308,7 +1308,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9375</div>
+                <div class="subtitle">v7.8.3.9376</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1621,7 +1621,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9375</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9376</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1687,7 +1687,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9375',
+        VERSION: 'v7.8.3.9376',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2718,7 +2718,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9375 已启动', 'info');
+        logEvent('兔可可王国 v7.8.3.9376 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9554,7 +9554,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9375 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.3.9376 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -10020,54 +10020,937 @@
             .bcos-anni-ms-item.reached { border-left: 3px solid #00ff41; color: #e2e8f0; }
             .bcos-anni-ms-item.next { border-left: 3px solid #ff6b9d; background: rgba(255,107,157,.08); font-weight: 700; }
 
-            /* BCOS Car Lockscreen & Screensaver Overlay */
-            #bcos-car-lockscreen {
-                position: fixed; inset: 0; z-index: 100000;
-                display: flex; flex-direction: column; justify-content: space-between;
-                padding: 1.2rem 1.8rem; box-sizing: border-box;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                user-select: none; -webkit-user-select: none; overflow: hidden;
-                transition: background 0.6s ease, color 0.4s ease;
+            /* ===== BCOS Car Cockpit Lockscreen CSS (Fully Synchronized with car.html) ===== */
+
+        /* Vehicle Touchscreen Specific Optimizations */
+        #bcos-car-lockscreen, #car-root {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: pan-y;
+        }
+        #bcos-car-lockscreen button, #car-root button,
+        #bcos-car-lockscreen .clickable, #car-root .clickable {
+            min-height: 44px;
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+        #bcos-car-lockscreen .car-slider-thumb, #car-root .car-slider-thumb {
+            touch-action: none;
+            cursor: grab;
+        }
+        #bcos-car-lockscreen .car-slider-thumb:active, #car-root .car-slider-thumb:active {
+            cursor: grabbing;
+        }
+        .car-wallpaper-layer {
+            position: fixed;
+            inset: 0;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            z-index: 0;
+            pointer-events: none;
+            will-change: opacity;
+        }
+        .car-wallpaper-layer.active {
+            opacity: 1;
+        }
+
+:root {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+            --car-wp-dim: rgba(5, 8, 17, 0.45);
+            --car-wp-blur: 1px;
+        }
+        #bcos-car-lockscreen.theme-xpeng, body.theme-xpeng {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+        }
+        #bcos-car-lockscreen.theme-bunny, body.theme-bunny {
+            --car-bg: radial-gradient(circle at 50% 30%, #301726 0%, #150912 75%, #0a0408 100%);
+            --car-accent: #ff6b9d;
+            --car-accent2: #ffd166;
+            --car-glow: rgba(255, 107, 157, 0.45);
+            --car-panel: rgba(40, 15, 30, 0.72);
+            --car-border: rgba(255, 107, 157, 0.3);
+            --car-text: #fff0f5;
+            --car-text-dim: #c48b9f;
+        }
+        #bcos-car-lockscreen.theme-aurora, body.theme-aurora {
+            --car-bg: radial-gradient(circle at 50% 30%, #082623 0%, #041412 75%, #020807 100%);
+            --car-accent: #06ffa5;
+            --car-accent2: #38bdf8;
+            --car-glow: rgba(6, 255, 165, 0.45);
+            --car-panel: rgba(6, 32, 28, 0.72);
+            --car-border: rgba(6, 255, 165, 0.3);
+            --car-text: #e6fffb;
+            --car-text-dim: #7bb3aa;
+        }
+        #bcos-car-lockscreen.theme-carbon, body.theme-carbon {
+            --car-bg: radial-gradient(circle at 50% 30%, #2b1114 0%, #120708 75%, #080304 100%);
+            --car-accent: #ff334b;
+            --car-accent2: #fbbf24;
+            --car-glow: rgba(255, 51, 75, 0.45);
+            --car-panel: rgba(35, 12, 16, 0.72);
+            --car-border: rgba(255, 51, 75, 0.3);
+            --car-text: #fff1f2;
+            --car-text-dim: #c2888f;
+        }
+        #bcos-car-lockscreen.theme-stealth, body.theme-stealth {
+            --car-bg: #000000;
+            --car-accent: #d1d5db;
+            --car-accent2: #6b7280;
+            --car-glow: rgba(255, 255, 255, 0.12);
+            --car-panel: rgba(20, 20, 20, 0.85);
+            --car-border: rgba(255, 255, 255, 0.15);
+            --car-text: #e5e7eb;
+            --car-text-dim: #6b7280;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            color: var(--car-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #bcos-car-lockscreen, #car-root {
+            z-index: 100000;
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.2rem 1.8rem;
+            overflow: hidden;
+            box-sizing: border-box;
+            touch-action: pan-y;
+            overscroll-behavior: none;
+            position: fixed;
+            inset: 0;
+            background: var(--car-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.2rem 1.8rem;
+            transition: background 0.6s ease, color 0.4s ease;
+            overflow: hidden;
+        }
+
+        /* Wallpaper Engine Layers */
+        .car-wallpaper-layer {
+            position: fixed;
+            inset: 0;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out, filter 0.6s ease;
+            z-index: 0;
+            pointer-events: none;
+            will-change: opacity;
+        }
+        .car-wallpaper-layer.active {
+            opacity: 1;
+        }
+        .car-wallpaper-layer.wp-loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.09) 50%, transparent 70%);
+            background-size: 200% 100%;
+            animation: wp-shimmer 1.4s linear infinite;
+        }
+        @keyframes wp-shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
+        .car-wallpaper-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--car-wp-dim);
+            backdrop-filter: blur(var(--car-wp-blur));
+            -webkit-backdrop-filter: blur(var(--car-wp-blur));
+            z-index: 1;
+            pointer-events: none;
+            transition: background 0.4s ease, backdrop-filter 0.4s ease;
+        }
+
+        /* Anti burn-in continuous subtle micro-drift */
+        @keyframes carAntiBurnIn {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(3px, -2px); }
+            50% { transform: translate(-2px, 3px); }
+            75% { transform: translate(-3px, -1px); }
+            100% { transform: translate(0, 0); }
+        }
+        .car-content-layer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: carAntiBurnIn 45s ease-in-out infinite;
+        }
+
+        /* Header / Top Status Bar */
+        .car-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: .8rem;
+            border-bottom: 1px solid var(--car-border);
+            transition: opacity .4s ease;
+        }
+        .car-brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--car-accent);
+            text-shadow: 0 0 12px var(--car-glow);
+            flex-wrap: wrap;
+        }
+        .car-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--car-border);
+            padding: .15rem .55rem;
+            border-radius: 12px;
+            font-size: .75rem;
+            color: var(--car-accent2);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            transition: all .2s;
+        }
+        .car-badge.clickable {
+            cursor: pointer;
+        }
+        .car-badge.clickable:hover {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            transform: translateY(-1px);
+        }
+
+        /* Top actions buttons - Hidden by default for pristine cockpit dashboard */
+        .car-top-actions {
+            display: none;
+            align-items: center;
+            gap: .5rem;
+        }
+        #bcos-car-lockscreen.show-top-actions, body.show-top-actions .car-top-actions {
+            display: flex;
+        }
+        .car-top-status-right {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+        .car-mini-trigger {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            font-size: .9rem;
+            cursor: pointer;
+            padding: .25rem .6rem;
+            border-radius: 10px;
+            opacity: 0.6;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .car-mini-trigger:hover {
+            opacity: 1;
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            transform: scale(1.05);
+        }
+
+        .car-icon-btn {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            color: var(--car-text);
+            padding: .35rem .7rem;
+            border-radius: 8px;
+            font-size: .8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            transition: all .2s;
+        }
+        .car-icon-btn:hover, .car-icon-btn:active {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+
+        /* Main Cockpit Split Layout */
+        .car-main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1rem 0;
+            min-height: 0;
+        }
+        @media (max-width: 900px) {
+            .car-main-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                overflow-y: auto;
             }
-            #bcos-car-lockscreen.theme-xpeng {
-                background: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
-                color: #e6f7ff; --c-acc: #00eaff; --c-acc2: #a78bfa; --c-glow: rgba(0,234,255,0.45); --c-panel: rgba(10,20,40,0.7); --c-border: rgba(0,234,255,0.25);
-            }
-            #bcos-car-lockscreen.theme-bunny {
-                background: radial-gradient(circle at 50% 30%, #301726 0%, #150912 75%, #0a0408 100%);
-                color: #fff0f5; --c-acc: #ff6b9d; --c-acc2: #ffd166; --c-glow: rgba(255,107,157,0.45); --c-panel: rgba(40,15,30,0.7); --c-border: rgba(255,107,157,0.3);
-            }
-            #bcos-car-lockscreen.theme-aurora {
-                background: radial-gradient(circle at 50% 30%, #082623 0%, #041412 75%, #020807 100%);
-                color: #e6fffb; --c-acc: #06ffa5; --c-acc2: #38bdf8; --c-glow: rgba(6,255,165,0.45); --c-panel: rgba(6,32,28,0.7); --c-border: rgba(6,255,165,0.3);
-            }
-            #bcos-car-lockscreen.theme-carbon {
-                background: radial-gradient(circle at 50% 30%, #2b1114 0%, #120708 75%, #080304 100%);
-                color: #fff1f2; --c-acc: #ff334b; --c-acc2: #fbbf24; --c-glow: rgba(255,51,75,0.45); --c-panel: rgba(35,12,16,0.7); --c-border: rgba(255,51,75,0.3);
-            }
-            #bcos-car-lockscreen.theme-stealth {
-                background: #000000;
-                color: #e5e7eb; --c-acc: #d1d5db; --c-acc2: #6b7280; --c-glow: rgba(255,255,255,0.12); --c-panel: rgba(20,20,20,0.85); --c-border: rgba(255,255,255,0.15);
-            }
-            @keyframes carAntiBurnInDrift {
-                0% { transform: translate(0, 0); }
-                25% { transform: translate(3px, -2px); }
-                50% { transform: translate(-2px, 3px); }
-                75% { transform: translate(-3px, -1px); }
-                100% { transform: translate(0, 0); }
-            }
-            .car-drift-wrap { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; animation: carAntiBurnInDrift 45s ease-in-out infinite; }
-            .car-top-dock { display: flex; align-items: center; justify-content: space-between; padding-bottom: .8rem; border-bottom: 1px solid var(--c-border); transition: opacity .4s ease; }
-            .car-clock-huge { font-size: clamp(3.2rem, 7vw, 5.8rem); font-weight: 800; letter-spacing: 2px; font-family: 'Consolas', monospace; line-height: 1; text-shadow: 0 0 25px var(--c-glow); font-variant-numeric: tabular-nums; }
-            .car-hero-box { background: var(--c-panel); border: 1px solid var(--c-border); border-radius: 16px; padding: 1.2rem 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); margin-top: .6rem; position: relative; overflow: hidden; }
-            .car-hero-box::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--c-acc), var(--c-acc2), transparent); }
-            .car-hero-days-txt { font-size: clamp(2.8rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1; color: var(--c-acc); text-shadow: 0 0 25px var(--c-glow); font-family: 'Consolas', monospace; }
-            .car-slider-dock { display: flex; align-items: center; justify-content: center; padding-top: .8rem; transition: opacity .4s ease; }
-            .car-slider-rail { position: relative; width: min(440px, 90vw); height: 52px; background: var(--c-panel); border: 1px solid var(--c-border); border-radius: 26px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 8px rgba(0,0,0,.6); overflow: hidden; }
-            .car-slider-knob { position: absolute; left: 4px; top: 4px; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--c-acc), var(--c-acc2)); color: #000; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: grab; box-shadow: 0 0 14px var(--c-glow); transition: transform 0.05s ease-out; }
-            .car-slider-knob:active { cursor: grabbing; transform: scale(1.08); }
-            @keyframes bunnyFloatAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-            .car-rabbit-avatar-float { animation: bunnyFloatAnim 3s ease-in-out infinite; font-size: 2.2rem; filter: drop-shadow(0 0 10px var(--c-glow)); flex-shrink: 0; }
+        }
+
+        /* Left Column: Big Clock & Anniversary Hero */
+        .car-hero-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .car-clock-box {
+            margin-bottom: 1.2rem;
+        }
+        .car-digital-clock {
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-weight: 900;
+            font-family: "Courier New", Courier, monospace, "Segoe UI";
+            letter-spacing: 2px;
+            line-height: 1;
+            color: var(--car-accent);
+            text-shadow: 0 0 25px var(--car-glow);
+            font-variant-numeric: tabular-nums;
+        }
+        .car-digital-date {
+            font-size: clamp(0.95rem, 2vw, 1.35rem);
+            color: var(--car-text-dim);
+            margin-top: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        /* Anniversary Hero Card */
+        .car-hero-card {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            border-radius: 18px;
+            padding: 1.4rem 1.6rem;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .car-hero-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, var(--car-glow) 0%, transparent 70%);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .car-hero-title {
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--car-accent);
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .car-hero-days-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: .6rem;
+            margin: .4rem 0 .2rem 0;
+        }
+        .car-hero-days {
+            font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1;
+            font-family: monospace;
+            background: linear-gradient(135deg, var(--car-accent) 0%, var(--car-accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px var(--car-glow);
+        }
+        .car-hero-unit {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--car-text-dim);
+            letter-spacing: 1px;
+        }
+        .car-hero-time {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--car-accent2);
+            font-family: monospace;
+            margin-bottom: .8rem;
+        }
+        .car-hero-progress-box {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 12px;
+            padding: .75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .car-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: .8rem;
+            color: var(--car-text-dim);
+            margin-bottom: .4rem;
+        }
+        .car-progress-bar-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .car-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            border-radius: 6px;
+            box-shadow: 0 0 10px var(--car-glow);
+            transition: width .5s ease;
+        }
+
+        /* Right Column: Widgets */
+        .car-side-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+            justify-content: center;
+        }
+        .car-widget-card {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            border-radius: 16px;
+            padding: 1.1rem 1.3rem;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: border-color .3s;
+        }
+        .car-widget-card:hover {
+            border-color: var(--car-accent);
+        }
+        .car-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .6rem;
+        }
+        .car-widget-header .title {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* EV Battery & Range Hero Component */
+        .car-battery-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .6rem 0 .8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: .7rem;
+        }
+        .car-battery-left {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+        }
+        .car-battery-icon-wrap {
+            display: flex;
+            align-items: center;
+        }
+        .car-battery-outline {
+            width: 58px;
+            height: 28px;
+            border: 2.5px solid var(--car-accent);
+            border-radius: 6px;
+            padding: 2.5px;
+            box-shadow: 0 0 12px var(--car-glow);
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .car-battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            border-radius: 3px;
+            transition: width .5s ease, background .3s;
+        }
+        .car-battery-fill.low {
+            background: #ff334b !important;
+            box-shadow: 0 0 10px rgba(255, 51, 75, 0.6);
+        }
+        .car-battery-fill.mid {
+            background: #fbbf24 !important;
+        }
+        .car-battery-nipple {
+            width: 4px;
+            height: 12px;
+            background: var(--car-accent);
+            border-radius: 0 2px 2px 0;
+            margin-left: 2px;
+        }
+        .car-battery-soc-val {
+            font-size: 1.85rem;
+            font-weight: 900;
+            font-family: monospace;
+            line-height: 1;
+            color: var(--car-accent);
+            text-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-battery-soc-val .unit {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-left: 2px;
+            color: var(--car-text-dim);
+        }
+        .car-battery-right {
+            text-align: right;
+        }
+        .car-battery-range-val {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--car-accent2);
+            font-family: monospace;
+            line-height: 1;
+        }
+        .car-battery-range-val .unit {
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--car-text-dim);
+            margin-left: 2px;
+        }
+        .car-battery-edit-btn {
+            font-size: .7rem;
+            color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            padding: .15rem .45rem;
+            border-radius: 6px;
+            margin-top: .3rem;
+            display: inline-block;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .car-battery-edit-btn:hover {
+            border-color: var(--car-accent);
+            transform: scale(1.05);
+        }
+
+        /* Companion quote box */
+        .car-companion-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+        .car-rabbit-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px var(--car-glow);
+            flex-shrink: 0;
+            animation: carRabbitPulse 4s ease-in-out infinite;
+        }
+        @keyframes carRabbitPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px var(--car-glow); }
+            50% { transform: scale(1.08); box-shadow: 0 0 25px var(--car-glow); }
+        }
+        .car-quote-text {
+            font-size: .88rem;
+            line-height: 1.45;
+            color: var(--car-text);
+            font-style: italic;
+        }
+
+        /* Cockpit diagnostics grid */
+        .car-diag-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .65rem;
+        }
+        .car-diag-item {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: .5rem .7rem;
+            border-radius: 10px;
+        }
+        .car-diag-label {
+            font-size: .65rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.5px;
+            margin-bottom: .2rem;
+        }
+        .car-diag-val {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Music EQ Visualizer Bars */
+        .car-eq-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 16px;
+        }
+        .car-eq-bar {
+            width: 3px;
+            background: var(--car-accent);
+            border-radius: 2px;
+            animation: eqBounce 1.2s ease-in-out infinite alternate;
+        }
+        .car-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+        .car-eq-bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+        .car-eq-bar:nth-child(3) { height: 55%; animation-delay: 0.2s; }
+        .car-eq-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+        .car-eq-bar:nth-child(5) { height: 70%; animation-delay: 0.15s; }
+        .car-eq-bar:nth-child(6) { height: 45%; animation-delay: 0.35s; }
+        @keyframes eqBounce {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1); }
+        }
+
+        /* Milestone Horizontal/Vertical Scroller */
+        .car-milestone-scroller {
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+            padding-right: .3rem;
+        }
+        .car-milestone-scroller::-webkit-scrollbar {
+            width: 4px;
+        }
+        .car-milestone-scroller::-webkit-scrollbar-thumb {
+            background: var(--car-border);
+            border-radius: 2px;
+        }
+        .car-ms-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .78rem;
+            padding: .4rem .6rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+        }
+        .car-ms-row.reached {
+            border-left-color: #00ff41;
+            color: #d1fae5;
+        }
+        .car-ms-row.next {
+            border-left-color: var(--car-accent);
+            background: rgba(0, 234, 255, 0.08);
+            font-weight: 700;
+        }
+
+        /* Bottom Unlock Slider Track */
+        .car-bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: .8rem;
+            border-top: 1px solid var(--car-border);
+            transition: opacity .4s ease;
+        }
+        .car-slider-track {
+            position: relative;
+            width: min(440px, 92%);
+            height: 52px;
+            background: rgba(10, 20, 40, 0.85);
+            border: 1px solid var(--car-border);
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.4);
+            user-select: none;
+            touch-action: pan-y;
+            overflow: hidden;
+        }
+        .car-slider-text {
+            font-size: .88rem;
+            color: var(--car-text-dim);
+            font-weight: 600;
+            letter-spacing: 1px;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            transition: opacity .2s;
+        }
+        .car-slider-thumb {
+            position: absolute;
+            left: 4px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: grab;
+            box-shadow: 0 0 15px var(--car-glow);
+            transition: transform 0.1s ease-out;
+            touch-action: none;
+        }
+        .car-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+
+        /* Modals & Dialogs */
+        .car-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+            padding: 1.5rem;
+        }
+        .car-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .car-modal {
+            background: #0b1120;
+            border: 1px solid var(--car-border);
+            border-radius: 20px;
+            padding: 1.6rem 2rem;
+            max-width: 540px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px var(--car-glow);
+            transform: translateY(20px);
+            transition: transform .3s ease;
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+        .car-modal-overlay.active .car-modal {
+            transform: translateY(0);
+        }
+        .car-modal-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--car-accent);
+            margin-bottom: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .car-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .8rem;
+            margin: 1.2rem 0;
+        }
+        .car-modal-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--car-text);
+            padding: .85rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            font-size: .85rem;
+            font-weight: 600;
+            transition: all .2s;
+            text-decoration: none;
+        }
+        .car-modal-btn:hover {
+            border-color: var(--car-accent);
+            background: rgba(0, 234, 255, 0.12);
+            color: var(--car-accent);
+            transform: translateY(-2px);
+        }
+        .car-modal-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Wallpaper Gallery Grid */
+        .car-wp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: .75rem;
+            max-height: 250px;
+            overflow-y: auto;
+            margin: .8rem 0;
+            padding: .3rem;
+        }
+        .car-wp-item {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all .2s;
+            background: #090e17;
+        }
+        .car-wp-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .car-wp-item.active {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 14px var(--car-glow);
+        }
+        .car-wp-item .label {
+            position: absolute;
+            bottom: 0;
+            inset-inline: 0;
+            background: rgba(0,0,0,.75);
+            font-size: .65rem;
+            padding: .2rem .3rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: center;
+        }
+        .car-wp-item .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--car-accent);
+            color: #000;
+            font-size: .6rem;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        /* Form Inputs in Modals */
+        .car-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            margin-bottom: .8rem;
+        }
+        .car-input-label {
+            font-size: .75rem;
+            color: var(--car-text-dim);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .car-input-control {
+            width: 100%;
+            background: #070c14;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: .6rem .8rem;
+            border-radius: 8px;
+            outline: none;
+            font-size: .9rem;
+            transition: border-color .2s;
+        }
+        .car-input-control:focus {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-tag-row {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+            margin-top: .4rem;
+        }
+        .car-quick-tag {
+            font-size: .72rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: .2rem .5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .car-quick-tag:hover {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+        }
+
+        /* Toast */
+        .car-toast {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--car-accent);
+            box-shadow: 0 0 20px var(--car-glow);
+            color: #fff;
+            padding: .5rem 1.2rem;
+            border-radius: 20px;
+            font-size: .85rem;
+            z-index: 2000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .car-toast.show { opacity: 1; }
+    
+
         `;
         document.head.appendChild(style);
     }
@@ -12479,7 +13362,7 @@
             return '<div class="item"><label>设置与偏好项</label><span class="node-val">' + _bcosEscape(p) + '</span></div>';
         }).join('\n        ');
 
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9375 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9375 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9376 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9376 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
     function _bcosExtractDiffRules(defaultHtml, currentHtml) {
@@ -13324,6 +14207,7 @@ const START_DATE = '2024/03/12 00:00:00';
 
         let allWallpapers = [...BUILTIN_WALLPAPERS];
         let currentWallpaperIdx = 0;
+        let displayTimer = null;
         let wallpaperTimer = null;
 
         function getCustomWallpapers() {
@@ -13540,7 +14424,19 @@ const START_DATE = '2024/03/12 00:00:00';
             wpAbortCtrl = ctrl;
             const token = ++wpLoadToken;
 
-            // ① 先显示模糊占位图: 弱网环境也有画面, 配合微光 shimmer 动画
+            // 缓存命中: 直接平滑显示，绝不闪现占位图或loading微光，彻底杜绝发抽搐
+            if (wpBlobCache[cur.file]) {
+                layer.classList.remove('wp-loading');
+                layer.style.backgroundImage = `url("${wpBlobCache[cur.file]}")`;
+                layer.classList.add('active');
+                if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                highlightActiveThumbnail();
+                wpPreloaded.add(cur.file);
+                preloadNextWallpaper();
+                return;
+            }
+
+            // ① 仅在未缓存时才显示模糊占位图与微光进度
             const ph = WP_PLACEHOLDER[cur.file];
             if (ph) {
                 layer.style.backgroundImage = `url("${ph}")`;
@@ -13548,12 +14444,6 @@ const START_DATE = '2024/03/12 00:00:00';
             }
             layer.classList.add('wp-loading');
             if (badge) badge.textContent = `🖼️ ${cur.name} · 0%`;
-
-            // 缓存命中: 直接显示, 零等待
-            if (wpBlobCache[cur.file]) {
-                showWallpaperBlob(layer, badge, cur, token, wpBlobCache[cur.file]);
-                return;
-            }
 
             // ② 下载壁纸数据, 实时显示进度
             loadWallpaperBlob(cur, ctrl.signal, (loaded, total) => {
@@ -13591,22 +14481,14 @@ const START_DATE = '2024/03/12 00:00:00';
 
         // 把解码后的壁纸显示到锁屏层 (带淡入)
         function showWallpaperBlob(layer, badge, cur, token, objUrl) {
-            const img = new Image();
-            img.onload = () => {
-                if (token !== wpLoadToken) return;
-                layer.style.backgroundImage = `url("${objUrl}")`;
-                layer.classList.remove('wp-loading');
-                layer.classList.add('active');
-                if (badge) badge.textContent = `🖼️ ${cur.name}`;
-                highlightActiveThumbnail();
-                wpPreloaded.add(cur.file);
-                preloadNextWallpaper(); // ③ 后台预加载下一张
-            };
-            img.onerror = () => {
-                layer.classList.remove('wp-loading');
-                if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
-            };
-            img.src = objUrl;
+            if (token !== wpLoadToken) return;
+            layer.style.backgroundImage = `url("${objUrl}")`;
+            layer.classList.remove('wp-loading');
+            layer.classList.add('active');
+            if (badge) badge.textContent = `🖼️ ${cur.name}`;
+            highlightActiveThumbnail();
+            wpPreloaded.add(cur.file);
+            preloadNextWallpaper();
         }
 
         // 后台静默预加载下一张壁纸: 轮播切换时零等待
@@ -14128,7 +15010,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 currentX = Math.max(0, Math.min(deltaX, maxSlide));
                 thumb.style.transform = `translateX(${currentX}px)`;
 
-                if (currentX / maxSlide > 0.85) {
+                if (maxSlide > 0 && currentX / maxSlide > 0.70) {
                     isDragging = false;
                     thumb.style.transform = `translateX(${maxSlide}px)`;
                     unlockScreen();
@@ -14142,14 +15024,17 @@ const START_DATE = '2024/03/12 00:00:00';
                 thumb.style.transform = 'translateX(0px)';
             };
 
-            thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+            thumb.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) onStart(e.touches[0].clientX);
+            }, { passive: true });
             window.addEventListener('touchmove', (e) => {
-                if (isDragging) {
+                if (isDragging && e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onMove(e.touches[0].clientX);
                 }
             }, { passive: false });
             window.addEventListener('touchend', onEnd);
+            window.addEventListener('touchcancel', onEnd);
 
             thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
             window.addEventListener('mousemove', (e) => onMove(e.clientX));
@@ -14409,7 +15294,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9375</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9376</div>
                             </div>
                         </div>
                     </div>
@@ -14702,15 +15587,30 @@ const START_DATE = '2024/03/12 00:00:00';
     <!-- Toast Notification -->
     <div class="car-toast" id="car-toast"></div>`;
 
+        loadSavedTheme();
+        initTopActionsToggle();
+        loadBatteryData();
+        updateDisplay();
+        renderMilestones();
+        if (displayTimer) clearInterval(displayTimer);
+        displayTimer = setInterval(updateDisplay, 100);
         initSlider();
+        acquireWakeLock();
         resetAutoFade();
-        startDisplayTicker();
-        applySavedTheme(savedTheme);
-        applySavedBatterySettings();
-        fetchWallpaperManifest();
+
+        // Load wallpapers & manifest
+        const savedIdx = localStorage.getItem('car_wp_current_idx');
+        if (savedIdx !== null) currentWallpaperIdx = parseInt(savedIdx, 10) || 0;
+        applyCurrentWallpaper();
+        fetchWallpaperManifest(false);
         restartWallpaperTimer();
         prefetchRemainingWallpapers();
-        acquireWakeLock();
+
+        // Initialize dimmer and blur from storage
+        const dim = localStorage.getItem('car_wp_dim') || '45';
+        updateWallpaperDim(dim);
+        const blur = localStorage.getItem('car_wp_blur') || '1';
+        updateWallpaperBlur(blur);
     }
 
     function closeBcosCarLockscreen() {
@@ -18643,32 +19543,38 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.3.9375', title:'BCOS 开机动画 & 深度审计修复', items:[
+        { ver:'v7.8.3.9376', title:'车机锁屏全量同步 & 触屏终极优化', items:[
+            '🐞 修复锁屏初始化崩溃：彻底根除 startDisplayTicker 未定义报错，车机锁屏进入时数字时钟（毫秒级响应）、公农历、电量状态及里程碑列表瞬间满血加载',
+            '🏎️ 全量同步车机座舱样式库：将 car.html 完整的原生座舱样式与主题变量无缝同步至 BCOS 主系统，彻底解决壁纸层缺少定位属性导致的排版塌陷与位移问题',
+            '🖼️ 杜绝壁纸切换抽搐与闪烁：重构壁纸加载与缓存管线，命中 IndexedDB/内存缓存时直接无缝渐变呈现，不再反复穿插低清占位图与 shimmer 动画，切换如丝般顺滑',
+            '🚗 深度优化触屏车机操控：滑块加入 touchcancel 容错与 70% 舒适滑动解锁阈值，按键扩大至中控触屏黄金标准尺寸（44px+），彻底禁用边缘手势干扰',
+        ]},
+        { ver:'v7.8.3.9376', title:'BCOS 开机动画 & 深度审计修复', items:[
             '🚀 BCOS 专属开机动画：现在每次点击"Reboot"或首次进入 BCOS，都会看到优雅的黑底开机动画。内含兔可可头像、版本号、渐变进度条与跳动呼吸光点。开机期间同步在后台进行壁纸库预热、IndexedDB 初始化、自定义壁纸预解码，保证桌面出现时一切已就绪。',
             '🔍 代码深度审计：系统性扫描所有 onclick/ontouchstart 事件引用的函数，验证 44 个关键函数均已正确定义与全局导出，零漏洞',
             '🐛 overscroll 作用域修正：将 overscroll-behavior:none 从 body 全局移至 #bcos-overlay，避免在 BCOS 外部的原始网页区域也无法正常滚动',
             '🖼️ 壁纸初始化顺序修正：_bcosLaunchDesktop 不再硬编码 localStorage 壁纸作为 background inline style，改为完全交由 _bcosApplyDesktopTheme 统一管理，避免 b64 壁纸路径被当作 URL 直接使用',
         ]},
-        { ver:'v7.8.3.9375', title:'桌面体验重构与细节优化', items:[
+        { ver:'v7.8.3.9376', title:'桌面体验重构与细节优化', items:[
             '🎨 BCOS 全局右键菜单支持：为 BCOS 桌面环境打造了专属右键菜单，彻底屏蔽浏览器原生右键菜单。一键快速更换壁纸、直达车机锁屏、打开终端或查看系统信息',
             '🍎 深度适配 iOS/iPadOS 沉浸式体验：在 BCOS 桌面屏蔽了向下拖拽导致的弹性回弹 (overscroll) 及系统原生的退出全屏手势，实现了真正的原生应用级沉浸体验',
             '⏱️ 任务栏实时时间升级：任务栏时钟现已支持秒级实时刷新，同时修复了在窄屏移动设备上时钟文字被过度挤压挤出屏幕边缘的排版问题',
             '🖱️ 窗口控制逻辑重构：修复了点击“红黄绿”三个窗口控制按钮时因标题栏拖拽事件覆盖导致失效的问题，现在关闭、最小化、最大化按钮都能精准响应',
             '🔄 修复关机重置界面：修复了“System Halted”界面中点击 Reboot (重新开机) 按钮无反应的 Bug，保障系统的流畅循环启动',
         ]},
-        { ver:'v7.8.3.9375', title:'系统设置重磅升级 & 锁屏无缝互通', items:[
+        { ver:'v7.8.3.9376', title:'系统设置重磅升级 & 锁屏无缝互通', items:[
             '🎨 系统设置壁纸库互通：BCOS 系统设置现已全面接入车机锁屏的高清壁纸库！直接在 BCOS 中浏览、预览并一键应用内置的星空/插画/极光等 14 款极品壁纸（完美支持 .b64 离线缓存高速加载）！',
             '🚀 默认直开全屏桌面：听取反馈，去除了繁琐的黑底代码 Boot 动画，现在打开网页或点击重新开机，将以毫秒级速度直接进入 BCOS 全景桌面环境！',
             '🛠️ 全局首选项回归：系统设置中补全了之前精简掉的“Tab 栏模式”、“侧边栏模式”与“头像风格”设置，全面满足自定义需求',
             '🐞 修复了在 BCOS 桌面点击【车机锁屏】图标时偶尔报 CAR_THEMES 变量未定义的错误',
         ]},
-        { ver:'v7.8.3.9375', title:'系统设置重构与纯净开机体验升级', items:[
+        { ver:'v7.8.3.9376', title:'系统设置重构与纯净开机体验升级', items:[
             '🎨 重构系统设置布局：彻底废弃老旧的设置页面粗暴移植，为 bcos 量身定制了全新的系统设置窗口，支持自定义壁纸 URL，可随时切换 10 款内置主题或应用专属壁纸！',
             '🚀 纯净开机体验：彻底移除老旧的 Classic UI 入口及相关的 "关于作者" 入口，解决了重复点击导致系统多次挂载产生重复弹窗的严重漏洞',
             '✨ 完美全屏启动：修复了开机强制触发全屏导致的浏览器安全告警，现在将在关机后通过友好的系统已停止界面，以用户点击“重新开机”按钮的方式平滑获取全屏权限',
             '📏 桌面图标完美对齐：修复了桌面图标文字过长换行时导致的列不对齐与排版错乱问题',
         ]},
-        { ver:'v7.8.3.9375', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
+        { ver:'v7.8.3.9376', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
             '🖥️ 网页与PWA直接启动全屏 bcos 操作系统：无论是普通网页直接访问、本地 file:// 访问还是 PWA 桌面应用，均默认直开现代化 bcos 桌面操作系统并自动进入全屏！全新 macOS/Linux 红黄绿三色窗口控制、窗口最小化与任务栏恢复、右下角系统托盘（实时电池电量 ⚡ 88%、⛶ 全屏切换、🚗 车机锁屏一键直达），支持 11 款窗口化多任务独立运行！',
             '🛠️ 彻底修复空指针中断与 TDZ 连锁报错：重构座舱锁屏后台事件绑定与 DOM 检测，彻底根除 `#car-root` 空指针导致整段脚本执行中断的致命异常，彻底解决 `_fontScaleRafId`、`textSelectDisabled`、`CHANGELOG`、`trailCanvas`、`MILESTONES`、`SAVE_SLOTS` 等变量因 Temporal Dead Zone 未初始化报错的问题',
             '🌐 本地与跨域访问安全加固：智能检测当前运行环境，修复本地 `file:///` 协议加载 manifest.json 及 ServiceWorker 注册引发的 CORS origin null 拦截报错，保障本地双击离线直接可用与线上 HTTPS 完美运作',

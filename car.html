@@ -1070,7 +1070,7 @@
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9375</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9376</div>
                             </div>
                         </div>
                     </div>
@@ -1925,7 +1925,19 @@
             wpAbortCtrl = ctrl;
             const token = ++wpLoadToken;
 
-            // ① 先显示模糊占位图: 弱网环境也有画面, 配合微光 shimmer 动画
+            // 缓存命中: 直接平滑显示，绝不闪现占位图或loading微光，彻底杜绝发抽搐
+            if (wpBlobCache[cur.file]) {
+                layer.classList.remove('wp-loading');
+                layer.style.backgroundImage = `url("${wpBlobCache[cur.file]}")`;
+                layer.classList.add('active');
+                if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                highlightActiveThumbnail();
+                wpPreloaded.add(cur.file);
+                preloadNextWallpaper();
+                return;
+            }
+
+            // ① 仅在未缓存时才显示模糊占位图与微光进度
             const ph = WP_PLACEHOLDER[cur.file];
             if (ph) {
                 layer.style.backgroundImage = `url("${ph}")`;
@@ -1933,12 +1945,6 @@
             }
             layer.classList.add('wp-loading');
             if (badge) badge.textContent = `🖼️ ${cur.name} · 0%`;
-
-            // 缓存命中: 直接显示, 零等待
-            if (wpBlobCache[cur.file]) {
-                showWallpaperBlob(layer, badge, cur, token, wpBlobCache[cur.file]);
-                return;
-            }
 
             // ② 下载壁纸数据, 实时显示进度
             loadWallpaperBlob(cur, ctrl.signal, (loaded, total) => {
@@ -1976,22 +1982,14 @@
 
         // 把解码后的壁纸显示到锁屏层 (带淡入)
         function showWallpaperBlob(layer, badge, cur, token, objUrl) {
-            const img = new Image();
-            img.onload = () => {
-                if (token !== wpLoadToken) return;
-                layer.style.backgroundImage = `url("${objUrl}")`;
-                layer.classList.remove('wp-loading');
-                layer.classList.add('active');
-                if (badge) badge.textContent = `🖼️ ${cur.name}`;
-                highlightActiveThumbnail();
-                wpPreloaded.add(cur.file);
-                preloadNextWallpaper(); // ③ 后台预加载下一张
-            };
-            img.onerror = () => {
-                layer.classList.remove('wp-loading');
-                if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
-            };
-            img.src = objUrl;
+            if (token !== wpLoadToken) return;
+            layer.style.backgroundImage = `url("${objUrl}")`;
+            layer.classList.remove('wp-loading');
+            layer.classList.add('active');
+            if (badge) badge.textContent = `🖼️ ${cur.name}`;
+            highlightActiveThumbnail();
+            wpPreloaded.add(cur.file);
+            preloadNextWallpaper();
         }
 
         // 后台静默预加载下一张壁纸: 轮播切换时零等待
@@ -2513,7 +2511,7 @@
                 currentX = Math.max(0, Math.min(deltaX, maxSlide));
                 thumb.style.transform = `translateX(${currentX}px)`;
 
-                if (currentX / maxSlide > 0.85) {
+                if (maxSlide > 0 && currentX / maxSlide > 0.70) {
                     isDragging = false;
                     thumb.style.transform = `translateX(${maxSlide}px)`;
                     unlockScreen();
@@ -2527,14 +2525,17 @@
                 thumb.style.transform = 'translateX(0px)';
             };
 
-            thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+            thumb.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) onStart(e.touches[0].clientX);
+            }, { passive: true });
             window.addEventListener('touchmove', (e) => {
-                if (isDragging) {
+                if (isDragging && e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onMove(e.touches[0].clientX);
                 }
             }, { passive: false });
             window.addEventListener('touchend', onEnd);
+            window.addEventListener('touchcancel', onEnd);
 
             thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
             window.addEventListener('mousemove', (e) => onMove(e.clientX));
