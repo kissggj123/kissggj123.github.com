@@ -11159,7 +11159,10 @@
 
 
     let _bcosCtxMenu = null;
+    let _bcosCtxMenuBound = false;
     function _bcosInitContextMenu() {
+        if (_bcosCtxMenuBound) return;
+        _bcosCtxMenuBound = true;
         document.addEventListener('contextmenu', (e) => {
             if (!document.getElementById('bcos-overlay')?.classList.contains('bcos-desktop-mode')) return;
             e.preventDefault();
@@ -11363,7 +11366,7 @@
         if (typeof _bcosInitContextMenu === 'function') _bcosInitContextMenu();
         _bcosShowOOBE(ov);
         if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
-        setTimeout(() => _bcosOpenApp('terminal'), 300);
+        
     }
 
     function _bcosUpdateClock() {
