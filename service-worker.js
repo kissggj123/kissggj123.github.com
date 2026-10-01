@@ -19,14 +19,10 @@ const RELATIVE_CORE_ASSETS = [
     'wallpaper/Starlight210128.min.b64.p1',
     'wallpaper/Starlight210128.min.b64.p2',
     'wallpaper/Starlight210128.min.b64.p3',
-    'wallpaper/Starlight210128.min.b64.p4',
     'wallpaper/1126942.min.b64.p1',
-    'wallpaper/1126942.min.b64.p2',
     'wallpaper/IMG_2833.min.b64.p1',
     'wallpaper/IMG_2833.min.b64.p2',
     'wallpaper/IMG_2833.min.b64.p3',
-    'wallpaper/IMG_2833.min.b64.p4',
-    'dist/Bunny%20CC_Profile.JPG'
 ];
 const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).href);
 
