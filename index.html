@@ -3,31 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.1.9365 -->
-    <title>兔可可王国 🐰</title>
-    <meta name="description" content="兔可可王国 · 大富翁模拟经营 + bcos 虚拟操作系统 + 智能座舱车机锁屏 + 纪念日流转">
+    <!-- VERSION: v7.8.2.9370 -->
+    <title>兔可可王国 · bcos 虚拟系统 🐰</title>
+    <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="兔可可王国 🐰">
-    <meta property="og:description" content="兔可可王国 · 大富翁模拟经营 + bcos 虚拟操作系统 + 智能座舱车机锁屏 + 纪念日流转">
+    <meta property="og:title" content="兔可可王国 · bcos 🐰">
+    <meta property="og:description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta property="og:image" content="./icon/512.png">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="兔可可王国 🐰">
-    <meta name="twitter:description" content="兔可可王国 · 大富翁模拟经营 + bcos 虚拟操作系统 + 智能座舱车机锁屏 + 纪念日流转">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.1.9365">
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.1.9365">
-    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.1.9365">
-    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.1.9365">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.1.9365">
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.1.9365">
+    <meta name="twitter:title" content="兔可可王国 · bcos 🐰">
+    <meta name="twitter:description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.2.9370">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.2.9370">
+    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.2.9370">
+    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.2.9370">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.2.9370">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.2.9370">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./car.css">
     <!-- PWA -->
     <meta name="theme-color" content="#FFF0F5">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="兔可可">
+    <meta name="apple-mobile-web-app-title" content="bcos">
     <link rel="apple-touch-icon" href="./icon/512.png">
     <link rel="apple-touch-icon" sizes="180x180" href="./icon/256.png">
     <link rel="apple-touch-icon" sizes="192x192" href="./icon/192.png">
@@ -1679,7 +1681,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.1.9365',
+        VERSION: 'v7.8.2.9370',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2534,17 +2536,22 @@
         safe(initAvatarEffect);
         safe(initMobileTouchBloom);
         safe(startLoop);
-        safe(applyDefaultView);
         safe(() => {
             const sp = new URLSearchParams(window.location.search);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || sp.get('pwa') === '1';
             if (sp.has('car') || sp.get('mode') === 'car' || sp.has('lock') || sp.has('lockscreen') || sp.get('bcos') === 'car') {
                 setTimeout(() => showBcosCarLockscreen(), 150);
-            } else if (sp.get('bcos') === 'desktop' || sp.get('mode') === 'desktop') {
-                setTimeout(() => { showBcosOS(); setTimeout(() => { if (_bcos.mode === 'terminal') _bcosLaunchDesktop(); }, 1200); }, 150);
+            } else if (isStandalone || sp.get('bcos') === 'desktop' || sp.get('mode') === 'desktop') {
+                setTimeout(() => {
+                    showBcosOS();
+                    setTimeout(() => { if (_bcos.mode === 'terminal' || _bcos.mode === 'boot') _bcosLaunchDesktop(); }, 500);
+                }, 100);
             } else if (sp.has('bcos')) {
                 setTimeout(() => showBcosOS(), 150);
             } else if (sp.get('view') === 'anniversary' || sp.has('anniversary')) {
                 navigateTo('anniversary');
+            } else {
+                applyDefaultView();
             }
         });
     };
@@ -2556,9 +2563,9 @@
         else if (dv === 'anniversary') navigateTo('anniversary');
         else if (dv === 'logs') navigateTo('logs');
         else if (dv === 'settings') navigateTo('settings');
-        else if (dv === 'bcos') setTimeout(() => showBcosOS(), 500);
-        else if (dv === 'bcos-desktop') setTimeout(() => { showBcosOS(); setTimeout(() => { if (_bcos.mode === 'terminal') _bcosLaunchDesktop(); }, 2500); }, 500);
-        else if (dv === 'carlock') setTimeout(() => showBcosCarLockscreen(), 500);
+        else if (dv === 'bcos') setTimeout(() => showBcosOS(), 200);
+        else if (dv === 'bcos-desktop' || dv === 'desktop') setTimeout(() => { showBcosOS(); setTimeout(() => { if (_bcos.mode === 'terminal' || _bcos.mode === 'boot') _bcosLaunchDesktop(); }, 600); }, 200);
+        else if (dv === 'carlock') setTimeout(() => showBcosCarLockscreen(), 200);
     }
 
     function setDefaultView(v) {
@@ -10878,10 +10885,65 @@
                 _bcosPrint('<span class="bcos-info">Commands:</span> <span class="bcos-success">car</span> (车机全屏锁屏) | <span class="bcos-success">anniversary gui</span> | <span class="bcos-success">anniversary add &lt;name&gt; &lt;date&gt;</span> | <span class="bcos-success">anniversary del &lt;name&gt;</span>');
             },
             anni: (args) => _bcosGetCommands().anniversary(args),
+            monopoly: () => {
+                if (_bcos.mode === 'desktop') {
+                    _bcosOpenApp('monopoly');
+                    _bcosPrint('<span class="bcos-success">✓ Launched: Monopoly Kingdom</span>');
+                } else {
+                    _bcosLaunchDesktop();
+                    setTimeout(() => _bcosOpenApp('monopoly'), 300);
+                }
+            },
+            mono: (args) => _bcosGetCommands().monopoly(args),
+            game: (args) => _bcosGetCommands().monopoly(args),
+            settings: () => {
+                if (_bcos.mode === 'desktop') {
+                    _bcosOpenApp('settings');
+                    _bcosPrint('<span class="bcos-success">✓ Opened: System Settings</span>');
+                } else {
+                    _bcosLaunchDesktop();
+                    setTimeout(() => _bcosOpenApp('settings'), 300);
+                }
+            },
+            pref: (args) => _bcosGetCommands().settings(args),
+            config: (args) => _bcosGetCommands().settings(args),
+            logs: () => {
+                if (_bcos.mode === 'desktop') {
+                    _bcosOpenApp('logs');
+                    _bcosPrint('<span class="bcos-success">✓ Opened: System Logs</span>');
+                } else {
+                    _bcosLaunchDesktop();
+                    setTimeout(() => _bcosOpenApp('logs'), 300);
+                }
+            },
+            log: (args) => _bcosGetCommands().logs(args),
+            changelog: (args) => _bcosGetCommands().logs(args),
+            carlock: () => { showBcosCarLockscreen(); },
             car: () => { showBcosCarLockscreen(); },
             lock: () => { showBcosCarLockscreen(); },
             lockscreen: () => { showBcosCarLockscreen(); },
             screensaver: () => { showBcosCarLockscreen(); },
+            app: (args) => {
+                const a = (args[0] || '').toLowerCase();
+                const appMap = {
+                    'texteditor': 'texteditor', 'editor': 'texteditor', 'browser': 'browser',
+                    'files': 'files', 'monitor': 'monitor', 'about': 'about', 'terminal': 'terminal', 'me': 'me',
+                    'anniversary': 'anniversary', 'anni': 'anniversary',
+                    'monopoly': 'monopoly', 'mono': 'monopoly', 'game': 'monopoly',
+                    'settings': 'settings', 'pref': 'settings', 'config': 'settings',
+                    'logs': 'logs', 'log': 'logs', 'changelog': 'logs',
+                    'carlock': 'carlock', 'car': 'carlock', 'lock': 'carlock', 'lockscreen': 'carlock'
+                };
+                const target = appMap[a];
+                if (!target) {
+                    _bcosPrint('<span class="bcos-error">app: Unknown application: ' + _bcosEscape(a) + '</span>');
+                    _bcosPrint('<span class="bcos-dim">Available apps: terminal, files, monitor, browser, anniversary, monopoly, settings, logs, carlock, texteditor, about</span>');
+                    return;
+                }
+                if (target === 'carlock') { showBcosCarLockscreen(); return; }
+                if (_bcos.mode === 'desktop') _bcosOpenApp(target);
+                else { _bcosLaunchDesktop(); setTimeout(() => _bcosOpenApp(target), 300); }
+            }
         };
     }
 
@@ -10897,6 +10959,9 @@
                 'texteditor': 'texteditor', 'editor': 'texteditor', 'browser': 'browser',
                 'files': 'files', 'monitor': 'monitor', 'about': 'about', 'terminal': 'terminal', 'me': 'me',
                 'anniversary': 'anniversary', 'anni': 'anniversary',
+                'monopoly': 'monopoly', 'mono': 'monopoly', 'game': 'monopoly',
+                'settings': 'settings', 'pref': 'settings', 'config': 'settings',
+                'logs': 'logs', 'log': 'logs', 'changelog': 'logs',
                 'carlock': 'carlock', 'car': 'carlock', 'lock': 'carlock', 'lockscreen': 'carlock'
             };
             const app = appMap[appName];
@@ -10907,7 +10972,8 @@
                     return;
                 }
                 if (_bcos.mode !== 'desktop') {
-                    _bcosPrint('<span class="bcos-warn">bcos: ' + _bcosEscape(appName) + ' requires desktop mode. Type \'desktop\' first.</span>');
+                    _bcosLaunchDesktop();
+                    setTimeout(() => _bcosOpenApp(app), 300);
                 } else {
                     _bcosOpenApp(app);
                     _bcosPrint('<span class="bcos-success">✓ Launched: ' + _bcosEscape(appName) + '</span>');
@@ -10915,7 +10981,7 @@
                 return;
             }
             _bcosPrint('<span class="bcos-cmd-not-found">bcos: ' + _bcosEscape(name) + ': No such application</span>');
-            _bcosPrint('<span class="bcos-dim">Available: ./texteditor ./browser ./files ./monitor ./about</span>');
+            _bcosPrint('<span class="bcos-dim">Available: ./texteditor ./browser ./files ./monitor ./anniversary ./monopoly ./settings ./logs ./carlock ./about</span>');
             return;
         }
         if (cmds[name]) {
@@ -11138,7 +11204,11 @@
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">${dt.icons.monitor}</div><div class="bcos-desktop-icon-label">Monitor</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('browser')"><div class="bcos-desktop-icon-emoji">${dt.icons.browser}</div><div class="bcos-desktop-icon-label">Browser</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('anniversary')"><div class="bcos-desktop-icon-emoji">${dt.icons.anniversary||'💕'}</div><div class="bcos-desktop-icon-label">纪念日</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monopoly')"><div class="bcos-desktop-icon-emoji">🎲</div><div class="bcos-desktop-icon-label">大富翁</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('settings')"><div class="bcos-desktop-icon-emoji">⚙️</div><div class="bcos-desktop-icon-label">系统设置</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('logs')"><div class="bcos-desktop-icon-emoji">📜</div><div class="bcos-desktop-icon-label">运行日志</div></div>
                     <div class="bcos-desktop-icon" onclick="showBcosCarLockscreen()"><div class="bcos-desktop-icon-emoji">${dt.icons.car||'🚗'}</div><div class="bcos-desktop-icon-label">车机锁屏</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('texteditor')"><div class="bcos-desktop-icon-emoji">${dt.icons.editor||'📝'}</div><div class="bcos-desktop-icon-label">Text Editor</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">${dt.icons.about}</div><div class="bcos-desktop-icon-label">About</div></div>
                 </div>
                 <div class="bcos-desktop-icon" style="position:absolute;right:${meX}px;top:${meY}px;" onclick="_bcosOpenApp('me')"><div class="bcos-desktop-icon-emoji">${dt.icons.me}</div><div class="bcos-desktop-icon-label">me</div></div>
@@ -11150,16 +11220,21 @@
                 <div class="bcos-taskbar-clock" id="bcos-clock">--:--</div>
             </div>
             <div class="bcos-start-menu" id="bcos-start-menu">
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('terminal');_bcosToggleStartMenu()">${dt.icons.terminal} Terminal</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('files');_bcosToggleStartMenu()">${dt.icons.files} File Manager</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monitor');_bcosToggleStartMenu()">${dt.icons.monitor} System Monitor</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('browser');_bcosToggleStartMenu()">${dt.icons.browser} Browser</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('terminal');_bcosToggleStartMenu()">${dt.icons.terminal} Terminal (终端控制)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('files');_bcosToggleStartMenu()">${dt.icons.files} File Manager (文件管理)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monitor');_bcosToggleStartMenu()">${dt.icons.monitor} System Monitor (系统监视)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('browser');_bcosToggleStartMenu()">${dt.icons.browser} Browser (系统浏览器)</div>
                 <div class="bcos-start-menu-item" onclick="_bcosOpenApp('anniversary');_bcosToggleStartMenu()">${dt.icons.anniversary||'💕'} 纪念日 (Anniversary)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monopoly');_bcosToggleStartMenu()">🎲 大富翁模拟经营 (Monopoly)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('settings');_bcosToggleStartMenu()">⚙️ 系统设置 (System Settings)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('logs');_bcosToggleStartMenu()">📜 运行日志 (System Logs)</div>
                 <div class="bcos-start-menu-item" onclick="showBcosCarLockscreen();_bcosToggleStartMenu()">${dt.icons.car||'🚗'} 车机锁屏 (Car Lock Screen)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('about');_bcosToggleStartMenu()">${dt.icons.about} About bcos</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('texteditor');_bcosToggleStartMenu()">${dt.icons.editor||'📝'} Text Editor (代码文本)</div>
+                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('about');_bcosToggleStartMenu()">${dt.icons.about} About bcos (关于系统)</div>
                 <div class="bcos-start-menu-separator"></div>
                 <div class="bcos-start-menu-item" onclick="_bcosBackToTerminal();_bcosToggleStartMenu()">⌨️ Back to Terminal</div>
-                <div class="bcos-start-menu-item" onclick="closeBcosOS();_bcosToggleStartMenu()">⏻ Exit bcos</div>
+                <div class="bcos-start-menu-item" onclick="toggleFullscreen();_bcosToggleStartMenu()">⛶ Toggle Fullscreen (全屏)</div>
+                <div class="bcos-start-menu-item" onclick="closeBcosOS();_bcosToggleStartMenu()">⏻ Exit bcos to Classic View</div>
             </div>
         </div>`;
         _bcosUpdateClock();
@@ -11205,16 +11280,23 @@
     }
 
     function _bcosOpenApp(app) {
+        if (app === 'carlock' || app === 'car' || app === 'lock') {
+            showBcosCarLockscreen();
+            return;
+        }
         if (_bcos.wins[app]) { _bcosFocusWin(app); return; }
         const apps = {
-            terminal: { t: 'Terminal — bcos@bunny', w: 480, h: 320 },
-            files: { t: 'File Manager', w: 480, h: 380 },
-            monitor: { t: 'System Monitor', w: 420, h: 340 },
-            about: { t: 'About bcos', w: 380, h: 340 },
-            browser: { t: 'Browser — bcos', w: 520, h: 380 },
-            me: { t: 'me — File Explorer', w: 360, h: 300 },
-            texteditor: { t: 'Text Editor — bcos', w: 520, h: 400 },
-            anniversary: { t: '💕 兔可可纪念日 — Anniversary', w: 560, h: 460 }
+            terminal: { t: 'Terminal — bcos@bunny', w: 520, h: 360 },
+            files: { t: 'File Manager — bcos', w: 520, h: 400 },
+            monitor: { t: 'System Monitor — bcos', w: 460, h: 360 },
+            about: { t: 'About bcos', w: 420, h: 360 },
+            browser: { t: 'Browser — bcos', w: 560, h: 420 },
+            me: { t: 'me — File Explorer', w: 400, h: 320 },
+            texteditor: { t: 'Text Editor — bcos', w: 560, h: 420 },
+            anniversary: { t: '💕 兔可可纪念日 — Anniversary', w: 580, h: 480 },
+            monopoly: { t: '🎲 大富翁模拟经营 — Monopoly Kingdom', w: 880, h: 580 },
+            settings: { t: '⚙️ 系统设置 — System Settings', w: 720, h: 520 },
+            logs: { t: '📜 系统运行日志 — System Logs', w: 680, h: 480 }
         };
         const cfg = apps[app]; if (!cfg) return;
         const winId = 'bcos-win-' + app;
@@ -11222,10 +11304,14 @@
         if (!container) return;
         const win = document.createElement('div');
         win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
-        const offset = Object.keys(_bcos.wins).length * 30;
-        win.style.cssText += `left:0;top:0;width:${cfg.w}px;height:${cfg.h}px;transform:translate3d(${50+offset}px, ${30+offset}px, 0);`;
-        win._bcosTX = 50 + offset; win._bcosTY = 30 + offset;
-        win._bcosOrigW = cfg.w; win._bcosOrigH = cfg.h;
+        const offset = Object.keys(_bcos.wins).length * 28;
+        const maxW = Math.min(cfg.w, Math.max(320, window.innerWidth - 16));
+        const maxH = Math.min(cfg.h, Math.max(260, window.innerHeight - 70));
+        const leftX = Math.max(8, Math.min(30 + offset, Math.max(10, window.innerWidth - maxW - 8)));
+        const topY = Math.max(8, Math.min(20 + offset, Math.max(10, window.innerHeight - maxH - 50)));
+        win.style.cssText += `left:0;top:0;width:${maxW}px;height:${maxH}px;transform:translate3d(${leftX}px, ${topY}px, 0);`;
+        win._bcosTX = leftX; win._bcosTY = topY;
+        win._bcosOrigW = maxW; win._bcosOrigH = maxH;
         win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><span class="bcos-window-title">${cfg.t}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseWin('${app}')"></button></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
         container.appendChild(win);
         _bcos.wins[app] = winId;
@@ -11241,6 +11327,9 @@
             else if (app === 'me') _bcosRenderMeFolder(content);
             else if (app === 'texteditor') _bcosRenderTextEditor(content);
             else if (app === 'anniversary') _bcosRenderAnniversaryApp(content);
+            else if (app === 'monopoly') _bcosRenderMonopolyApp(content);
+            else if (app === 'settings') _bcosRenderSettingsApp(content);
+            else if (app === 'logs') _bcosRenderLogsApp(content);
         } catch(err) {
             if (content) content.innerHTML = '<div style="color:#f44;padding:.5rem;font-size:12px;">Error loading app: ' + _bcosEscape(err.message) + '</div>';
             console.error('bcos app render error:', err);
@@ -11259,10 +11348,117 @@
         if (app === 'anniversary' && typeof _bcosAnniAppTimer !== 'undefined' && _bcosAnniAppTimer) { clearInterval(_bcosAnniAppTimer); _bcosAnniAppTimer = null; }
         if (app === 'browser') { var ab = document.getElementById('bcos-egg-applybar'); if (ab) ab.remove(); if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; } }
         if (app === 'texteditor') { if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; } }
+        if (app === 'monopoly') {
+            const el = document.getElementById('view-monopoly');
+            if (el && el._origParent) {
+                el.style.display = '';
+                el.classList.remove('active');
+                if (el._origNextSibling) el._origParent.insertBefore(el, el._origNextSibling);
+                else el._origParent.appendChild(el);
+                el._origParent = null;
+            }
+        }
+        if (app === 'settings') {
+            const el = document.getElementById('view-settings');
+            if (el && el._origParent) {
+                el.style.display = '';
+                el.classList.remove('active');
+                if (el._origNextSibling) el._origParent.insertBefore(el, el._origNextSibling);
+                else el._origParent.appendChild(el);
+                el._origParent = null;
+            }
+        }
+        if (app === 'logs') {
+            const el = document.getElementById('view-logs');
+            if (el && el._origParent) {
+                el.style.display = '';
+                el.classList.remove('active');
+                if (el._origNextSibling) el._origParent.insertBefore(el, el._origNextSibling);
+                else el._origParent.appendChild(el);
+                el._origParent = null;
+            }
+        }
         _bcosUpdateTaskbar();
     }
     function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
-    function _bcosUpdateTaskbar() { const b = document.getElementById('bcos-taskbar-items'); if (!b) return; const labels = { terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About', browser: 'Browser', me: 'me', texteditor: 'Editor', anniversary: '纪念日' }; b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join(''); }
+    function _bcosUpdateTaskbar() {
+        const b = document.getElementById('bcos-taskbar-items');
+        if (!b) return;
+        const labels = {
+            terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About',
+            browser: 'Browser', me: 'me', texteditor: 'Editor', anniversary: '纪念日',
+            monopoly: '大富翁', settings: '设置', logs: '日志'
+        };
+        b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosFocusWin('${a}')">${labels[a]||a}</div>`).join('');
+    }
+
+    function _bcosRenderMonopolyApp(content) {
+        content.style.padding = '0';
+        content.style.overflow = 'auto';
+        content.style.height = '100%';
+        const host = document.createElement('div');
+        host.id = 'bcos-mono-host';
+        host.style.padding = '.8rem';
+        host.style.color = 'var(--text)';
+        const el = document.getElementById('view-monopoly');
+        if (el) {
+            if (!el._origParent) {
+                el._origParent = el.parentNode;
+                el._origNextSibling = el.nextSibling;
+            }
+            el.style.display = 'block';
+            el.classList.add('active');
+            host.appendChild(el);
+        }
+        content.appendChild(host);
+        if (typeof renderMonopoly === 'function') renderMonopoly();
+    }
+
+    function _bcosRenderSettingsApp(content) {
+        content.style.padding = '0';
+        content.style.overflow = 'auto';
+        content.style.height = '100%';
+        const host = document.createElement('div');
+        host.id = 'bcos-settings-host';
+        host.style.padding = '.8rem';
+        host.style.color = 'var(--text)';
+        const el = document.getElementById('view-settings');
+        if (el) {
+            if (!el._origParent) {
+                el._origParent = el.parentNode;
+                el._origNextSibling = el.nextSibling;
+            }
+            el.style.display = 'block';
+            el.classList.add('active');
+            host.appendChild(el);
+        }
+        content.appendChild(host);
+        if (typeof renderGodPanel === 'function' && godModeActive) renderGodPanel();
+        if (typeof renderSaveSlots === 'function') renderSaveSlots();
+        if (typeof updateNotifyBtn === 'function') updateNotifyBtn();
+    }
+
+    function _bcosRenderLogsApp(content) {
+        content.style.padding = '0';
+        content.style.overflow = 'auto';
+        content.style.height = '100%';
+        const host = document.createElement('div');
+        host.id = 'bcos-logs-host';
+        host.style.padding = '.8rem';
+        host.style.color = 'var(--text)';
+        const el = document.getElementById('view-logs');
+        if (el) {
+            if (!el._origParent) {
+                el._origParent = el.parentNode;
+                el._origNextSibling = el.nextSibling;
+            }
+            el.style.display = 'block';
+            el.classList.add('active');
+            host.appendChild(el);
+        }
+        content.appendChild(host);
+        if (typeof renderEvents === 'function') renderEvents();
+    }
     function _bcosDragStart(winId, e) {
         // Don't start drag if clicking on window controls (close button)
         if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
@@ -12350,17 +12546,1161 @@
         }
     }
 
-    const _CAR_THEMES = [
-        { id: 'theme-xpeng', name: '小鹏赛博 · 霓虹青' },
-        { id: 'theme-bunny', name: '棉花糖兔 · 梦幻粉' },
-        { id: 'theme-aurora', name: '极光深空 · 翡翠绿' },
-        { id: 'theme-carbon', name: '运动竞速 · 烈焰红' },
-        { id: 'theme-stealth', name: '极简护眼 · OLED黑' }
-    ];
-    let _carCurrentThemeIdx = 0;
+(function(){
+
+    /* ==================== BCOS Car Cockpit Lockscreen (Sync with car.html) ==================== */
+const START_DATE = '2024/03/12 00:00:00';
+        const MILESTONES = [
+            { days: 100, label: '100天纪念' },
+            { days: 180, label: '180天纪念' },
+            { days: 300, label: '300天纪念' },
+            { days: 365, label: '一周年 (365天)' },
+            { days: 500, label: '500天纪念' },
+            { days: 730, label: '两周年 (730天)' },
+            { days: 1000, label: '1000天纪念 (千日里程碑)' },
+            { days: 1095, label: '三周年 (1095天)' },
+            { days: 1461, label: '四周年 (1461天)' },
+            { days: 1500, label: '1500天纪念' },
+            { days: 1826, label: '五周年 (1826天)' },
+            { days: 2000, label: '2000天纪念' },
+            { days: 3652, label: '十周年 (3652天)' },
+            { days: 10000, label: '10000天 (万日之约)' }
+        ];
+
+        const THEMES = [
+            { id: 'theme-xpeng', name: '小鹏赛博 · 霓虹青' },
+            { id: 'theme-bunny', name: '棉花糖兔 · 梦幻粉' },
+            { id: 'theme-aurora', name: '极光深空 · 翡翠绿' },
+            { id: 'theme-carbon', name: '运动竞速 · 烈焰红' },
+            { id: 'theme-stealth', name: '极简护眼 · OLED黑' }
+        ];
+
+        const COMPANION_QUOTES = [
+            "道路千万条，安全第一条，兔兔与你一路同行~",
+            "每一段路程都有兔可可相伴，愿你所行皆坦途！",
+            "累了就进服务区歇歇脚，给兔兔喂根胡萝卜🥕",
+            "电量充沛，能量满格，今天也是元气满满的一天！",
+            "在虚拟与现实的交汇点，兔可可永远在车机里守护你。",
+            "看前方的风景，也别忘了身边温暖的小确幸✨"
+        ];
+        let currentQuoteIdx = 0;
+
+        function showToast(msg) {
+            const t = document.getElementById('car-toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        // --- Theme Management ---
+        let currentThemeIdx = 0;
+        function loadSavedTheme() {
+            const saved = localStorage.getItem('bcos_car_theme');
+            const idx = THEMES.findIndex(t => t.id === saved);
+            if (idx !== -1) currentThemeIdx = idx;
+            applyTheme();
+        }
+        function applyTheme() {
+            document.body.className = THEMES[currentThemeIdx].id;
+            const badge = document.getElementById('car-theme-name');
+            if (badge) badge.textContent = THEMES[currentThemeIdx].name;
+            localStorage.setItem('bcos_car_theme', THEMES[currentThemeIdx].id);
+        }
+        function cycleTheme() {
+            currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
+            applyTheme();
+            showToast('已切换氛围主题: ' + THEMES[currentThemeIdx].name);
+        }
+
+        // --- Top Bar Buttons Toggle (User Request: Hide top buttons by default) ---
+        function initTopActionsToggle() {
+            const show = localStorage.getItem('car_show_top_actions') === 'true';
+            applyTopActionsState(show);
+        }
+        function applyTopActionsState(show) {
+            if (show) {
+                document.body.classList.add('show-top-actions');
+            } else {
+                document.body.classList.remove('show-top-actions');
+            }
+            const btn = document.getElementById('toggle-top-btn');
+            if (btn) btn.textContent = show ? '常驻显示中 (点击隐藏)' : '已隐藏 (点击显示)';
+        }
+        function toggleTopActions() {
+            const current = document.body.classList.contains('show-top-actions');
+            const next = !current;
+            localStorage.setItem('car_show_top_actions', next ? 'true' : 'false');
+            applyTopActionsState(next);
+            showToast(next ? '✓ 顶部操作按键已常驻显示' : '✓ 顶部操作按键已隐藏（可在设置中随时恢复）');
+        }
+
+        // --- EV Battery & Range Management ---
+        let carBatteryData = {
+            soc: 88,
+            range: 535,
+            standard: 'WLTP', // 'WLTP' or '实估' (Only these two options)
+            mode: '🌱 标准节能',
+            temp: 22
+        };
+
+        function loadBatteryData() {
+            try {
+                const s = localStorage.getItem('car_soc');
+                if (s !== null) carBatteryData.soc = Math.max(0, Math.min(100, parseInt(s, 10)));
+                const r = localStorage.getItem('car_range');
+                if (r !== null) carBatteryData.range = Math.max(0, parseInt(r, 10));
+                const std = localStorage.getItem('car_range_standard');
+                if (std === 'WLTP' || std === '实估') carBatteryData.standard = std;
+                const m = localStorage.getItem('car_drive_mode');
+                if (m) carBatteryData.mode = m;
+                const t = localStorage.getItem('car_cabin_temp');
+                if (t !== null) carBatteryData.temp = parseInt(t, 10);
+            } catch(e) {}
+            renderBatteryUI();
+        }
+
+        function renderBatteryUI() {
+            // Update numbers
+            const socEl = document.getElementById('car-soc-num');
+            const rangeEl = document.getElementById('car-range-num');
+            const topBatEl = document.getElementById('car-top-battery-txt');
+            const fillEl = document.getElementById('car-battery-fill');
+            const modeEl = document.getElementById('car-drive-mode');
+            const tempEl = document.getElementById('car-temp-status');
+            const rangeTypeEl = document.getElementById('car-range-type-label');
+
+            if (socEl) socEl.textContent = carBatteryData.soc;
+            if (rangeEl) rangeEl.textContent = carBatteryData.range;
+            if (rangeTypeEl) rangeTypeEl.textContent = `${carBatteryData.standard} 预估续航`;
+            if (topBatEl) topBatEl.textContent = `🔋 ${carBatteryData.soc}% · ${carBatteryData.range} km (${carBatteryData.standard})`;
+            if (modeEl) modeEl.textContent = carBatteryData.mode;
+            if (tempEl) tempEl.textContent = `🌤️ ${carBatteryData.temp}°C / 舒适`;
+
+            if (fillEl) {
+                fillEl.style.width = carBatteryData.soc + '%';
+                fillEl.classList.remove('low', 'mid');
+                if (carBatteryData.soc < 20) fillEl.classList.add('low');
+                else if (carBatteryData.soc < 50) fillEl.classList.add('mid');
+            }
+        }
+
+        function openBatteryModal() {
+            closeMenuModal();
+            document.getElementById('input-car-soc').value = carBatteryData.soc;
+            document.getElementById('slider-car-soc').value = carBatteryData.soc;
+            document.getElementById('battery-slider-val').textContent = carBatteryData.soc + '%';
+            document.getElementById('input-car-range').value = carBatteryData.range;
+            document.getElementById('range-display-preview').textContent = `${carBatteryData.range} km (${carBatteryData.standard})`;
+            document.getElementById('select-car-mode').value = carBatteryData.mode;
+            document.getElementById('input-car-temp').value = carBatteryData.temp;
+            updateRangeStandardButtons(carBatteryData.standard);
+            document.getElementById('car-battery-modal').classList.add('active');
+        }
+
+        function closeBatteryModal() {
+            document.getElementById('car-battery-modal').classList.remove('active');
+        }
+
+        function selectRangeStandard(std) {
+            carBatteryData.standard = (std === '实估') ? '实估' : 'WLTP';
+            updateRangeStandardButtons(carBatteryData.standard);
+            updateRangePreview(document.getElementById('input-car-range').value);
+        }
+
+        function updateRangeStandardButtons(std) {
+            document.querySelectorAll('.range-type-btn').forEach(btn => {
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                btn.style.color = 'var(--car-text)';
+            });
+            const activeId = (std === '实估') ? 'range-type-est' : 'range-type-wltp';
+            const active = document.getElementById(activeId);
+            if (active) {
+                active.style.borderColor = 'var(--car-accent)';
+                active.style.color = 'var(--car-accent)';
+            }
+        }
+
+        function syncBatterySlider(val) {
+            const num = Math.max(0, Math.min(100, parseInt(val, 10) || 0));
+            document.getElementById('slider-car-soc').value = num;
+            document.getElementById('battery-slider-val').textContent = num + '%';
+        }
+
+        function syncBatteryInput(val) {
+            document.getElementById('input-car-soc').value = val;
+            document.getElementById('battery-slider-val').textContent = val + '%';
+        }
+
+        function quickSetSoc(pct) {
+            syncBatteryInput(pct);
+            syncBatterySlider(pct);
+        }
+
+        function updateRangePreview(val) {
+            document.getElementById('range-display-preview').textContent = `${val || 0} km (${carBatteryData.standard})`;
+        }
+
+        function stepRange(delta) {
+            const el = document.getElementById('input-car-range');
+            let current = parseInt(el.value, 10) || 0;
+            current = Math.max(0, current + delta);
+            el.value = current;
+            updateRangePreview(current);
+        }
+
+        function quickSetRange(val) {
+            const el = document.getElementById('input-car-range');
+            el.value = val;
+            updateRangePreview(val);
+        }
+
+        function saveBatteryModalData() {
+            const soc = Math.max(0, Math.min(100, parseInt(document.getElementById('input-car-soc').value, 10) || 0));
+            const range = Math.max(0, parseInt(document.getElementById('input-car-range').value, 10) || 0);
+            const mode = document.getElementById('select-car-mode').value;
+            const temp = parseInt(document.getElementById('input-car-temp').value, 10) || 22;
+
+            carBatteryData = {
+                soc,
+                range,
+                standard: carBatteryData.standard,
+                mode,
+                temp
+            };
+            localStorage.setItem('car_soc', soc);
+            localStorage.setItem('car_range', range);
+            localStorage.setItem('car_range_standard', carBatteryData.standard);
+            localStorage.setItem('car_drive_mode', mode);
+            localStorage.setItem('car_cabin_temp', temp);
+
+            renderBatteryUI();
+            closeBatteryModal();
+            showToast(`✓ 车辆动力能耗已更新 (${carBatteryData.standard} 标准)！`);
+        }
+
+        // --- Wallpaper Engine ---
+        // b64+parts: 壁纸以 base64 文本分片存储(绕开二进制上传限制), 前端并行下载分片后解码显示
+        const BUILTIN_WALLPAPERS = [
+            { id: 'starlight', name: '星空原野 · 银河漫步', file: 'wallpaper/Starlight210128.min.b64', b64: true, parts: 3, size: 296020 },
+            { id: 'illustration', name: '梦幻插画 · 浪漫次元', file: 'wallpaper/1126942.min.b64', b64: true, parts: 1, size: 111336 },
+            { id: 'bunny_snow', name: '兔可可 · 纯真雪白', file: 'wallpaper/IMG_2833.min.b64', b64: true, parts: 3, size: 334780 },
+        ];
+
+        let allWallpapers = [...BUILTIN_WALLPAPERS];
+        let currentWallpaperIdx = 0;
+        let wallpaperTimer = null;
+
+        function getCustomWallpapers() {
+            try {
+                return JSON.parse(localStorage.getItem('car_custom_wallpapers') || '[]');
+            } catch(e) { return []; }
+        }
+
+        function saveCustomWallpapers(list) {
+            localStorage.setItem('car_custom_wallpapers', JSON.stringify(list));
+        }
+
+        function fetchWallpaperManifest(showNotice) {
+            fetch('wallpaper/manifest.json?t=' + Date.now())
+                .then(r => r.json())
+                .then(data => {
+                    if (data && Array.isArray(data.wallpapers) && data.wallpapers.length > 0) {
+                        const map = new Map();
+                        // Put scanned manifest wallpapers first
+                        data.wallpapers.forEach(w => map.set(w.file, w));
+                        // Merge builtin fallbacks
+                        BUILTIN_WALLPAPERS.forEach(w => { if (!map.has(w.file)) map.set(w.file, w); });
+                        // Merge user custom
+                        getCustomWallpapers().forEach(w => map.set(w.file, w));
+                        allWallpapers = Array.from(map.values());
+                    } else {
+                        fallbackWallpapers();
+                    }
+                    if (currentWallpaperIdx >= allWallpapers.length) currentWallpaperIdx = 0;
+                    renderWallpaperUI();
+                    applyCurrentWallpaper();
+                    if (showNotice) showToast(`✓ 已检测到 ${allWallpapers.length} 张壁纸`);
+                })
+                .catch(err => {
+                    fallbackWallpapers();
+                    if (currentWallpaperIdx >= allWallpapers.length) currentWallpaperIdx = 0;
+                    renderWallpaperUI();
+                    applyCurrentWallpaper();
+                    if (showNotice) showToast(`已加载默认壁纸库 (${allWallpapers.length} 张)`);
+                });
+        }
+
+        function fallbackWallpapers() {
+            const map = new Map();
+            BUILTIN_WALLPAPERS.forEach(w => map.set(w.file, w));
+            getCustomWallpapers().forEach(w => map.set(w.file, w));
+            allWallpapers = Array.from(map.values());
+        }
+        // 模糊占位图 (blur-up): 弱网下先显示低清模糊图, 避免黑屏
+        const WP_PLACEHOLDER = {"wallpaper/Starlight210128.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAgADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCaCcqQrlmz05q6DxWVuAA3gfhUySvglXJ59c1cZ23IcS9nFNaVFDbmA2jLZ7Cq/wBqxywGPUVl6hdQzxlWmDMucBQR+B9a0UkyGmjVgu1cKWYASMRH7gVKxrn9MOZgkgACguMDlTn1raMgJwDQtA3M6O5Q4AHOCMbc8+tSZAZgxKk88L1P0qKOPZ+8jbBx/F6+lPMrFDuRSPp0+tc6ZqAcurKrMpztPGMe9ZUttLbfOdrpuxuU5OPWtWGKQyCNlOAuS2/8qZLBJuCIy4z9zPOKpStsJpPcqacdzu2eQOOeaveYSdo5Y8BehpyRDzWRwN4PBI68VDuIVgqsWT7uDkihtt3BKysf/9k=", "wallpaper/1126942.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlweanjjyeRUAx9amWaSMDAXB4ya1uZs2dNSzSOUXEQldj8nGccVHqq2bGNbWHy2XO/jFZ8Ny0chI3DPJGcZqeW/dkPykOD1Y54qb6hZlNgyZxkVEWqWSYyDhcLjknuahbFUC8x8KZ5q8sAkQqMcjg1Utq3dHRXm+YA01sQ7tmJOs8rvK0bYAAJC4HHFJAWMmxUYs429M1o6qSb51ydqjgelWdNjR1V3XLKflPpWUnY6aUPaXM+S2KHyyuCOBz1qjcQtC5VwQR2Nad3M86yea27Y5VeMYGKi1EBrC0kIy7ZBPr0q73MbcrP//Z", "wallpaper/IMG_2833.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDm43ZVAJNXbd9zEljkdAKWC2RpDnzHUHgRr1H1pxsZNxZUKAHjcaTV0BuaDNI0M4ZwwQ5Jqgy+c8rICSCSfQCn2QvLRH8hlAY/MCM5qSzQpKxKhycgZHIzUy1SQ0QBBGhkZTHEOSx6n8KkW1M2VjwcdiR0Ipt6kzXHzIzQoQQCeD7YqhdR3Czu6CUB2JUdMDNNJJaA3qXkVnxIHcJ/efgH6DqamM6KOFdjjktjP4elVkdmUFiSaCTmk433C5OtwAG+WXHXDEU1Z/lJAYH2bFLHyGB9Krr1o5UFywb8AKHiLAf3iDmnxXFu453REHorcVnygZz61CeDx6UKNth3P//Z"};
+        // --- High-Speed Wallpaper Engine with IndexedDB Local Caching (Optimized for China Network) ---
+        const WP_DB_NAME = 'bcos_wp_cache_v2';
+        const WP_STORE = 'blobs';
+
+        function openWallpaperDB() {
+            return new Promise((resolve) => {
+                if (!('indexedDB' in window)) return resolve(null);
+                try {
+                    const req = indexedDB.open(WP_DB_NAME, 1);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(WP_STORE)) {
+                            db.createObjectStore(WP_STORE);
+                        }
+                    };
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = () => resolve(null);
+                } catch(e) { resolve(null); }
+            });
+        }
+
+        async function getStoredWallpaperBlob(fileKey) {
+            try {
+                const db = await openWallpaperDB();
+                if (!db) return null;
+                return new Promise((res) => {
+                    const tx = db.transaction(WP_STORE, 'readonly');
+                    const req = tx.objectStore(WP_STORE).get(fileKey);
+                    req.onsuccess = () => res(req.result || null);
+                    req.onerror = () => res(null);
+                });
+            } catch(e) { return null; }
+        }
+
+        async function storeWallpaperBlob(fileKey, blob) {
+            try {
+                const db = await openWallpaperDB();
+                if (!db) return;
+                const tx = db.transaction(WP_STORE, 'readwrite');
+                tx.objectStore(WP_STORE).put(blob, fileKey);
+            } catch(e) {}
+        }
+
+        // 已预加载的壁纸集合 (轮播切换零等待)
+        const wpPreloaded = new Set();
+        // 已解码壁纸的 objectURL 缓存: file -> objectURL, 避免重复下载/解码
+        const wpBlobCache = {};
+        // base64 文本 -> JPEG Blob
+        function b64ToJpegBlob(b64Text) {
+            const bin = atob(b64Text.replace(/\s+/g, ''));
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return new Blob([bytes], { type: 'image/jpeg' });
+        }
+        let wpLoadToken = 0; // 防竞态: 快速切换壁纸时只保留最后一次请求
+        let wpAbortCtrl = null; // 取消上一次未完成的壁纸下载
+
+        // 统一壁纸数据加载, 返回 Promise<Blob>
+        // ① 先读本地 IndexedDB 缓存 (零网络等待, 离线秒开)
+        // ② 无本地缓存则进行并行分片下载, 支持弱网自动重试
+        // ③ 下载完成后静默存入 IndexedDB
+        async function loadWallpaperBlob(cur, signal, onProgress) {
+            try {
+                const cached = await getStoredWallpaperBlob(cur.file);
+                if (cached && (cached instanceof Blob || cached instanceof File)) {
+                    if (onProgress) onProgress(cached.size, cached.size);
+                    return cached;
+                }
+            } catch(e) {}
+
+            const fetchOpts = signal ? { signal } : {};
+            if (cur.b64 && cur.parts) {
+                const total = cur.size || 0;
+                const partLoaded = new Array(cur.parts).fill(0);
+                const report = () => {
+                    const sum = partLoaded.reduce((a, b) => a + b, 0);
+                    if (onProgress) onProgress(sum, total);
+                };
+                const jobs = [];
+                for (let i = 1; i <= cur.parts; i++) {
+                    const idx = i - 1;
+                    const url = cur.file + '.p' + i;
+                    const fetchPart = async (attempt = 0) => {
+                        try {
+                            const resp = await fetch(url, fetchOpts);
+                            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                            if (!resp.body) {
+                                const t = await resp.text();
+                                partLoaded[idx] = t.length;
+                                report();
+                                return t;
+                            }
+                            const reader = resp.body.getReader();
+                            const chunks = [];
+                            const dec = new TextDecoder();
+                            while (true) {
+                                const { done, value } = await reader.read();
+                                if (done) break;
+                                chunks.push(value);
+                                partLoaded[idx] += value.length;
+                                report();
+                            }
+                            let s = '';
+                            chunks.forEach(ch => { s += dec.decode(ch, { stream: true }); });
+                            return s + dec.decode();
+                        } catch(err) {
+                            if (attempt < 2 && (!signal || !signal.aborted)) {
+                                await new Promise(r => setTimeout(r, 600));
+                                return fetchPart(attempt + 1);
+                            }
+                            throw err;
+                        }
+                    };
+                    jobs.push(fetchPart());
+                }
+                const texts = await Promise.all(jobs);
+                const blob = b64ToJpegBlob(texts.join(''));
+                storeWallpaperBlob(cur.file, blob);
+                return blob;
+            }
+            return fetch(cur.file, fetchOpts).then(resp => {
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const total = parseInt(resp.headers.get('Content-Length') || '0', 10);
+                if (!resp.body || !total) return resp.blob();
+                const reader = resp.body.getReader();
+                const chunks = [];
+                let loaded = 0;
+                const pump = () => reader.read().then(({ done, value }) => {
+                    if (done) {
+                        const b = new Blob(chunks, { type: resp.headers.get('Content-Type') || 'image/jpeg' });
+                        storeWallpaperBlob(cur.file, b);
+                        return b;
+                    }
+                    chunks.push(value);
+                    loaded += value.length;
+                    if (onProgress) onProgress(loaded, total);
+                    return pump();
+                });
+                return pump();
+            });
+        }
+
+        // 国内网络优化: ①模糊占位先行(无黑屏) ②分片并行下载+实时进度 ③预加载下一张(切换零等待) ④SW 离线缓存
+        function applyCurrentWallpaper() {
+            const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
+            const layer = document.getElementById('car-wallpaper-layer');
+            const badge = document.getElementById('car-wp-badge-txt');
+            if (!layer) return;
+
+            if (mode === 'theme' || allWallpapers.length === 0) {
+                layer.classList.remove('active');
+                layer.classList.remove('wp-loading');
+                if (badge) badge.textContent = '🎨 纯净座舱';
+                return;
+            }
+
+            if (currentWallpaperIdx >= allWallpapers.length) currentWallpaperIdx = 0;
+            const cur = allWallpapers[currentWallpaperIdx];
+            if (!cur) return;
+
+            // 取消上一次未完成的下载, 只保留最后一次请求
+            if (wpAbortCtrl) { try { wpAbortCtrl.abort(); } catch (e) {} }
+            const ctrl = new AbortController();
+            wpAbortCtrl = ctrl;
+            const token = ++wpLoadToken;
+
+            // ① 先显示模糊占位图: 弱网环境也有画面, 配合微光 shimmer 动画
+            const ph = WP_PLACEHOLDER[cur.file];
+            if (ph) {
+                layer.style.backgroundImage = `url("${ph}")`;
+                layer.classList.add('active');
+            }
+            layer.classList.add('wp-loading');
+            if (badge) badge.textContent = `🖼️ ${cur.name} · 0%`;
+
+            // 缓存命中: 直接显示, 零等待
+            if (wpBlobCache[cur.file]) {
+                showWallpaperBlob(layer, badge, cur, token, wpBlobCache[cur.file]);
+                return;
+            }
+
+            // ② 下载壁纸数据, 实时显示进度
+            loadWallpaperBlob(cur, ctrl.signal, (loaded, total) => {
+                if (token !== wpLoadToken || !badge) return;
+                badge.textContent = total > 0
+                    ? `🖼️ ${cur.name} · ${Math.min(99, Math.round(loaded / total * 100))}%`
+                    : `🖼️ ${cur.name} · ${Math.round(loaded / 1024)}KB`;
+            }).then(blob => {
+                if (token !== wpLoadToken || ctrl.signal.aborted) return;
+                const objUrl = URL.createObjectURL(blob);
+                wpBlobCache[cur.file] = objUrl; // 缓存解码结果
+                showWallpaperBlob(layer, badge, cur, token, objUrl);
+            }).catch(err => {
+                if (ctrl.signal.aborted || token !== wpLoadToken) return;
+                // 下载失败 (如用户添加的跨域 URL 无 CORS 头): 回退 Image 直连加载
+                console.warn('Wallpaper fetch failed, fallback to direct Image load:', cur.file, err);
+                const img = new Image();
+                img.onload = () => {
+                    if (token !== wpLoadToken) return;
+                    layer.style.backgroundImage = `url("${cur.file}")`;
+                    layer.classList.remove('wp-loading');
+                    layer.classList.add('active');
+                    if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                    highlightActiveThumbnail();
+                    wpPreloaded.add(cur.file);
+                    preloadNextWallpaper();
+                };
+                img.onerror = () => {
+                    layer.classList.remove('wp-loading');
+                    if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
+                };
+                img.src = cur.file;
+            });
+        }
+
+        // 把解码后的壁纸显示到锁屏层 (带淡入)
+        function showWallpaperBlob(layer, badge, cur, token, objUrl) {
+            const img = new Image();
+            img.onload = () => {
+                if (token !== wpLoadToken) return;
+                layer.style.backgroundImage = `url("${objUrl}")`;
+                layer.classList.remove('wp-loading');
+                layer.classList.add('active');
+                if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                highlightActiveThumbnail();
+                wpPreloaded.add(cur.file);
+                preloadNextWallpaper(); // ③ 后台预加载下一张
+            };
+            img.onerror = () => {
+                layer.classList.remove('wp-loading');
+                if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
+            };
+            img.src = objUrl;
+        }
+
+        // 后台静默预加载下一张壁纸: 轮播切换时零等待
+        function preloadNextWallpaper() {
+            if (allWallpapers.length <= 1) return;
+            const next = allWallpapers[(currentWallpaperIdx + 1) % allWallpapers.length];
+            if (!next || wpPreloaded.has(next.file) || wpBlobCache[next.file]) return;
+            if (next.b64 && next.parts) {
+                // b64 分片壁纸: 后台下载分片并解码缓存, 切换时直接可用
+                loadWallpaperBlob(next, null, null).then(blob => {
+                    wpBlobCache[next.file] = URL.createObjectURL(blob);
+                    wpPreloaded.add(next.file);
+                }).catch(() => {});
+                return;
+            }
+            const img = new Image();
+            img.onload = () => wpPreloaded.add(next.file);
+            img.onerror = () => {};
+            img.src = next.file;
+        }
+
+        function nextWallpaper(isUserAction) {
+            if (allWallpapers.length <= 1) return;
+            currentWallpaperIdx = (currentWallpaperIdx + 1) % allWallpapers.length;
+            localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
+            applyCurrentWallpaper();
+            if (isUserAction) showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
+        }
+
+        function prevWallpaper(isUserAction) {
+            if (allWallpapers.length <= 1) return;
+            currentWallpaperIdx = (currentWallpaperIdx - 1 + allWallpapers.length) % allWallpapers.length;
+            localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
+            applyCurrentWallpaper();
+            if (isUserAction) showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
+        }
+
+        function selectWallpaperByIdx(idx) {
+            currentWallpaperIdx = idx;
+            localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
+            applyCurrentWallpaper();
+            highlightActiveThumbnail();
+            showToast(`已选择壁纸: ${allWallpapers[idx].name}`);
+        }
+
+        function setWallpaperMode(mode) {
+            localStorage.setItem('car_wp_mode', mode);
+            updateWallpaperModeButtons(mode);
+            applyCurrentWallpaper();
+            restartWallpaperTimer();
+            showToast(`已设为: ${mode === 'slideshow' ? '📁 自动轮播' : (mode === 'single' ? '🖼️ 固定单张' : '🎨 纯净座舱')}`);
+        }
+
+        function updateWallpaperModeButtons(mode) {
+            document.querySelectorAll('.wp-mode-btn').forEach(btn => {
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                btn.style.color = 'var(--car-text)';
+            });
+            const activeBtn = document.getElementById('wp-mode-' + mode);
+            if (activeBtn) {
+                activeBtn.style.borderColor = 'var(--car-accent)';
+                activeBtn.style.color = 'var(--car-accent)';
+            }
+        }
+
+        function updateWallpaperDim(val) {
+            const pct = parseInt(val, 10);
+            const overlay = document.getElementById('car-wallpaper-overlay');
+            const lbl = document.getElementById('wp-dim-val');
+            if (lbl) lbl.textContent = pct + '%';
+            if (overlay) overlay.style.background = `rgba(5, 8, 17, ${pct / 100})`;
+            localStorage.setItem('car_wp_dim', pct);
+        }
+
+        function updateWallpaperBlur(val) {
+            const px = parseInt(val, 10);
+            const overlay = document.getElementById('car-wallpaper-overlay');
+            const lbl = document.getElementById('wp-blur-val');
+            if (lbl) lbl.textContent = px + 'px';
+            if (overlay) {
+                overlay.style.backdropFilter = `blur(${px}px)`;
+                overlay.style.webkitBackdropFilter = `blur(${px}px)`;
+            }
+            localStorage.setItem('car_wp_blur', px);
+        }
+
+        function changeWallpaperInterval(val) {
+            localStorage.setItem('car_wp_interval', val);
+            restartWallpaperTimer();
+            showToast(`轮播间隔已改为: ${val} 分钟`);
+        }
+
+        function restartWallpaperTimer() {
+            if (wallpaperTimer) clearInterval(wallpaperTimer);
+            const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
+            if (mode === 'slideshow') {
+                const mins = parseInt(localStorage.getItem('car_wp_interval') || '5', 10);
+                wallpaperTimer = setInterval(() => {
+                    nextWallpaper(false);
+                }, mins * 60 * 1000);
+            }
+        }
+
+        function renderWallpaperUI() {
+            const grid = document.getElementById('car-wp-grid');
+            const count = document.getElementById('wp-count');
+            if (count) count.textContent = allWallpapers.length;
+            if (!grid) return;
+
+            grid.innerHTML = allWallpapers.map((w, idx) => {
+                const isActive = (idx === currentWallpaperIdx);
+                const thumbSrc = wpBlobCache[w.file] || WP_PLACEHOLDER[w.file] || w.file;
+                return `<div class="car-wp-item ${isActive ? 'active' : ''}" onclick="selectWallpaperByIdx(${idx})">
+                    <img src="${thumbSrc}" alt="${w.name}" loading="lazy">
+                    <div class="label">${w.name}</div>
+                    ${isActive ? '<span class="badge">当前</span>' : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function highlightActiveThumbnail() {
+            document.querySelectorAll('.car-wp-item').forEach((item, idx) => {
+                if (idx === currentWallpaperIdx) {
+                    item.classList.add('active');
+                    if (!item.querySelector('.badge')) {
+                        const b = document.createElement('span');
+                        b.className = 'badge';
+                        b.textContent = '当前';
+                        item.appendChild(b);
+                    }
+                    const img = item.querySelector('img');
+                    const w = allWallpapers[idx];
+                    if (img && w && wpBlobCache[w.file] && img.src !== wpBlobCache[w.file]) {
+                        img.src = wpBlobCache[w.file];
+                    }
+                } else {
+                    item.classList.remove('active');
+                    const b = item.querySelector('.badge');
+                    if (b) b.remove();
+                }
+            });
+        }
+
+        function openWallpaperModal() {
+            closeMenuModal();
+            const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
+            updateWallpaperModeButtons(mode);
+
+            const dim = localStorage.getItem('car_wp_dim') || '45';
+            const dimSlider = document.getElementById('slider-wp-dim');
+            if (dimSlider) dimSlider.value = dim;
+            const dimVal = document.getElementById('wp-dim-val');
+            if (dimVal) dimVal.textContent = dim + '%';
+
+            const blur = localStorage.getItem('car_wp_blur') || '1';
+            const blurSlider = document.getElementById('slider-wp-blur');
+            if (blurSlider) blurSlider.value = blur;
+            const blurVal = document.getElementById('wp-blur-val');
+            if (blurVal) blurVal.textContent = blur + 'px';
+
+            const intv = localStorage.getItem('car_wp_interval') || '5';
+            const intvSelect = document.getElementById('select-wp-interval');
+            if (intvSelect) intvSelect.value = intv;
+
+            renderWallpaperUI();
+            const modal = document.getElementById('car-wallpaper-modal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeWallpaperModal() {
+            const modal = document.getElementById('car-wallpaper-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function triggerWallpaperFileInput() {
+            const inp = document.getElementById('file-upload-wp');
+            if (inp) {
+                inp.value = '';
+                inp.click();
+            }
+        }
+
+        function handleWallpaperUpload(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            showToast('正在读取并优化图片...');
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const rawUrl = evt.target.result;
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const MAX_W = 1440;
+                        const MAX_H = 1440;
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > MAX_W || h > MAX_H) {
+                            if (w > h) {
+                                h = Math.round((h * MAX_W) / w);
+                                w = MAX_W;
+                            } else {
+                                w = Math.round((w * MAX_H) / h);
+                                h = MAX_H;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+                        const newId = 'custom_' + Date.now();
+                        const newWp = {
+                            id: newId,
+                            name: (file.name || '自定义壁纸').replace(/\.[^/.]+$/, ""),
+                            file: compressedDataUrl
+                        };
+                        const custom = getCustomWallpapers();
+                        custom.push(newWp);
+                        saveCustomWallpapers(custom);
+                        allWallpapers.push(newWp);
+
+                        canvas.toBlob((b) => {
+                            if (b) storeWallpaperBlob(compressedDataUrl, b);
+                        }, 'image/jpeg', 0.82);
+
+                        selectWallpaperByIdx(allWallpapers.length - 1);
+                        renderWallpaperUI();
+                        showToast('✓ 自定义壁纸优化添加成功！');
+                    } catch(err) {
+                        const newWp = {
+                            id: 'custom_' + Date.now(),
+                            name: (file.name || '自定义壁纸').replace(/\.[^/.]+$/, ""),
+                            file: rawUrl
+                        };
+                        const custom = getCustomWallpapers();
+                        custom.push(newWp);
+                        saveCustomWallpapers(custom);
+                        allWallpapers.push(newWp);
+                        selectWallpaperByIdx(allWallpapers.length - 1);
+                        renderWallpaperUI();
+                        showToast('✓ 自定义壁纸添加成功！');
+                    }
+                };
+                img.onerror = () => {
+                    showToast('⚠️ 图片解析失败，请检查文件格式');
+                };
+                img.src = rawUrl;
+            };
+            reader.onerror = () => {
+                showToast('⚠️ 文件读取失败');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function promptAddWallpaperUrl() {
+            const url = prompt('请输入壁纸图片的完整 URL 地址 (https://...):');
+            if (!url || !url.trim()) return;
+            const name = prompt('为这张壁纸起个名字:', '网络精选壁纸') || '网络壁纸';
+            const newWp = {
+                id: 'custom_' + Date.now(),
+                name: name.trim(),
+                file: url.trim()
+            };
+            const custom = getCustomWallpapers();
+            custom.push(newWp);
+            saveCustomWallpapers(custom);
+            allWallpapers.push(newWp);
+            selectWallpaperByIdx(allWallpapers.length - 1);
+            renderWallpaperUI();
+            showToast('✓ 网络壁纸添加成功！');
+        }
+
+        // 后台静默预热壁纸库到 IndexedDB: 国内网络秒开且永久离线可用
+        function prefetchRemainingWallpapers() {
+            setTimeout(async () => {
+                for (const w of allWallpapers) {
+                    try {
+                        if (!wpBlobCache[w.file]) {
+                            const cached = await getStoredWallpaperBlob(w.file);
+                            if (cached) {
+                                wpBlobCache[w.file] = URL.createObjectURL(cached);
+                                wpPreloaded.add(w.file);
+                            } else {
+                                loadWallpaperBlob(w, null, null).then(blob => {
+                                    wpBlobCache[w.file] = URL.createObjectURL(blob);
+                                    wpPreloaded.add(w.file);
+                                }).catch(() => {});
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }, 2500);
+        }
+
+        // --- WakeLock & Anti-Sleep Heartbeat (Android Car Screen Protection) ---
+        let wakeLockObj = null;
+        let keepAliveTimer = null;
+        async function acquireWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLockObj = await navigator.wakeLock.request('screen');
+                    const b = document.getElementById('car-wakelock-badge');
+                    if (b) b.textContent = '💡 常亮保持: 开启';
+                    wakeLockObj.addEventListener('release', () => {
+                        const b2 = document.getElementById('car-wakelock-badge');
+                        if (b2) b2.textContent = '💡 常亮保持: 备用守护';
+                        startKeepAliveHeartbeat();
+                    });
+                    return;
+                } catch(err) {
+                    console.warn('WakeLock not granted:', err);
+                }
+            }
+            startKeepAliveHeartbeat();
+        }
+
+        function startKeepAliveHeartbeat() {
+            if (keepAliveTimer) return;
+            const b = document.getElementById('car-wakelock-badge');
+            if (b) b.textContent = '💡 防息屏守护: 运行中';
+            keepAliveTimer = setInterval(() => {
+                const c = document.getElementById('car-keepalive-canvas');
+                if (c) {
+                    const ctx = c.getContext('2d');
+                    if (ctx) {
+                        ctx.fillStyle = ctx.fillStyle === '#000001' ? '#000002' : '#000001';
+                        ctx.fillRect(0, 0, 1, 1);
+                    }
+                }
+            }, 15000);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') acquireWakeLock();
+        });
+
+        // --- Fullscreen API (Cross-Vendor for Android Car Browsers) ---
+        function toggleFullscreen() {
+            const doc = document;
+            const el = document.documentElement;
+            const isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+            const icon = document.getElementById('car-fs-icon');
+            if (!isFull) {
+                const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+                if (rfs) rfs.call(el).catch(() => {});
+                if (icon) icon.textContent = '⛶ 退出全屏';
+            } else {
+                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+                if (efs) efs.call(doc).catch(() => {});
+                if (icon) icon.textContent = '⛶ 全屏';
+            }
+        }
+
+        // --- Quotes ---
+        function nextQuote() {
+            currentQuoteIdx = (currentQuoteIdx + 1) % COMPANION_QUOTES.length;
+            const q = document.getElementById('car-quote');
+            if (q) {
+                q.style.opacity = '0';
+                setTimeout(() => {
+                    q.textContent = `"${COMPANION_QUOTES[currentQuoteIdx]}"`;
+                    q.style.opacity = '1';
+                }, 200);
+            }
+        }
+
+        // --- Custom Anniversaries ---
+        function getCustomAnniversaries() {
+            try {
+                return JSON.parse(localStorage.getItem('bcos_custom_anniversaries') || '[]');
+            } catch(e) { return []; }
+        }
+        function saveCustomAnniversaries(list) {
+            localStorage.setItem('bcos_custom_anniversaries', JSON.stringify(list));
+            renderMilestones();
+        }
+
+        // --- Time & Calendar Calculation ---
+        function updateDisplay() {
+            const now = new Date();
+            const start = new Date(START_DATE);
+            const diff = now - start;
+
+            // 1. Digital Clock (HH:mm:ss)
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const clockEl = document.getElementById('car-clock');
+            if (clockEl) clockEl.textContent = `${h}:${m}:${s}`;
+
+            // 2. Solar Date + Weekday + Lunar
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const yearStr = `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日`;
+            const weekStr = weekdays[now.getDay()];
+            const dateEl = document.getElementById('car-date');
+            if (dateEl) dateEl.textContent = `${yearStr} ${weekStr}`;
+
+            const lunarEl = document.getElementById('car-lunar');
+            if (lunarEl) lunarEl.textContent = getSimpleLunar(now);
+
+            // 3. Days Counted & Milliseconds
+            const totalDays = Math.floor(diff / 86400000);
+            const rHours = Math.floor((diff % 86400000) / 3600000);
+            const rMins = Math.floor((diff % 3600000) / 60000);
+            const rSecs = Math.floor((diff % 60000) / 1000);
+            const rMs = Math.floor((diff % 1000) / 100);
+
+            const daysEl = document.getElementById('car-days');
+            if (daysEl) daysEl.textContent = totalDays;
+
+            const timeEl = document.getElementById('car-time');
+            if (timeEl) timeEl.textContent = `${String(rHours).padStart(2,'0')}时 ${String(rMins).padStart(2,'0')}分 ${String(rSecs).padStart(2,'0')}秒 .${rMs}`;
+
+            // 4. Next Milestone Countdown & Progress
+            const nextM = MILESTONES.find(item => totalDays < item.days);
+            const nextLbl = document.getElementById('car-next-label');
+            const nextCnt = document.getElementById('car-next-countdown');
+            const fill = document.getElementById('car-progress-fill');
+
+            if (nextM) {
+                const remainDays = nextM.days - totalDays;
+                if (nextLbl) nextLbl.textContent = `🎯 目标: ${nextM.label}`;
+                if (nextCnt) nextCnt.textContent = `还有 ${remainDays} 天`;
+                const prevM = MILESTONES.slice().reverse().find(item => totalDays >= item.days);
+                const prevDays = prevM ? prevM.days : 0;
+                const pct = Math.min(100, Math.max(0, ((totalDays - prevDays) / (nextM.days - prevDays)) * 100));
+                if (fill) fill.style.width = pct.toFixed(1) + '%';
+            } else {
+                if (nextLbl) nextLbl.textContent = '🏆 恭喜达成千日万日超级里程碑！';
+                if (nextCnt) nextCnt.textContent = '永远相伴';
+                if (fill) fill.style.width = '100%';
+            }
+        }
+
+        // Approximate Lunar representation (Chinese Almanac)
+        function getSimpleLunar(date) {
+            try {
+                const lunarMonths = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '冬月', '腊月'];
+                const lunarDays = ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十',
+                                  '十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
+                                  '廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+                const day = lunarDays[(date.getDate() - 1) % 30];
+                const month = lunarMonths[date.getMonth()];
+                return `农历 ${month}${day}`;
+            } catch(e) {
+                return '虚拟纪元吉祥日';
+            }
+        }
+
+        function renderMilestones() {
+            const start = new Date(START_DATE);
+            const now = new Date();
+            const days = Math.floor((now - start) / 86400000);
+            const listEl = document.getElementById('car-ms-list');
+            if (!listEl) return;
+
+            let html = '';
+            // Built-in milestones
+            MILESTONES.forEach(m => {
+                const reached = days >= m.days;
+                const isNext = !reached && (MILESTONES.find(x => days < x.days) === m);
+                const mDate = new Date(start.getTime() + m.days * 86400000);
+                const dateStr = `${mDate.getFullYear()}/${String(mDate.getMonth()+1).padStart(2,'0')}/${String(mDate.getDate()).padStart(2,'0')}`;
+                html += `<div class="car-ms-row ${reached ? 'reached' : (isNext ? 'next' : '')}">
+                    <span>${reached ? '✅' : (isNext ? '🎯' : '⏳')} ${m.label}</span>
+                    <span style="opacity:.8;">${dateStr} (${reached ? '已达成' : `剩${m.days - days}天`})</span>
+                </div>`;
+            });
+
+            // Custom anniversaries
+            const custom = getCustomAnniversaries();
+            if (custom.length > 0) {
+                custom.forEach((c) => {
+                    const cDate = new Date(c.date + ' 00:00:00');
+                    const diffDays = Math.floor((now - cDate) / 86400000);
+                    const isPast = diffDays >= 0;
+                    html += `<div class="car-ms-row" style="border-left-color:var(--car-accent2);">
+                        <span>${c.icon || '💖'} ${c.name}</span>
+                        <span>${c.date} (${isPast ? `已过 ${diffDays} 天` : `剩 ${-diffDays} 天`})</span>
+                    </div>`;
+                });
+            }
+
+            listEl.innerHTML = html;
+        }
+
+        // --- Slide to Unlock Gesture ---
+        function initSlider() {
+            const track = document.getElementById('car-track');
+            const thumb = document.getElementById('car-thumb');
+            if (!track || !thumb) return;
+
+            let isDragging = false;
+            let startX = 0;
+            let currentX = 0;
+            let maxSlide = 0;
+
+            const onStart = (clientX) => {
+                isDragging = true;
+                startX = clientX;
+                maxSlide = track.clientWidth - thumb.clientWidth - 8;
+                thumb.style.transition = 'none';
+            };
+
+            const onMove = (clientX) => {
+                if (!isDragging) return;
+                const deltaX = clientX - startX;
+                currentX = Math.max(0, Math.min(deltaX, maxSlide));
+                thumb.style.transform = `translateX(${currentX}px)`;
+
+                if (currentX / maxSlide > 0.85) {
+                    isDragging = false;
+                    thumb.style.transform = `translateX(${maxSlide}px)`;
+                    unlockScreen();
+                }
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                thumb.style.transition = 'transform .25s ease';
+                thumb.style.transform = 'translateX(0px)';
+            };
+
+            thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    if (e.cancelable) e.preventDefault();
+                    onMove(e.touches[0].clientX);
+                }
+            }, { passive: false });
+            window.addEventListener('touchend', onEnd);
+
+            thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
+            window.addEventListener('mousemove', (e) => onMove(e.clientX));
+            window.addEventListener('mouseup', onEnd);
+        }
+
+        // --- Auto Hide Inactive Controls ---
+        let hideTimer = null;
+        function resetAutoFade() {
+            const topBar = document.getElementById('car-top-bar');
+            const bottomBar = document.getElementById('car-bottom-bar');
+            if (topBar) topBar.style.opacity = '1';
+            if (bottomBar) bottomBar.style.opacity = '1';
+
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => {
+                const anyModalActive = document.querySelector('.car-modal-overlay.active');
+                if (!anyModalActive) {
+                    if (topBar) topBar.style.opacity = '0.35';
+                    if (bottomBar) bottomBar.style.opacity = '0.15';
+                }
+            }, 6000);
+        }
+
+        window.addEventListener('mousemove', resetAutoFade);
+        window.addEventListener('touchstart', resetAutoFade);
+        window.addEventListener('click', resetAutoFade);
+
+        // Double-click/tap background to toggle unlock or quick switch
+        let lastTap = 0;
+        document.getElementById('car-root').addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('#car-track') || e.target.closest('.car-modal') || e.target.closest('.clickable')) return;
+            const now = Date.now();
+            if (now - lastTap < 350) {
+                // Double tap opens menu
+                unlockScreen();
+            }
+            lastTap = now;
+        });
+
+        // ESC key to unlock
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') unlockScreen();
+        });
+
+        // --- Modals ---
+        function unlockScreen() {
+            openMenuModal();
+        }
+        function openMenuModal() {
+            document.getElementById('car-menu-modal').classList.add('active');
+        }
+        function closeMenuModal() {
+            document.getElementById('car-menu-modal').classList.remove('active');
+            const thumb = document.getElementById('car-thumb');
+            if (thumb) {
+                thumb.style.transition = 'transform .25s ease';
+                thumb.style.transform = 'translateX(0px)';
+            }
+        }
+        function openAddAnniversaryModal() {
+            closeMenuModal();
+            document.getElementById('car-add-modal').classList.add('active');
+        }
+        function closeAddAnniversaryModal() {
+            document.getElementById('car-add-modal').classList.remove('active');
+        }
+        function closeModalOnBg(e) {
+            if (e.target.classList.contains('car-modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        }
+
+        function saveNewAnniversary() {
+            const name = document.getElementById('add-anni-name').value.trim();
+            const date = document.getElementById('add-anni-date').value;
+            const icon = document.getElementById('add-anni-icon').value.trim() || '💖';
+
+            if (!name || !date) {
+                alert('请填写纪念日名称和有效日期！');
+                return;
+            }
+
+            const list = getCustomAnniversaries();
+            list.push({ id: 'custom_' + Date.now(), name, date, icon });
+            saveCustomAnniversaries(list);
+            closeAddAnniversaryModal();
+            showToast('✓ 纪念日添加成功！');
+        }
+
+        // --- Init ---
+        
 
     function showBcosCarLockscreen(targetTheme) {
-        _carAcquireWakeLock();
         let el = document.getElementById('bcos-car-lockscreen');
         if (!el) {
             el = document.createElement('div');
@@ -12368,348 +13708,512 @@
             document.body.appendChild(el);
         }
 
-        const savedTheme = targetTheme || safeGetItem('bcos_car_theme', 'theme-xpeng');
-        const tIdx = _CAR_THEMES.findIndex(t => t.id === savedTheme);
-        _carCurrentThemeIdx = tIdx !== -1 ? tIdx : 0;
-        el.className = _CAR_THEMES[_carCurrentThemeIdx].id;
+        const savedTheme = targetTheme || localStorage.getItem('car_theme') || safeGetItem('bcos_car_theme', 'theme-xpeng');
+        const tIdx = CAR_THEMES.findIndex(t => t.id === savedTheme);
+        currentThemeIdx = tIdx !== -1 ? tIdx : 0;
+        el.className = CAR_THEMES[currentThemeIdx].id;
 
-        const currentWp = _bcosGetActiveWallpaper();
-        const curSoc = safeGetItem('car_soc', '88');
-        const curRange = safeGetItem('car_range', '535');
-        const curStd = safeGetItem('car_range_standard', 'WLTP');
-        const curMode = safeGetItem('car_drive_mode', '🌱 标准节能');
-        const curTemp = safeGetItem('car_cabin_temp', '22');
+        el.innerHTML = `<!-- Wallpaper Background Layer -->
+        <div class="car-wallpaper-layer" id="car-wallpaper-layer"></div>
+        <div class="car-wallpaper-overlay" id="car-wallpaper-overlay"></div>
 
-        el.innerHTML = `
-            <div id="bcos-car-wp-layer" style="position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0.65;z-index:0;transition:opacity .8s ease, background-image .6s ease;background-image:url('${currentWp.file}');"></div>
-            <div style="position:absolute;inset:0;background:rgba(5,8,17,0.45);backdrop-filter:blur(1px);z-index:1;pointer-events:none;"></div>
-
-            <div class="car-drift-wrap" style="position:relative;z-index:2;">
-                <!-- Clean Cockpit Top Status Bar (Top buttons hidden by default) -->
-                <div class="car-top-dock" id="car-top-dock">
-                    <div style="display:flex;align-items:center;gap:.6rem;font-weight:700;color:var(--c-acc);flex-wrap:wrap;">
-                        <span>🐰 BCOS COCKPIT</span>
-                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc2);" id="car-theme-tag">${_CAR_THEMES[_carCurrentThemeIdx].name}</span>
-                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);">🅿️ 驻车 P</span>
-                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.15rem .5rem;border-radius:12px;font-size:.75rem;color:var(--c-acc);">
-                            🔋 <span id="bcos-car-soc-top">${curSoc}% · ${curRange} km (${curStd})</span>
-                        </span>
-                        <span style="background:rgba(0,255,65,.1);border:1px solid rgba(0,255,65,.3);color:#00ff41;padding:.15rem .5rem;border-radius:12px;font-size:.75rem;">💡 常亮激活</span>
-                    </div>
-
-                    <div style="display:flex;align-items:center;gap:.5rem;">
-                        <span style="background:rgba(255,255,255,.08);border:1px solid var(--c-border);padding:.2rem .6rem;border-radius:12px;font-size:.75rem;color:var(--car-text);cursor:pointer;" onclick="_carCycleWallpaper()" id="bcos-wp-name-pill" title="点击切换壁纸">
-                            🖼️ ${currentWp.name}
-                        </span>
-                        <button class="bcos-anni-btn" onclick="_toggleBcosCarTopActions()" title="显示/隐藏顶部设置按键">⚙️ 导航设置</button>
-                        <div id="bcos-car-top-actions" style="display:none;align-items:center;gap:.4rem;">
-                            <button class="bcos-anni-btn" onclick="_promptEditCarBattery()" style="border-color:var(--c-acc);color:var(--c-acc);">⚡ 修改续航与电量</button>
-                            <button class="bcos-anni-btn" onclick="_carCycleTheme()">🎨 主题</button>
-                            <button class="bcos-anni-btn" onclick="toggleFullscreen()">⛶ 全屏</button>
-                            <button class="bcos-anni-btn" onclick="copyCarScreenUrl()">📋 复制链接</button>
-                        </div>
-                        <button class="bcos-anni-btn" onclick="closeBcosCarLockscreen()" style="border-color:rgba(255,80,80,.4);color:#ff8080;">✕ 解锁</button>
-                    </div>
+        <div class="car-content-layer">
+            <!-- Top Status Bar -->
+            <header class="car-top-bar" id="car-top-bar">
+                <div class="car-brand">
+                    <span>🐰 BCOS COCKPIT</span>
+                    <span class="car-badge" id="car-theme-name">小鹏赛博</span>
+                    <span class="car-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
+                    <span class="car-badge clickable" id="car-top-battery" onclick="openBatteryModal()" title="点击手动修改电量和续航">
+                        <span id="car-top-battery-txt">🔋 88% · 535 km</span>
+                    </span>
+                    <span class="car-badge" style="color:#00ff41;" id="car-wakelock-badge">💡 常亮保持: 开启</span>
                 </div>
 
-                <div style="flex:1;display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;align-items:center;padding:1rem 0;">
-                    <div>
-                        <div class="car-clock-huge" id="car-cockpit-clock">--:--:--</div>
-                        <div style="font-size:1.05rem;color:#8899aa;margin-top:.4rem;display:flex;align-items:center;gap:.5rem;" id="car-cockpit-date">----年--月--日</div>
+                <!-- Clean Dashboard Right Controls -->
+                <div class="car-top-status-right">
+                    <span class="car-badge clickable" id="car-wp-badge" onclick="openWallpaperModal()" title="点击管理壁纸与轮播">
+                        <span id="car-wp-badge-txt">🖼️ 星空原野</span>
+                    </span>
+                    <button class="car-mini-trigger" onclick="openMenuModal()" title="打开中控设置菜单">
+                        <span>⚙️ 导航设置</span>
+                    </button>
+                </div>
 
-                        <div class="car-hero-box">
-                            <div style="font-size:.85rem;color:var(--c-acc);font-weight:700;display:flex;align-items:center;gap:.4rem;">
-                                <span>💕 兔可可相伴虚拟纪元</span>
-                                <span style="font-size:.7rem;opacity:.7;">| START 2024/03/12</span>
-                            </div>
-                            <div style="display:flex;align-items:baseline;gap:.5rem;margin:.4rem 0 .2rem 0;">
-                                <span class="car-hero-days-txt" id="car-cockpit-days">0</span>
-                                <span style="font-size:1.2rem;font-weight:700;color:#8899aa;">DAYS</span>
-                            </div>
-                            <div style="font-size:1.1rem;font-weight:700;color:var(--c-acc2);font-family:monospace;margin-bottom:.6rem;" id="car-cockpit-time">00:00:00</div>
+                <!-- Optional Top Action Buttons (Hidden by default for genuine cockpit feel) -->
+                <div class="car-top-actions" id="car-top-actions">
+                    <button class="car-icon-btn" onclick="cycleTheme()" title="切换车机氛围主题">
+                        <span>🎨 主题</span>
+                    </button>
+                    <button class="car-icon-btn" onclick="toggleFullscreen()" title="切换全屏">
+                        <span id="car-fs-icon">⛶ 全屏</span>
+                    </button>
+                    <button class="car-icon-btn" onclick="openWallpaperModal()" title="壁纸管理">
+                        <span>🖼️ 壁纸</span>
+                    </button>
+                    <button class="car-icon-btn" onclick="openBatteryModal()" title="电量续航设定">
+                        <span>⚡ 续航</span>
+                    </button>
+                    <button class="car-icon-btn" onclick="openMenuModal()" title="系统选项">
+                        <span>⚙️ 导航</span>
+                    </button>
+                    <button class="car-icon-btn" onclick="unlockScreen()" title="解锁退出" style="border-color:rgba(255,80,80,.4);color:#ff8080;">
+                        <span>✕ 解锁</span>
+                    </button>
+                </div>
+            </header>
 
-                            <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:.6rem .8rem;border:1px solid rgba(255,255,255,.05);">
-                                <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#8899aa;margin-bottom:.3rem;">
-                                    <span id="car-cockpit-next-lbl">🎯 下一个里程碑: 计算中...</span>
-                                    <span id="car-cockpit-next-cnt" style="color:var(--c-acc);font-weight:700;">--</span>
-                                </div>
-                                <div style="height:7px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;">
-                                    <div id="car-cockpit-progress-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--c-acc2),var(--c-acc));border-radius:4px;box-shadow:0 0 10px var(--c-glow);"></div>
-                                </div>
-                            </div>
+            <!-- Main Display Grid -->
+            <main class="car-main-grid">
+                <!-- Left: Big Digital Clock & Hero Anniversary -->
+                <div class="car-hero-col">
+                    <div class="car-clock-box">
+                        <div class="car-digital-clock" id="car-clock">--:--:--</div>
+                        <div class="car-digital-date">
+                            <span id="car-date">----年--月--日 星期-</span>
+                            <span>·</span>
+                            <span id="car-lunar">农历计算中</span>
                         </div>
                     </div>
 
-                    <div style="display:flex;flex-direction:column;gap:.8rem;height:100%;justify-content:center;">
-                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:1rem 1.2rem;backdrop-filter:blur(10px);display:flex;align-items:center;gap:.8rem;">
-                            <div class="car-rabbit-avatar-float">🐰</div>
-                            <div>
-                                <div style="font-size:.7rem;color:var(--c-acc);margin-bottom:.2rem;font-weight:700;">🐰 兔可可座舱伴侣</div>
-                                <div style="font-size:.85rem;line-height:1.45;color:var(--car-text,#fff);" id="car-cockpit-quote">"道路千万条，安全第一条，兔兔与你一路同行~"</div>
-                            </div>
+                    <!-- Grand Anniversary Hero Card -->
+                    <div class="car-hero-card">
+                        <div class="car-hero-title">
+                            <span>💕 兔可可相伴虚拟纪元</span>
+                            <span style="font-size:.7rem;opacity:.7;">| START 2024/03/12</span>
                         </div>
-
-                        <!-- EV Battery and Range Telemetry Card -->
-                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:1rem 1.2rem;backdrop-filter:blur(10px);">
-                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;font-size:.8rem;color:#8899aa;font-weight:700;">
-                                <span style="color:var(--c-acc);">⚡ 车辆动力与能耗状态</span>
-                            </div>
-
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0 .6rem 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:.6rem;">
-                                <div style="display:flex;align-items:center;gap:.8rem;">
-                                    <div style="width:50px;height:24px;border:2px solid var(--c-acc);border-radius:5px;padding:2px;position:relative;background:rgba(0,0,0,.4);">
-                                        <div id="bcos-car-soc-fill" style="height:100%;width:${curSoc}%;background:linear-gradient(90deg,var(--c-acc2),var(--c-acc));border-radius:2px;"></div>
-                                        <div style="position:absolute;right:-4px;top:6px;width:3px;height:8px;background:var(--c-acc);border-radius:0 2px 2px 0;"></div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size:1.6rem;font-weight:900;font-family:monospace;color:var(--c-acc);line-height:1;"><span id="bcos-car-soc-val">${curSoc}</span><span style="font-size:.8rem;color:#8899aa;">%</span></div>
-                                        <div style="font-size:.65rem;color:#8899aa;">剩余电量</div>
-                                    </div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <div style="font-size:1.3rem;font-weight:900;font-family:monospace;color:var(--c-acc2);line-height:1;"><span id="bcos-car-range-val">${curRange}</span> <span style="font-size:.75rem;color:#8899aa;">km</span></div>
-                                    <div style="font-size:.65rem;color:#8899aa;"><span id="bcos-car-range-type">${curStd}</span> 预估续航</div>
-                                </div>
-                            </div>
-
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.75rem;">
-                                <div style="background:rgba(0,0,0,.25);border-radius:6px;padding:.4rem .6rem;">
-                                    <div style="font-size:.65rem;color:#8899aa;">DRIVE MODE</div>
-                                    <div style="color:var(--c-acc);font-weight:700;" id="bcos-car-mode-val">${curMode}</div>
-                                </div>
-                                <div style="background:rgba(0,0,0,.25);border-radius:6px;padding:.4rem .6rem;">
-                                    <div style="font-size:.65rem;color:#8899aa;">CABIN TEMP</div>
-                                    <div style="color:var(--c-acc2);font-weight:700;" id="bcos-car-temp-val">🌤️ ${curTemp}°C / 舒适</div>
-                                </div>
-                            </div>
+                        <div class="car-hero-days-wrap">
+                            <span class="car-hero-days" id="car-days">0</span>
+                            <span class="car-hero-unit">DAYS</span>
                         </div>
+                        <div class="car-hero-time" id="car-time">00时 00分 00秒 .0</div>
 
-                        <div style="background:var(--c-panel);border:1px solid var(--c-border);border-radius:14px;padding:.8rem 1rem;backdrop-filter:blur(10px);">
-                            <div style="font-size:.8rem;color:var(--c-acc);font-weight:700;margin-bottom:.4rem;">🎯 历程里程碑</div>
-                            <div style="max-height:100px;overflow-y:auto;display:flex;flex-direction:column;gap:.3rem;" id="car-cockpit-ms-box"></div>
+                        <!-- Milestone Progress Card -->
+                        <div class="car-hero-progress-box">
+                            <div class="car-progress-header">
+                                <span id="car-next-label">🎯 下一个里程碑: 计算中...</span>
+                                <span id="car-next-countdown" style="color:var(--car-accent);font-weight:700;">--</span>
+                            </div>
+                            <div class="car-progress-bar-bg">
+                                <div class="car-progress-bar-fill" id="car-progress-fill" style="width: 0%;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="car-slider-dock" id="car-slider-dock">
-                    <div class="car-slider-rail" id="car-lock-rail">
-                        <div style="font-size:.85rem;color:#8899aa;letter-spacing:1px;pointer-events:none;">👉 滑动滑块解锁退出锁屏</div>
-                        <div class="car-slider-knob" id="car-lock-knob">🐰</div>
+                <!-- Right: Cockpit Status & Milestones -->
+                <div class="car-side-col">
+                    <!-- Companion Quote Card -->
+                    <div class="car-widget-card car-companion-box" onclick="nextQuote()">
+                        <div class="car-rabbit-avatar">🐰</div>
+                        <div>
+                            <div style="font-size:.7rem;color:var(--car-accent);margin-bottom:.2rem;font-weight:700;">🐰 兔可可座舱伴侣 (点击切换寄语)</div>
+                            <div class="car-quote-text" id="car-quote">"道路千万条，安全第一条，兔兔与你一路同行~"</div>
+                        </div>
+                    </div>
+
+                    <!-- EV Vehicle Telemetry & Battery Range Card -->
+                    <div class="car-widget-card" title="车辆动力与能耗状态">
+                        <div class="car-widget-header">
+                            <span class="title">⚡ 车辆动力与能耗状态</span>
+                            <div class="car-eq-container" title="座舱氛围律动">
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                                <div class="car-eq-bar"></div>
+                            </div>
+                        </div>
+
+                        <!-- Big Battery & Range Display -->
+                        <div class="car-battery-hero">
+                            <div class="car-battery-left">
+                                <div class="car-battery-icon-wrap">
+                                    <div class="car-battery-outline">
+                                        <div class="car-battery-fill" id="car-battery-fill" style="width: 88%;"></div>
+                                    </div>
+                                    <div class="car-battery-nipple"></div>
+                                </div>
+                                <div>
+                                    <div class="car-battery-soc-val"><span id="car-soc-num">88</span><span class="unit">%</span></div>
+                                    <div style="font-size:.65rem;color:var(--car-text-dim);">剩余电量 (SoC)</div>
+                                </div>
+                            </div>
+                            <div class="car-battery-right">
+                                <div class="car-battery-range-val"><span id="car-range-num">535</span><span class="unit">km</span></div>
+                                <div style="font-size:.65rem;color:var(--car-text-dim);" id="car-range-type-label">WLTP 预估续航</div>
+                            </div>
+                        </div>
+
+                        <div class="car-diag-grid">
+                            <div class="car-diag-item">
+                                <div class="car-diag-label">DRIVE MODE</div>
+                                <div class="car-diag-val" id="car-drive-mode">🌱 标准节能</div>
+                            </div>
+                            <div class="car-diag-item">
+                                <div class="car-diag-label">NETWORK LINK</div>
+                                <div class="car-diag-val" id="car-net-status">📶 在线就绪</div>
+                            </div>
+                            <div class="car-diag-item">
+                                <div class="car-diag-label">CABIN TEMP</div>
+                                <div class="car-diag-val" id="car-temp-status">🌤️ 22°C / 舒适</div>
+                            </div>
+                            <div class="car-diag-item">
+                                <div class="car-diag-label">CORE SYSTEM</div>
+                                <div class="car-diag-val">💻 bcos v7.8.2.9370</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestones Scroller -->
+                    <div class="car-widget-card">
+                        <div class="car-widget-header">
+                            <span class="title">🎯 历程纪念日里程碑</span>
+                            <span style="font-size:.7rem;color:var(--car-accent2);cursor:pointer;" onclick="openAddAnniversaryModal()">➕ 自定义</span>
+                        </div>
+                        <div class="car-milestone-scroller" id="car-ms-list">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Bottom Unlock Slider Track -->
+            <footer class="car-bottom-bar" id="car-bottom-bar">
+                <div class="car-slider-track" id="car-track">
+                    <div class="car-slider-text">👉 滑动滑块解锁退出锁屏</div>
+                    <div class="car-slider-thumb" id="car-thumb">🐰</div>
+                </div>
+            </footer>
+        </div>
+
+    <!-- Navigation / Unlock Modal -->
+    <div class="car-modal-overlay" id="car-menu-modal" onclick="closeModalOnBg(event)">
+        <div class="car-modal">
+            <div class="car-modal-title">
+                <span>🚗 车机锁屏导航中心</span>
+                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeMenuModal()">✕</span>
+            </div>
+            <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">兔可可专属车机锁屏已暂停，请选择下一步操作：</p>
+            
+            <div class="car-modal-grid">
+                <a class="car-modal-btn" href="javascript:void(0)" onclick="closeBcosCarLockscreen();showBcosOS();setTimeout(_bcosLaunchDesktop,100);">
+                    <span class="icon">🖥️</span>
+                    <span>bcos 桌面系统</span>
+                </a>
+                <a class="car-modal-btn" href="javascript:void(0)" onclick="closeBcosCarLockscreen();showBcosOS();setTimeout(_bcosBackToTerminal,100);">
+                    <span class="icon">⌨️</span>
+                    <span>bcos 终端控制</span>
+                </a>
+                <a class="car-modal-btn" href="javascript:void(0)" onclick="closeBcosCarLockscreen();closeBcosOS();navigateTo('home');">
+                    <span class="icon">🏰</span>
+                    <span>兔可可王国主页</span>
+                </a>
+                <button class="car-modal-btn" onclick="openBatteryModal()" style="border-color:var(--car-accent);background:rgba(0,234,255,0.08);">
+                    <span class="icon">⚡</span>
+                    <span style="color:var(--car-accent);font-weight:700;">修改续航与电量 (WLTP/实估)</span>
+                </button>
+                <button class="car-modal-btn" onclick="openWallpaperModal()">
+                    <span class="icon">🖼️</span>
+                    <span>座舱壁纸与轮播</span>
+                </button>
+                <button class="car-modal-btn" onclick="openAddAnniversaryModal()">
+                    <span class="icon">💖</span>
+                    <span>添加自定义纪念日</span>
+                </button>
+            </div>
+
+            <!-- Toggles & Quick Actions -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.8rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:.6rem;font-size:.8rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>🎨 切换座舱氛围主题</span>
+                    <button class="car-icon-btn" onclick="cycleTheme()">切换主题</button>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>⛶ 切换浏览器全屏</span>
+                    <button class="car-icon-btn" onclick="toggleFullscreen()">切换全屏</button>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>👁️ 顶部操作按钮 (常驻显示)</span>
+                    <button class="car-icon-btn" id="toggle-top-btn" onclick="toggleTopActions()">已隐藏 (点击显示)</button>
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:.5rem;">
+                <button class="car-icon-btn" onclick="closeMenuModal();acquireWakeLock();" style="background:var(--car-accent);color:#000;font-weight:bold;">
+                    🔒 继续保持锁屏
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battery & Range Manual Setup Modal -->
+    <div class="car-modal-overlay" id="car-battery-modal" onclick="closeModalOnBg(event)">
+        <div class="car-modal">
+            <div class="car-modal-title">
+                <span>⚡ 车辆动力与能耗设置</span>
+                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeBatteryModal()">✕</span>
+            </div>
+            <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">可手动输入你当前车辆的真实电量和剩余里程，支持选择 WLTP 或 实估 标准：</p>
+
+            <div style="margin:1rem 0;display:flex;flex-direction:column;gap:.9rem;">
+                <!-- Battery SoC Input -->
+                <div class="car-input-group">
+                    <div class="car-input-label">
+                        <span>🔋 剩余电量百分比 (%)</span>
+                        <span id="battery-slider-val" style="color:var(--car-accent);font-weight:700;">88%</span>
+                    </div>
+                    <div style="display:flex;gap:.5rem;align-items:center;">
+                        <input type="number" id="input-car-soc" min="0" max="100" value="88" class="car-input-control" style="width:100px;" oninput="syncBatterySlider(this.value)">
+                        <input type="range" id="slider-car-soc" min="0" max="100" value="88" style="flex:1;accent-color:var(--car-accent);" oninput="syncBatteryInput(this.value)">
+                    </div>
+                    <div class="car-tag-row">
+                        <span class="car-quick-tag" onclick="quickSetSoc(100)">⚡ 100% 满电</span>
+                        <span class="car-quick-tag" onclick="quickSetSoc(90)">90%</span>
+                        <span class="car-quick-tag" onclick="quickSetSoc(80)">80%</span>
+                        <span class="car-quick-tag" onclick="quickSetSoc(50)">50%</span>
+                        <span class="car-quick-tag" onclick="quickSetSoc(20)">20% 告警</span>
+                    </div>
+                </div>
+
+                <!-- Range Standard Selector (Only WLTP and 实估) -->
+                <div class="car-input-group">
+                    <label class="car-input-label">续航里程预估标准</label>
+                    <div style="display:flex;gap:.5rem;">
+                        <button type="button" class="car-icon-btn range-type-btn" id="range-type-wltp" onclick="selectRangeStandard('WLTP')" style="flex:1;justify-content:center;padding:.5rem;">
+                            ⚡ WLTP 标准
+                        </button>
+                        <button type="button" class="car-icon-btn range-type-btn" id="range-type-est" onclick="selectRangeStandard('实估')" style="flex:1;justify-content:center;padding:.5rem;">
+                            🎯 动态实估
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Range Input -->
+                <div class="car-input-group">
+                    <div class="car-input-label">
+                        <span>🛣️ 预估剩余续航里程 (km)</span>
+                        <span id="range-display-preview" style="color:var(--car-accent2);font-weight:700;">535 km (WLTP)</span>
+                    </div>
+                    <input type="number" id="input-car-range" min="0" max="1500" value="535" class="car-input-control" oninput="updateRangePreview(this.value)">
+                    <div class="car-tag-row">
+                        <span class="car-quick-tag" onclick="stepRange(-50)">-50 km</span>
+                        <span class="car-quick-tag" onclick="stepRange(-10)">-10 km</span>
+                        <span class="car-quick-tag" onclick="stepRange(10)">+10 km</span>
+                        <span class="car-quick-tag" onclick="stepRange(50)">+50 km</span>
+                        <span class="car-quick-tag" onclick="quickSetRange(480)">480 km</span>
+                        <span class="car-quick-tag" onclick="quickSetRange(550)">550 km</span>
+                        <span class="car-quick-tag" onclick="quickSetRange(600)">600 km</span>
+                    </div>
+                </div>
+
+                <!-- Drive Mode & Temperature -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+                    <div class="car-input-group">
+                        <label class="car-input-label">驾驶动力模式</label>
+                        <select id="select-car-mode" class="car-input-control">
+                            <option value="🌱 标准节能">🌱 标准节能</option>
+                            <option value="🌿 极致节能 (ECO+)">🌿 极致节能 (ECO+)</option>
+                            <option value="🛋️ 舒适巡航 (COMFORT)">🛋️ 舒适巡航 (COMFORT)</option>
+                            <option value="🏎️ 狂暴运动 (SPORT)">🏎️ 狂暴运动 (SPORT)</option>
+                        </select>
+                    </div>
+                    <div class="car-input-group">
+                        <label class="car-input-label">空调/车外温度 (°C)</label>
+                        <input type="number" id="input-car-temp" value="22" min="-30" max="55" class="car-input-control">
                     </div>
                 </div>
             </div>
-        `;
 
-        _carStartDisplayTicker();
-        _carInitLockSlider();
-        _carInitAutoFade();
-        _bcosFetchWallpaperManifest();
-    }
+            <div style="display:flex;justify-content:flex-end;gap:.6rem;">
+                <button class="car-icon-btn" onclick="closeBatteryModal()">取消</button>
+                <button class="car-icon-btn" onclick="saveBatteryModalData()" style="background:var(--car-accent);color:#000;font-weight:bold;">保存车况设定</button>
+            </div>
+        </div>
+    </div>
 
-    let _BCOS_WALLPAPERS = [
-        { id: 'starlight', name: '星空原野', file: 'wallpaper/Starlight210128.jpg' },
-        { id: 'illustration', name: '梦幻插画', file: 'wallpaper/1126942.jpg' },
-        { id: 'bunny_snow', name: '兔可可纯白', file: 'wallpaper/IMG_2833.PNG' }
-    ];
-    let _bcosWpIdx = 0;
+    <!-- Wallpaper Management Modal -->
+    <div class="car-modal-overlay" id="car-wallpaper-modal" onclick="closeModalOnBg(event)">
+        <div class="car-modal" style="max-width:620px;">
+            <div class="car-modal-title">
+                <span>🖼️ 座舱壁纸与轮播设定</span>
+                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeWallpaperModal()">✕</span>
+            </div>
+            <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">支持加载文件夹里的所有壁纸（包含后续上传新增的图片），自由选择轮播或固定展示：</p>
 
-    function _bcosFetchWallpaperManifest() {
-        fetch('wallpaper/manifest.json?t=' + Date.now())
-            .then(r => r.json())
-            .then(data => {
-                if (data && Array.isArray(data.wallpapers) && data.wallpapers.length > 0) {
-                    _BCOS_WALLPAPERS = data.wallpapers;
-                    const pill = document.getElementById('bcos-wp-name-pill');
-                    const layer = document.getElementById('bcos-car-wp-layer');
-                    const cur = _bcosGetActiveWallpaper();
-                    if (pill && cur) pill.textContent = `🖼️ ${cur.name}`;
-                    if (layer && cur) layer.style.backgroundImage = `url('${cur.file}')`;
-                }
-            })
-            .catch(() => {});
-    }
+            <div style="margin:1rem 0;display:flex;flex-direction:column;gap:.9rem;">
+                <!-- Wallpaper Mode -->
+                <div class="car-input-group">
+                    <label class="car-input-label">壁纸工作模式</label>
+                    <div style="display:flex;gap:.5rem;">
+                        <button class="car-icon-btn wp-mode-btn" id="wp-mode-slideshow" onclick="setWallpaperMode('slideshow')" style="flex:1;justify-content:center;">
+                            📁 自动轮播 (文件夹壁纸)
+                        </button>
+                        <button class="car-icon-btn wp-mode-btn" id="wp-mode-single" onclick="setWallpaperMode('single')" style="flex:1;justify-content:center;">
+                            🖼️ 固定单张壁纸
+                        </button>
+                        <button class="car-icon-btn wp-mode-btn" id="wp-mode-theme" onclick="setWallpaperMode('theme')" style="flex:1;justify-content:center;">
+                            🎨 纯净座舱色彩 (无壁纸)
+                        </button>
+                    </div>
+                </div>
 
-    function _bcosGetActiveWallpaper() {
-        const saved = parseInt(safeGetItem('car_wp_current_idx', '0'), 10) || 0;
-        _bcosWpIdx = saved % _BCOS_WALLPAPERS.length;
-        return _BCOS_WALLPAPERS[_bcosWpIdx];
-    }
+                <!-- Gallery Grid -->
+                <div class="car-input-group">
+                    <div class="car-input-label">
+                        <span>可选用壁纸列表 (<span id="wp-count">3</span> 张)</span>
+                        <span style="font-size:.7rem;color:var(--car-accent);cursor:pointer;" onclick="fetchWallpaperManifest(true)">🔄 刷新检测文件夹</span>
+                    </div>
+                    <div class="car-wp-grid" id="car-wp-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
 
-    function _carCycleWallpaper() {
-        _bcosWpIdx = (_bcosWpIdx + 1) % _BCOS_WALLPAPERS.length;
-        safeSetItem('car_wp_current_idx', _bcosWpIdx);
-        const cur = _BCOS_WALLPAPERS[_bcosWpIdx];
-        const layer = document.getElementById('bcos-car-wp-layer');
-        if (layer) layer.style.backgroundImage = `url('${cur.file}')`;
-        const pill = document.getElementById('bcos-wp-name-pill');
-        if (pill) pill.textContent = `🖼️ ${cur.name}`;
-        showToast('已切换壁纸: ' + cur.name);
-    }
+                <!-- Sliders: Dimmer & Blur -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+                    <div class="car-input-group">
+                        <div class="car-input-label">
+                            <span>遮罩暗化浓度: <span id="wp-dim-val">45%</span></span>
+                        </div>
+                        <input type="range" id="slider-wp-dim" min="0" max="85" value="45" style="accent-color:var(--car-accent);" oninput="updateWallpaperDim(this.value)">
+                    </div>
+                    <div class="car-input-group">
+                        <div class="car-input-label">
+                            <span>背景轻微虚化: <span id="wp-blur-val">1px</span></span>
+                        </div>
+                        <input type="range" id="slider-wp-blur" min="0" max="15" value="1" style="accent-color:var(--car-accent);" oninput="updateWallpaperBlur(this.value)">
+                    </div>
+                </div>
 
-    function _toggleBcosCarTopActions() {
-        const el = document.getElementById('bcos-car-top-actions');
-        if (el) {
-            el.style.display = (el.style.display === 'none' || !el.style.display) ? 'inline-flex' : 'none';
-        }
-    }
+                <!-- Slideshow interval & custom import -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;align-items:center;">
+                    <div class="car-input-group">
+                        <label class="car-input-label">轮播切换间隔</label>
+                        <select id="select-wp-interval" class="car-input-control" onchange="changeWallpaperInterval(this.value)">
+                            <option value="1">每 1 分钟切换</option>
+                            <option value="3">每 3 分钟切换</option>
+                            <option value="5" selected>每 5 分钟切换 (推荐)</option>
+                            <option value="15">每 15 分钟切换</option>
+                            <option value="30">每 30 分钟切换</option>
+                        </select>
+                    </div>
+                    <div class="car-input-group">
+                        <label class="car-input-label">添加本地或在线图片</label>
+                        <div style="display:flex;gap:.4rem;">
+                            <div style="position:relative;flex:1;display:flex;">
+                                <button type="button" class="car-icon-btn" onclick="triggerWallpaperFileInput()" style="width:100%;justify-content:center;cursor:pointer;">
+                                    📤 上传图片
+                                </button>
+                                <input type="file" id="file-upload-wp" accept="image/*" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.0001;cursor:pointer;z-index:5;" onchange="handleWallpaperUpload(event)">
+                            </div>
+                            <button type="button" class="car-icon-btn" onclick="promptAddWallpaperUrl()" title="输入在线图片 URL">🔗 链接</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    function _promptEditCarBattery() {
-        const curSoc = safeGetItem('car_soc', '88');
-        const curRange = safeGetItem('car_range', '535');
-        const curStd = safeGetItem('car_range_standard', 'WLTP');
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="display:flex;gap:.4rem;">
+                    <button class="car-icon-btn" onclick="prevWallpaper(true)">⏮️ 上一张</button>
+                    <button class="car-icon-btn" onclick="nextWallpaper(true)">下一张 ⏭️</button>
+                </div>
+                <button class="car-icon-btn" onclick="closeWallpaperModal()" style="background:var(--car-accent);color:#000;font-weight:bold;">完成</button>
+            </div>
+        </div>
+    </div>
 
-        const newSoc = prompt('请输入当前电池剩余电量百分比 (0 - 100 %):', curSoc);
-        if (newSoc === null) return;
-        const socNum = Math.max(0, Math.min(100, parseInt(newSoc, 10) || 0));
+    <!-- Add Anniversary Modal -->
+    <div class="car-modal-overlay" id="car-add-modal" onclick="closeModalOnBg(event)">
+        <div class="car-modal">
+            <div class="car-modal-title">
+                <span>💖 添加新纪念日</span>
+                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeAddAnniversaryModal()">✕</span>
+            </div>
+            <div style="margin:1rem 0;display:flex;flex-direction:column;gap:.8rem;">
+                <div class="car-input-group">
+                    <label class="car-input-label">纪念日名称</label>
+                    <input type="text" id="add-anni-name" placeholder="例如：提车纪念日、兔兔生日" class="car-input-control">
+                </div>
+                <div class="car-input-group">
+                    <label class="car-input-label">日期 (YYYY-MM-DD)</label>
+                    <input type="date" id="add-anni-date" class="car-input-control">
+                </div>
+                <div class="car-input-group">
+                    <label class="car-input-label">图标 Emoji</label>
+                    <input type="text" id="add-anni-icon" value="🚗" class="car-input-control">
+                </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:.5rem;">
+                <button class="car-icon-btn" onclick="closeAddAnniversaryModal()">取消</button>
+                <button class="car-icon-btn" onclick="saveNewAnniversary()" style="background:var(--car-accent);color:#000;font-weight:bold;">保存纪念日</button>
+            </div>
+        </div>
+    </div>
 
-        const newRange = prompt('请输入预估剩余续航里程 (km):', curRange);
-        if (newRange === null) return;
-        const rangeNum = Math.max(0, parseInt(newRange, 10) || 0);
+    <!-- Toast Notification -->
+    <div class="car-toast" id="car-toast"></div>`;
 
-        const stdChoice = prompt('请选择续航里程标准 (输入 1 选择 WLTP, 输入 2 选择 实估):', curStd === '实估' ? '2' : '1');
-        const stdVal = (stdChoice === '2' || stdChoice === '实估') ? '实估' : 'WLTP';
-
-        safeSetItem('car_soc', socNum);
-        safeSetItem('car_range', rangeNum);
-        safeSetItem('car_range_standard', stdVal);
-
-        // Update displays
-        const topEl = document.getElementById('bcos-car-soc-top');
-        if (topEl) topEl.textContent = `${socNum}% · ${rangeNum} km (${stdVal})`;
-        const valEl = document.getElementById('bcos-car-soc-val');
-        if (valEl) valEl.textContent = socNum;
-        const fillEl = document.getElementById('bcos-car-soc-fill');
-        if (fillEl) fillEl.style.width = socNum + '%';
-        const rngEl = document.getElementById('bcos-car-range-val');
-        if (rngEl) rngEl.textContent = rangeNum;
-        const typeEl = document.getElementById('bcos-car-range-type');
-        if (typeEl) typeEl.textContent = stdVal;
-
-        showToast(`✓ 续航电量已设定为: ${socNum}% (${rangeNum} km ${stdVal})`);
-    }
-
-    function _carCycleTheme() {
-        _carCurrentThemeIdx = (_carCurrentThemeIdx + 1) % _CAR_THEMES.length;
-        const el = document.getElementById('bcos-car-lockscreen');
-        if (el) el.className = _CAR_THEMES[_carCurrentThemeIdx].id;
-        const tag = document.getElementById('car-theme-tag');
-        if (tag) tag.textContent = _CAR_THEMES[_carCurrentThemeIdx].name;
-        safeSetItem('bcos_car_theme', _CAR_THEMES[_carCurrentThemeIdx].id);
-        showToast('已切换氛围主题: ' + _CAR_THEMES[_carCurrentThemeIdx].name);
-    }
-
-    function _carStartDisplayTicker() {
-        if (_carLockTimer) clearInterval(_carLockTimer);
-        const update = () => {
-            const el = document.getElementById('bcos-car-lockscreen');
-            if (!el) { clearInterval(_carLockTimer); _carLockTimer = null; return; }
-
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            const clk = document.getElementById('car-cockpit-clock');
-            if (clk) clk.textContent = `${h}:${m}:${s}`;
-
-            const dt = document.getElementById('car-cockpit-date');
-            if (dt) {
-                const wks = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-                dt.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${wks[now.getDay()]}`;
-            }
-
-            const data = _bcosGetAnniversaryData();
-            const daysEl = document.getElementById('car-cockpit-days');
-            const timeEl = document.getElementById('car-cockpit-time');
-            if (daysEl) daysEl.textContent = data.days;
-            if (timeEl) timeEl.textContent = `${data.hours} 时 ${data.mins} 分 ${data.secs} 秒 .${data.ms}`;
-
-            const nLbl = document.getElementById('car-cockpit-next-lbl');
-            const nCnt = document.getElementById('car-cockpit-next-cnt');
-            const nFill = document.getElementById('car-cockpit-progress-fill');
-            if (data.nextMilestone) {
-                if (nLbl) nLbl.textContent = `🎯 下一个里程碑: ${data.nextMilestone.label}`;
-                if (nCnt) nCnt.textContent = `还有 ${data.nextMilestone.remainDays} 天 (${data.nextPercent}%)`;
-                if (nFill) nFill.style.width = data.nextPercent + '%';
-            } else {
-                if (nLbl) nLbl.textContent = '🏆 兔可可所有里程碑全达成！';
-                if (nCnt) nCnt.textContent = '万日永恒守护';
-                if (nFill) nFill.style.width = '100%';
-            }
-
-            const msBox = document.getElementById('car-cockpit-ms-box');
-            if (msBox && msBox.children.length === 0) {
-                msBox.innerHTML = data.milestones.map(m => {
-                    const ok = m.reached;
-                    return `<div style="display:flex;justify-content:space-between;font-size:.7rem;padding:.2rem .4rem;border-radius:4px;background:rgba(255,255,255,.03);${ok?'color:#00ff41;':''}">
-                        <span>${ok?'✅':'⏳'} ${m.label}</span>
-                        <span>${m.dateStr}</span>
-                    </div>`;
-                }).join('');
-            }
-        };
-        update();
-        _carLockTimer = setInterval(update, 100);
-    }
-
-    function _carInitLockSlider() {
-        const rail = document.getElementById('car-lock-rail');
-        const knob = document.getElementById('car-lock-knob');
-        if (!rail || !knob) return;
-
-        let dragging = false, startX = 0, curX = 0, maxDist = 0;
-        const onStart = (cx) => {
-            dragging = true; startX = cx;
-            maxDist = rail.clientWidth - knob.clientWidth - 8;
-            knob.style.transition = 'none';
-        };
-        const onMove = (cx) => {
-            if (!dragging) return;
-            curX = Math.max(0, Math.min(cx - startX, maxDist));
-            knob.style.transform = `translateX(${curX}px)`;
-            if (curX / maxDist > 0.85) {
-                dragging = false;
-                closeBcosCarLockscreen();
-            }
-        };
-        const onEnd = () => {
-            if (!dragging) return;
-            dragging = false;
-            knob.style.transition = 'transform .25s ease';
-            knob.style.transform = 'translateX(0px)';
-        };
-
-        knob.addEventListener('touchstart', e => onStart(e.touches[0].clientX));
-        window.addEventListener('touchmove', e => onMove(e.touches[0].clientX));
-        window.addEventListener('touchend', onEnd);
-        knob.addEventListener('mousedown', e => onStart(e.clientX));
-        window.addEventListener('mousemove', e => onMove(e.clientX));
-        window.addEventListener('mouseup', onEnd);
-    }
-
-    function _carInitAutoFade() {
-        const topDock = document.getElementById('car-top-dock');
-        const sliderDock = document.getElementById('car-slider-dock');
-        const resetFade = () => {
-            if (topDock) topDock.style.opacity = '1';
-            if (sliderDock) sliderDock.style.opacity = '1';
-            clearTimeout(_carFadeTimer);
-            _carFadeTimer = setTimeout(() => {
-                if (topDock) topDock.style.opacity = '0.15';
-                if (sliderDock) sliderDock.style.opacity = '0.35';
-            }, 6000);
-        };
-        window.addEventListener('mousemove', resetFade);
-        window.addEventListener('touchstart', resetFade);
-        resetFade();
+        initSlider();
+        initAutoFade();
+        startDisplayTicker();
+        applySavedTheme(savedTheme);
+        applySavedBatterySettings();
+        fetchWallpaperManifest();
+        restartWallpaperTimer();
+        prefetchRemainingWallpapers();
+        acquireWakeLock();
     }
 
     function closeBcosCarLockscreen() {
         const el = document.getElementById('bcos-car-lockscreen');
         if (el) el.remove();
-        if (_carLockTimer) { clearInterval(_carLockTimer); _carLockTimer = null; }
-        clearTimeout(_carFadeTimer);
+        if (displayTimer) { clearInterval(displayTimer); displayTimer = null; }
+        if (wallpaperTimer) { clearInterval(wallpaperTimer); wallpaperTimer = null; }
+        clearTimeout(autoFadeTimer);
+        releaseWakeLock();
         showToast('已退出车机锁屏');
     }
+
+    function unlockScreen() {
+        closeBcosCarLockscreen();
+    }
+
+    // Export aliases to window to ensure all onclick attributes in lockscreen work seamlessly
+    window.openWallpaperModal = openWallpaperModal;
+    window.closeWallpaperModal = closeWallpaperModal;
+    window.openBatteryModal = openBatteryModal;
+    window.closeBatteryModal = closeBatteryModal;
+    window.saveBatteryModalData = saveBatteryModalData;
+    window.syncBatterySlider = syncBatterySlider;
+    window.syncBatteryInput = syncBatteryInput;
+    window.quickSetSoc = quickSetSoc;
+    window.selectRangeStandard = selectRangeStandard;
+    window.updateRangePreview = updateRangePreview;
+    window.stepRange = stepRange;
+    window.quickSetRange = quickSetRange;
+    window.openAddAnniversaryModal = openAddAnniversaryModal;
+    window.closeAddAnniversaryModal = closeAddAnniversaryModal;
+    window.saveNewAnniversary = saveNewAnniversary;
+    window.openMenuModal = openMenuModal;
+    window.closeMenuModal = closeMenuModal;
+    window.toggleTopActions = toggleTopActions;
+    window.cycleTheme = cycleTheme;
+    window.nextQuote = nextQuote;
+    window.unlockScreen = unlockScreen;
+    window.triggerWallpaperFileInput = triggerWallpaperFileInput;
+    window.handleWallpaperUpload = handleWallpaperUpload;
+    window.promptAddWallpaperUrl = promptAddWallpaperUrl;
+    window.setWallpaperMode = setWallpaperMode;
+    window.updateWallpaperDim = updateWallpaperDim;
+    window.updateWallpaperBlur = updateWallpaperBlur;
+    window.changeWallpaperInterval = changeWallpaperInterval;
+    window.prevWallpaper = prevWallpaper;
+    window.nextWallpaper = nextWallpaper;
+    window.selectWallpaperByIdx = selectWallpaperByIdx;
+    window.fetchWallpaperManifest = fetchWallpaperManifest;
+
+})();
 
     // === Me folder app ===
     function _bcosRenderMeFolder(content) {
@@ -16584,6 +18088,13 @@
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.2.9370', title:'bcos 全屏桌面与 PWA 深度重构 · 车机锁屏全功能同步与国内壁纸离线极速缓存', items:[
+            '🖥️ bcos 全屏桌面与 PWA 深度重构：启动 PWA 即刻直达全屏 bcos 桌面操作系统！桌面与开始菜单全面集成【终端 Terminal、文件管理 Files、性能监视 Monitor、系统浏览器 Browser、大富翁 Monopoly、纪念日 Anniversary、系统设置 Settings、运行日志 Logs、车机锁屏 Car Lockscreen、工作区 me、代码文本编辑器 Text Editor、关于 About】，所有模块均以 Linux 风格窗口化多任务独立运行！',
+            '🚗 智能座舱锁屏同款界面与功能完整同步：将 car.html 最新智能座舱界面深度移植同步到主系统，支持电量/续航 (WLTP/实估双标准) 手动与预估调节、动态 EQ 律动、5 套座舱氛围主题、手势滑动解锁与导航中心',
+            '⚡ 国内网络壁纸 IndexedDB 离线极速缓存：针对国内直连慢的问题，引入微占位图先行 (blur-up)、分片并行下载与弱网自动重试，解码 Blob 永久存储于本地 IndexedDB (bcos_wp_cache_v2)，秒开零黑屏且彻底支持离线轮播',
+            '📱 安卓车机浏览器与 WebView 深度兼容：修复车机与安卓端因合成点击限制导致壁纸上传无法唤醒文件管理器的顽疾，采用透明原生覆盖层 + 同步交互触发，内置 HTML5 Canvas 1440px 自适应轻量化压缩，防止 LocalStorage 超限',
+            '💡 车机级防熄屏与防手势冲突：升级 micro-canvas 心跳保活与 WakeLock API 双重容灾，添加 overscroll-behavior: none 防拉动刷新，优化触摸滑块 { passive: false } 拦截，防止车机屏幕横滑手势干扰'
+        ]},
         { ver:'v7.8.1.9365', title:'bcos 纪念日系统深度集成 & 智能座舱车机锁屏 (car.html) 全新上线', items:[
             '💕 bcos 纪念日系统深度融合：bcos 操作系统全面支持纪念日体系！新增桌面图标与开始菜单【💕 纪念日】GUI 应用、终端命令 `anniversary` / `anni`、虚拟文件系统 `/me/anniversary.txt` 与 `/desktop/anniversary`，实时计算兔可可相伴精准天数与里程碑倒计时',
             '🚗 智能座舱车机锁屏 (car.html)：专为车载大屏（特斯拉/小鹏/蔚来/理想/比亚迪等车机浏览器）量身定制的独立锁屏与屏保！支持常亮防熄屏 (Screen WakeLock API)、防烧屏微漂移技术 (Anti-Burn-in Drift)、5 套科技/甜美智能座舱主题、超大数字仪表时钟与手势滑动解锁 (Slide to Unlock)',

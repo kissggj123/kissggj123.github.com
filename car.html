@@ -26,6 +26,11 @@
             padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
+        html, body {
+            overscroll-behavior: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
         :root {
             --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
             --car-accent: #00eaff;
@@ -1058,7 +1063,7 @@
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.1</div>
+                                <div class="car-diag-val">💻 bcos v7.8.2.9370</div>
                             </div>
                         </div>
                     </div>
@@ -1299,11 +1304,13 @@
                     <div class="car-input-group">
                         <label class="car-input-label">添加本地或在线图片</label>
                         <div style="display:flex;gap:.4rem;">
-                            <label class="car-icon-btn" style="flex:1;justify-content:center;cursor:pointer;">
-                                📤 上传图片
-                                <input type="file" id="file-upload-wp" accept="image/*" style="display:none;" onchange="handleWallpaperUpload(event)">
-                            </label>
-                            <button class="car-icon-btn" onclick="promptAddWallpaperUrl()" title="输入在线图片 URL">🔗 链接</button>
+                            <div style="position:relative;flex:1;display:flex;">
+                                <button type="button" class="car-icon-btn" onclick="triggerWallpaperFileInput()" style="width:100%;justify-content:center;cursor:pointer;">
+                                    📤 上传图片
+                                </button>
+                                <input type="file" id="file-upload-wp" accept="image/*" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.0001;cursor:pointer;z-index:5;" onchange="handleWallpaperUpload(event)">
+                            </div>
+                            <button type="button" class="car-icon-btn" onclick="promptAddWallpaperUrl()" title="输入在线图片 URL">🔗 链接</button>
                         </div>
                     </div>
                 </div>
@@ -1641,6 +1648,49 @@
         }
         // 模糊占位图 (blur-up): 弱网下先显示低清模糊图, 避免黑屏
         const WP_PLACEHOLDER = {"wallpaper/Starlight210128.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAgADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCaCcqQrlmz05q6DxWVuAA3gfhUySvglXJ59c1cZ23IcS9nFNaVFDbmA2jLZ7Cq/wBqxywGPUVl6hdQzxlWmDMucBQR+B9a0UkyGmjVgu1cKWYASMRH7gVKxrn9MOZgkgACguMDlTn1raMgJwDQtA3M6O5Q4AHOCMbc8+tSZAZgxKk88L1P0qKOPZ+8jbBx/F6+lPMrFDuRSPp0+tc6ZqAcurKrMpztPGMe9ZUttLbfOdrpuxuU5OPWtWGKQyCNlOAuS2/8qZLBJuCIy4z9zPOKpStsJpPcqacdzu2eQOOeaveYSdo5Y8BehpyRDzWRwN4PBI68VDuIVgqsWT7uDkihtt3BKysf/9k=", "wallpaper/1126942.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlweanjjyeRUAx9amWaSMDAXB4ya1uZs2dNSzSOUXEQldj8nGccVHqq2bGNbWHy2XO/jFZ8Ny0chI3DPJGcZqeW/dkPykOD1Y54qb6hZlNgyZxkVEWqWSYyDhcLjknuahbFUC8x8KZ5q8sAkQqMcjg1Utq3dHRXm+YA01sQ7tmJOs8rvK0bYAAJC4HHFJAWMmxUYs429M1o6qSb51ydqjgelWdNjR1V3XLKflPpWUnY6aUPaXM+S2KHyyuCOBz1qjcQtC5VwQR2Nad3M86yea27Y5VeMYGKi1EBrC0kIy7ZBPr0q73MbcrP//Z", "wallpaper/IMG_2833.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDm43ZVAJNXbd9zEljkdAKWC2RpDnzHUHgRr1H1pxsZNxZUKAHjcaTV0BuaDNI0M4ZwwQ5Jqgy+c8rICSCSfQCn2QvLRH8hlAY/MCM5qSzQpKxKhycgZHIzUy1SQ0QBBGhkZTHEOSx6n8KkW1M2VjwcdiR0Ipt6kzXHzIzQoQQCeD7YqhdR3Czu6CUB2JUdMDNNJJaA3qXkVnxIHcJ/efgH6DqamM6KOFdjjktjP4elVkdmUFiSaCTmk433C5OtwAG+WXHXDEU1Z/lJAYH2bFLHyGB9Krr1o5UFywb8AKHiLAf3iDmnxXFu453REHorcVnygZz61CeDx6UKNth3P//Z"};
+        // --- High-Speed Wallpaper Engine with IndexedDB Local Caching (Optimized for China Network) ---
+        const WP_DB_NAME = 'bcos_wp_cache_v2';
+        const WP_STORE = 'blobs';
+
+        function openWallpaperDB() {
+            return new Promise((resolve) => {
+                if (!('indexedDB' in window)) return resolve(null);
+                try {
+                    const req = indexedDB.open(WP_DB_NAME, 1);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(WP_STORE)) {
+                            db.createObjectStore(WP_STORE);
+                        }
+                    };
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = () => resolve(null);
+                } catch(e) { resolve(null); }
+            });
+        }
+
+        async function getStoredWallpaperBlob(fileKey) {
+            try {
+                const db = await openWallpaperDB();
+                if (!db) return null;
+                return new Promise((res) => {
+                    const tx = db.transaction(WP_STORE, 'readonly');
+                    const req = tx.objectStore(WP_STORE).get(fileKey);
+                    req.onsuccess = () => res(req.result || null);
+                    req.onerror = () => res(null);
+                });
+            } catch(e) { return null; }
+        }
+
+        async function storeWallpaperBlob(fileKey, blob) {
+            try {
+                const db = await openWallpaperDB();
+                if (!db) return;
+                const tx = db.transaction(WP_STORE, 'readwrite');
+                tx.objectStore(WP_STORE).put(blob, fileKey);
+            } catch(e) {}
+        }
+
         // 已预加载的壁纸集合 (轮播切换零等待)
         const wpPreloaded = new Set();
         // 已解码壁纸的 objectURL 缓存: file -> objectURL, 避免重复下载/解码
@@ -1656,9 +1706,18 @@
         let wpAbortCtrl = null; // 取消上一次未完成的壁纸下载
 
         // 统一壁纸数据加载, 返回 Promise<Blob>
-        // - b64 分片壁纸: 并行下载 file.p1..pN 文本分片, 拼接后解码为 JPEG
-        // - 普通图片: 流式下载
-        function loadWallpaperBlob(cur, signal, onProgress) {
+        // ① 先读本地 IndexedDB 缓存 (零网络等待, 离线秒开)
+        // ② 无本地缓存则进行并行分片下载, 支持弱网自动重试
+        // ③ 下载完成后静默存入 IndexedDB
+        async function loadWallpaperBlob(cur, signal, onProgress) {
+            try {
+                const cached = await getStoredWallpaperBlob(cur.file);
+                if (cached && (cached instanceof Blob || cached instanceof File)) {
+                    if (onProgress) onProgress(cached.size, cached.size);
+                    return cached;
+                }
+            } catch(e) {}
+
             const fetchOpts = signal ? { signal } : {};
             if (cur.b64 && cur.parts) {
                 const total = cur.size || 0;
@@ -1671,31 +1730,43 @@
                 for (let i = 1; i <= cur.parts; i++) {
                     const idx = i - 1;
                     const url = cur.file + '.p' + i;
-                    jobs.push(
-                        fetch(url, fetchOpts).then(resp => {
+                    const fetchPart = async (attempt = 0) => {
+                        try {
+                            const resp = await fetch(url, fetchOpts);
                             if (!resp.ok) throw new Error('HTTP ' + resp.status);
                             if (!resp.body) {
-                                return resp.text().then(t => { partLoaded[idx] = t.length; report(); return t; });
+                                const t = await resp.text();
+                                partLoaded[idx] = t.length;
+                                report();
+                                return t;
                             }
                             const reader = resp.body.getReader();
                             const chunks = [];
-                            const pump = () => reader.read().then(({ done, value }) => {
-                                if (done) {
-                                    const dec = new TextDecoder();
-                                    let s = '';
-                                    chunks.forEach(ch => { s += dec.decode(ch, { stream: true }); });
-                                    return s + dec.decode();
-                                }
+                            const dec = new TextDecoder();
+                            while (true) {
+                                const { done, value } = await reader.read();
+                                if (done) break;
                                 chunks.push(value);
                                 partLoaded[idx] += value.length;
                                 report();
-                                return pump();
-                            });
-                            return pump();
-                        })
-                    );
+                            }
+                            let s = '';
+                            chunks.forEach(ch => { s += dec.decode(ch, { stream: true }); });
+                            return s + dec.decode();
+                        } catch(err) {
+                            if (attempt < 2 && (!signal || !signal.aborted)) {
+                                await new Promise(r => setTimeout(r, 600));
+                                return fetchPart(attempt + 1);
+                            }
+                            throw err;
+                        }
+                    };
+                    jobs.push(fetchPart());
                 }
-                return Promise.all(jobs).then(texts => b64ToJpegBlob(texts.join('')));
+                const texts = await Promise.all(jobs);
+                const blob = b64ToJpegBlob(texts.join(''));
+                storeWallpaperBlob(cur.file, blob);
+                return blob;
             }
             return fetch(cur.file, fetchOpts).then(resp => {
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -1705,7 +1776,11 @@
                 const chunks = [];
                 let loaded = 0;
                 const pump = () => reader.read().then(({ done, value }) => {
-                    if (done) return new Blob(chunks, { type: resp.headers.get('Content-Type') || 'image/jpeg' });
+                    if (done) {
+                        const b = new Blob(chunks, { type: resp.headers.get('Content-Type') || 'image/jpeg' });
+                        storeWallpaperBlob(cur.file, b);
+                        return b;
+                    }
                     chunks.push(value);
                     loaded += value.length;
                     if (onProgress) onProgress(loaded, total);
@@ -1980,24 +2055,85 @@
             if (modal) modal.classList.remove('active');
         }
 
+        function triggerWallpaperFileInput() {
+            const inp = document.getElementById('file-upload-wp');
+            if (inp) {
+                inp.value = '';
+                inp.click();
+            }
+        }
+
         function handleWallpaperUpload(e) {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
+            showToast('正在读取并优化图片...');
+
             const reader = new FileReader();
             reader.onload = (evt) => {
-                const dataUrl = evt.target.result;
-                const newWp = {
-                    id: 'custom_' + Date.now(),
-                    name: file.name.replace(/\.[^/.]+$/, ""),
-                    file: dataUrl
+                const rawUrl = evt.target.result;
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const MAX_W = 1440;
+                        const MAX_H = 1440;
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > MAX_W || h > MAX_H) {
+                            if (w > h) {
+                                h = Math.round((h * MAX_W) / w);
+                                w = MAX_W;
+                            } else {
+                                w = Math.round((w * MAX_H) / h);
+                                h = MAX_H;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+                        const newId = 'custom_' + Date.now();
+                        const newWp = {
+                            id: newId,
+                            name: (file.name || '自定义壁纸').replace(/\.[^/.]+$/, ""),
+                            file: compressedDataUrl
+                        };
+                        const custom = getCustomWallpapers();
+                        custom.push(newWp);
+                        saveCustomWallpapers(custom);
+                        allWallpapers.push(newWp);
+
+                        canvas.toBlob((b) => {
+                            if (b) storeWallpaperBlob(compressedDataUrl, b);
+                        }, 'image/jpeg', 0.82);
+
+                        selectWallpaperByIdx(allWallpapers.length - 1);
+                        renderWallpaperUI();
+                        showToast('✓ 自定义壁纸优化添加成功！');
+                    } catch(err) {
+                        const newWp = {
+                            id: 'custom_' + Date.now(),
+                            name: (file.name || '自定义壁纸').replace(/\.[^/.]+$/, ""),
+                            file: rawUrl
+                        };
+                        const custom = getCustomWallpapers();
+                        custom.push(newWp);
+                        saveCustomWallpapers(custom);
+                        allWallpapers.push(newWp);
+                        selectWallpaperByIdx(allWallpapers.length - 1);
+                        renderWallpaperUI();
+                        showToast('✓ 自定义壁纸添加成功！');
+                    }
                 };
-                const custom = getCustomWallpapers();
-                custom.push(newWp);
-                saveCustomWallpapers(custom);
-                allWallpapers.push(newWp);
-                selectWallpaperByIdx(allWallpapers.length - 1);
-                renderWallpaperUI();
-                showToast('✓ 自定义壁纸添加成功！');
+                img.onerror = () => {
+                    showToast('⚠️ 图片解析失败，请检查文件格式');
+                };
+                img.src = rawUrl;
+            };
+            reader.onerror = () => {
+                showToast('⚠️ 文件读取失败');
             };
             reader.readAsDataURL(file);
         }
@@ -2020,8 +2156,31 @@
             showToast('✓ 网络壁纸添加成功！');
         }
 
-        // --- WakeLock API (Prevent Screen Sleeping) ---
+        // 后台静默预热壁纸库到 IndexedDB: 国内网络秒开且永久离线可用
+        function prefetchRemainingWallpapers() {
+            setTimeout(async () => {
+                for (const w of allWallpapers) {
+                    try {
+                        if (!wpBlobCache[w.file]) {
+                            const cached = await getStoredWallpaperBlob(w.file);
+                            if (cached) {
+                                wpBlobCache[w.file] = URL.createObjectURL(cached);
+                                wpPreloaded.add(w.file);
+                            } else {
+                                loadWallpaperBlob(w, null, null).then(blob => {
+                                    wpBlobCache[w.file] = URL.createObjectURL(blob);
+                                    wpPreloaded.add(w.file);
+                                }).catch(() => {});
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }, 2500);
+        }
+
+        // --- WakeLock & Anti-Sleep Heartbeat (Android Car Screen Protection) ---
         let wakeLockObj = null;
+        let keepAliveTimer = null;
         async function acquireWakeLock() {
             if ('wakeLock' in navigator) {
                 try {
@@ -2030,26 +2189,50 @@
                     if (b) b.textContent = '💡 常亮保持: 开启';
                     wakeLockObj.addEventListener('release', () => {
                         const b2 = document.getElementById('car-wakelock-badge');
-                        if (b2) b2.textContent = '💡 常亮保持: 未激活';
+                        if (b2) b2.textContent = '💡 常亮保持: 备用守护';
+                        startKeepAliveHeartbeat();
                     });
+                    return;
                 } catch(err) {
                     console.warn('WakeLock not granted:', err);
                 }
             }
+            startKeepAliveHeartbeat();
         }
+
+        function startKeepAliveHeartbeat() {
+            if (keepAliveTimer) return;
+            const b = document.getElementById('car-wakelock-badge');
+            if (b) b.textContent = '💡 防息屏守护: 运行中';
+            keepAliveTimer = setInterval(() => {
+                const c = document.getElementById('car-keepalive-canvas');
+                if (c) {
+                    const ctx = c.getContext('2d');
+                    if (ctx) {
+                        ctx.fillStyle = ctx.fillStyle === '#000001' ? '#000002' : '#000001';
+                        ctx.fillRect(0, 0, 1, 1);
+                    }
+                }
+            }, 15000);
+        }
+
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') acquireWakeLock();
         });
 
-        // --- Fullscreen API ---
+        // --- Fullscreen API (Cross-Vendor for Android Car Browsers) ---
         function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-                const icon = document.getElementById('car-fs-icon');
+            const doc = document;
+            const el = document.documentElement;
+            const isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+            const icon = document.getElementById('car-fs-icon');
+            if (!isFull) {
+                const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+                if (rfs) rfs.call(el).catch(() => {});
                 if (icon) icon.textContent = '⛶ 退出全屏';
             } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-                const icon = document.getElementById('car-fs-icon');
+                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+                if (efs) efs.call(doc).catch(() => {});
                 if (icon) icon.textContent = '⛶ 全屏';
             }
         }
@@ -2225,8 +2408,13 @@
                 thumb.style.transform = 'translateX(0px)';
             };
 
-            thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX));
-            window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX));
+            thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    if (e.cancelable) e.preventDefault();
+                    onMove(e.touches[0].clientX);
+                }
+            }, { passive: false });
             window.addEventListener('touchend', onEnd);
 
             thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
@@ -2335,6 +2523,7 @@
             if (savedIdx !== null) currentWallpaperIdx = parseInt(savedIdx, 10) || 0;
             fetchWallpaperManifest(false);
             restartWallpaperTimer();
+            prefetchRemainingWallpapers();
 
             // Initialize dimmer and blur from storage
             const dim = localStorage.getItem('car_wp_dim') || '45';
@@ -2357,5 +2546,6 @@
             window.addEventListener('touchstart', firstInteraction);
         };
     </script>
+    <canvas id="car-keepalive-canvas" width="1" height="1" style="display:none;position:fixed;pointer-events:none;"></canvas>
 </body>
 </html>

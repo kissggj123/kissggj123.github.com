@@ -1,0 +1,893 @@
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            overscroll-behavior: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        :root {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+            --car-wp-dim: rgba(5, 8, 17, 0.45);
+            --car-wp-blur: 1px;
+        }
+        body.theme-xpeng {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+        }
+        body.theme-xpeng, #car-root.theme-xpeng, #bcos-car-lockscreen.theme-xpeng {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+        }
+        body.theme-bunny, #car-root.theme-bunny, #bcos-car-lockscreen.theme-bunny {
+            --car-bg: radial-gradient(circle at 50% 30%, #301726 0%, #150912 75%, #0a0408 100%);
+            --car-accent: #ff6b9d;
+            --car-accent2: #ffd166;
+            --car-glow: rgba(255, 107, 157, 0.45);
+            --car-panel: rgba(40, 15, 30, 0.72);
+            --car-border: rgba(255, 107, 157, 0.3);
+            --car-text: #fff0f5;
+            --car-text-dim: #c48b9f;
+        }
+        body.theme-aurora, #car-root.theme-aurora, #bcos-car-lockscreen.theme-aurora {
+            --car-bg: radial-gradient(circle at 50% 30%, #082623 0%, #041412 75%, #020807 100%);
+            --car-accent: #06ffa5;
+            --car-accent2: #38bdf8;
+            --car-glow: rgba(6, 255, 165, 0.45);
+            --car-panel: rgba(6, 32, 28, 0.72);
+            --car-border: rgba(6, 255, 165, 0.3);
+            --car-text: #e6fffb;
+            --car-text-dim: #7bb3aa;
+        }
+        body.theme-carbon, #car-root.theme-carbon, #bcos-car-lockscreen.theme-carbon {
+            --car-bg: radial-gradient(circle at 50% 30%, #2b1114 0%, #120708 75%, #080304 100%);
+            --car-accent: #ff334b;
+            --car-accent2: #fbbf24;
+            --car-glow: rgba(255, 51, 75, 0.45);
+            --car-panel: rgba(35, 12, 16, 0.72);
+            --car-border: rgba(255, 51, 75, 0.3);
+            --car-text: #fff1f2;
+            --car-text-dim: #c2888f;
+        }
+        body.theme-stealth, #car-root.theme-stealth, #bcos-car-lockscreen.theme-stealth {
+            --car-bg: #000000;
+            --car-accent: #d1d5db;
+            --car-accent2: #6b7280;
+            --car-glow: rgba(255, 255, 255, 0.12);
+            --car-panel: rgba(20, 20, 20, 0.85);
+            --car-border: rgba(255, 255, 255, 0.15);
+            --car-text: #e5e7eb;
+            --car-text-dim: #6b7280;
+        }
+
+        #car-root, #bcos-car-lockscreen {
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            background: var(--car-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.2rem 1.8rem;
+            transition: background 0.6s ease, color 0.4s ease;
+            overflow: hidden;
+        }
+
+        /* Wallpaper Engine Layers */
+        .car-wallpaper-layer {
+            position: fixed;
+            inset: 0;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out, filter 0.6s ease;
+            z-index: 0;
+            pointer-events: none;
+            will-change: opacity;
+        }
+        .car-wallpaper-layer.active {
+            opacity: 1;
+        }
+        .car-wallpaper-layer.wp-loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.09) 50%, transparent 70%);
+            background-size: 200% 100%;
+            animation: wp-shimmer 1.4s linear infinite;
+        }
+        @keyframes wp-shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
+        .car-wallpaper-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--car-wp-dim);
+            backdrop-filter: blur(var(--car-wp-blur));
+            -webkit-backdrop-filter: blur(var(--car-wp-blur));
+            z-index: 1;
+            pointer-events: none;
+            transition: background 0.4s ease, backdrop-filter 0.4s ease;
+        }
+
+        /* Anti burn-in continuous subtle micro-drift */
+        @keyframes carAntiBurnIn {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(3px, -2px); }
+            50% { transform: translate(-2px, 3px); }
+            75% { transform: translate(-3px, -1px); }
+            100% { transform: translate(0, 0); }
+        }
+        .car-content-layer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: carAntiBurnIn 45s ease-in-out infinite;
+        }
+
+        /* Header / Top Status Bar */
+        .car-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: .8rem;
+            border-bottom: 1px solid var(--car-border);
+            transition: opacity .4s ease;
+        }
+        .car-brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--car-accent);
+            text-shadow: 0 0 12px var(--car-glow);
+            flex-wrap: wrap;
+        }
+        .car-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--car-border);
+            padding: .15rem .55rem;
+            border-radius: 12px;
+            font-size: .75rem;
+            color: var(--car-accent2);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            transition: all .2s;
+        }
+        .car-badge.clickable {
+            cursor: pointer;
+        }
+        .car-badge.clickable:hover {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            transform: translateY(-1px);
+        }
+
+        /* Top actions buttons - Hidden by default for pristine cockpit dashboard */
+        .car-top-actions {
+            display: none;
+            align-items: center;
+            gap: .5rem;
+        }
+        body.show-top-actions .car-top-actions {
+            display: flex;
+        }
+        .car-top-status-right {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+        .car-mini-trigger {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            font-size: .9rem;
+            cursor: pointer;
+            padding: .25rem .6rem;
+            border-radius: 10px;
+            opacity: 0.6;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .car-mini-trigger:hover {
+            opacity: 1;
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            transform: scale(1.05);
+        }
+
+        .car-icon-btn {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            color: var(--car-text);
+            padding: .35rem .7rem;
+            border-radius: 8px;
+            font-size: .8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            transition: all .2s;
+        }
+        .car-icon-btn:hover, .car-icon-btn:active {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+
+        /* Main Cockpit Split Layout */
+        .car-main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1rem 0;
+            min-height: 0;
+        }
+        @media (max-width: 900px) {
+            .car-main-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                overflow-y: auto;
+            }
+        }
+
+        /* Left Column: Big Clock & Anniversary Hero */
+        .car-hero-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .car-clock-box {
+            margin-bottom: 1.2rem;
+        }
+        .car-digital-clock {
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-weight: 900;
+            font-family: "Courier New", Courier, monospace, "Segoe UI";
+            letter-spacing: 2px;
+            line-height: 1;
+            color: var(--car-accent);
+            text-shadow: 0 0 25px var(--car-glow);
+            font-variant-numeric: tabular-nums;
+        }
+        .car-digital-date {
+            font-size: clamp(0.95rem, 2vw, 1.35rem);
+            color: var(--car-text-dim);
+            margin-top: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        /* Anniversary Hero Card */
+        .car-hero-card {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            border-radius: 18px;
+            padding: 1.4rem 1.6rem;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .car-hero-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, var(--car-glow) 0%, transparent 70%);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .car-hero-title {
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--car-accent);
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .car-hero-days-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: .6rem;
+            margin: .4rem 0 .2rem 0;
+        }
+        .car-hero-days {
+            font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1;
+            font-family: monospace;
+            background: linear-gradient(135deg, var(--car-accent) 0%, var(--car-accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px var(--car-glow);
+        }
+        .car-hero-unit {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--car-text-dim);
+            letter-spacing: 1px;
+        }
+        .car-hero-time {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--car-accent2);
+            font-family: monospace;
+            margin-bottom: .8rem;
+        }
+        .car-hero-progress-box {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 12px;
+            padding: .75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .car-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: .8rem;
+            color: var(--car-text-dim);
+            margin-bottom: .4rem;
+        }
+        .car-progress-bar-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .car-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            border-radius: 6px;
+            box-shadow: 0 0 10px var(--car-glow);
+            transition: width .5s ease;
+        }
+
+        /* Right Column: Widgets */
+        .car-side-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+            justify-content: center;
+        }
+        .car-widget-card {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            border-radius: 16px;
+            padding: 1.1rem 1.3rem;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: border-color .3s;
+        }
+        .car-widget-card:hover {
+            border-color: var(--car-accent);
+        }
+        .car-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .6rem;
+        }
+        .car-widget-header .title {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* EV Battery & Range Hero Component */
+        .car-battery-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .6rem 0 .8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: .7rem;
+        }
+        .car-battery-left {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+        }
+        .car-battery-icon-wrap {
+            display: flex;
+            align-items: center;
+        }
+        .car-battery-outline {
+            width: 58px;
+            height: 28px;
+            border: 2.5px solid var(--car-accent);
+            border-radius: 6px;
+            padding: 2.5px;
+            box-shadow: 0 0 12px var(--car-glow);
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .car-battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            border-radius: 3px;
+            transition: width .5s ease, background .3s;
+        }
+        .car-battery-fill.low {
+            background: #ff334b !important;
+            box-shadow: 0 0 10px rgba(255, 51, 75, 0.6);
+        }
+        .car-battery-fill.mid {
+            background: #fbbf24 !important;
+        }
+        .car-battery-nipple {
+            width: 4px;
+            height: 12px;
+            background: var(--car-accent);
+            border-radius: 0 2px 2px 0;
+            margin-left: 2px;
+        }
+        .car-battery-soc-val {
+            font-size: 1.85rem;
+            font-weight: 900;
+            font-family: monospace;
+            line-height: 1;
+            color: var(--car-accent);
+            text-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-battery-soc-val .unit {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-left: 2px;
+            color: var(--car-text-dim);
+        }
+        .car-battery-right {
+            text-align: right;
+        }
+        .car-battery-range-val {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--car-accent2);
+            font-family: monospace;
+            line-height: 1;
+        }
+        .car-battery-range-val .unit {
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--car-text-dim);
+            margin-left: 2px;
+        }
+        .car-battery-edit-btn {
+            font-size: .7rem;
+            color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            padding: .15rem .45rem;
+            border-radius: 6px;
+            margin-top: .3rem;
+            display: inline-block;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .car-battery-edit-btn:hover {
+            border-color: var(--car-accent);
+            transform: scale(1.05);
+        }
+
+        /* Companion quote box */
+        .car-companion-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+        .car-rabbit-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px var(--car-glow);
+            flex-shrink: 0;
+            animation: carRabbitPulse 4s ease-in-out infinite;
+        }
+        @keyframes carRabbitPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px var(--car-glow); }
+            50% { transform: scale(1.08); box-shadow: 0 0 25px var(--car-glow); }
+        }
+        .car-quote-text {
+            font-size: .88rem;
+            line-height: 1.45;
+            color: var(--car-text);
+            font-style: italic;
+        }
+
+        /* Cockpit diagnostics grid */
+        .car-diag-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .65rem;
+        }
+        .car-diag-item {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: .5rem .7rem;
+            border-radius: 10px;
+        }
+        .car-diag-label {
+            font-size: .65rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.5px;
+            margin-bottom: .2rem;
+        }
+        .car-diag-val {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Music EQ Visualizer Bars */
+        .car-eq-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 16px;
+        }
+        .car-eq-bar {
+            width: 3px;
+            background: var(--car-accent);
+            border-radius: 2px;
+            animation: eqBounce 1.2s ease-in-out infinite alternate;
+        }
+        .car-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+        .car-eq-bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+        .car-eq-bar:nth-child(3) { height: 55%; animation-delay: 0.2s; }
+        .car-eq-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+        .car-eq-bar:nth-child(5) { height: 70%; animation-delay: 0.15s; }
+        .car-eq-bar:nth-child(6) { height: 45%; animation-delay: 0.35s; }
+        @keyframes eqBounce {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1); }
+        }
+
+        /* Milestone Horizontal/Vertical Scroller */
+        .car-milestone-scroller {
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+            padding-right: .3rem;
+        }
+        .car-milestone-scroller::-webkit-scrollbar {
+            width: 4px;
+        }
+        .car-milestone-scroller::-webkit-scrollbar-thumb {
+            background: var(--car-border);
+            border-radius: 2px;
+        }
+        .car-ms-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .78rem;
+            padding: .4rem .6rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+        }
+        .car-ms-row.reached {
+            border-left-color: #00ff41;
+            color: #d1fae5;
+        }
+        .car-ms-row.next {
+            border-left-color: var(--car-accent);
+            background: rgba(0, 234, 255, 0.08);
+            font-weight: 700;
+        }
+
+        /* Bottom Unlock Slider Track */
+        .car-bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: .8rem;
+            border-top: 1px solid var(--car-border);
+            transition: opacity .4s ease;
+        }
+        .car-slider-track {
+            position: relative;
+            width: min(440px, 92%);
+            height: 52px;
+            background: rgba(10, 20, 40, 0.85);
+            border: 1px solid var(--car-border);
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.4);
+            user-select: none;
+            touch-action: pan-y;
+            overflow: hidden;
+        }
+        .car-slider-text {
+            font-size: .88rem;
+            color: var(--car-text-dim);
+            font-weight: 600;
+            letter-spacing: 1px;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            transition: opacity .2s;
+        }
+        .car-slider-thumb {
+            position: absolute;
+            left: 4px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: grab;
+            box-shadow: 0 0 15px var(--car-glow);
+            transition: transform 0.1s ease-out;
+            touch-action: none;
+        }
+        .car-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+
+        /* Modals & Dialogs */
+        .car-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100050;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+            padding: 1.5rem;
+        }
+        .car-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .car-modal {
+            background: #0b1120;
+            border: 1px solid var(--car-border);
+            border-radius: 20px;
+            padding: 1.6rem 2rem;
+            max-width: 540px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px var(--car-glow);
+            transform: translateY(20px);
+            transition: transform .3s ease;
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+        .car-modal-overlay.active .car-modal {
+            transform: translateY(0);
+        }
+        .car-modal-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--car-accent);
+            margin-bottom: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .car-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .8rem;
+            margin: 1.2rem 0;
+        }
+        .car-modal-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--car-text);
+            padding: .85rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            font-size: .85rem;
+            font-weight: 600;
+            transition: all .2s;
+            text-decoration: none;
+        }
+        .car-modal-btn:hover {
+            border-color: var(--car-accent);
+            background: rgba(0, 234, 255, 0.12);
+            color: var(--car-accent);
+            transform: translateY(-2px);
+        }
+        .car-modal-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Wallpaper Gallery Grid */
+        .car-wp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: .75rem;
+            max-height: 250px;
+            overflow-y: auto;
+            margin: .8rem 0;
+            padding: .3rem;
+        }
+        .car-wp-item {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all .2s;
+            background: #090e17;
+        }
+        .car-wp-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .car-wp-item.active {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 14px var(--car-glow);
+        }
+        .car-wp-item .label {
+            position: absolute;
+            bottom: 0;
+            inset-inline: 0;
+            background: rgba(0,0,0,.75);
+            font-size: .65rem;
+            padding: .2rem .3rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: center;
+        }
+        .car-wp-item .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--car-accent);
+            color: #000;
+            font-size: .6rem;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        /* Form Inputs in Modals */
+        .car-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            margin-bottom: .8rem;
+        }
+        .car-input-label {
+            font-size: .75rem;
+            color: var(--car-text-dim);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .car-input-control {
+            width: 100%;
+            background: #070c14;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: .6rem .8rem;
+            border-radius: 8px;
+            outline: none;
+            font-size: .9rem;
+            transition: border-color .2s;
+        }
+        .car-input-control:focus {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-tag-row {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+            margin-top: .4rem;
+        }
+        .car-quick-tag {
+            font-size: .72rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: .2rem .5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .car-quick-tag:hover {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+        }
+
+        /* Toast */
+        .car-toast {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--car-accent);
+            box-shadow: 0 0 20px var(--car-glow);
+            color: #fff;
+            padding: .5rem 1.2rem;
+            border-radius: 20px;
+            font-size: .85rem;
+            z-index: 100100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .car-toast.show { opacity: 1; }
+    
