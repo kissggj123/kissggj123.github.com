@@ -126,6 +126,18 @@
         .car-wallpaper-layer.active {
             opacity: 1;
         }
+        .car-wallpaper-layer.wp-loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.09) 50%, transparent 70%);
+            background-size: 200% 100%;
+            animation: wp-shimmer 1.4s linear infinite;
+        }
+        @keyframes wp-shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
         .car-wallpaper-overlay {
             position: fixed;
             inset: 0;
@@ -1568,61 +1580,89 @@
         }
 
         // --- Wallpaper Engine ---
+        // b64+parts: 壁纸以 base64 文本分片存储(绕开二进制上传限制), 前端并行下载分片后解码显示
         const BUILTIN_WALLPAPERS = [
-            { id: 'starlight', name: '星空原野 · 银河漫步', file: 'wallpaper/Starlight210128.jpg' },
-            { id: 'illustration', name: '梦幻插画 · 浪漫次元', file: 'wallpaper/1126942.jpg' },
-            { id: 'bunny_snow', name: '兔可可 · 纯真雪白', file: 'wallpaper/IMG_2833.PNG' }
+            { id: 'starlight', name: '星空原野 · 银河漫步', file: 'wallpaper/Starlight210128.min.b64', b64: true, parts: 4, size: 296020 },
+            { id: 'illustration', name: '梦幻插画 · 浪漫次元', file: 'wallpaper/1126942.min.b64', b64: true, parts: 2, size: 111336 },
+            { id: 'bunny_snow', name: '兔可可 · 纯真雪白', file: 'wallpaper/IMG_2833.min.b64', b64: true, parts: 4, size: 334780 },
         ];
-
-        let allWallpapers = [...BUILTIN_WALLPAPERS];
-        let currentWallpaperIdx = 0;
-        let wallpaperTimer = null;
-
-        function getCustomWallpapers() {
-            try {
-                return JSON.parse(localStorage.getItem('car_custom_wallpapers') || '[]');
-            } catch(e) { return []; }
+        // 模糊占位图 (blur-up): 弱网下先显示低清模糊图, 避免黑屏
+        const WP_PLACEHOLDER = {"wallpaper/Starlight210128.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAgADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCaCcqQrlmz05q6DxWVuAA3gfhUySvglXJ59c1cZ23IcS9nFNaVFDbmA2jLZ7Cq/wBqxywGPUVl6hdQzxlWmDMucBQR+B9a0UkyGmjVgu1cKWYASMRH7gVKxrn9MOZgkgACguMDlTn1raMgJwDQtA3M6O5Q4AHOCMbc8+tSZAZgxKk88L1P0qKOPZ+8jbBx/F6+lPMrFDuRSPp0+tc6ZqAcurKrMpztPGMe9ZUttLbfOdrpuxuU5OPWtWGKQyCNlOAuS2/8qZLBJuCIy4z9zPOKpStsJpPcqacdzu2eQOOeaveYSdo5Y8BehpyRDzWRwN4PBI68VDuIVgqsWT7uDkihtt3BKysf/9k=", "wallpaper/1126942.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlweanjjyeRUAx9amWaSMDAXB4ya1uZs2dNSzSOUXEQldj8nGccVHqq2bGNbWHy2XO/jFZ8Ny0chI3DPJGcZqeW/dkPykOD1Y54qb6hZlNgyZxkVEWqWSYyDhcLjknuahbFUC8x8KZ5q8sAkQqMcjg1Utq3dHRXm+YA01sQ7tmJOs8rvK0bYAAJC4HHFJAWMmxUYs429M1o6qSb51ydqjgelWdNjR1V3XLKflPpWUnY6aUPaXM+S2KHyyuCOBz1qjcQtC5VwQR2Nad3M86yea27Y5VeMYGKi1EBrC0kIy7ZBPr0q73MbcrP//Z", "wallpaper/IMG_2833.min.b64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAbADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDm43ZVAJNXbd9zEljkdAKWC2RpDnzHUHgRr1H1pxsZNxZUKAHjcaTV0BuaDNI0M4ZwwQ5Jqgy+c8rICSCSfQCn2QvLRH8hlAY/MCM5qSzQpKxKhycgZHIzUy1SQ0QBBGhkZTHEOSx6n8KkW1M2VjwcdiR0Ipt6kzXHzIzQoQQCeD7YqhdR3Czu6CUB2JUdMDNNJJaA3qXkVnxIHcJ/efgH6DqamM6KOFdjjktjP4elVkdmUFiSaCTmk433C5OtwAG+WXHXDEU1Z/lJAYH2bFLHyGB9Krr1o5UFywb8AKHiLAf3iDmnxXFu453REHorcVnygZz61CeDx6UKNth3P//Z"};
+        // 已预加载的壁纸集合 (轮播切换零等待)
+        const wpPreloaded = new Set();
+        // 已解码壁纸的 objectURL 缓存: file -> objectURL, 避免重复下载/解码
+        const wpBlobCache = {};
+        // base64 文本 -> JPEG Blob
+        function b64ToJpegBlob(b64Text) {
+            const bin = atob(b64Text.replace(/\s+/g, ''));
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return new Blob([bytes], { type: 'image/jpeg' });
         }
+        let wpLoadToken = 0; // 防竞态: 快速切换壁纸时只保留最后一次请求
+        let wpAbortCtrl = null; // 取消上一次未完成的壁纸下载
 
-        function saveCustomWallpapers(list) {
-            localStorage.setItem('car_custom_wallpapers', JSON.stringify(list));
-        }
-
-        function fetchWallpaperManifest(showNotice) {
-            fetch('wallpaper/manifest.json?t=' + Date.now())
-                .then(r => r.json())
-                .then(data => {
-                    if (data && Array.isArray(data.wallpapers) && data.wallpapers.length > 0) {
-                        const map = new Map();
-                        // Put scanned manifest wallpapers first
-                        data.wallpapers.forEach(w => map.set(w.file, w));
-                        // Merge builtin fallbacks
-                        BUILTIN_WALLPAPERS.forEach(w => { if (!map.has(w.file)) map.set(w.file, w); });
-                        // Merge user custom
-                        getCustomWallpapers().forEach(w => map.set(w.file, w));
-                        allWallpapers = Array.from(map.values());
-                    } else {
-                        fallbackWallpapers();
-                    }
-                    renderWallpaperUI();
-                    applyCurrentWallpaper();
-                    if (showNotice) showToast(`✓ 已检测到 ${allWallpapers.length} 张壁纸`);
-                })
-                .catch(err => {
-                    fallbackWallpapers();
-                    renderWallpaperUI();
-                    applyCurrentWallpaper();
-                    if (showNotice) showToast(`已加载默认壁纸库 (${allWallpapers.length} 张)`);
+        // 统一壁纸数据加载, 返回 Promise<Blob>
+        // - b64 分片壁纸: 并行下载 file.p1..pN 文本分片, 拼接后解码为 JPEG
+        // - 普通图片: 流式下载
+        function loadWallpaperBlob(cur, signal, onProgress) {
+            const fetchOpts = signal ? { signal } : {};
+            if (cur.b64 && cur.parts) {
+                const total = cur.size || 0;
+                const partLoaded = new Array(cur.parts).fill(0);
+                const report = () => {
+                    const sum = partLoaded.reduce((a, b) => a + b, 0);
+                    if (onProgress) onProgress(sum, total);
+                };
+                const jobs = [];
+                for (let i = 1; i <= cur.parts; i++) {
+                    const idx = i - 1;
+                    const url = cur.file + '.p' + i;
+                    jobs.push(
+                        fetch(url, fetchOpts).then(resp => {
+                            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                            if (!resp.body) {
+                                return resp.text().then(t => { partLoaded[idx] = t.length; report(); return t; });
+                            }
+                            const reader = resp.body.getReader();
+                            const chunks = [];
+                            const pump = () => reader.read().then(({ done, value }) => {
+                                if (done) {
+                                    const dec = new TextDecoder();
+                                    let s = '';
+                                    chunks.forEach(ch => { s += dec.decode(ch, { stream: true }); });
+                                    return s + dec.decode();
+                                }
+                                chunks.push(value);
+                                partLoaded[idx] += value.length;
+                                report();
+                                return pump();
+                            });
+                            return pump();
+                        })
+                    );
+                }
+                return Promise.all(jobs).then(texts => b64ToJpegBlob(texts.join('')));
+            }
+            return fetch(cur.file, fetchOpts).then(resp => {
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const total = parseInt(resp.headers.get('Content-Length') || '0', 10);
+                if (!resp.body || !total) return resp.blob();
+                const reader = resp.body.getReader();
+                const chunks = [];
+                let loaded = 0;
+                const pump = () => reader.read().then(({ done, value }) => {
+                    if (done) return new Blob(chunks, { type: resp.headers.get('Content-Type') || 'image/jpeg' });
+                    chunks.push(value);
+                    loaded += value.length;
+                    if (onProgress) onProgress(loaded, total);
+                    return pump();
                 });
+                return pump();
+            });
         }
 
-        function fallbackWallpapers() {
-            const map = new Map();
-            BUILTIN_WALLPAPERS.forEach(w => map.set(w.file, w));
-            getCustomWallpapers().forEach(w => map.set(w.file, w));
-            allWallpapers = Array.from(map.values());
-        }
-
+        // 国内网络优化: ①模糊占位先行(无黑屏) ②分片并行下载+实时进度 ③预加载下一张(切换零等待) ④SW 离线缓存
         function applyCurrentWallpaper() {
             const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
             const layer = document.getElementById('car-wallpaper-layer');
@@ -1631,6 +1671,7 @@
 
             if (mode === 'theme' || allWallpapers.length === 0) {
                 layer.classList.remove('active');
+                layer.classList.remove('wp-loading');
                 if (badge) badge.textContent = '🎨 纯净座舱';
                 return;
             }
@@ -1639,197 +1680,98 @@
             const cur = allWallpapers[currentWallpaperIdx];
             if (!cur) return;
 
+            // 取消上一次未完成的下载, 只保留最后一次请求
+            if (wpAbortCtrl) { try { wpAbortCtrl.abort(); } catch (e) {} }
+            const ctrl = new AbortController();
+            wpAbortCtrl = ctrl;
+            const token = ++wpLoadToken;
+
+            // ① 先显示模糊占位图: 弱网环境也有画面, 配合微光 shimmer 动画
+            const ph = WP_PLACEHOLDER[cur.file];
+            if (ph) {
+                layer.style.backgroundImage = `url("${ph}")`;
+                layer.classList.add('active');
+            }
+            layer.classList.add('wp-loading');
+            if (badge) badge.textContent = `🖼️ ${cur.name} · 0%`;
+
+            // 缓存命中: 直接显示, 零等待
+            if (wpBlobCache[cur.file]) {
+                showWallpaperBlob(layer, badge, cur, token, wpBlobCache[cur.file]);
+                return;
+            }
+
+            // ② 下载壁纸数据, 实时显示进度
+            loadWallpaperBlob(cur, ctrl.signal, (loaded, total) => {
+                if (token !== wpLoadToken || !badge) return;
+                badge.textContent = total > 0
+                    ? `🖼️ ${cur.name} · ${Math.min(99, Math.round(loaded / total * 100))}%`
+                    : `🖼️ ${cur.name} · ${Math.round(loaded / 1024)}KB`;
+            }).then(blob => {
+                if (token !== wpLoadToken || ctrl.signal.aborted) return;
+                const objUrl = URL.createObjectURL(blob);
+                wpBlobCache[cur.file] = objUrl; // 缓存解码结果
+                showWallpaperBlob(layer, badge, cur, token, objUrl);
+            }).catch(err => {
+                if (ctrl.signal.aborted || token !== wpLoadToken) return;
+                // 下载失败 (如用户添加的跨域 URL 无 CORS 头): 回退 Image 直连加载
+                console.warn('Wallpaper fetch failed, fallback to direct Image load:', cur.file, err);
+                const img = new Image();
+                img.onload = () => {
+                    if (token !== wpLoadToken) return;
+                    layer.style.backgroundImage = `url("${cur.file}")`;
+                    layer.classList.remove('wp-loading');
+                    layer.classList.add('active');
+                    if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                    highlightActiveThumbnail();
+                    wpPreloaded.add(cur.file);
+                    preloadNextWallpaper();
+                };
+                img.onerror = () => {
+                    layer.classList.remove('wp-loading');
+                    if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
+                };
+                img.src = cur.file;
+            });
+        }
+
+        // 把解码后的壁纸显示到锁屏层 (带淡入)
+        function showWallpaperBlob(layer, badge, cur, token, objUrl) {
             const img = new Image();
-            img.src = cur.file;
             img.onload = () => {
-                layer.style.backgroundImage = `url('${cur.file}')`;
+                if (token !== wpLoadToken) return;
+                layer.style.backgroundImage = `url("${objUrl}")`;
+                layer.classList.remove('wp-loading');
                 layer.classList.add('active');
                 if (badge) badge.textContent = `🖼️ ${cur.name}`;
                 highlightActiveThumbnail();
+                wpPreloaded.add(cur.file);
+                preloadNextWallpaper(); // ③ 后台预加载下一张
             };
             img.onerror = () => {
-                // If failed, fall back to next
-                console.warn('Failed to load wallpaper:', cur.file);
+                layer.classList.remove('wp-loading');
+                if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
             };
+            img.src = objUrl;
         }
 
-        function nextWallpaper(isUserAction) {
+        // 后台静默预加载下一张壁纸: 轮播切换时零等待
+        function preloadNextWallpaper() {
             if (allWallpapers.length <= 1) return;
-            currentWallpaperIdx = (currentWallpaperIdx + 1) % allWallpapers.length;
-            localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
-            applyCurrentWallpaper();
-            if (isUserAction) showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
-        }
-
-        function prevWallpaper(isUserAction) {
-            if (allWallpapers.length <= 1) return;
-            currentWallpaperIdx = (currentWallpaperIdx - 1 + allWallpapers.length) % allWallpapers.length;
-            localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
-            applyCurrentWallpaper();
-            if (isUserAction) showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
-        }
-
-        function selectWallpaperByIdx(idx) {
-            currentWallpaperIdx = idx;
-            localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
-            applyCurrentWallpaper();
-            showToast(`已选择壁纸: ${allWallpapers[idx].name}`);
-        }
-
-        function setWallpaperMode(mode) {
-            localStorage.setItem('car_wp_mode', mode);
-            updateWallpaperModeButtons(mode);
-            applyCurrentWallpaper();
-            restartWallpaperTimer();
-            showToast(`已设为: ${mode === 'slideshow' ? '📁 自动轮播' : (mode === 'single' ? '🖼️ 固定单张' : '🎨 纯净座舱')}`);
-        }
-
-        function updateWallpaperModeButtons(mode) {
-            document.querySelectorAll('.wp-mode-btn').forEach(btn => {
-                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                btn.style.color = 'var(--car-text)';
-            });
-            const activeBtn = document.getElementById('wp-mode-' + mode);
-            if (activeBtn) {
-                activeBtn.style.borderColor = 'var(--car-accent)';
-                activeBtn.style.color = 'var(--car-accent)';
+            const next = allWallpapers[(currentWallpaperIdx + 1) % allWallpapers.length];
+            if (!next || wpPreloaded.has(next.file) || wpBlobCache[next.file]) return;
+            if (next.b64 && next.parts) {
+                // b64 分片壁纸: 后台下载分片并解码缓存, 切换时直接可用
+                loadWallpaperBlob(next, null, null).then(blob => {
+                    wpBlobCache[next.file] = URL.createObjectURL(blob);
+                    wpPreloaded.add(next.file);
+                }).catch(() => {});
+                return;
             }
-        }
-
-        function updateWallpaperDim(val) {
-            const pct = parseInt(val, 10);
-            const overlay = document.getElementById('car-wallpaper-overlay');
-            const lbl = document.getElementById('wp-dim-val');
-            if (lbl) lbl.textContent = pct + '%';
-            if (overlay) overlay.style.background = `rgba(5, 8, 17, ${pct / 100})`;
-            localStorage.setItem('car_wp_dim', pct);
-        }
-
-        function updateWallpaperBlur(val) {
-            const px = parseInt(val, 10);
-            const overlay = document.getElementById('car-wallpaper-overlay');
-            const lbl = document.getElementById('wp-blur-val');
-            if (lbl) lbl.textContent = px + 'px';
-            if (overlay) {
-                overlay.style.backdropFilter = `blur(${px}px)`;
-                overlay.style.webkitBackdropFilter = `blur(${px}px)`;
-            }
-            localStorage.setItem('car_wp_blur', px);
-        }
-
-        function changeWallpaperInterval(val) {
-            localStorage.setItem('car_wp_interval', val);
-            restartWallpaperTimer();
-            showToast(`轮播间隔已改为: ${val} 分钟`);
-        }
-
-        function restartWallpaperTimer() {
-            if (wallpaperTimer) clearInterval(wallpaperTimer);
-            const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
-            if (mode === 'slideshow') {
-                const mins = parseInt(localStorage.getItem('car_wp_interval') || '5', 10);
-                wallpaperTimer = setInterval(() => {
-                    nextWallpaper(false);
-                }, mins * 60 * 1000);
-            }
-        }
-
-        function renderWallpaperUI() {
-            const grid = document.getElementById('car-wp-grid');
-            const count = document.getElementById('wp-count');
-            if (count) count.textContent = allWallpapers.length;
-            if (!grid) return;
-
-            grid.innerHTML = allWallpapers.map((w, idx) => {
-                const isActive = (idx === currentWallpaperIdx);
-                return `<div class="car-wp-item ${isActive ? 'active' : ''}" onclick="selectWallpaperByIdx(${idx})">
-                    <img src="${w.file}" alt="${w.name}" loading="lazy">
-                    <div class="label">${w.name}</div>
-                    ${isActive ? '<span class="badge">当前</span>' : ''}
-                </div>`;
-            }).join('');
-        }
-
-        function highlightActiveThumbnail() {
-            document.querySelectorAll('.car-wp-item').forEach((item, idx) => {
-                if (idx === currentWallpaperIdx) {
-                    item.classList.add('active');
-                    if (!item.querySelector('.badge')) {
-                        const b = document.createElement('span');
-                        b.className = 'badge';
-                        b.textContent = '当前';
-                        item.appendChild(b);
-                    }
-                } else {
-                    item.classList.remove('active');
-                    const b = item.querySelector('.badge');
-                    if (b) b.remove();
-                }
-            });
-        }
-
-        function openWallpaperModal() {
-            closeMenuModal();
-            const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
-            updateWallpaperModeButtons(mode);
-
-            const dim = localStorage.getItem('car_wp_dim') || '45';
-            document.getElementById('slider-wp-dim').value = dim;
-            document.getElementById('wp-dim-val').textContent = dim + '%';
-
-            const blur = localStorage.getItem('car_wp_blur') || '1';
-            document.getElementById('slider-wp-blur').value = blur;
-            document.getElementById('wp-blur-val').textContent = blur + 'px';
-
-            const intv = localStorage.getItem('car_wp_interval') || '5';
-            document.getElementById('select-wp-interval').value = intv;
-
-            renderWallpaperUI();
-            document.getElementById('car-wallpaper-modal').classList.add('active');
-        }
-
-        function closeWallpaperModal() {
-            document.getElementById('car-wallpaper-modal').classList.remove('active');
-        }
-
-        function handleWallpaperUpload(e) {
-            const file = e.target.files && e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const dataUrl = evt.target.result;
-                const newWp = {
-                    id: 'custom_' + Date.now(),
-                    name: file.name.replace(/\.[^/.]+$/, ""),
-                    file: dataUrl
-                };
-                const custom = getCustomWallpapers();
-                custom.push(newWp);
-                saveCustomWallpapers(custom);
-                allWallpapers.push(newWp);
-                selectWallpaperByIdx(allWallpapers.length - 1);
-                renderWallpaperUI();
-                showToast('✓ 自定义壁纸添加成功！');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function promptAddWallpaperUrl() {
-            const url = prompt('请输入壁纸图片的完整 URL 地址 (https://...):');
-            if (!url || !url.trim()) return;
-            const name = prompt('为这张壁纸起个名字:', '网络精选壁纸') || '网络壁纸';
-            const newWp = {
-                id: 'custom_' + Date.now(),
-                name: name.trim(),
-                file: url.trim()
-            };
-            const custom = getCustomWallpapers();
-            custom.push(newWp);
-            saveCustomWallpapers(custom);
-            allWallpapers.push(newWp);
-            selectWallpaperByIdx(allWallpapers.length - 1);
-            renderWallpaperUI();
-            showToast('✓ 网络壁纸添加成功！');
+            const img = new Image();
+            img.onload = () => wpPreloaded.add(next.file);
+            img.onerror = () => {};
+            img.src = next.file;
         }
 
         // --- WakeLock API (Prevent Screen Sleeping) ---
