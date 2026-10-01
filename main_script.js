@@ -1,1693 +1,7 @@
-<!DOCTYPE html>
-<html lang="zh-CN" data-theme="bunny">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9373 -->
-    <title>兔可可王国 · bcos 虚拟系统 🐰</title>
-    <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="兔可可王国 · bcos 🐰">
-    <meta property="og:description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
-    <meta property="og:image" content="./icon/512.png">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="兔可可王国 · bcos 🐰">
-    <meta name="twitter:description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.2.9370">
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.2.9370">
-    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.2.9370">
-    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.2.9370">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.2.9370">
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.2.9370">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./car.css">
-    <!-- PWA -->
-    <meta name="theme-color" content="#FFF0F5">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="bcos">
-    <link rel="apple-touch-icon" href="./icon/512.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="./icon/256.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="./icon/192.png">
-    <script>
-        if (location.protocol !== 'file:') {
-            const mLink = document.createElement('link');
-            mLink.rel = 'manifest';
-            mLink.href = './manifest.json';
-            document.head.appendChild(mLink);
-        }
-    </script>
-    <script>
-        // Apply saved theme IMMEDIATELY before any rendering to prevent flash
-        (function(){
-            try {
-                var t = localStorage.getItem('theme');
-                if (t) document.documentElement.setAttribute('data-theme', t);
-            } catch(e) {}
-        })();
-        // === Mobile: Prevent pinch-to-zoom and double-tap zoom globally ===
-        (function(){
-            // Block multi-touch gestures (pinch zoom)
-            document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive:false});
-            document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, {passive:false});
-            document.addEventListener('gestureend', function(e){ e.preventDefault(); }, {passive:false});
-            // Block pinch with 2+ fingers
-            document.addEventListener('touchstart', function(e){
-                if (e.touches.length > 1) { e.preventDefault(); }
-            }, {passive:false});
-            // Block double-tap zoom
-            var lastTouchEnd = 0;
-            document.addEventListener('touchend', function(e){
-                var now = Date.now();
-                if (now - lastTouchEnd <= 300) { e.preventDefault(); }
-                lastTouchEnd = now;
-            }, {passive:false});
-            // Block wheel zoom (Ctrl+wheel)
-            document.addEventListener('wheel', function(e){
-                if (e.ctrlKey) { e.preventDefault(); }
-            }, {passive:false});
-            // Block keydown zoom (Ctrl+plus/minus/zero)
-            document.addEventListener('keydown', function(e){
-                if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
-                    e.preventDefault();
-                }
-            }, {passive:false});
-        })();
-    </script>
-    <style>
-        /* ==================== Theme Variables ==================== */
-        :root {
-            --radius: 16px;
-            --radius-sm: 10px;
-            --radius-lg: 24px;
-            --transition: .3s cubic-bezier(.4,0,.2,1);
-            --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --tab-h: 64px;
-            /* Default theme (bunny) */
-            --bg: #FFF0F5; --bg2: #FFE4EC; --card: #FFFFFF; --card2: #FFF8FB;
-            --text: #5D4E37; --text2: #9B8E7E; --accent: #FF6B9D; --accent-rgb:255,107,157;
-            --accent2: #FFB5BA; --border: #FFD0DE; --shadow: rgba(255,107,157,.12);
-            --good: #4CAF50; --warn: #FF9800; --bad: #F44336; --glow: none;
-            --trail-style: 'ribbon'; --trail-width: 6; --trail-glow: 12px;
-        }
-        [data-theme="bunny"] {
-            --bg: #FFF0F5; --bg2: #FFE4EC; --card: #FFFFFF; --card2: #FFF8FB;
-            --text: #5D4E37; --text2: #9B8E7E; --accent: #FF6B9D; --accent-rgb:255,107,157;
-            --accent2: #FFB5BA; --border: #FFD0DE; --shadow: rgba(255,107,157,.12);
-            --good: #4CAF50; --warn: #FF9800; --bad: #F44336; --glow: none;
-            --trail-style: 'ribbon'; --trail-width: 6; --trail-glow: 12px;
-        }
-        [data-theme="forest"] {
-            --bg: #F0F7EE; --bg2: #D8E8D5; --card: #FFFFFF; --card2: #F5FAF3;
-            --text: #2D4A2D; --text2: #5A7A5A; --accent: #4CAF50; --accent-rgb:76,175,80;
-            --accent2: #A5D6A7; --border: #C8E0C5; --shadow: rgba(76,175,80,.12);
-            --good: #2E7D32; --warn: #FF9800; --bad: #D32F2F; --glow: none;
-            --trail-style: 'leaf'; --trail-width: 5; --trail-glow: 8px;
-        }
-        [data-theme="ocean"] {
-            --bg: #E8F4FD; --bg2: #C7E4F7; --card: #FFFFFF; --card2: #F0F8FF;
-            --text: #1A3A52; --text2: #4A6A82; --accent: #0EA5E9; --accent-rgb:14,165,233;
-            --accent2: #7DD3FC; --border: #A0D0EB; --shadow: rgba(14,165,233,.12);
-            --good: #059669; --warn: #F59E0B; --bad: #DC2626; --glow: none;
-            --trail-style: 'wave'; --trail-width: 7; --trail-glow: 15px;
-        }
-        [data-theme="starlight"] {
-            --bg: #1a1a2e; --bg2: #16213e; --card: #1f2940; --card2: #243352;
-            --text: #e6edf3; --text2: #8b949e; --accent: #a78bfa; --accent-rgb:167,139,250;
-            --accent2: #C4B5FD; --border: #312e81; --shadow: rgba(167,139,250,.2);
-            --good: #34D399; --warn: #FBBF24; --bad: #F87171; --glow: 0 0 12px rgba(167,139,250,.3);
-            --trail-style: 'magic'; --trail-width: 8; --trail-glow: 20px;
-        }
-        [data-theme="cyber"] {
-            --bg: #0c0a1d; --bg2: #1a0a2e; --card: #0d0d18; --card2: #12121f;
-            --text: #e6edf3; --text2: #8b949e; --accent: #fbbf24; --accent-rgb:251,191,36;
-            --accent2: #ec4899; --border: #2a2a3e; --shadow: rgba(251,191,36,.15);
-            --good: #22c55e; --warn: #f59e0b; --bad: #ef4444; --glow: 0 0 8px rgba(251,191,36,.3);
-            --trail-style: 'lightsaber'; --trail-width: 4; --trail-glow: 25px;
-        }
-        /* New themes: sunset, mint, rose */
-        [data-theme="sunset"] {
-            --bg: #FFF3E0; --bg2: #FFE0B2; --card: #FFFFFF; --card2: #FFF8E7;
-            --text: #5D4037; --text2: #8D6E63; --accent: #FF6B35; --accent-rgb:255,107,53;
-            --accent2: #FFB74D; --border: #FFCC80; --shadow: rgba(255,107,53,.12);
-            --good: #4CAF50; --warn: #FF9800; --bad: #E53935; --glow: 0 0 10px rgba(255,107,53,.2);
-            --trail-style: 'flame'; --trail-width: 6; --trail-glow: 18px;
-        }
-        [data-theme="mint"] {
-            --bg: #E8F5E9; --bg2: #C8E6C9; --card: #FFFFFF; --card2: #F1F8E9;
-            --text: #1B5E20; --text2: #4E6E50; --accent: #26A69A; --accent-rgb:38,166,154;
-            --accent2: #80CBC4; --border: #A5D6A7; --shadow: rgba(38,166,154,.12);
-            --good: #2E7D32; --warn: #FF9800; --bad: #D32F2F; --glow: none;
-            --trail-style: 'mintBubble'; --trail-width: 6; --trail-glow: 12px;
-        }
-        [data-theme="rose"] {
-            --bg: #FCE4EC; --bg2: #F8BBD0; --card: #FFFFFF; --card2: #FFF0F5;
-            --text: #880E4F; --text2: #AD5E7A; --accent: #E91E63; --accent-rgb:233,30,99;
-            --accent2: #F48FB1; --border: #F8BBD0; --shadow: rgba(233,30,99,.12);
-            --good: #4CAF50; --warn: #FF9800; --bad: #D32F2F; --glow: 0 0 10px rgba(233,30,99,.15);
-            --trail-style: 'petal'; --trail-width: 5; --trail-glow: 14px;
-        }
-        /* New v9306 themes: aurora, galaxy, candy, matrix */
-        [data-theme="aurora"] {
-            --bg: #0B1026; --bg2: #1A1B3A; --card: #141633; --card2: #1C1E42;
-            --text: #E0E7FF; --text2: #818CF8; --accent: #06FFA5; --accent-rgb:6,255,165;
-            --accent2: #5B21B6; --border: #312E81; --shadow: rgba(6,255,165,.15);
-            --good: #34D399; --warn: #FBBF24; --bad: #F87171; --glow: 0 0 12px rgba(6,255,165,.25);
-            --trail-style: 'aurora'; --trail-width: 6; --trail-glow: 20px;
-        }
-        [data-theme="galaxy"] {
-            --bg: #0F0C29; --bg2: #1a1547; --card: #1A1640; --card2: #221D52;
-            --text: #E2E8F0; --text2: #94A3B8; --accent: #C084FC; --accent-rgb:192,132,252;
-            --accent2: #60A5FA; --border: #4C1D95; --shadow: rgba(192,132,252,.18);
-            --good: #34D399; --warn: #FBBF24; --bad: #F87171; --glow: 0 0 14px rgba(192,132,252,.25);
-            --trail-style: 'galaxy'; --trail-width: 5; --trail-glow: 18px;
-        }
-        [data-theme="candy"] {
-            --bg: #FFF8E7; --bg2: #FFE8F0; --card: #FFFFFF; --card2: #FFF5FA;
-            --text: #6B3FA0; --text2: #B886CF; --accent: #FF4081; --accent-rgb:255,64,129;
-            --accent2: #FFD740; --border: #FFCDD2; --shadow: rgba(255,64,129,.12);
-            --good: #66BB6A; --warn: #FFA726; --bad: #EF5350; --glow: 0 0 10px rgba(255,64,129,.2);
-            --trail-style: 'candy'; --trail-width: 6; --trail-glow: 14px;
-        }
-        [data-theme="matrix"] {
-            --bg: #000000; --bg2: #001100; --card: #001A00; --card2: #002200;
-            --text: #00FF41; --text2: #008F11; --accent: #00FF41; --accent-rgb:0,255,65;
-            --accent2: #003B00; --border: #00FF4133; --shadow: rgba(0,255,65,.15);
-            --good: #00FF41; --warn: #FFD700; --bad: #FF3333; --glow: 0 0 8px rgba(0,255,65,.3);
-            --trail-style: 'matrix'; --trail-width: 4; --trail-glow: 15px;
-        }
 
-        /* Low performance mode — activated by _perfConfig when FPS < 30 */
-        .low-perf *:not(#egg-whiteout) { animation-duration: 0.01s !important; transition-duration: 0.05s !important; }
-        .low-perf .bg-pattern, .low-perf #bg-grid { display: none; }
-
-        /* ==================== Base ==================== */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        /* Fluid root font-size: scales from 14px (320px viewport) to 21px (1920px+) */
-        /* --font-scale: user-controlled multiplier (0.8 ~ 2.0), persisted in localStorage */
-        /* --dpi-scale: auto-detected DPI multiplier (1.0 ~ 1.2) for HiDPI/Retina displays */
-        html { font-size: calc(clamp(14px, 0.5vw + 12px, 21px) * var(--font-scale, 1) * var(--dpi-scale, 1)); }
-        body {
-            font-family: 'Nunito', -apple-system, sans-serif;
-            font-size: clamp(.85rem, .85rem + .1vw, 1rem); font-weight: 600;
-            background: var(--bg); color: var(--text);
-            line-height: 1.6; overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-        /* Unified text selection: disabled when .no-select is on body, opt-in via .selectable */
-        body.no-select {
-            user-select: none; -webkit-user-select: none; -moz-user-select: none;
-            -webkit-touch-callout: none;
-        }
-        /* Allowlist: elements where text selection is always permitted */
-        .selectable, input, textarea, .mono-log, #changelog-content {
-            user-select: text; -webkit-user-select: text; -moz-user-select: text;
-            -webkit-touch-callout: default;
-        }
-        html.font-pixel, html.font-pixel body { font-family: 'Press Start 2P', monospace; font-size: clamp(.7rem, .7rem + .1vw, .85rem); }
-        @keyframes fadeIn { to { opacity: 1; } }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.3); border-radius: 3px; }
-        a { color: var(--accent); text-decoration: none; }
-        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-
-        /* ==================== Background ==================== */
-        #bg-layer { position: fixed; inset: 0; z-index: -5; background: var(--bg); transition: background var(--transition); }
-        #bg-pattern { position: fixed; inset: 0; z-index: -4; opacity: .5;
-            background-image: radial-gradient(circle at 20% 50%, rgba(var(--accent-rgb),.06) 0%, transparent 50%),
-                              radial-gradient(circle at 80% 80%, rgba(var(--accent-rgb),.04) 0%, transparent 50%);
-            transition: opacity var(--transition); }
-        #bg-grid { position: fixed; inset: 0; z-index: -3; opacity: .03;
-            background-image: linear-gradient(rgba(var(--accent-rgb),1) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(var(--accent-rgb),1) 1px, transparent 1px);
-            background-size: 40px 40px; }
-        #bg-glow { position: fixed; inset: 0; z-index: -2; pointer-events: none;
-            background: radial-gradient(400px at var(--mx,50%) var(--my,50%), rgba(var(--accent-rgb),.08), transparent 70%); }
-        #trail-canvas { position: fixed; inset: 0; z-index: 9998; pointer-events: none; }
-        #bunny-canvas { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
-        #epic-overlay { position: fixed; inset: 0; z-index: 9997; pointer-events: none; display: none; }
-
-        /* Egg Painting Mode: disable text selection, image drag, and all interactions */
-        body.egg-painting {
-            user-select: none !important;
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            cursor: crosshair !important;
-        }
-        body.egg-painting img {
-            -webkit-user-drag: none !important;
-            user-drag: none !important;
-            pointer-events: none !important;
-        }
-        body.egg-painting a,
-        body.egg-painting button,
-        body.egg-painting input,
-        body.egg-painting .nav-item,
-        body.egg-painting .tab-item,
-        body.egg-painting .setting-row,
-        body.egg-painting .toggle,
-        body.egg-painting .sidebar-logo,
-        body.egg-painting .avatar-img,
-        body.egg-painting .card,
-        body.egg-painting .mono-tile-cell,
-        body.egg-painting .theme-grid,
-        body.egg-painting .btn {
-            -webkit-user-drag: none !important;
-            pointer-events: none !important;
-        }
-        /* Egg control bar: must remain interactive during painting mode */
-        body.egg-painting #egg-fab,
-        body.egg-painting #egg-fab button,
-        body.egg-painting #egg-fab span {
-            pointer-events: auto !important;
-            -webkit-user-drag: none !important;
-            cursor: default !important;
-        }
-        body.egg-painting #egg-fab-btn {
-            pointer-events: auto !important;
-        }
-        body.egg-painting #egg-fab button {
-            cursor: pointer !important;
-        }
-        body.egg-painting #egg-fab button:active {
-            transform: scale(0.95);
-            opacity: 0.85;
-        }
-        body.egg-painting #egg-block {
-            touch-action: none !important;
-        }
-
-        /* ==================== Layout ==================== */
-        .app { display: none !important; height: 100vh; height: 100dvh; }
-        .sidebar {
-            width: 220px; flex-shrink: 0; padding: 1.5rem 1rem;
-            background: var(--bg2); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; gap: .5rem; transition: background var(--transition);
-            overflow-y: auto; overflow-x: hidden; min-height: 0;
-        }
-        .sidebar-logo { text-align: center; margin-bottom: 1.5rem; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
-        .sidebar-logo .bunny-icon { font-size: 2.5rem; display: block; margin-bottom: .25rem; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; pointer-events: auto; }
-        .sidebar-logo * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-        .sidebar-logo .bunny-icon.avatar-photo {
-            width: 2.5rem; height: 2.5rem; border-radius: 50%; overflow: hidden;
-            margin: 0 auto .25rem; display: block; border: 2px solid var(--accent);
-            user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
-            clip-path: circle(50%); -webkit-clip-path: circle(50%);
-            aspect-ratio: 1;
-        }
-        .sidebar-logo .bunny-icon.avatar-photo img {
-            width: 100%; height: 100%; object-fit: cover; display: block;
-            border-radius: 50%; -webkit-border-radius: 50%;
-            clip-path: circle(50%); -webkit-clip-path: circle(50%);
-            -webkit-user-drag: none; user-drag: none; pointer-events: none;
-        }
-        .sidebar.collapsed .sidebar-logo .bunny-icon.avatar-photo {
-            width: 1.8rem; height: 1.8rem; margin: 0 auto;
-        }
-        .sidebar-logo .title { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
-        .sidebar-logo .subtitle { font-size: .7rem; color: var(--text2); }
-        .nav-item {
-            display: flex; align-items: center; gap: .75rem;
-            padding: .75rem 1rem; border-radius: var(--radius-sm);
-            color: var(--text2); font-weight: 700; transition: background-color var(--transition), color var(--transition);
-            white-space: nowrap;
-        }
-        .nav-item:hover { background: rgba(var(--accent-rgb),.08); color: var(--text); }
-        .nav-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--shadow); }
-        .nav-item .icon { font-size: 1.3rem; flex-shrink: 0; }
-        .nav-item .label { font-size: .9rem; }
-        .sidebar-footer { margin-top: auto; text-align: center; font-size: .7rem; color: var(--text2); }
-        /* Sidebar collapse — robust centering at any font scale */
-        .sidebar { transition: width var(--transition); position: relative; }
-        .sidebar.no-transition { transition: none !important; }
-        .sidebar.collapsed { width: 64px; padding: .75rem .25rem; }
-        .sidebar.collapsed .nav-item .label,
-        .sidebar.collapsed .sidebar-logo .title,
-        .sidebar.collapsed .sidebar-logo .subtitle,
-        .sidebar.collapsed .god-indicator { display: none; }
-        .sidebar.collapsed .nav-item {
-            justify-content: center; align-items: center;
-            padding: .5rem 0; width: 100%; overflow: hidden;
-            border-radius: var(--radius-sm);
-        }
-        .sidebar.collapsed .nav-item .icon {
-            font-size: 1.3rem; flex-shrink: 0; text-align: center; line-height: 1;
-        }
-        .sidebar.collapsed .nav-item.active {
-            background: var(--accent); color: #fff;
-            box-shadow: 0 2px 8px var(--shadow);
-            overflow: hidden; border-radius: var(--radius-sm);
-        }
-        .sidebar.collapsed .sidebar-logo {
-            margin-bottom: 1rem; position: relative;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .sidebar.collapsed .sidebar-logo .bunny-icon {
-            font-size: 1.8rem; display: block; text-align: center; line-height: 1;
-            margin: 0 auto;
-        }
-        .sidebar.collapsed .sidebar-pin {
-            position: absolute; top: -2px; right: -2px; font-size: .65rem;
-            z-index: 10; line-height: 1;
-        }
-        .sidebar.collapsed .sidebar-footer { font-size: 0; }
-        .sidebar.collapsed .nav-item:hover .label {
-            display: block; position: fixed; left: 64px;
-            background: var(--card); padding: .5rem .75rem;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            box-shadow: 2px 0 8px rgba(0,0,0,.2); z-index: 400;
-            white-space: nowrap; margin-top: -1.2rem;
-        }
-        /* Auto-hide: fully hide sidebar, show a thin strip for click-to-restore */
-        .sidebar.auto-hidden { width: 8px; padding: 0; overflow: visible; cursor: pointer; }
-        .sidebar.auto-hidden > * { opacity: 0; pointer-events: none; }
-        .sidebar.auto-hidden::after {
-            content: '🐰'; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 1rem; opacity: .6;
-            pointer-events: none;
-        }
-        .sidebar.auto-hidden:hover::after { opacity: 1; }
-        .sidebar-pin {
-            display: inline-block; font-size: .8rem; cursor: pointer;
-            opacity: .5; transition: opacity var(--transition); margin-top: .3rem;
-        }
-        .sidebar-pin:hover { opacity: 1; }
-        .sidebar-pin.locked { opacity: 1; }
-        .god-indicator { display: none; padding: .5rem .75rem; border-radius: var(--radius-sm);
-            background: rgba(244,67,54,.1); color: var(--bad); font-size: .75rem; font-weight: 700;
-            text-align: center; margin-bottom: .5rem; }
-        .god-indicator.show { display: block; animation: pulse 2s ease infinite; }
-        @keyframes pulse { 50% { opacity: .6; } }
-
-        .content { flex: 1; overflow-y: auto; padding: 1.5rem; padding-top: calc(1.5rem + var(--safe-top)); }
-        .view { display: none; animation: slideUp .4s ease; }
-        .view.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ==================== Cards ==================== */
-        .card {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 1.5rem;
-            box-shadow: 0 2px 8px var(--shadow); transition: box-shadow var(--transition), transform var(--transition);
-        }
-        .card:hover { box-shadow: 0 8px 24px var(--shadow); transform: translateY(-2px); }
-        .card-title { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
-        .card-grid { display: grid; gap: 1rem; }
-        .grid-2 { grid-template-columns: repeat(2, 1fr); }
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .grid-auto { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-
-        /* ==================== Buttons ==================== */
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
-            padding: .6rem 1.2rem; border-radius: var(--radius-sm); font-weight: 700; font-size: .85rem;
-            transition: transform var(--transition), background-color var(--transition), filter var(--transition), box-shadow var(--transition), opacity var(--transition); white-space: nowrap;
-        }
-        .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--shadow); }
-        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-secondary { background: rgba(var(--accent-rgb),.1); color: var(--accent); }
-        .btn-secondary:hover { background: rgba(var(--accent-rgb),.2); }
-        .btn-danger { background: rgba(244,67,54,.1); color: var(--bad); }
-        .btn-danger:hover { background: var(--bad); color: #fff; }
-        .btn-sm { padding: .4rem .8rem; font-size: .75rem; }
-        .btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
-
-        /* ==================== Stats ==================== */
-        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: .5rem 0; border-bottom: 1px solid var(--border); }
-        .stat-row:last-child { border: none; }
-        .stat-label { color: var(--text2); font-size: .85rem; }
-        .stat-value { font-weight: 800; color: var(--text); }
-        .stat-bar { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; margin-top: .25rem; }
-        .stat-bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; background: var(--accent); }
-
-        /* ==================== Monopoly (Expanded) ==================== */
-        .mono-era-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
-        .mono-era-info { display: flex; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 700; }
-        .mono-era-badge { padding: .25rem .6rem; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-size: .75rem; font-weight: 800; }
-        .mono-era-progress { flex: 1; min-width: 120px; height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
-        .mono-era-progress-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s; }
-
-        .mono-map-scroll {
-            overflow-x: auto; overflow-y: hidden; padding: .5rem;
-            background: var(--card2); border-radius: var(--radius-sm);
-            border: 1px solid var(--border); margin-bottom: .75rem;
-            scroll-behavior: smooth;
-        }
-        .mono-map-ring {
-            position: relative; width: 100%; max-width: 400px; height: 200px;
-            margin: 0 auto .75rem; background: var(--card2); border-radius: 50%;
-            border: 2px solid var(--border); overflow: hidden;
-        }
-        .mono-map-ring-inner {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60%; height: 60%; background: var(--card); border-radius: 50%;
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-            font-size: .7rem; color: var(--text2); text-align: center;
-        }
-        .mono-ring-dot {
-            position: absolute; width: 14px; height: 14px; border-radius: 50%;
-            transform: translate(-50%, -50%); cursor: pointer; transition: all .3s;
-            border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); z-index: 5;
-        }
-        .mono-ring-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 10; }
-        .mono-ring-dot.current { animation: ringPulse 1s ease infinite; }
-        @keyframes ringPulse { 50% { transform: translate(-50%, -50%) scale(1.4); box-shadow: 0 0 8px currentColor; } }
-        /* ==================== Mobile Theme-Specific Player Dot Effects ==================== */
-        /* Replaces infinite pulse with GPU-accelerated pseudo-element breathing — no box-shadow animation */
-        html.touch-device .mono-ring-dot.current {
-            animation: none;
-            transform: translate(-50%, -50%) scale(1.25);
-            will-change: transform;
-        }
-        html.touch-device .mono-ring-dot.current::after {
-            content: '';
-            position: absolute;
-            inset: -6px;
-            border-radius: 50%;
-            pointer-events: none;
-            will-change: transform, opacity;
-        }
-        /* Bunny: heartbeat — double-pulse warmth */
-        html.touch-device[data-theme="bunny"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(255,107,157,.35) 0%, transparent 70%);
-            animation: mHeartbeat 1.8s ease-in-out infinite;
-        }
-        @keyframes mHeartbeat { 0%,100%{transform:scale(1);opacity:.3} 15%{transform:scale(1.4);opacity:.6} 30%{transform:scale(1.15);opacity:.4} 45%{transform:scale(1.5);opacity:.65} 60%{transform:scale(1.2);opacity:.35} }
-        /* Forest: leaf sway — gentle rotation breath */
-        html.touch-device[data-theme="forest"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(76,175,80,.3) 0%, transparent 70%);
-            animation: mLeafSway 3s ease-in-out infinite;
-        }
-        @keyframes mLeafSway { 0%,100%{transform:scale(1) rotate(0);opacity:.25} 50%{transform:scale(1.35) rotate(8deg);opacity:.5} }
-        /* Ocean: wave ripple — expanding ring */
-        html.touch-device[data-theme="ocean"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(14,165,233,.3) 0%, transparent 70%);
-            animation: mWaveRipple 2.5s ease-out infinite;
-        }
-        @keyframes mWaveRipple { 0%{transform:scale(0.8);opacity:.5} 100%{transform:scale(2.2);opacity:0} }
-        /* Starlight: star twinkle — irregular opacity */
-        html.touch-device[data-theme="starlight"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(167,139,250,.35) 0%, transparent 70%);
-            animation: mStarTwinkle 2s ease-in-out infinite;
-        }
-        @keyframes mStarTwinkle { 0%,100%{transform:scale(1);opacity:.2} 20%{transform:scale(1.3);opacity:.6} 40%{transform:scale(1.1);opacity:.3} 60%{transform:scale(1.4);opacity:.55} 80%{transform:scale(1.15);opacity:.25} }
-        /* Cyber: digital glitch — quick jitter */
-        html.touch-device[data-theme="cyber"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(251,191,36,.3) 0%, transparent 70%);
-            animation: mGlitch 1.5s steps(4) infinite;
-        }
-        @keyframes mGlitch { 0%{transform:scale(1) translateX(0);opacity:.3} 25%{transform:scale(1.3) translateX(2px);opacity:.55} 50%{transform:scale(1.1) translateX(-1px);opacity:.35} 75%{transform:scale(1.35) translateX(1px);opacity:.5} 100%{transform:scale(1) translateX(0);opacity:.3} }
-        /* Sunset: flame flicker — irregular scale */
-        html.touch-device[data-theme="sunset"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(255,107,53,.35) 0%, transparent 70%);
-            animation: mFlicker 1.6s ease-in-out infinite;
-        }
-        @keyframes mFlicker { 0%,100%{transform:scale(1) translateY(0);opacity:.3} 25%{transform:scale(1.3) translateY(-2px);opacity:.55} 50%{transform:scale(1.15) translateY(0);opacity:.4} 75%{transform:scale(1.4) translateY(-1px);opacity:.5} }
-        /* Mint: bubble pop — bouncy scale */
-        html.touch-device[data-theme="mint"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(38,166,154,.3) 0%, transparent 70%);
-            animation: mBubblePop 2.2s ease-in-out infinite;
-        }
-        @keyframes mBubblePop { 0%,100%{transform:scale(0.9);opacity:.3} 50%{transform:scale(1.5);opacity:.55} }
-        /* Rose: petal flutter — rotation + scale */
-        html.touch-device[data-theme="rose"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(233,30,99,.3) 0%, transparent 70%);
-            animation: mPetalFlutter 2.8s ease-in-out infinite;
-        }
-        @keyframes mPetalFlutter { 0%,100%{transform:scale(1) rotate(-5deg);opacity:.25} 50%{transform:scale(1.4) rotate(5deg);opacity:.5} }
-        /* Aurora: aurora shimmer — slow hue breathing */
-        html.touch-device[data-theme="aurora"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(6,255,165,.3) 0%, transparent 70%);
-            animation: mAuroraBreath 3s ease-in-out infinite;
-        }
-        @keyframes mAuroraBreath { 0%,100%{transform:scale(1);opacity:.2} 33%{transform:scale(1.3);opacity:.5} 66%{transform:scale(1.45);opacity:.4} }
-        /* Galaxy: cosmic pulse — slow expansion */
-        html.touch-device[data-theme="galaxy"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(192,132,252,.3) 0%, transparent 70%);
-            animation: mCosmicPulse 2.6s ease-out infinite;
-        }
-        @keyframes mCosmicPulse { 0%{transform:scale(0.9);opacity:.5} 100%{transform:scale(2);opacity:0} }
-        /* Candy: candy sparkle — quick twinkle */
-        html.touch-device[data-theme="candy"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(255,64,129,.3) 0%, transparent 70%);
-            animation: mCandySparkle 1.4s ease-in-out infinite;
-        }
-        @keyframes mCandySparkle { 0%,100%{transform:scale(1);opacity:.25} 30%{transform:scale(1.3);opacity:.6} 60%{transform:scale(1.1);opacity:.3} }
-        /* Matrix: digital rain — quick opacity steps */
-        html.touch-device[data-theme="matrix"] .mono-ring-dot.current::after {
-            background: radial-gradient(circle, rgba(0,255,65,.3) 0%, transparent 70%);
-            animation: mDigitalRain 1.2s steps(3) infinite;
-        }
-        @keyframes mDigitalRain { 0%{transform:scale(1);opacity:.3} 33%{transform:scale(1.3);opacity:.6} 66%{transform:scale(1.1);opacity:.35} 100%{transform:scale(1);opacity:.3} }
-        .mono-ring-region {
-            position: absolute; border-radius: 50%; opacity: 0.15;
-        }
-        .mono-map-strip { display: flex; gap: 3px; min-width: max-content; align-items: stretch; }
-        .region-divider {
-            display: flex; align-items: center; justify-content: center;
-            writing-mode: vertical-rl; text-orientation: mixed;
-            padding: .25rem .3rem; border-radius: 6px; font-size: clamp(.65rem, 0.6vw + 0.5rem, 0.85rem); font-weight: 800;
-            color: #fff; min-width: 18px; white-space: nowrap; flex-shrink: 0;
-        }
-        .mono-tile-cell {
-            width: clamp(52px, 4vw + 36px, 72px); min-height: clamp(66px, 4.5vw + 48px, 90px); background: var(--card); border: 1px solid var(--border);
-            border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center;
-            justify-content: flex-start; text-align: center; position: relative; transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
-            flex-shrink: 0; cursor: help;
-        }
-        .mono-tile-cell:hover { border-color: var(--accent); box-shadow: 0 2px 8px var(--shadow); transform: translateY(-2px); z-index: 10; }
-        .mono-tile-cell.current { border-color: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb),.4); animation: tilePulse 1s ease infinite; }
-        @keyframes tilePulse { 50% { box-shadow: 0 0 14px rgba(var(--accent-rgb),.5); } }
-        /* ==================== Mobile Theme-Specific Tile Effects ==================== */
-        /* Replaces infinite box-shadow pulse with pseudo-element glow — GPU-accelerated transform/opacity only */
-        html.touch-device .mono-tile-cell.current {
-            animation: none;
-            border-width: 2px;
-            border-color: var(--accent);
-            position: relative;
-        }
-        html.touch-device .mono-tile-cell.current::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 6px;
-            pointer-events: none;
-            z-index: 0;
-            will-change: transform, opacity;
-        }
-        /* Bunny: soft pink heartbeat glow */
-        html.touch-device[data-theme="bunny"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(255,107,157,.18) 0%, transparent 80%);
-            animation: mTileBreath 2s ease-in-out infinite;
-        }
-        /* Forest: green leaf sway glow */
-        html.touch-device[data-theme="forest"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(76,175,80,.15) 0%, transparent 80%);
-            animation: mTileBreath 2.5s ease-in-out infinite;
-        }
-        /* Ocean: blue wave glow */
-        html.touch-device[data-theme="ocean"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(14,165,233,.15) 0%, transparent 80%);
-            animation: mTileBreath 2.2s ease-in-out infinite;
-        }
-        /* Starlight: purple magic glow */
-        html.touch-device[data-theme="starlight"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(167,139,250,.2) 0%, transparent 80%);
-            animation: mTileBreath 1.8s ease-in-out infinite;
-        }
-        /* Cyber: gold glitch glow */
-        html.touch-device[data-theme="cyber"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(251,191,36,.18) 0%, transparent 80%);
-            animation: mTileGlitch 1.4s steps(3) infinite;
-        }
-        /* Sunset: orange flame glow */
-        html.touch-device[data-theme="sunset"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(255,107,53,.18) 0%, transparent 80%);
-            animation: mTileBreath 1.6s ease-in-out infinite;
-        }
-        /* Mint: teal bubble glow */
-        html.touch-device[data-theme="mint"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(38,166,154,.15) 0%, transparent 80%);
-            animation: mTileBreath 2.4s ease-in-out infinite;
-        }
-        /* Rose: pink petal glow */
-        html.touch-device[data-theme="rose"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(233,30,99,.15) 0%, transparent 80%);
-            animation: mTileBreath 2.6s ease-in-out infinite;
-        }
-        /* Aurora: green aurora glow */
-        html.touch-device[data-theme="aurora"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(6,255,165,.18) 0%, transparent 80%);
-            animation: mTileBreath 3s ease-in-out infinite;
-        }
-        /* Galaxy: purple cosmic glow */
-        html.touch-device[data-theme="galaxy"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(192,132,252,.18) 0%, transparent 80%);
-            animation: mTileBreath 2.8s ease-in-out infinite;
-        }
-        /* Candy: pink sparkle glow */
-        html.touch-device[data-theme="candy"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(255,64,129,.18) 0%, transparent 80%);
-            animation: mTileBreath 1.5s ease-in-out infinite;
-        }
-        /* Matrix: green digital glow */
-        html.touch-device[data-theme="matrix"] .mono-tile-cell.current::after {
-            background: radial-gradient(ellipse at center, rgba(0,255,65,.15) 0%, transparent 80%);
-            animation: mTileGlitch 1.2s steps(3) infinite;
-        }
-        @keyframes mTileBreath { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(1.02);opacity:.7} }
-        @keyframes mTileGlitch { 0%{transform:scale(1);opacity:.4} 33%{transform:scale(1.03);opacity:.7} 66%{transform:scale(1.01);opacity:.5} 100%{transform:scale(1);opacity:.4} }
-        /* Mobile highlighted tile — steady warn glow */
-        html.touch-device .mono-tile-cell.highlighted {
-            animation: none;
-            box-shadow: 0 0 12px rgba(255,152,0,.5);
-        }
-        .mono-tile-cell.owned { border-color: var(--good); }
-        .mono-tile-cell.locked { opacity: .3; filter: grayscale(.8); }
-        .mono-tile-cell.highlighted { border-color: var(--warn); box-shadow: 0 0 12px rgba(255,152,0,.5); animation: tilePulse 0.8s ease 3; }
-        .mono-tile-cell .tile-ic { font-size: clamp(1rem, 1.2vw + 0.7rem, 1.5rem); line-height: 1; margin-top: 2px; position: relative; z-index: 1; }
-        .mono-tile-cell .tile-nm { font-size: clamp(.58rem, 0.55vw + 0.45rem, 0.78rem); color: var(--text2); margin-top: 2px; line-height: 1.1; overflow: hidden; max-height: 2em; position: relative; z-index: 1; }
-        .mono-tile-cell .tile-cost { font-size: clamp(.52rem, 0.5vw + 0.4rem, 0.72rem); color: var(--accent); font-weight: 700; position: relative; z-index: 1; }
-        .mono-tile-cell .tile-level { font-size: clamp(.46rem, 0.45vw + 0.35rem, 0.62rem); color: var(--good); position: relative; z-index: 1; }
-        .mono-tile-cell .tile-owner { position: absolute; top: 3px; right: 3px; width: 7px; height: 7px; border-radius: 50%; }
-        .mono-tile-cell .tile-pins { position: absolute; bottom: 2px; left: 2px; display: flex; gap: 1px; font-size: clamp(.6rem, 0.55vw + 0.45rem, 0.78rem); }
-        .tile-tooltip {
-            display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-            background: var(--card); border: 1px solid var(--accent); border-radius: 6px; padding: .4rem .6rem;
-            font-size: .65rem; white-space: nowrap; z-index: 200; box-shadow: 0 4px 12px var(--shadow);
-            pointer-events: none; margin-bottom: 4px; max-width: 200px; white-space: normal; text-align: center;
-        }
-        .mono-tile-cell:hover .tile-tooltip { display: block; }
-
-        .mono-dice-area { text-align: center; padding: .5rem 0; }
-        #buff-bar { display:flex;flex-wrap:wrap;gap:4px;justify-content:center;transition:min-height .2s; }
-        .buff-icon {
-            position:relative; display:inline-flex; align-items:center; justify-content:center;
-            width:28px; height:28px; border-radius:6px;
-            background:var(--card2); border:1px solid var(--border);
-            font-size:1rem; animation:buffPop .3s ease; cursor:default;
-        }
-        .buff-badge {
-            position:absolute; top:-4px; right:-4px;
-            min-width:16px; height:16px; border-radius:8px;
-            background:var(--accent); color:#fff; font-size:.6rem; font-weight:800;
-            display:flex; align-items:center; justify-content:center;
-            line-height:1; padding:0 3px;
-        }
-        .buff-vehicle { border-color:var(--accent); background:rgba(99,102,241,.12); }
-        .buff-debuff { border-color:var(--bad); background:rgba(239,68,68,.12); }
-        .buff-badge-debuff { background:var(--bad); }
-        @keyframes buffPop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
-        .mono-dice { font-size: 1.4rem; display: flex; gap: .4rem; align-items: center; justify-content: center; }
-        .mono-dice-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
-        .mono-players { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
-        .mono-player { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .6rem; display: flex; flex-direction: column; align-items: center; min-width: clamp(52px, 3vw + 44px, 64px); transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); position: relative; cursor: pointer; }
-        .mono-player:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .mono-player.active { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow); }
-        .mono-player .mp-ic { font-size: 1.1rem; }
-        .mono-player .mp-name { font-size: .55rem; color: var(--text2); }
-        .mono-player .mp-money { font-weight: 800; font-size: .75rem; color: var(--accent); }
-        .mono-player .mp-status { font-size: .5rem; display: flex; gap: 1px; }
-        .mono-player .mp-personality { font-size: .45rem; color: var(--text2); }
-        .mono-cards { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; }
-        .mono-card-item { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: .15rem .3rem; cursor: pointer; transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); font-size: .6rem; position: relative; display: flex; flex-direction: column; align-items: center; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-        .mono-card-item:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .mono-card-item .mc-desc { font-size: .4rem; color: var(--text2); line-height: 1.1; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .mono-log { font-size: .65rem; color: var(--text2); max-height: 80px; overflow-y: auto; width: 100%; background: var(--card2); border-radius: var(--radius-sm); padding: .4rem; }
-        .mono-log .log-line { padding: .1rem 0; }
-        .mono-log .log-line.success { color: var(--good); }
-        .mono-log .log-line.error { color: var(--bad); }
-        .mono-log .log-line.god { color: #a78bfa; }
-        .mono-log .log-line.event { color: var(--warn); }
-        .mono-buy { margin-top: .5rem; text-align: center; display: flex; gap: .5rem; justify-content: center; align-items: center; }
-        .mono-section { margin-bottom: .75rem; }
-        .mono-section-title { font-size: clamp(.7rem, .15vw + .6rem, .85rem); font-weight: 800; color: var(--accent); margin-bottom: .4rem; }
-        .mono-inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; }
-
-        /* ==================== Anniversary ==================== */
-        .anniversary-hero { text-align: center; padding: 2rem 1rem; }
-        .anniversary-days { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
-        .anniversary-label { color: var(--text2); font-size: .9rem; margin-top: .25rem; }
-        .anniversary-time { font-size: 1.2rem; font-weight: 700; margin-top: .75rem; color: var(--text); }
-        .anniversary-start-date { font-size: .8rem; color: var(--text2); margin-top: .5rem; }
-        .next-milestone-box { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .75rem; text-align: center; margin-top: .75rem; }
-        .next-milestone-box .nm-date { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
-        .next-milestone-box .nm-countdown { font-size: .8rem; color: var(--text2); margin-top: .25rem; }
-        .milestone-item { display: flex; align-items: center; gap: .75rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
-        .milestone-item:last-child { border: none; }
-        .milestone-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--accent2); }
-        .milestone-dot.reached { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-        .milestone-text { font-size: .85rem; flex: 1; }
-        .milestone-text .milestone-date { font-size: .7rem; color: var(--text2); }
-        .milestone-text .milestone-remain { font-size: .7rem; }
-
-        /* ==================== Settings ==================== */
-        .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: .75rem; }
-        .theme-card { padding: 1rem; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: pointer; transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition); text-align: center; }
-        .theme-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
-        .theme-card.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.2); }
-        .theme-preview { width: 100%; height: 40px; border-radius: 6px; margin-bottom: .5rem; }
-        .theme-name { font-size: .75rem; font-weight: 700; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid var(--border); }
-        .setting-row:last-child { border: none; }
-        .toggle { position: relative; width: 44px; height: 24px; background: var(--bg2); border-radius: 12px; cursor: pointer; transition: background var(--transition); }
-        .toggle.on { background: var(--accent); }
-        .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left var(--transition); }
-        .toggle.on::after { left: 22px; }
-
-        #avatar-img { cursor: pointer; transition: transform .3s cubic-bezier(.4,0,.2,1); -webkit-user-drag: none; user-drag: none; -webkit-touch-callout: none; display: block; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-        #avatar-img:hover { transform: scale(1.05); }
-        #avatar-img:active { transform: scale(0.95); }
-        /* Avatar container: ensure circular clipping on all screen sizes — clip-path is more robust than overflow:hidden */
-        .avatar-container { width:120px; height:120px; margin:0 auto; border-radius:50%; overflow:hidden; -webkit-border-radius:50%; aspect-ratio:1; border:3px solid var(--accent); box-shadow:0 0 20px var(--shadow); position:relative; clip-path: circle(50%); -webkit-clip-path: circle(50%); touch-action: none; -webkit-tap-highlight-color: transparent; }
-        .avatar-container img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; -webkit-border-radius:50%; clip-path: circle(50%); -webkit-clip-path: circle(50%); }
-        .avatar-container #avatar-fallback { border-radius:50%; clip-path: circle(50%); -webkit-clip-path: circle(50%); }
-        .avatar-burst { position: fixed; pointer-events: none; z-index: 9997; }
-        @keyframes sparkle {
-            0% { transform: translate(0,0) scale(1) rotate(0); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); opacity: 0; }
-        }
-        @keyframes ringExpand {
-            0% { transform: translate(-50%,-50%) scale(0); opacity: .8; }
-            100% { transform: translate(-50%,-50%) scale(3); opacity: 0; }
-        }
-        @keyframes avatarShake {
-            0%, 100% { transform: rotate(0); }
-            25% { transform: rotate(-8deg); }
-            75% { transform: rotate(8deg); }
-        }
-        @keyframes epicRing {
-            0% { transform: translate(-50%,-50%) scale(0); opacity: 1; }
-            100% { transform: translate(-50%,-50%) scale(5); opacity: 0; }
-        }
-        @keyframes epicText {
-            0% { transform: translate(-50%,-50%) scale(0.3); opacity: 0; }
-            20% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
-            80% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%,-50%) scale(2); opacity: 0; }
-        }
-        @keyframes epicFlash {
-            0% { opacity: 0; } 10% { opacity: .6; } 100% { opacity: 0; }
-        }
-        @keyframes eggWhiteout {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        @keyframes epicFirework {
-            0% { transform: translate(0,0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
-
-        /* ==================== Card Draw ==================== */
-        .game-card:hover { transform: translateY(-4px) scale(1.08) !important; box-shadow: 0 4px 12px var(--shadow); z-index: 10; }
-        .game-card:active { transform: scale(0.95) !important; }
-        .game-card .gc-desc { font-size: .4rem; color: var(--text2); text-align: center; margin-top: 1px; line-height: 1.1; padding: 0 2px; max-height: 2.2em; overflow: hidden; }
-        .cooldown-btn { position: relative; overflow: hidden; }
-        .cooldown-btn .cooldown-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.1); pointer-events: none; }
-        .inventory-grid { display: flex; gap: .3rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; perspective: 800px; }
-        .inventory-card { width: 50px; height: 68px; border-radius: 6px; background: var(--card2); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform .25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color .25s, box-shadow .25s; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-        .inventory-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-        .inventory-card .ic-icon { font-size: 1.2rem; }
-        .inventory-card .ic-name { font-size: .42rem; font-weight: 700; text-align: center; line-height: 1.1; margin-top: 1px; }
-        .inventory-card .ic-desc { font-size: .35rem; color: var(--text2); text-align: center; line-height: 1.1; padding: 0 2px; overflow: hidden; max-height: 2.4em; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
-        .inventory-card .ic-hacker-badge { position: absolute; top: 1px; right: 1px; font-size: .4rem; }
-
-        /* ==================== Card Draw Animations ==================== */
-        @keyframes btnPulse {
-            0%   { transform: scale(1); }
-            50%  { transform: scale(0.92); box-shadow: 0 0 16px 4px rgba(var(--accent-rgb, 255,107,157), 0.4); }
-            100% { transform: scale(1); }
-        }
-        @keyframes cardDeal {
-            0%   { opacity: 0; transform: translateY(-50px) translateX(20px) rotateY(180deg) rotateZ(-15deg) scale(0.5); }
-            30%  { opacity: 0.6; transform: translateY(-20px) translateX(10px) rotateY(90deg) rotateZ(-8deg) scale(0.7); }
-            60%  { opacity: 0.9; transform: translateY(4px) translateX(0) rotateY(0deg) rotateZ(2deg) scale(1.08); }
-            80%  { opacity: 1; transform: translateY(-2px) rotateY(0deg) rotateZ(-1deg) scale(0.98); }
-            100% { opacity: 1; transform: translateY(0) rotateY(0deg) rotateZ(0deg) scale(1); }
-        }
-        @keyframes cardGlow {
-            0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 255,107,157), 0); }
-            50%  { box-shadow: 0 0 16px 4px rgba(var(--accent-rgb, 255,107,157), 0.5); }
-            100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 255,107,157), 0); }
-        }
-        @keyframes cardLegendaryGlow {
-            0%   { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
-            30%  { box-shadow: 0 0 24px 6px rgba(255, 215, 0, 0.7); }
-            60%  { box-shadow: 0 0 16px 4px rgba(255, 215, 0, 0.5); }
-            100% { box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.3); }
-        }
-        @keyframes cardShimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        .inventory-card.card-dealt {
-            animation: cardDeal .55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                       cardGlow .9s ease .35s forwards;
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            transition: none !important; /* Prevent transition conflict during deal animation */
-        }
-        .inventory-card.card-legendary {
-            animation: cardDeal .65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                       cardLegendaryGlow 1.5s ease .4s forwards;
-            border-color: #FFD700 !important;
-            box-shadow: 0 0 16px 4px rgba(255, 215, 0, 0.5);
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            transition: none !important;
-            background: linear-gradient(135deg, var(--card2) 0%, rgba(255,215,0,0.08) 50%, var(--card2) 100%);
-            background-size: 200% auto;
-        }
-        .inventory-card.card-legendary::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 6px;
-            background: linear-gradient(110deg, transparent 25%, rgba(255,215,0,0.15) 50%, transparent 75%);
-            background-size: 200% auto;
-            animation: cardShimmer 2s linear infinite;
-            pointer-events: none;
-        }
-
-        .god-challenge-box { background: var(--card2); border: 2px dashed var(--accent); border-radius: var(--radius); padding: 1rem; text-align: center; margin-bottom: 1rem; }
-        .god-code-display { font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace; font-size: .8rem; font-weight: 600; word-break: break-all; color: var(--accent); margin: .5rem 0; line-height: 2; letter-spacing: .5px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
-        .god-input { width: 100%; padding: .75rem; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--card2); color: var(--text); font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace; font-size: .8rem; letter-spacing: .5px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; transition: border var(--transition); }
-        .god-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,107,157,.12); }
-        .god-input::placeholder { color: var(--text2); opacity: .5; font-family: inherit; }
-        .god-status { padding: .75rem; border-radius: var(--radius-sm); text-align: center; font-weight: 700; margin-bottom: .5rem; display: none; }
-        .god-status.show { display: block; }
-        .god-status.success { background: rgba(76,175,80,.1); color: var(--good); }
-        .god-status.error { background: rgba(244,67,54,.1); color: var(--bad); }
-
-        /* ==================== Events Log ==================== */
-        .event-item { padding: .5rem .75rem; border-radius: var(--radius-sm); background: var(--card2); margin-bottom: .4rem; font-size: .8rem; display: flex; gap: .5rem; align-items: start; }
-        .event-time { color: var(--text2); font-size: .65rem; flex-shrink: 0; min-width: 50px; }
-        .event-text { flex: 1; }
-        .event-info { color: var(--text); }
-        .event-success { color: var(--good); }
-        .event-warn { color: var(--warn); }
-        .event-error { color: var(--bad); }
-        .event-god { color: #a78bfa; }
-
-        /* ==================== Modal ==================== */
-        .modal-overlay { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); }
-        .modal-overlay.show { display: flex; animation: fadeIn .3s ease; }
-        .modal { background: var(--card); border-radius: var(--radius); padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); position: relative; }
-        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem; }
-        .modal-close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: var(--text2); cursor: pointer; }
-        .modal-drag-handle { display: none; width: 40px; height: 4px; background: var(--text2); border-radius: 2px; margin: 0 auto .8rem; opacity: .4; }
-
-        /* ==================== Toast Notifications ==================== */
-        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 600; display: flex; flex-direction: column; gap: .5rem; pointer-events: none; }
-        .toast { background: var(--card); border-radius: var(--radius-sm); padding: .7rem 1rem; box-shadow: 0 4px 20px rgba(0,0,0,.2); border-left: 3px solid var(--accent); max-width: 300px; animation: toastIn .3s ease, toastOut .3s ease 2.5s forwards; pointer-events: auto; }
-        .toast.success { border-left-color: var(--good); }
-        .toast.error { border-left-color: var(--bad); }
-        .toast.info { border-left-color: var(--accent); }
-        .toast.god { border-left-color: var(--warn); }
-        .toast-text { font-size: .8rem; color: var(--text); }
-        @keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
-
-        /* ==================== Loading Overlay ==================== */
-        .load-overlay { position: fixed; inset: 0; z-index: 700; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); }
-        .load-overlay.show { display: flex; animation: fadeIn .2s ease; }
-        .load-content { text-align: center; }
-        .load-spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto .8rem; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .load-text { color: var(--text); font-size: .9rem; font-weight: 700; }
-        @keyframes bounceIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 60% { transform: scale(1.2) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
-
-        /* ==================== Mobile Tab Bar ==================== */
-        .tab-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
-            display: none; align-items: center; justify-content: space-around;
-            height: calc(var(--tab-h) + var(--safe-bottom)); padding-bottom: var(--safe-bottom);
-            background: var(--bg2); border-top: 1px solid var(--border);
-            backdrop-filter: blur(20px);
-        }
-        .tab-item { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; height: 100%; padding-top: 8px; color: var(--text2); transition: color var(--transition); -webkit-tap-highlight-color: transparent; user-select: none; }
-        .tab-item .tab-icon { font-size: 1.4rem; }
-        .tab-item .tab-label { font-size: .6rem; font-weight: 700; }
-        .tab-item.active { color: var(--accent); }
-        .tab-item.active .tab-icon { transform: translateY(-2px); transition: transform var(--transition); }
-
-        /* Tab bar collapse/hide */
-        .tab-bar { transition: height var(--transition), transform .3s ease; overflow: hidden; }
-        .tab-bar.collapsed { height: 36px; padding-bottom: 0; }
-        .tab-bar.collapsed .tab-label { display: none; }
-        .tab-bar.collapsed .tab-icon { font-size: 1.2rem; }
-        .tab-bar.collapsed .tab-item { padding-top: 0; justify-content: center; height: 100%; }
-        .tab-bar.hidden { transform: translateY(100%); }
-        .tab-bar-handle {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 4px; background: var(--text2); border-radius: 2px;
-            opacity: .3; cursor: pointer; transition: opacity var(--transition);
-        }
-        .tab-bar-handle:hover { opacity: .8; }
-        #tab-fab {
-            position: fixed; bottom: 16px; right: 16px; z-index: 300;
-            width: 48px; height: 48px; border-radius: 50%;
-            background: var(--accent); display: none;
-            align-items: center; justify-content: center;
-            font-size: 1.4rem; cursor: pointer; color: #fff;
-            box-shadow: 0 4px 16px rgba(0,0,0,.3);
-        }
-        #tab-fab.show { display: flex; animation: bounceIn .3s ease; }
-
-        /* ==================== Responsive ==================== */
-        /* Global: prevent pinch-zoom and double-tap zoom; allow pan */
-        html, body { touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
-        /* Touch optimization — prevent double-tap zoom on interactive elements */
-        .btn, .tab-item, .toggle, .sidebar-logo, .mono-tile-cell, .card-title {
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-        /* Prevent text selection on game UI for better mobile experience */
-        .mono-board, .tab-bar, .sidebar { -webkit-user-select: none; user-select: none; }
-        /* Extra small screens (phones) */
-        @media (max-width: 480px) {
-            body { overflow-y: auto; overflow-x: hidden; }
-            .app { flex-direction: column; height: auto; min-height: 100vh; }
-            .sidebar { display: none; }
-            .content { flex: 1; padding: .75rem; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 1rem); }
-            .tab-bar { display: flex; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .anniversary-days { font-size: 2.2rem; }
-            .card { padding: .75rem; }
-            .mono-tile-cell { width: 50px; min-height: 64px; }
-            .modal { padding: 1rem; max-width: 95%; }
-            .modal-title { font-size: 1rem; }
-        }
-        /* Small screens (tablets / large phones) */
-        @media (max-width: 768px) {
-            body { overflow-y: auto; overflow-x: hidden; }
-            .app { flex-direction: column; height: auto; min-height: 100vh; }
-            .sidebar { display: none; }
-            .content { flex: 1; padding: 1rem; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 1rem); }
-            .tab-bar { display: flex; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .anniversary-days { font-size: 2.5rem; }
-            .card { padding: 1rem; }
-            /* Bottom Sheet modal on mobile */
-            .modal-overlay { align-items: flex-end; }
-            .modal {
-                border-radius: 16px 16px 0 0;
-                max-height: 85vh;
-                width: 100%;
-                max-width: 100%;
-                padding: 1rem;
-                padding-bottom: calc(var(--tab-h, 0px) + var(--safe-bottom, 0px) + 1rem);
-                animation: slideUpSheet .3s ease-out;
-            }
-            .modal-drag-handle { display: block; }
-        }
-        /* Medium screens (small desktops / large tablets in landscape) */
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .sidebar { width: 180px; }
-            .content { padding: 1rem; }
-        }
-        /* Large screens (desktops) */
-        @media (min-width: 1440px) {
-            .sidebar { width: 240px; }
-            .content { padding: 2rem; }
-            .grid-auto { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-        }
-        /* Extra large screens */
-        @media (min-width: 1920px) {
-            .content { max-width: 1600px; margin: 0 auto; }
-        }
-        @media (display-mode: standalone) {
-            .tab-bar { display: flex; }
-            .sidebar { display: none; }
-        }
-        @keyframes slideUpSheet {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        /* ==================== GPU / Hardware Acceleration ==================== */
-        /* Promote animated/frequently-updated elements to GPU layers */
-        /* Only apply backface-visibility broadly; will-change only on actively animating elements */
-        .mono-tile-cell, .mono-ring-dot, .card, .btn, .tab-item, .modal-overlay > div {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-        /* Canvas elements get GPU compositing */
-        canvas {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        /* Ring canvas — dedicated GPU layer */
-        #mono-ring-canvas {
-            will-change: transform;
-            transform: translateZ(0);
-            backface-visibility: hidden;
-        }
-        /* Map strip — GPU compositing for smooth scrolling */
-        #mono-map-strip {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        /* Player dots on ring — GPU layer for smooth animation */
-        .mono-ring-dot {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        /* Modal overlay — GPU for smooth fade */
-        .modal-overlay {
-            will-change: opacity;
-        }
-        .modal-overlay > div {
-            transform: translateZ(0);
-        }
-        /* News ticker — GPU for smooth scroll animation */
-        .news-ticker-inner {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        /* Mouse trail canvas — GPU */
-        #trail-canvas, #bunny-canvas {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        /* Sidebar — no persistent will-change; transitions are infrequent */
-        .sidebar {
-            will-change: auto;
-        }
-        /* Tab bar — no persistent will-change; transitions are infrequent */
-        .tab-bar {
-            will-change: auto;
-        }
-        /* Egg FAB — GPU for smooth drag */
-        #egg-fab {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        /* Disable will-change on idle elements to free GPU memory */
-        .mono-tile-cell:not(.current):not(:hover) {
-            will-change: auto;
-        }
-        /* ==================== Render Optimization ==================== */
-        /* Contain layout/paint for cards to reduce reflow cost */
-        .card, .modal-overlay > div, .mono-tile-cell {
-            contain: layout style paint;
-        }
-        /* Skip rendering for off-screen content in long views */
-        .view.active > .card:nth-child(n+5) {
-            content-visibility: auto;
-            contain-intrinsic-size: auto 300px;
-        }
-        /* Button press ripple effect */
-        @keyframes rippleEffect {
-            0%   { transform: scale(0); opacity: 0.5; }
-            100% { transform: scale(4); opacity: 0; }
-        }
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 24px; height: 24px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.4);
-            transform: translate(-50%, -50%) scale(0);
-            pointer-events: none;
-            opacity: 0;
-        }
-        .btn:active::after {
-            animation: rippleEffect .4s ease-out;
-        }
-        .btn { position: relative; overflow: hidden; }
-        /* Tab item active press animation */
-        .tab-item:active { transform: scale(0.92); transition: transform .1s; }
-        .tab-item { transition: color var(--transition), transform .15s ease; }
-        /* Respect reduced motion preference */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-        }
-
-        /* ==================== Mobile-Exclusive Touch Bloom — Theme-Specific ==================== */
-        /* Independent from PC trail system — lightweight CSS-only bloom at touch points */
-        html.touch-device .touch-bloom {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0;
-            animation: touchBloom 0.6s ease-out forwards;
-            will-change: transform, opacity;
-            transform: translateZ(0);
-        }
-        @keyframes touchBloom {
-            0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0.5; }
-            40%  { opacity: 0.35; }
-            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
-        }
-        /* Theme-specific bloom shapes — each theme gets a unique visual */
-        html.touch-device[data-theme="bunny"] .touch-bloom {
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        }
-        html.touch-device[data-theme="forest"] .touch-bloom {
-            border-radius: 50% 0 50% 50% / 50% 0 50% 50%;
-        }
-        html.touch-device[data-theme="ocean"] .touch-bloom {
-            border-radius: 50%;
-            border-style: double;
-            border-width: 3px;
-        }
-        html.touch-device[data-theme="starlight"] .touch-bloom {
-            border-radius: 30%;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            border: none !important;
-        }
-        html.touch-device[data-theme="cyber"] .touch-bloom {
-            border-radius: 2px;
-        }
-        html.touch-device[data-theme="sunset"] .touch-bloom {
-            border-radius: 50%;
-        }
-        html.touch-device[data-theme="mint"] .touch-bloom {
-            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-        }
-        html.touch-device[data-theme="rose"] .touch-bloom {
-            border-radius: 50% 0 50% 50%;
-        }
-        html.touch-device[data-theme="aurora"] .touch-bloom {
-            border-radius: 50%;
-            filter: blur(1px);
-        }
-        html.touch-device[data-theme="galaxy"] .touch-bloom {
-            border-radius: 50%;
-            box-shadow: 0 0 8px currentColor;
-        }
-        html.touch-device[data-theme="candy"] .touch-bloom {
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        }
-        html.touch-device[data-theme="matrix"] .touch-bloom {
-            border-radius: 0;
-        }
-        /* ==================== Mobile Player Move Animation ==================== */
-        /* One-shot bounce when a player moves — GPU-accelerated, no infinite loops */
-        html.touch-device .mono-ring-dot.player-moved {
-            animation: mPlayerBounce 0.5s cubic-bezier(.34,1.56,.64,1) !important;
-        }
-        @keyframes mPlayerBounce {
-            0%   { transform: translate(-50%, -50%) scale(0.5); }
-            50%  { transform: translate(-50%, -50%) scale(1.6); }
-            100% { transform: translate(-50%, -50%) scale(1.25); }
-        }
-        /* ==================== Mobile Player Card Active Effect ==================== */
-        /* Theme-specific active player card glow using pseudo-element */
-        html.touch-device .mono-player.active {
-            position: relative;
-        }
-        html.touch-device .mono-player.active::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: var(--radius-sm, 8px);
-            pointer-events: none;
-            background: linear-gradient(135deg, rgba(var(--accent-rgb),.12), transparent);
-            animation: mPlayerCardGlow 2s ease-in-out infinite;
-            will-change: opacity;
-        }
-        @keyframes mPlayerCardGlow { 0%,100%{opacity:.3} 50%{opacity:.6} }
-        /* Mobile: softer trail canvas opacity for gentler visual */
-        html.touch-device #trail-canvas { opacity: 0.7; }
-        /* Mobile: add subtle glow to active buttons instead of relying on trail */
-        html.touch-device .btn:active {
-            filter: brightness(1.15);
-            transform: scale(0.96);
-        }
-        /* Mobile: gentle bounce for tab switches */
-        html.touch-device .tab-item:active {
-            transform: scale(0.88);
-            transition: transform .08s;
-        }
-        /* Mobile: card tap feedback — subtle lift without trail dependency */
-        html.touch-device .game-card:active,
-        html.touch-device .mono-tile-cell:active {
-            transform: scale(0.97);
-            transition: transform .08s;
-        }
-        /* Mobile: dice roll animation — theme-adaptive shake */
-        html.touch-device .mono-dice-num.rolling {
-            animation: mDiceShake 0.4s ease-in-out !important;
-        }
-        @keyframes mDiceShake {
-            0%,100% { transform: translateX(0) rotate(0); }
-            25% { transform: translateX(-3px) rotate(-5deg); }
-            50% { transform: translateX(3px) rotate(5deg); }
-            75% { transform: translateX(-2px) rotate(-3deg); }
-        }
-        /* Theme-adaptive BCOS button — in main stylesheet for first-load visibility */
-        .bcos-btn { width:100%; margin-top:.6rem; padding:.6rem; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; cursor:pointer; border-radius:var(--radius-sm); transition:all .25s ease; position:relative; overflow:hidden; }
-        .bcos-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transform:translateX(-100%); transition:transform .5s; }
-        .bcos-btn:hover::after { transform:translateX(100%); }
-        [data-theme="bunny"] .bcos-btn { background:linear-gradient(135deg,#FFF0F5,#FF6B9D); border:1px solid #FF6B9D; color:#fff; box-shadow:0 2px 12px rgba(255,107,157,.3); }
-        [data-theme="forest"] .bcos-btn { background:linear-gradient(135deg,#F0F7EE,#4CAF50); border:1px solid #4CAF50; color:#fff; box-shadow:0 2px 12px rgba(76,175,80,.3); }
-        [data-theme="ocean"] .bcos-btn { background:linear-gradient(135deg,#E8F4FD,#0EA5E9); border:1px solid #0EA5E9; color:#fff; box-shadow:0 2px 12px rgba(14,165,233,.3); }
-        [data-theme="starlight"] .bcos-btn { background:linear-gradient(135deg,#1a1a2e,#a78bfa); border:1px solid #a78bfa; color:#fff; box-shadow:0 2px 12px rgba(167,139,250,.4); }
-        [data-theme="cyber"] .bcos-btn { background:linear-gradient(135deg,#0c0a1d,#fbbf24); border:1px solid #fbbf24; color:#0c0a1d; box-shadow:0 0 16px rgba(251,191,36,.4); text-shadow:0 0 4px rgba(236,72,153,.5); }
-        [data-theme="sunset"] .bcos-btn { background:linear-gradient(135deg,#FFF3E0,#FF6B35); border:1px solid #FF6B35; color:#fff; box-shadow:0 2px 12px rgba(255,107,53,.3); }
-        [data-theme="mint"] .bcos-btn { background:linear-gradient(135deg,#E8F5E9,#26A69A); border:1px solid #26A69A; color:#fff; box-shadow:0 2px 12px rgba(38,166,154,.3); }
-        [data-theme="rose"] .bcos-btn { background:linear-gradient(135deg,#FCE4EC,#E91E63); border:1px solid #E91E63; color:#fff; box-shadow:0 2px 12px rgba(233,30,99,.3); }
-        [data-theme="aurora"] .bcos-btn { background:linear-gradient(135deg,#0B1026,#06FFA5); border:1px solid #06FFA5; color:#0B1026; box-shadow:0 0 16px rgba(6,255,165,.4); }
-        [data-theme="galaxy"] .bcos-btn { background:linear-gradient(135deg,#0F0C29,#C084FC); border:1px solid #C084FC; color:#fff; box-shadow:0 0 16px rgba(192,132,252,.4); }
-        [data-theme="candy"] .bcos-btn { background:linear-gradient(135deg,#FFF8E7,#FF4081); border:1px solid #FF4081; color:#fff; box-shadow:0 2px 12px rgba(255,64,129,.3); }
-        [data-theme="matrix"] .bcos-btn { background:linear-gradient(135deg,#000000,#003B00); border:1px solid #00FF41; color:#00FF41; box-shadow:0 0 16px rgba(0,255,65,.4); font-family:'Courier New',monospace; }
-    </style>
-    <script>
-        // Apply theme immediately before paint to prevent flash/black screen
-        (function() {
-            var t = localStorage.getItem('theme') || 'bunny';
-            document.documentElement.setAttribute('data-theme', t);
-            var pf = localStorage.getItem('pixelFont') === '1';
-            if (pf) document.documentElement.classList.add('font-pixel');
-            // DPI-aware scaling: use matchMedia for efficient detection (avoids layout thrashing)
-            var dpiScale = 1;
-            if (window.matchMedia && window.matchMedia('(min-resolution: 2dppx)').matches) {
-                dpiScale = 1.15;
-            } else if (window.matchMedia && window.matchMedia('(min-resolution: 1.5dppx)').matches) {
-                dpiScale = 1.08;
-            }
-            document.documentElement.style.setProperty('--dpi-scale', dpiScale);
-        })();
-    </script>
-</head>
-<body>
-    <div id="bg-layer"></div>
-    <div id="bg-pattern"></div>
-    <div id="bg-grid"></div>
-    <div id="bg-glow"></div>
-    <canvas id="trail-canvas"></canvas>
-    <canvas id="bunny-canvas"></canvas>
-    <div id="epic-overlay"></div>
-    <div id="egg-block" style="position:fixed;inset:0;z-index:9994;display:none;pointer-events:auto;background:transparent;cursor:crosshair;"></div>
-    <div id="egg-whiteout" style="position:fixed;inset:0;z-index:9995;pointer-events:none;display:none;background:#fff;opacity:0;"></div>
-    <!-- Egg painting FAB control -->
-    <div id="egg-fab" style="position:fixed;bottom:calc(var(--tab-h,0px) + var(--safe-bottom,0px) + 20px);right:20px;z-index:10001;display:none;flex-direction:column;align-items:flex-end;gap:8px;">
-        <div id="egg-fab-panel" style="display:none;flex-direction:column;gap:6px;align-items:flex-end;">
-            <button id="egg-btn-extend" type="button" style="pointer-events:auto;padding:10px 16px;border:none;border-radius:24px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-size:.8rem;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;touch-action:manipulation;">⏱ 延长 10s</button>
-            <button id="egg-btn-save" type="button" style="pointer-events:auto;padding:10px 16px;border:none;border-radius:24px;background:var(--good);color:#fff;font-weight:700;cursor:pointer;font-size:.8rem;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;touch-action:manipulation;">📸 保存截图</button>
-            <button id="egg-btn-end" type="button" style="pointer-events:auto;padding:10px 16px;border:none;border-radius:24px;background:var(--bad);color:#fff;font-weight:700;cursor:pointer;font-size:.8rem;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;touch-action:manipulation;">✅ 结束绘画</button>
-        </div>
-        <div id="egg-fab-btn" style="position:relative;width:56px;height:56px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:grab;box-shadow:0 4px 16px rgba(0,0,0,.3);touch-action:none;user-select:none;">
-            <span style="font-size:1.5rem;">🎨</span>
-            <span id="egg-fab-timer" style="position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;border-radius:11px;background:#FFD700;color:#000;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg);">30</span>
-        </div>
-    </div>
-
-    <!-- PWA: Offline indicator -->
-    <div id="offline-indicator" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:#EF4444;color:#fff;text-align:center;font-size:.75rem;padding:.25rem;transform:translateY(-100%);transition:transform .3s ease;pointer-events:none;">📡 离线模式 — 部分功能受限</div>
-    <!-- PWA: Install prompt banner -->
-    <div id="pwa-install-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card-bg,#fff);border-top:2px solid var(--accent,#FF6B9D);padding:.75rem 1rem;display:none;align-items:center;gap:.75rem;box-shadow:0 -4px 20px rgba(0,0,0,.15);">
-        <span style="font-size:1.5rem;">🐰</span>
-        <div style="flex:1;">
-            <div style="font-size:.85rem;font-weight:600;color:var(--text,#333);">安装兔可可王国</div>
-            <div style="font-size:.7rem;color:var(--text2,#888);">添加到主屏幕，随时畅玩</div>
-        </div>
-        <button onclick="installPWA()" style="background:var(--accent,#FF6B9D);color:#fff;border:none;border-radius:.5rem;padding:.4rem .9rem;font-size:.75rem;font-weight:600;cursor:pointer;">安装</button>
-        <button onclick="dismissPWAInstall()" style="background:none;border:none;color:var(--text2,#888);font-size:1.1rem;cursor:pointer;padding:.2rem;">✕</button>
-    </div>
-
-    <div class="app">
-        <!-- Sidebar (Desktop) -->
-        <nav class="sidebar">
-            <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
-                <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
-                <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9373</div>
-                <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
-            </div>
-            <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
-            <div class="nav-item active" data-view="home" onclick="navigateTo('home')">
-                <span class="icon">🏠</span><span class="label">首页</span>
-            </div>
-            <div class="nav-item" data-view="monopoly" onclick="navigateTo('monopoly')">
-                <span class="icon">🎲</span><span class="label">大富翁王国</span>
-            </div>
-            <div class="nav-item" data-view="anniversary" onclick="navigateTo('anniversary')">
-                <span class="icon">💕</span><span class="label">纪念日</span>
-            </div>
-            <div class="nav-item" data-view="logs" onclick="navigateTo('logs')">
-                <span class="icon">📜</span><span class="label">事件日志</span>
-            </div>
-            <div class="nav-item" data-view="settings" onclick="navigateTo('settings')">
-                <span class="icon">⚙️</span><span class="label">设置</span>
-            </div>
-            <div class="sidebar-footer">兔可可王国 · 虚拟纪元</div>
-        </nav>
-
-        <!-- Content -->
-        <main class="content">
-            <!-- Home View -->
-            <section id="view-home" class="view active">
-                <div class="card-grid grid-2" style="margin-bottom:1rem;">
-                    <div class="card" style="text-align:center;">
-                        <div class="avatar-container">
-                            <img id="avatar-img" src="./dist/Bunny CC_Profile.JPG" alt="兔可可" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';document.getElementById('avatar-fallback').style.opacity='1'">
-                            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3rem;pointer-events:none;opacity:0;transition:opacity .3s;" id="avatar-fallback">🐰</div>
-                        </div>
-                        <div style="font-size:1.3rem;font-weight:800;color:var(--accent);">兔可可市长</div>
-                        <div style="font-size:.8rem;color:var(--text2);margin-top:.25rem;">兔可可王国 · 虚拟纪元</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">🐰 兔可可纪念日</div>
-                        <div style="text-align:center;padding:1rem 0;">
-                            <div style="font-size:2.5rem;font-weight:800;color:var(--accent);" id="home-days">0</div>
-                            <div style="font-size:.8rem;color:var(--text2);">天</div>
-                            <div style="margin-top:.5rem;font-weight:700;color:var(--text);" id="home-time">0时 0分 0秒</div>
-                        </div>
-                        <div id="home-milestones" style="margin-top:.5rem;"></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">🃏 兔兔抽卡</div>
-                    <div style="text-align:center;padding:.5rem 0;">
-                        <div style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem;">每次抽取 10 张随机卡牌，可携带至大富翁中使用</div>
-                        <div id="card-draw-area" style="min-height:120px;"></div>
-                        <button class="btn btn-primary cooldown-btn" id="draw-btn" style="margin-top:.5rem;" onclick="drawCards()">🎴 抽卡 (10张)</button>
-                    </div>
-                    <div id="card-inventory-area" style="margin-top:.75rem;"></div>
-                </div>
-            </section>
-
-            <!-- Monopoly View -->
-            <section id="view-monopoly" class="view">
-                <div class="card" style="margin-bottom:1rem;">
-                    <!-- Real-time system indicator -->
-                    <div id="mono-time-bar" style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:var(--card2);border-radius:6px;margin-bottom:.5rem;font-size:.7rem;">
-                        <span id="mono-time-phase">🕐 加载中...</span>
-                        <span id="mono-time-weather" style="color:var(--text2);">--</span>
-                    </div>
-                    <!-- News ticker bar -->
-                    <div id="news-ticker" style="display:none;align-items:center;padding:.25rem .5rem;background:linear-gradient(90deg,var(--card2),var(--card));border-radius:6px;margin-bottom:.5rem;font-size:.7rem;overflow:hidden;cursor:pointer;" onclick="showNewsModal()"></div>
-                    <div class="mono-era-bar">
-                        <div class="mono-era-info">
-                            <span class="mono-era-badge" id="mono-era-badge">草原时代</span>
-                            <span id="mono-era-region">胡萝卜草原</span>
-                        </div>
-                        <div class="mono-era-progress"><div class="mono-era-progress-fill" id="mono-era-progress" style="width:0%;"></div></div>
-                        <button class="btn btn-primary btn-sm" id="mono-advance-btn" style="display:none;" onclick="advanceEra()">⬆️ 推进时代</button>
-                        <button class="btn btn-secondary btn-sm" onclick="newMonopolyGame();renderMonopoly();">🔄 新游戏</button>
-                    </div>
-                    <div class="mono-players" id="mono-players"></div>
-                </div>
-                <div class="card" style="margin-bottom:1rem;">
-                    <div class="mono-section-title">🗺️ 岛屿地图 · 环形全景</div>
-                    <div class="mono-map-ring" id="mono-map-ring">
-                        <div class="mono-map-ring-inner" id="mono-ring-center">🎲 环形岛屿</div>
-                    </div>
-                    <div style="font-size:.7rem;color:var(--text2);margin-bottom:.4rem;cursor:pointer;text-align:center;" onclick="document.getElementById('mono-map-scroll').scrollIntoView({behavior:'smooth'});">📍 点击下方地图条查看详细格子</div>
-                    <div style="display:flex;gap:.3rem;margin-bottom:.3rem;">
-                        <button class="btn btn-sm btn-secondary" onclick="openFsMap()" style="font-size:.7rem;">🗺️ 全景地图</button>
-                    </div>
-                    <div id="mono-overview-bar" style="position:relative;height:24px;background:var(--card2);border-radius:4px;overflow:hidden;margin-bottom:.3rem;cursor:pointer;">
-                        <canvas id="mono-overview-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
-                        <div id="mono-overview-viewport" style="position:absolute;top:0;height:100%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);pointer-events:none;"></div>
-                    </div>
-                    <div class="mono-map-scroll" id="mono-map-scroll">
-                        <div class="mono-map-strip" id="mono-map-strip"></div>
-                    </div>
-                </div>
-                <div class="card-grid grid-2">
-                    <div class="card">
-                        <div class="mono-section-title">🎲 行动</div>
-                        <div id="buff-bar" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:0;padding:2px 0;transition:min-height .2s;"></div>
-                        <div class="mono-dice-area" id="mono-dice-area"></div>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:.3rem;margin-top:.5rem;">
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="openStockExchange()" title="随时交易股票">📈 交易所</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="openBank()" title="随时办理银行业务">🏦 银行</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showVehicleShop()" title="购买载具获得加成">🚗 载具店</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showCardShop()" title="买卖技能卡">🃏 卡牌店</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showWizard()" title="占卜、许愿、诅咒">🧙 巫师</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showMarketModal()" title="二手交易市场">🏪 市场</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showNewsModal()" title="查看/散播新闻">📺 新闻台</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="openAuctionHouse()" title="拍卖行（自由参与）">🔨 拍卖行</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showCasino()" title="赌场（自由进入）">🎰 赌场</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showEventLogModal()" title="查看本局所有事件">📜 事件记录</button>
-                            <button class="btn btn-secondary btn-sm" style="text-align:center;padding:.4rem .2rem;" onclick="showAboutModal()" title="游戏信息与性能数据">ℹ️ 关于</button>
-                        </div>
-                        <div class="mono-section-title" style="margin-top:.5rem;">🃏 手牌</div>
-                        <div class="mono-cards" id="mono-cards"></div>
-                        <div class="mono-log" id="mono-log" style="margin-top:.5rem;"></div>
-                    </div>
-                    <div class="card">
-                        <div class="mono-section-title">🎒 卡牌背包</div>
-                        <div style="font-size:.7rem;color:var(--text2);margin-bottom:.4rem;">从首页抽到的卡牌可携带到游戏中使用</div>
-                        <div class="mono-inventory-grid" id="mono-inventory"></div>
-                        <div class="mono-section-title" style="margin-top:.75rem;">📊 股市指数</div>
-                        <div style="text-align:center;">
-                            <span style="font-size:1.5rem;font-weight:800;color:var(--accent);cursor:pointer;" id="mono-stock" onclick="openStockExchange()" title="点击交易股票">100</span>
-                            <div style="font-size:.6rem;color:var(--text2);margin-top:.2rem;" id="mono-stock-portfolio"></div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Stats Panel -->
-                <div class="card-grid grid-2" style="margin-top:1rem;">
-                    <div class="card">
-                        <div class="mono-section-title">🏠 地产统计</div>
-                        <div id="mono-property-stats"></div>
-                    </div>
-                    <div class="card">
-                        <div class="mono-section-title">💰 租金统计</div>
-                        <div id="mono-rent-stats"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Anniversary View -->
-            <section id="view-anniversary" class="view">
-                <div class="card">
-                    <div class="anniversary-hero">
-                        <div style="font-size:1rem;color:var(--text2);margin-bottom:.5rem;">🐰 兔可可已经到来</div>
-                        <div class="anniversary-days" id="anni-days">0</div>
-                        <div class="anniversary-label">天</div>
-                        <div class="anniversary-time" id="anni-time">0 时 0 分 0 秒</div>
-                        <div class="anniversary-start-date">起始日期：2024/03/12</div>
-                        <div class="next-milestone-box" id="anni-next-milestone"></div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:1rem;background:linear-gradient(135deg,rgba(0,234,255,0.08),rgba(167,139,250,0.08));border:1px solid rgba(0,234,255,0.3);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
-                        <div>
-                            <div style="font-weight:bold;color:#00eaff;font-size:1rem;display:flex;align-items:center;gap:.4rem;">🚗 车机浏览器专属锁屏 / 屏保模式</div>
-                            <div style="font-size:.8rem;color:var(--text2);margin-top:.25rem;">专为小鹏、特斯拉等车机中控大屏设计，支持全屏沉浸、防熄屏常亮、防烧屏漂移、超大数字纪念日时钟</div>
-                        </div>
-                        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                            <button class="btn btn-primary" onclick="showBcosCarLockscreen()">🚗 立即进入车机锁屏</button>
-                            <button class="btn btn-secondary" onclick="copyCarScreenUrl()">📋 复制车机专属链接</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:1rem;">
-                    <div class="card-title">🎯 里程碑</div>
-                    <div id="anni-milestones"></div>
-                </div>
-                <div class="card" style="margin-top:1rem;">
-                    <div class="card-title">📖 兔可可王国传承</div>
-                    <p style="font-size:.85rem;color:var(--text2);line-height:1.8;">
-                        在虚拟纪元的曙光中，兔可可王国从一片数字草原上崛起。这不是现实中的城市，而是一座由爱与想象构筑的永恒之国。
-                        兔可可是这个王国的灵魂化身——一位超越了现实边界的安哥拉兔，从像素中诞生，在数据中成长，最终成为万民爱戴的永恒市长。
-                        每一栋建筑都是一段记忆，每一位市民都是一个故事，而兔可可的温柔与柔软绒毛，是这座虚拟王国最真实的魔法。
-                    </p>
-                </div>
-            </section>
-
-            <!-- Logs View -->
-            <section id="view-logs" class="view">
-                <div class="card">
-                    <div class="card-title">📜 事件日志</div>
-                    <div id="events-list"></div>
-                </div>
-            </section>
-
-            <!-- Settings View -->
-            <section id="view-settings" class="view">
-                <div class="card" style="margin-bottom:1rem;">
-                    <div class="card-title">🎨 主题选择</div>
-                    <div class="theme-grid" id="theme-grid"></div>
-                </div>
-                <div class="card" style="margin-bottom:1rem;">
-                    <div class="card-title">⚙️ 偏好设置</div>
-                    <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span>🔤 字体缩放</span>
-                            <span id="font-scale-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">100%</span>
-                        </div>
-                        <input type="range" id="font-scale-slider" min="80" max="200" value="100" step="5" style="width:100%;accent-color:var(--accent);" oninput="setFontScale(this.value)">
-                        <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--text2);">
-                            <span>小</span><span>标准</span><span>大</span>
-                        </div>
-                    </div>
-                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="font-size:.85rem;">📱 移动端 Tab 栏</span>
-                        <select id="tabbar-mode-select" onchange="setTabBarMode(this.value)" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;font-size:.8rem;">
-                            <option value="always">始终显示</option>
-                            <option value="auto-collapse">自动折叠</option>
-                            <option value="hidden">隐藏</option>
-                        </select>
-                    </div>
-                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="font-size:.85rem;">🖥️ PC 侧边栏</span>
-                        <select id="sidebar-mode-select" onchange="setSidebarMode(this.value)" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;font-size:.8rem;">
-                            <option value="auto">自动折叠(悬停展开)</option>
-                            <option value="auto-hide">自动隐藏(点击恢复)</option>
-                            <option value="locked-open">始终展开</option>
-                            <option value="locked-collapsed">始终折叠</option>
-                        </select>
-                    </div>
-                    <div class="setting-row">
-                        <span>像素字体模式</span>
-                        <div class="toggle" id="font-toggle" onclick="togglePixelFont()"></div>
-                    </div>
-                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="font-size:.85rem;">🐰 侧边栏头像</span>
-                        <div style="display:flex;gap:.3rem;">
-                            <button class="btn btn-sm" id="avatar-emoji-btn" style="font-size:.7rem;padding:.2rem .5rem;" onclick="setSidebarAvatar('emoji')">🐰 Emoji</button>
-                            <button class="btn btn-sm" id="avatar-photo-btn" style="font-size:.7rem;padding:.2rem .5rem;" onclick="setSidebarAvatar('photo')">📷 照片</button>
-                        </div>
-                    </div>
-                    <div class="setting-row">
-                        <span>鼠标光效跟随</span>
-                        <div class="toggle on" id="mouse-toggle" onclick="toggleMouseBunny()"></div>
-                    </div>
-                    <div class="setting-row">
-                        <span>禁用文本选中</span>
-                        <div class="toggle on" id="text-select-toggle" onclick="toggleTextSelect()"></div>
-                    </div>
-                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="font-size:.85rem;">🎮 连点触发彩蛋</span>
-                        <div class="toggle" id="egg-click-toggle" onclick="toggleEggClickTrigger()"></div>
-                    </div>
-                    <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span style="font-size:.85rem;">🗺️ 地图大小</span>
-                            <span id="map-size-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">中型(156)</span>
-                        </div>
-                        <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('small')">小型(78)</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('medium')">中型(156)</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setMapSize('standard')">标准(312)</button>
-                        </div>
-                        <div style="font-size:.6rem;color:var(--text2);">下局新游戏生效 · 房产固定，其他随机刷新</div>
-                    </div>
-                    <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:.4rem;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span style="font-size:.85rem;">👥 玩家数量</span>
-                            <span id="player-count-val" style="font-size:.8rem;color:var(--accent);font-weight:700;">随机(4-8)</span>
-                        </div>
-                        <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount('random')">随机</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount(4)">4人</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount(6)">6人</button>
-                            <button class="btn btn-sm" style="flex:1;font-size:.7rem;" onclick="setPlayerCount(8)">8人</button>
-                        </div>
-                        <div style="font-size:.6rem;color:var(--text2);">下局新游戏生效</div>
-                    </div>
-                    <div class="setting-row">
-                        <span>全屏模式</span>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleFullscreen()">🖥️ 切换</button>
-                    </div>
-                    <div class="setting-row">
-                        <span>🔔 回合通知</span>
-                        <button class="btn btn-secondary btn-sm" id="notify-toggle-btn" onclick="subscribePushNotifications()">开启</button>
-                    </div>
-                    <div class="setting-row" style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="font-size:.85rem;">🚀 首次进入页面</span>
-                        <select id="default-view-select" onchange="setDefaultView(this.value)" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.3rem .5rem;font-size:.8rem;">
-                            <option value="home">🏠 首页</option>
-                            <option value="monopoly">🎲 大富翁</option>
-                            <option value="anniversary">💕 纪念日</option>
-                            <option value="settings">⚙️ 设置</option>
-                            <option value="bcos">🖥️ bcos 终端</option>
-                            <option value="bcos-desktop">🖥️ bcos 桌面</option>
-                            <option value="carlock">🚗 车机锁屏</option>
-                        </select>
-                    </div>
-                    <div class="setting-row">
-                        <span>🚗 车机锁屏</span>
-                        <div style="display:flex;gap:.3rem;">
-                            <button class="btn btn-secondary btn-sm" onclick="showBcosCarLockscreen()">进入锁屏</button>
-                            <button class="btn btn-secondary btn-sm" onclick="copyCarScreenUrl()">复制链接</button>
-                        </div>
-                    </div>
-                    <div class="setting-row">
-                        <span>📲 安装App</span>
-                        <button class="btn btn-secondary btn-sm" onclick="installPWA()">添加到主屏</button>
-                    </div>
-                </div>
-                <div class="card" id="god-panel" style="margin-bottom:1rem;display:none;">
-                    <div class="card-title">✨ 上帝模式</div>
-                    <div id="god-content"></div>
-                </div>
-                <div class="card" style="margin-bottom:1rem;">
-                    <div class="card-title">💾 存档管理</div>
-                    <div id="save-slots" style="display:flex;flex-direction:column;gap:.6rem;"></div>
-                </div>
-                <div class="card" style="margin-bottom:1rem;">
-                    <div class="card-title">ℹ️ 关于版本</div>
-                    <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9373</span></span>
-                            <span style="font-size:.7rem;">🐰</span>
-                        </div>
-                        <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
-                        <div style="margin-top:.2rem;font-size:.7rem;color:var(--text2);opacity:.6;">点击查看更多信息</div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">📋 更新日志</div>
-                    <div id="changelog-content" style="font-size:.85rem;color:var(--text2);"></div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Mobile Tab Bar -->
-    <nav class="tab-bar">
-        <div class="tab-bar-handle" onclick="toggleTabBar()"></div>
-        <div class="tab-item active" data-view="home" onclick="navigateTo('home')">
-            <span class="tab-icon">🏠</span><span class="tab-label">首页</span>
-        </div>
-        <div class="tab-item" data-view="monopoly" onclick="navigateTo('monopoly')">
-            <span class="tab-icon">🎲</span><span class="tab-label">大富翁</span>
-        </div>
-        <div class="tab-item" data-view="anniversary" onclick="navigateTo('anniversary')">
-            <span class="tab-icon">💕</span><span class="tab-label">纪念</span>
-        </div>
-        <div class="tab-item" data-view="logs" onclick="navigateTo('logs')">
-            <span class="tab-icon">📜</span><span class="tab-label">日志</span>
-        </div>
-        <div class="tab-item" data-view="settings" onclick="navigateTo('settings')">
-            <span class="tab-icon">⚙️</span><span class="tab-label">设置</span>
-        </div>
-    </nav>
-    <div id="tab-fab" onclick="showTabBar()">🐰</div>
-
-    <!-- Fullscreen map modal -->
-    <div id="fs-map-overlay" style="position:fixed;inset:0;z-index:600;display:none;background:rgba(0,0,0,.9);">
-        <div style="position:absolute;top:1rem;right:1rem;z-index:10;">
-            <button onclick="closeFsMap()" style="background:var(--card);border:none;border-radius:50%;width:40px;height:40px;font-size:1.2rem;cursor:pointer;color:var(--text);">✕</button>
-        </div>
-        <div style="position:absolute;top:1rem;left:1rem;z-index:10;color:#fff;font-size:.8rem;">
-            <span id="fs-map-info">🗺️ 全景岛屿地图</span>
-        </div>
-        <canvas id="fs-map-canvas" style="position:absolute;inset:0;width:100%;height:100%;cursor:grab;"></canvas>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-        <div class="modal" id="modal-content"></div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- Loading Overlay -->
-    <div class="load-overlay" id="load-overlay">
-        <div class="load-content">
-            <div class="load-spinner"></div>
-            <div class="load-text" id="load-text">读取中...</div>
-        </div>
-    </div>
-
-    <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9373',
+        VERSION: 'v7.8.2.9370',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2539,6 +853,7 @@
         }
     }
     const enterFsOnFirstGesture = () => {
+        tryAutoFullscreen();
         window.removeEventListener('click', enterFsOnFirstGesture);
         window.removeEventListener('touchstart', enterFsOnFirstGesture);
         window.removeEventListener('keydown', enterFsOnFirstGesture);
@@ -2564,6 +879,7 @@
         safe(() => {
             const sp = new URLSearchParams(window.location.search);
             const isCar = sp.has('car') || sp.get('mode') === 'car' || sp.has('lock') || sp.has('lockscreen') || sp.get('bcos') === 'car';
+            tryAutoFullscreen();
             if (isCar) {
                 setTimeout(() => showBcosCarLockscreen(), 100);
             } else {
@@ -2718,7 +1034,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9373 已启动', 'info');
+        logEvent('兔可可王国 v7.8.2.9370 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9554,7 +7870,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9373 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.2.9370 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9566,187 +7882,108 @@
     // === BCOS (Bunny OS) — Linux-style OS ===
     // === BCOS (Bunny OS) — Linux-style OS Terminal ===
     const _bcosRepos = [
-  ["kissggj123.github.com","\u5154\u53ef\u53ef\u7eaa\u5ff5\u65e5","HTML",0,0,"2026-10-01","https://github.com/kissggj123/kissggj123.github.com",false,165561,"https://so.menglolita.com/"],
-  ["Asahi-Steam-M1","\u5728M1\u4e0a\u901a\u8fc7Fedora Asahi Remix\u6e38\u73a9Steam\u6e38\u620f","N/A",1,0,"2026-09-16","https://github.com/kissggj123/Asahi-Steam-M1",false,46,""],
-  ["NIO-Dash-iOS","\u851a\u6765\u8f66\u8f86\u770b\u677f \u2014 macOS \u83dc\u5355\u680f\u5e94\u7528\uff0c\u81ea\u52a8\u62c9\u53d6\u8f66\u51b5\u4e0e\u6362\u7535\u8bb0\u5f55","Swift",0,0,"2026-08-31","https://github.com/kissggj123/NIO-Dash-iOS",true,4113,""],
-  ["YumikoToys","\u4e00\u6b3e\u73b0\u4ee3\u5316\u7684 macOS \u684c\u9762\u5ba0\u7269\u4e0e AI \u52a9\u624b\u5e94\u7528 | A modern macOS desktop pet & AI assistant app","Swift",0,0,"2026-08-31","https://github.com/kissggj123/YumikoToys",false,63954,""],
-  ["kissggj123","A British Angora rabbit breeder","N/A",0,0,"2026-08-03","https://github.com/kissggj123/kissggj123",false,15,""],
-  ["poke-tui","\ud83c\udf34 Chat with your Poke AI assistant from the terminal","N/A",0,0,"2026-06-06","https://github.com/kissggj123/poke-tui",true,51,""],
-  ["Perler_beads","\u5154\u53ef\u53ef\u7684\u62fc\u8c46\u4e16\u754c - \u62fc\u8c46\u8bbe\u8ba1\u5668","Dart",0,0,"2026-03-28","https://github.com/kissggj123/Perler_beads",false,1997,""],
-  ["pv-tool","Automaticly generate kinetic typography","N/A",0,0,"2026-03-28","https://github.com/kissggj123/pv-tool",true,301,"https://pv.pixjam.cn"],
-  ["scrcpy-mobile","Ported scrcpy for mobile platforms, to remotely control Android devices on your iPhone or Android phone.","N/A",0,0,"2026-03-25","https://github.com/kissggj123/scrcpy-mobile",true,145847,""],
-  ["Puked","\u5410\u69fd\uff0c\u81ea\u52a8\u9a7e\u9a76\u4ea7\u54c1\u7ecf\u7406\u5bf9\u6807\u4e13\u7528 App\uff0c\u8bb0\u5f55\u5404\u79cd\u8d1f\u4f53\u9a8c\u4e8b\u4ef6","Dart",0,0,"2026-03-08","https://github.com/kissggj123/Puked",true,13019,"https://hkgood.github.io/Puked/"],
-  ["Puked-Callback","Replay the Json from Puked App","N/A",0,0,"2026-01-20","https://github.com/kissggj123/Puked-Callback",true,8880,""],
-  ["Twist","A Light Script For You To Setup Shadowsocks-libev Server with High-Speed Connections","Shell",3,37,"2025-06-10","https://github.com/kissggj123/Twist",false,389,"https://so.menglolita.com"],
-  ["XpengDashcamPro","A desktop application designed for viewing Xpeng dashcam footage, with support for integrating and displaying vehicle CAN bus data.","N/A",0,0,"2025-03-16","https://github.com/kissggj123/XpengDashcamPro",true,12582,""],
-  ["Ryujinx","Experimental Switch emulator written in C#","C#",0,0,"2025-03-03","https://github.com/kissggj123/Ryujinx",true,1797,""],
-  ["WindowTabs-Plus","\u4e00\u4e2a\u53ef\u4ee5\u63d0\u4f9b\u591a\u9009\u9879\u5361\u7684\u6269\u5c55\u5de5\u5177","C#",1,0,"2024-10-08","https://github.com/kissggj123/WindowTabs-Plus",true,82191,""],
-  ["open-deepnude","Open source reverse-engineered clone of DeepNude","Python",0,0,"2024-10-02","https://github.com/kissggj123/open-deepnude",true,490,""],
-  ["SOSCSRPG","Scott's Open Source C# RPG","C#",0,0,"2024-09-07","https://github.com/kissggj123/SOSCSRPG",true,109,""],
-  ["DeepNewdsForAndroid","DeepNudes & deep nudes Android Source Code","Java",0,0,"2024-08-21","https://github.com/kissggj123/DeepNewdsForAndroid",true,76559,""],
-  ["whilom","\ud83e\ude84  keep your mac awake even when the lid is closed https://insanj.github.io/whilom/","N/A",0,0,"2024-08-18","https://github.com/kissggj123/whilom",true,10616,"https://insanj.github.io/whilom/"],
-  ["yuzu","NS\u81ea\u5236\u7a0b\u5e8f\u6a21\u62df\u5668","C++",0,0,"2024-05-01","https://github.com/kissggj123/yuzu",true,18936,""],
-  ["awesome-shizuku","Awesome list of Android apps making use of Shizuku","N/A",0,0,"2023-10-28","https://github.com/kissggj123/awesome-shizuku",true,114,""],
-  ["wysiwyg.js","wysiwyg contenteditable editor (lightweight + cross browser)","JavaScript",0,0,"2023-10-02","https://github.com/kissggj123/wysiwyg.js",true,1053,"http://wysiwygjs.github.io/"],
-  ["hackp5g9","\u672c\u9879\u76ee\u53ef\u4ee5\u5e2e\u52a9\u5c0f\u9e4fP5\u548c\u5c0f\u9e4fG9\u5f00\u542fadb\u548c\u7f51\u7edcadb","N/A",0,0,"2023-09-09","https://github.com/kissggj123/hackp5g9",true,262,""],
-  ["ArcPy-multiexport","The tool is an automated multi-process image export tool implemented using the built-in ArcPy library provided by ArcGIS","Python",0,0,"2023-09-02","https://github.com/kissggj123/ArcPy-multiexport",false,39,""],
-  ["YumikoToys-MTMR","MTMR\u89c4\u5219","N/A",0,0,"2023-06-10","https://github.com/kissggj123/YumikoToys-MTMR",false,926,""],
-  ["Dress","\u597d\u8036  \u662f\u5973\u88c5","Ruby",0,0,"2023-02-25","https://github.com/kissggj123/Dress",true,907127,""],
-  ["YumikoToys-Lite","\u4e00\u4e2aWindows&macOS\u5408\u76d6\u4e0d\u4f11\u7720\u5de5\u5177","C#",0,0,"2023-01-18","https://github.com/kissggj123/YumikoToys-Lite",false,37551,""],
-  ["NXPlay","Multimedia player for Nintendo Switch (audio only, video soon)","C++",0,0,"2022-12-06","https://github.com/kissggj123/NXPlay",true,1695,""],
-  ["YumikoToys-Browser","A lightweight Android browser with modern navigation","N/A",0,0,"2022-08-10","https://github.com/kissggj123/YumikoToys-Browser",true,15272,"http://acrdevelopment.org"],
-  ["holoiso","SteamOS 3 (Holo) archiso configuration","N/A",1,0,"2022-05-04","https://github.com/kissggj123/holoiso",true,106,""],
-  ["TidGi-Desktop","TidGi is an privatcy-in-mind, automated, auto-git-backup, freely-deployed Tiddlywiki knowledgement Desktop app, with local REST API. \u300c \u592a\u8bb0 \u300d\u662f\u4e00\u4e2a\u57fa\u4e8e\u300c \u592a\u5fae TiddlyWiki \u300d\u7684\u77e5\u8bc6\u7ba1\u7406\u684c\u9762\u5e94\u7528\uff0c\u80fd\u4fdd\u62a4\u9690\u79c1\u5185\u5bb9\u3001\u9ad8\u7ea7\u81ea\u52a8\u5316\u3001\u81ea\u52a8Git\u4e91\u5907\u4efd\u3001\u90e8\u7f72\u4e3a\u535a\u5ba2\uff0c\u4e14\u53ef\u901a\u8fc7RESTAPI\u4e0eAnki\u7b49\u5e94\u7528\u8fde\u63a5\u3002\uff08\u8fed\u4ee3\u5f00\u53d1\u4e2d\u6b22\u8fce\u8bd5\u7528\uff0c\u5f00\u53d1\u8fdb\u5ea6\u89c1\u4e0b\u65b9\u94fe\u63a5\uff09(Under active development, see website below for details) ","N/A",0,0,"2022-03-23","https://github.com/kissggj123/TidGi-Desktop",true,45943,"https://github.com/tiddly-gittly/TidGi-Desktop/projects"],
-  ["Rules","Rules / \u89c4\u5219\uff1aSurge / Shadowrocket / Quantumult","N/A",0,0,"2022-01-25","https://github.com/kissggj123/Rules",true,4974,""],
-  ["fullstack","React/ApolloGraphQL/Node/Mongo demo written in Typescript","TypeScript",0,0,"2021-11-15","https://github.com/kissggj123/fullstack",true,1242,""],
-  ["Twist-v2","A light script for you to setup shadowsocks-libev server with high-speed connections and newest powerful features","N/A",0,0,"2021-11-12","https://github.com/kissggj123/Twist-v2",true,96,"https://unbinilium.github.io/Twist"],
-  ["UGame","A launcher made to compile all of my games in one place, keep a collection of them all, and launch those on PC!","C#",0,0,"2021-08-23","https://github.com/kissggj123/UGame",false,53118,""],
-  ["Touch-Bar-Visualizer","A music visualizer created to run on the touch bar of a mac computer.","N/A",0,0,"2021-07-29","https://github.com/kissggj123/Touch-Bar-Visualizer",true,3890,""],
-  ["MTMR-presets","\ud83d\udc88 [My TouchBar My rules] Share your preset!","N/A",0,0,"2021-07-26","https://github.com/kissggj123/MTMR-presets",true,8208,"https://github.com/toxblh/mtmr"],
-  ["PowerScheme","This app allows you to quickly select power plans. If you need to restore the default settings for power schemes.","N/A",0,0,"2021-07-06","https://github.com/kissggj123/PowerScheme",true,251,""],
-  ["PowerSwitcher","Power plan switcher for Windows 10. Heavily inspired by EarTrumpet.","N/A",0,0,"2021-07-02","https://github.com/kissggj123/PowerSwitcher",true,13242,""],
-  ["vMixUTC","Customizable controller for vMix","N/A",0,0,"2021-06-17","https://github.com/kissggj123/vMixUTC",true,18343,""],
-  ["surface-pro-7-opencore","A proposal OpenCore configuration for run macOS on Surface Pro 7","N/A",0,0,"2021-06-13","https://github.com/kissggj123/surface-pro-7-opencore",true,90362,""],
-  ["surfacepro7-oc","surfacepro7-hackintosh","N/A",0,0,"2021-06-13","https://github.com/kissggj123/surfacepro7-oc",true,16320,""],
-  ["jd-base","","JavaScript",0,0,"2021-06-04","https://github.com/kissggj123/jd-base",true,448,""],
-  ["EdgeWebBrowser","Experimental C# Windows Forms WebBrowser based on Edge","N/A",0,0,"2021-05-19","https://github.com/kissggj123/EdgeWebBrowser",true,396,""],
-  ["Funkin","","N/A",0,0,"2021-05-18","https://github.com/kissggj123/Funkin",true,473144,""],
-  ["YumikoAnime","\u57fa\u4e8eairAnime\u5f00\u6e90\u9879\u76ee\u505a\u7684\u6570\u636e\u66f4\u65b0\u5de5\u5177","C#",2,0,"2021-05-11","https://github.com/kissggj123/YumikoAnime",false,23018,""],
-  ["New_JD-FreeFuck-Fix","github_SuperManito_JD-FreeFuck","Shell",0,0,"2021-04-25","https://github.com/kissggj123/New_JD-FreeFuck-Fix",true,25080,""],
-  ["JD-FreeFuck-Fix","\u300aJD\u8585\u7f8a\u6bdb\u300b\u4e00\u952e\u90e8\u7f72 For Linux","Shell",0,0,"2021-04-24","https://github.com/kissggj123/JD-FreeFuck-Fix",true,25551,"https://github.com/kissggj123/JD-FreeFuck"],
-  ["OpenWrt-AC1750","","Shell",0,0,"2021-04-14","https://github.com/kissggj123/OpenWrt-AC1750",false,5,""],
-  ["SteamTools","  \u300cSteam++\u300d\u662f\u4e00\u4e2a\u5305\u542b\u591a\u79cdSteam\u5de5\u5177\u529f\u80fd\u7684\u5de5\u5177\u7bb1\u3002","N/A",0,0,"2021-02-20","https://github.com/kissggj123/SteamTools",true,10344,""],
-  ["one_click_script","\u4e00\u952e\u5b89\u88c5 trojan v2ray xray. Install v2ray / xray (VLESS) and trojan (trojan-go) script","N/A",0,0,"2021-02-16","https://github.com/kissggj123/one_click_script",true,369054,""],
-  ["fancyss_history_package","\u79d1\u5b66\u4e0a\u7f51\u63d2\u4ef6\u7684\u79bb\u7ebf\u5b89\u88c5\u5305\u50a8\u5b58\u5728\u8fd9\u91cc","N/A",0,0,"2021-02-14","https://github.com/kissggj123/fancyss_history_package",true,1938832,""],
-  ["qqrobot","","N/A",0,0,"2021-01-26","https://github.com/kissggj123/qqrobot",false,2587,""],
-  ["DesignerProtect","autosave and backup photoshop,sai,sa2 editing files.photoshop backup,sai backup","N/A",0,0,"2020-10-22","https://github.com/kissggj123/DesignerProtect",true,8658,""],
-  ["spotify-downloader","Download Spotify playlists with albumart and meta-tags","Python",0,0,"2020-09-29","https://github.com/kissggj123/spotify-downloader",true,286,""],
-  ["MenglolitaHost","\u4fee\u6539Host\u7684\u5c0f\u5de5\u5177","C#",8,6,"2020-09-09","https://github.com/kissggj123/MenglolitaHost",false,67392,""],
-  ["Panda-Learning","\u5b66\u4e60\u5f3a\u56fd xuexiqiangguo  \u5168\u7f51\u6700\u597d\u7528\u5b66\u4e60\u5f3a\u56fd\u52a9\u624b\uff1aPanda_Learning \u840c\u840c\u7684\u718a\u732b\u5e2e\u4f60\u641e\u5b9a\u5b66\u4e60\u5f3a\u56fd","N/A",0,0,"2020-09-08","https://github.com/kissggj123/Panda-Learning",true,838500,""],
-  ["wangEditor","wangEditor \u2014\u2014 \u8f7b\u91cf\u7ea7web\u5bcc\u6587\u672c\u6846","JavaScript",0,0,"2020-09-08","https://github.com/kissggj123/wangEditor",true,12673,"http://wangEditor.github.io/"],
-  ["MoRecall","\u4e00\u4e2a\u652f\u6301QQ/TIM\u64a4\u56de\u7684\u7a0b\u5e8f","C#",3,0,"2020-08-02","https://github.com/kissggj123/MoRecall",false,54518,""],
-  ["UTM","Virtual machines for iOS","N/A",0,0,"2020-07-02","https://github.com/kissggj123/UTM",true,1939,"https://getutm.app"],
-  ["big-sur-plz","","N/A",0,0,"2020-06-24","https://github.com/kissggj123/big-sur-plz",true,3,""],
-  ["macOS-BigSur-Patcher","macOS Big Sur Patcher ","Objective-C",0,0,"2020-06-23","https://github.com/kissggj123/macOS-BigSur-Patcher",true,190611,"https://so.menglolita.com"],
-  ["PowerToys","Windows system utilities to maximize productivity","N/A",0,0,"2020-06-08","https://github.com/kissggj123/PowerToys",true,204446,""],
-  ["Wapp","\u5fae\u4fe1\u7b54\u9898\u5c0f\u7a0b\u5e8f\uff0c\u53ef\u7528\u4e8e\u5185\u90e8\u8003\u6838\uff0c\u8003\u8bd5\u9884\u7ea6\uff0c\u5185\u90e8\u8bc4\u5206\u7b49\uff0c\u4f7f\u7528\u5c0f\u7a0b\u5e8f\u81ea\u5e26\u4e91\u73af\u5883","N/A",0,0,"2020-05-18","https://github.com/kissggj123/Wapp",true,1441,""],
-  ["ArchWSL","ArchLinux as a WSL Instance. Supports multiple install.","N/A",0,0,"2020-04-28","https://github.com/kissggj123/ArchWSL",true,274,"https://git.io/archwsl"],
-  ["Sandboxie","Open Source Sandboxie","N/A",0,0,"2020-04-16","https://github.com/kissggj123/Sandboxie",true,2462,""],
-  ["saigon","iOS 10.2.1 Jailbreak?","C",0,0,"2020-03-21","https://github.com/kissggj123/saigon",true,8855,""],
-  ["sandcastle-buildroot","Buildroot for Sandcastle.","N/A",0,0,"2020-03-09","https://github.com/kissggj123/sandcastle-buildroot",true,105907,""],
-  ["projectsandcastle","Supporting tools for Android/Linux on the iPhone","N/A",0,0,"2020-03-06","https://github.com/kissggj123/projectsandcastle",true,29080,""],
-  ["Tensorflow2-Tutorial","Tensorflow 2.0 toy examples","N/A",0,0,"2020-02-29","https://github.com/kissggj123/Tensorflow2-Tutorial",true,11,""],
-  ["VirusBroadcast","A java virus broadcast simulation","N/A",0,0,"2020-02-07","https://github.com/kissggj123/VirusBroadcast",true,61,""],
-  ["0","","N/A",0,0,"2020-01-16","https://github.com/kissggj123/0",true,426,""],
-  ["Hippy","A cross platform framework designed for Web developer. Introduction video - https://v.qq.com/x/page/i3038urj2mt.html","N/A",0,0,"2019-12-30","https://github.com/kissggj123/Hippy",true,59922,""],
-  ["Downloader","A library for resuming and multi-part/multi-threaded downloads in .NET written in C#","N/A",0,0,"2019-12-18","https://github.com/kissggj123/Downloader",true,519,""],
-  ["evil-huawei","Evil Huawei - \u534e\u4e3a\u4f5c\u8fc7\u7684\u6076","N/A",0,0,"2019-12-06","https://github.com/kissggj123/evil-huawei",true,14672,"https://evil-huawei.github.io/evil-huawei/"],
-  ["EpicSurvivalGameSeries","Third-person Survival Game for Unreal Engine 4.","N/A",0,0,"2019-12-03","https://github.com/kissggj123/EpicSurvivalGameSeries",true,1359805,"https://www.tomlooman.com/survival-sample-game-for-ue4/"],
-  ["monopoly","A realtime multiplayer javascript-based monopoly game","N/A",0,0,"2019-11-20","https://github.com/kissggj123/monopoly",true,32189,""],
-  ["rpg","Online Role Playing Game (based on Laravel 5)","N/A",0,0,"2019-11-20","https://github.com/kissggj123/rpg",true,3123,""],
-  ["cockpit","Add content management functionality to any site - plug & play / headless / api-first CMS","N/A",0,0,"2019-11-18","https://github.com/kissggj123/cockpit",true,22041,"http://getcockpit.com"],
-  ["ScreenToGif","\ud83c\udfac ScreenToGif allows you to record a selected area of your screen, edit and save it as a gif or video.","N/A",0,0,"2019-11-08","https://github.com/kissggj123/ScreenToGif",true,16842,"http://www.screentogif.com"],
-  ["iptv","\u770bHBO\u76f4\u64ad + \u96c6\u5404\u5e7f\u7535\u76f4\u64ad\u6e90 + \u4e00\u952e\u7ba1\u7406 IPTV \u76f4\u64ad\u9891\u9053\u811a\u672c mpeg ts => hls","N/A",0,0,"2019-11-06","https://github.com/kissggj123/iptv",true,1960,""],
-  ["AutoGetFeaturesCefSharpBrowserDesktopPC",":1st_place_medal: :new:  :zap:   :+1:   :cn: Chinese + :egypt: Egypt | Example Custom Windows Desktop PC for Project Supported  C# ( CefSharp Web Browser )  More CefSharp Version Auto Get Fast Chromium Web Browser (http://createbrowser.github.io/)","N/A",0,0,"2019-10-31","https://github.com/kissggj123/AutoGetFeaturesCefSharpBrowserDesktopPC",true,30123,"https://createbrowser.github.io/AutoGetFeaturesCefSharpBrowserDesktopPC/PayPal.html"],
-  ["WristBilibili","\u8155\u4e0a\u54d4\u54e9 \u5728\u667a\u80fd\u624b\u8868\u4e0a\u96c6\u6210\u4e00\u4e2a\u6709\u7b80\u5355\u529f\u80fd\u7684\u54d4\u54e9\u54d4\u54e9/bilibili/b\u7ad9\u5ba2\u6237\u7aef","N/A",0,0,"2019-10-31","https://github.com/kissggj123/WristBilibili",true,2974,"https://luern0313.cn"],
-  ["ipwndfu","open-source jailbreaking tool for many iOS devices","N/A",0,0,"2019-09-30","https://github.com/kissggj123/ipwndfu",true,1892,""],
-  ["MOBS","\u4e00\u6b3e\u57fa\u4e8eChromium\u5f00\u53d1\u7684\u8f7b\u4fbf\u6d4f\u89c8\u5668","C#",4,0,"2019-08-27","https://github.com/kissggj123/MOBS",false,41717,""],
-  ["Notepads","A modern, stylish text editor with minimum design.","C#",0,0,"2019-08-21","https://github.com/kissggj123/Notepads",true,19564,""],
-  ["search","\u4e00\u4e2a\u7cbe\u7f8e\u7684\u6d4f\u89c8\u5668\u4e3b\u9875\uff0c\u641c\u7d22\u5f15\u64ce\u91c7\u7528\u5fc5\u5e94\uff0c\u641c\u7d22\u5efa\u8bae\u7531\u795e\u9a6c\u641c\u7d22\u63d0\u4f9b","HTML",0,0,"2019-07-23","https://github.com/kissggj123/search",true,2556,""],
-  ["sou","\u7b80\u5355\u641c\u7d22\u2014\u2014\u7528\u60ef\u4e86\u5404\u79cd\u5bfc\u822a\u9996\u9875\uff0c\u6ee1\u5c4f\u5e55\u5c3d\u662f\u5404\u79cd\u4e0d\u538c\u5176\u70e6\u7684\u5e7f\u544a\u548c\u8d44\u8baf\uff1b\u5c1d\u8bd5\u81ea\u5df1\u5199\u4e2a\u81ea\u5df1\u7684\u4e3b\u9875\uff0c\u8fd9\u5df2\u7ecf\u662f\u7b2c\u56db\u7248\u4e86\u3002","PHP",0,0,"2019-07-03","https://github.com/kissggj123/sou",true,2144,"https://5iux.cn/"],
-  ["onedrive-sample-apibrowser-dotnet","OneDrive API Browser Sample for Desktop","C#",0,0,"2019-06-19","https://github.com/kissggj123/onedrive-sample-apibrowser-dotnet",true,72,""],
-  ["Gta-5-in-Unity","Gta 5 made in Unity","ASP",0,0,"2019-06-06","https://github.com/kissggj123/Gta-5-in-Unity",true,108780,"https://nickwasused.com"],
-  ["Java-RPG-Maker-MV-Decrypter","You can decrypt whole RPG-Maker MV Directories with this Program, it also has a GUI.","Java",0,0,"2019-05-05","https://github.com/kissggj123/Java-RPG-Maker-MV-Decrypter",true,311,""],
-  ["TalesOfEvilSword_Finished","\u4e00\u6b3e\u7531Unity 3D\u5236\u4f5c\u7684ARPG\u7684\u52a8\u4f5c\u7c7b\u6e38\u620f","C#",0,0,"2019-04-26","https://github.com/kissggj123/TalesOfEvilSword_Finished",true,206819,""],
-  ["DarkSouls_Work","\uff3bUnity\uff3d\u300a\u9ed1\u6697\u4e4b\u9b42\u300b\u590d\u523b\u9879\u76ee","C#",0,1,"2019-04-26","https://github.com/kissggj123/DarkSouls_Work",false,47163,""],
-  ["DarkSoul","\u6a21\u4eff\u9ed1\u9b42","C#",0,0,"2019-04-26","https://github.com/kissggj123/DarkSoul",true,272461,""],
-  ["RunGame","\u8dd1\u9177\u6e38\u620f\uff0c\u57fa\u4e8e\u865a\u5e7bC++\u5f00\u53d1\uff0c\u6b63\u5728\u5236\u4f5c\u3002\u3002\u3002","C++",0,0,"2019-04-26","https://github.com/kissggj123/RunGame",true,213,""],
-  ["ARPG","\u865a\u5e7b\u9879\u76ee","C++",0,0,"2019-04-26","https://github.com/kissggj123/ARPG",true,54432,""],
-  ["UnityDarkSourceCopy","Unity\u4eff\u9ed1\u9b42","C#",0,0,"2019-04-26","https://github.com/kissggj123/UnityDarkSourceCopy",true,78503,""],
-  ["Unity3DTraining","Unity3D\u7684\u7ec3\u4e60\u9879\u76ee","C#",0,0,"2019-04-26","https://github.com/kissggj123/Unity3DTraining",true,742531,""],
-  ["scigen","An automatic paper generator","TeX",0,0,"2019-04-24","https://github.com/kissggj123/scigen",true,622,""],
-  ["huginn","Create agents that monitor and act on your behalf.  Your agents are standing by!","Ruby",0,0,"2019-04-24","https://github.com/kissggj123/huginn",true,7647,""],
-  ["weibo-rss","\u628a\u67d0\u4eba\u7684\u5fae\u535a\u8f6c\u6362\u4e3aRSS Feed","JavaScript",0,0,"2019-04-24","https://github.com/kissggj123/weibo-rss",true,117,"https://api.izgq.net/weibo/"],
-  ["weibo2linenotify","\u8ddf\u670b\u53cb\u9592\u804a\u5f8c\u8a66\u8457\u505a\u505a\u770b\u7684\u529f\u80fd\uff0c\u8b80\u53d6\u5fae\u535a\u7684RSS\uff0c\u900f\u904eLineNotify\u670d\u52d9\u8ffd\u8e64","PHP",0,0,"2019-04-24","https://github.com/kissggj123/weibo2linenotify",true,31,""],
-  ["DesktopBridgeToUWP-Samples","This repo contains the samples that demonstrate the usage patterns for the Desktop Conversion extensions.","N/A",0,0,"2019-04-23","https://github.com/kissggj123/DesktopBridgeToUWP-Samples",true,61262,""],
-  ["Windows-appsample-rssreader","An RSS aggregator sample for the Universal Windows Platform.","C#",0,0,"2019-04-23","https://github.com/kissggj123/Windows-appsample-rssreader",true,652,""],
-  ["bnetlauncher","Launcher utility to help start battle.net games with the steam overlay.","C#",0,0,"2019-04-22","https://github.com/kissggj123/bnetlauncher",true,343,"http://madalien.com/stuff/bnetlauncher/"],
-  ["Playnite","Open source video game library manager with support for 3rd party libraries like Steam, GOG, Origin, Battle.net and Uplay. Including game emulation support, providing one unified interface for your games.","C#",0,0,"2019-04-22","https://github.com/kissggj123/Playnite",true,34246,"https://playnite.link"],
-  ["go-bilibili","\u54d4\u54e9\u54d4\u54e9 bilibili \u7f51\u7ad9\u540e\u53f0\u5de5\u7a0b \u6e90\u7801","Go",0,0,"2019-04-22","https://github.com/kissggj123/go-bilibili",true,0,""],
-  ["ss-panel-v3-mod_Uim","\u57fa\u4e8ess-panel-v3-mod\u7684 UI \u4fee\u6539\u7248","Smarty",0,0,"2019-04-04","https://github.com/kissggj123/ss-panel-v3-mod_Uim",true,65029,""],
-  ["xstyle","A declarative, reactive framework that extends CSS","JavaScript",0,0,"2019-04-04","https://github.com/kissggj123/xstyle",true,1246,"http://kriszyp.github.com/xstyle"],
-  ["bilibili-helper","\u54d4\u54e9\u54d4\u54e9 (bilibili.com) \u8f85\u52a9\u5de5\u5177\uff0c\u53ef\u4ee5\u66ff\u6362\u64ad\u653e\u5668\u3001\u53bb\u5e7f\u544a\u3001\u63a8\u9001\u901a\u77e5\u5e76\u8fdb\u884c\u4e00\u4e9b\u5feb\u6377\u64cd\u4f5c","JavaScript",0,0,"2019-04-03","https://github.com/kissggj123/bilibili-helper",true,9245,"https://bilibili-helper.github.io"],
-  ["bye-flash-hello-html5","\u5929\u671d\u67d0\u4e9b\u89c6\u9891\u7f51\u7ad9\u4f7f\u7528HTML5\u64ad\u653e\u89c6\u9891\u7684\u6cb9\u7334\u811a\u672c","JavaScript",0,0,"2019-03-28","https://github.com/kissggj123/bye-flash-hello-html5",true,37,"https://greasyfork.org/zh-CN/scripts/30879-bye-flash-hello-html5-%E5%86%8D%E8%A7%81flash-%E4%BD%A0%E5%A5%BDhtml5"],
-  ["ChromeAppHeroes","\ud83c\udf08Chrome\u63d2\u4ef6\u82f1\u96c4\u699c, \u4e3a\u4f18\u79c0\u7684Chrome\u63d2\u4ef6\u5199\u4e00\u672c\u4e2d\u6587\u8bf4\u660e\u4e66, \u8ba9Chrome\u63d2\u4ef6\u82f1\u96c4\u4eec\u9020\u798f\u4eba\u7c7b~  ChromePluginHeroes, Write a Chinese manual for the excellent Chrome plugin, let the Chrome plugin heroes benefit the human~","Python",0,0,"2019-03-28","https://github.com/kissggj123/ChromeAppHeroes",true,23813,"https://zhaoolee.gitbooks.io/chrome/content/"],
-  ["DMSkin-for-WPF","WPF Borderless Window | Custom Controls & Styles | MVVM Support","C#",0,0,"2019-03-16","https://github.com/kissggj123/DMSkin-for-WPF",true,56264,"http://www.dmskin.com"],
-  ["DMSkin-CloudMusic","\u7f51\u6613\u4e91\u97f3\u4e50-\u7528WPF\u6765\u505a\u7f51\u6613\u4e91\u97f3\u4e50\u5ba2\u6237\u7aef\u4f1a\u600e\u4e48\u6837?","C#",0,0,"2019-03-16","https://github.com/kissggj123/DMSkin-CloudMusic",true,4947,""],
-  ["bilimini","\u85cf\u8d77\u6765\uff01\u54d4\u54e9\u54d4\u54e9","JavaScript",0,0,"2019-03-06","https://github.com/kissggj123/bilimini",true,3423,""],
-  ["spring12","\u6625\u8282\u5341\u4e8c\u54cd","C",0,0,"2019-03-02","https://github.com/kissggj123/spring12",true,18,""],
-  ["RSSHub","\ud83c\udf70 \u4e07\u7269\u7686\u53ef RSS","JavaScript",0,0,"2019-03-01","https://github.com/kissggj123/RSSHub",true,4858,"https://docs.rsshub.app"],
-  ["Love-Bangumi","\u4e00\u4e2a\u53ef\u4ee5\u8ba9\u4f60\u53ef\u4ee5\u66f4\u52a0\u79d1\u5b66\u5730\u8865\u756a\u7684\u8f6f\u4ef6\u3002/ A software which can be used to watch bangumi more comfortably.","C#",0,0,"2019-03-01","https://github.com/kissggj123/Love-Bangumi",true,6280,"https://wuhan5.cc/love-bangumi/"],
-  ["irreader","irreader \u7f51\u7a7a\u9605\u8bfb\u5668\uff0c\u8ba2\u9605\u4f60\u7684\u8ba2\u9605\u3002","HTML",0,0,"2019-03-01","https://github.com/kissggj123/irreader",true,25938,"http://irreader.netqon.com"],
-  ["bilibili2rss","\u5229\u7528 RSS \u8ba2\u9605 B \u7ad9 UP\u4e3b","PHP",0,0,"2019-03-01","https://github.com/kissggj123/bilibili2rss",true,4,""],
-  ["bangumi-data","Raw data for Japanese Anime","JavaScript",0,0,"2019-03-01","https://github.com/kissggj123/bangumi-data",true,6032,""],
-  ["bangumi-list","\u5927\u9646\u7248\u6743\u65b0\u756a\u64ad\u653e\u5730\u5740\u805a\u5408\u7ad9 V2","JavaScript",0,0,"2019-03-01","https://github.com/kissggj123/bangumi-list",true,959,"http://bgmlist.com/"],
-  ["GirlDress","\u770b\u5230\u5973\u88c5\u7684\u9879\u76ee\u7684issue\u5efa\u8bae\u59b9\u5b50\u5efa\u4e00\u4e2a\u7537\u88c5\u7684\u9879\u76ee\uff0c\u4f46\u662f\u8003\u8651\u5230github\u7684\u5973\u6027\u7528\u6237 \u6570\u91cf\u8c8c\u4f3c\u5e76\u4e0d\u80fd\u8fbe\u5230\u5973\u88c5\u7684\u6548\u679c2333\u603b\u4e4b\u5148\u5efa\u4e00\u4e2a\u3002","N/A",0,0,"2019-02-24","https://github.com/kissggj123/GirlDress",true,14836,""],
-  ["Story-for-Typecho","Typecho Theme Story - \u7231\u4e0a\u4f60\u6211\u7684\u6545\u4e8b","PHP",0,0,"2019-02-21","https://github.com/kissggj123/Story-for-Typecho",true,114,"https://yumoe.com/"],
-  ["airAnime","\u4e00\u6b3e\u4e0d\u9519\u7684\u8f7b\u91cf\u5316\u96c6\u5408\u756a\u5267\u641c\u7d22\u7a0b\u5e8f\uff0c\u57fa\u4e8e PHP 7.0+","PHP",0,0,"2019-02-21","https://github.com/kissggj123/airAnime",true,5484,"http://airanime.applinzi.com/"],
-  ["Moricolor-for-Typecho","Typecho Theme Moricolor - \u68ee\u4e4b\u8272","JavaScript",0,0,"2019-02-21","https://github.com/kissggj123/Moricolor-for-Typecho",true,2387,"https://null.yumoe.com/2-0/"],
-  ["meidou","\u6a31\u82b1\u5e84\u7684\u5ba0\u7269\u5973\u5b69AI\u5973\u4ec6\u9171\u5b9e\u4f53\u5316\uff0c\u5973\u4ec6\u59b9\u6296\u9171\uff0c\u7f8e\u8c46\u9171\uff0c\u6682\u65f6\u7684\u76ee\u6807\u662f\u684c\u9762\u52a9\u624b","Python",0,0,"2019-02-18","https://github.com/kissggj123/meidou",true,8616,""],
-  ["Musish","Apple Music...ish ","JavaScript",0,0,"2019-01-29","https://github.com/kissggj123/Musish",true,4593,"https://musi.sh"],
-  ["USBCopyer","\ud83d\ude09 \u7528\u4e8e\u5728\u63d2\u4e0aU\u76d8\u540e\u81ea\u52a8\u6309\u9700\u590d\u5236\u8be5U\u76d8\u7684\u6587\u4ef6\u3002\u201d\u5907\u4efd&\u5077U\u76d8\u6587\u4ef6\u7684\u795e\u5668\u201d\uff08\u5199\u4f5cUSBCopyer\uff0c\u8bfb\u4f5cUSBCopier\uff09","C#",0,0,"2019-01-21","https://github.com/kissggj123/USBCopyer",true,2245,"https://kenvix.com/post/usbcopyer/"],
-  ["Mosaic","\u7528\u591a\u5f20\u5c0f\u56fe\u6784\u6210\u5927\u56fe\uff0c\u6bcf\u4e2a\u5c0f\u56fe\u4f5c\u4e3a\u5927\u56fe\u7684\u67d0\u4e2a\u50cf\u7d20\u70b9\u3002\u6700\u540e\u5f62\u6210\u4e00\u79cd\u9a6c\u8d5b\u514b\u7684\u6548\u679c(\u6216\u8005\u8bf4\u662f\u8499\u592a\u5947\u6548\u679c?)","MATLAB",0,0,"2019-01-12","https://github.com/kissggj123/Mosaic",true,13662,""],
-  ["-Hidden-Tear","\u5168\u7403\u9996\u6b3e\u5f00\u6e90\u52d2\u7d22\u8f6f\u4ef6-\u2013-Hidden-Tear","C#",1,0,"2019-01-01","https://github.com/kissggj123/-Hidden-Tear",true,270,""],
-  ["Darkest-Dungeon-Unity","Darkest Dungeon port in Unity. Almost completely identical to the original. Platforms: PC/Android.","C#",0,0,"2018-12-26","https://github.com/kissggj123/Darkest-Dungeon-Unity",true,184227,""],
-  ["UE4Cleaner","\u865a\u5e7b4\u6e05\u7406\u7f13\u5b58\u7684\u5c0f\u5de5\u5177","C#",0,0,"2018-09-25","https://github.com/kissggj123/UE4Cleaner",false,398,""],
-  ["TegraRcmGUI","C++ GUI for TegraRcmSmash (payload loader for Nintendo Switch)","C++",0,0,"2018-09-02","https://github.com/kissggj123/TegraRcmGUI",true,583,""],
-  ["NSPower","NSPower - Switch title installer/manager (evolution of eNXhop)","C++",0,0,"2018-08-03","https://github.com/kissggj123/NSPower",true,189,""],
-  ["ReiNX","WIP modular Switch custom firmware","C",0,0,"2018-07-31","https://github.com/kissggj123/ReiNX",true,991,""],
-  ["DNSset-win","DNS\u8bbe\u7f6e\u5de5\u5177 \u5c1d\u8bd5\u652f\u6301\u4e86dnscrypt","C#",0,0,"2018-07-30","https://github.com/kissggj123/DNSset-win",false,1082,""],
-  ["MagiskManager","Companion Android application for Magisk","Java",0,0,"2018-07-30","https://github.com/kissggj123/MagiskManager",true,8594,""],
-  ["hekate","Nintendo Switch Bootloader - CTCaer mod","C",0,0,"2018-07-24","https://github.com/kissggj123/hekate",true,1053,""],
-  ["dns-over-tls","Quick DNS-over-TLS Proxy prototype using C# / .NET Core / .NET Framework / UWP / Windows Services","C#",0,0,"2018-07-16","https://github.com/kissggj123/dns-over-tls",true,100,""],
-  ["dnscrypt-win-client","Windows front end for DNSCrypt Proxy","C#",0,0,"2018-07-16","https://github.com/kissggj123/dnscrypt-win-client",true,1843,""],
-  ["reactos","A free Windows-compatible Operating System","C",0,0,"2018-07-14","https://github.com/kissggj123/reactos",true,457733,""],
-  ["Pinguy-Builder","Tool to remaster *buntu systems","Python",0,0,"2018-07-14","https://github.com/kissggj123/Pinguy-Builder",true,126745,""],
-  ["Offline-PS4-Remote-Play","Enjoy playing on your PS4 from your computer (WLAN/Ad-hoc) without the need of an Internet connection.","C#",0,0,"2018-06-24","https://github.com/kissggj123/Offline-PS4-Remote-Play",true,1290,""],
-  ["Starup-Game-Python","\u6587\u5b57\u5192\u9669\u6e38\u620f\uff1a\u5357\u5c71\u542f\u793a\u5f55","Python",0,0,"2018-05-19","https://github.com/kissggj123/Starup-Game-Python",true,14,""],
-  ["WinHtmlEditor","one html editor for winform(.net)","C#",0,0,"2018-05-08","https://github.com/kissggj123/WinHtmlEditor",true,5797,"http://tewuapple.github.io/WinHtmlEditor/"],
-  ["markdown-here","Google Chrome, Firefox, and Thunderbird extension that lets you write email in Markdown and render it before sending.","JavaScript",0,0,"2018-05-08","https://github.com/kissggj123/markdown-here",true,16142,"http://markdown-here.com"],
-  ["Edi","Edi - The open source text editor IDE based on AvalonDock and AvalonEdit","C#",0,0,"2018-04-26","https://github.com/kissggj123/Edi",true,14831,"https://dirkster99.github.io/Edi/"],
-  ["Edi-Setup","Holds all necessary files to build a setup via WiX Toolset","Batchfile",0,0,"2018-04-26","https://github.com/kissggj123/Edi-Setup",true,6523,""],
-  ["ChaturbateRecorder","","Python",0,0,"2018-04-23","https://github.com/kissggj123/ChaturbateRecorder",true,22,""],
-  ["VoiceControlAssistant","\u8bed\u97f3\u63a7\u5236\u2014\u2014\u201c\u7ed9\u6211\u64ad\u653e\u70b9\u97f3\u4e50\u201d\uff0c\u201c\u7ea2\u70e7\u9c7c\u600e\u4e48\u505a\u201d\uff0c\u201c\u4eca\u5929\u5929\u6c14\u600e\u4e48\u6837\u201d\uff0c\u201c\u6253\u5f00\u6dd8\u5b9d\u201d\uff0c\u201c\u4eca\u665a11\u70b9\u5e2e\u6211\u5173\u7535\u8111\u201d","C#",0,0,"2018-03-21","https://github.com/kissggj123/VoiceControlAssistant",true,274,""],
-  ["WiFi-Assistant","\u7528\u81ea\u5e26\u65e0\u7ebf\u7f51\u5361\u5171\u4eabWiFi\u7684\u5de5\u5177\uff0c\u62e5\u6709\u5b9a\u65f6\u5173\u673a\u529f\u80fd","C++",0,2,"2018-03-12","https://github.com/kissggj123/WiFi-Assistant",false,40320,""],
-  ["mastodon","Your self-hosted, globally interconnected microblogging community","Ruby",0,0,"2018-03-02","https://github.com/kissggj123/mastodon",true,55088,"https://joinmastodon.org"],
-  ["ZeroNet","ZeroNet - Decentralized websites using Bitcoin crypto and BitTorrent network","Python",0,0,"2018-03-02","https://github.com/kissggj123/ZeroNet",true,9468,"https://zeronet.io"],
-  ["pegaswitch","PegaSwitch is an exploit toolkit for the Nintendo Switch","JavaScript",0,0,"2017-11-22","https://github.com/kissggj123/pegaswitch",true,1372,"https://pegaswit.ch/"],
-  ["libtransistor","Open source toolchain for Switch development","C++",0,0,"2017-11-22","https://github.com/kissggj123/libtransistor",true,203,""],
-  ["SharpBrowser","A full featured web-browser built using C# and CefSharp","C#",0,0,"2017-10-18","https://github.com/kissggj123/SharpBrowser",true,66233,""],
-  ["XposedInstaller","Materialised Xposed Installer","Java",0,0,"2017-10-09","https://github.com/kissggj123/XposedInstaller",true,17887,""],
-  ["1-2-Switch","1-2-Switch recreation project using Microsoft Small Basic.","N/A",0,0,"2017-09-26","https://github.com/kissggj123/1-2-Switch",true,170,""],
-  ["savegame-editors","A compilation of console savegame editors made with HTML5 technologies.","JavaScript",0,0,"2017-09-19","https://github.com/kissggj123/savegame-editors",true,5077,"http://www.marcrobledo.com/savegame-editors/"],
-  ["arcore-android-sdk","Google ARCore SDK for Android","N/A",0,0,"2017-08-31","https://github.com/kissggj123/arcore-android-sdk",true,831,"https://developers.google.com/ar"],
-  ["CageTheUnicorn","Debugging/emulating environment for Switch code","Python",0,0,"2017-08-21","https://github.com/kissggj123/CageTheUnicorn",true,473,""],
-  ["shadowsocks-rss","ShadowsocksR update rss, SSR organization https://github.com/shadowsocksr","N/A",0,0,"2017-08-07","https://github.com/kissggj123/shadowsocks-rss",true,402,"https://twitter.com/breakwa11"],
-  ["shadowsocksr-csharp","","C#",1,0,"2017-08-07","https://github.com/kissggj123/shadowsocksr-csharp",true,7017,""],
-  ["Nintendo_Switch_Reverse_Engineering","A look at inner workings of Joycon and Nintendo Switch","C",0,0,"2017-08-03","https://github.com/kissggj123/Nintendo_Switch_Reverse_Engineering",true,31264,""],
-  ["LoungeChairAPI","","C#",0,1,"2017-08-03","https://github.com/kissggj123/LoungeChairAPI",false,15,""],
-  ["LoungeChair","","C#",1,0,"2017-08-02","https://github.com/kissggj123/LoungeChair",true,16,""],
-  ["xposed_art_n","ART module for a built-in enabled Xposed firmware based on AOSP 7","C++",0,0,"2017-08-01","https://github.com/kissggj123/xposed_art_n",true,5762,""],
-  ["imewlconverter","\u4e00\u6b3e\u5f00\u6e90\u514d\u8d39\u7684\u8f93\u5165\u6cd5\u8bcd\u5e93\u8f6c\u6362\u7a0b\u5e8f","C#",0,0,"2017-06-06","https://github.com/kissggj123/imewlconverter",true,55380,""],
-  ["Wenli.IEM","This is a simple C# version of the IEM, support for bubi input, pinyin input. \u8fd9\u662f\u4e00\u4e2a\u7b80\u5355C# \u7248\u8f93\u5165\u6cd5\uff0c\u652f\u6301\u4e94\u7b14\u8f93\u5165\u3001\u62fc\u97f3\u8f93\u5165\u3002","C#",0,0,"2017-06-06","https://github.com/kissggj123/Wenli.IEM",true,2711,""],
-  ["meow","\u732b\u306e\u8f93\u5165\u6cd5\uff0c\u55b5\uff01","C++",0,0,"2017-06-06","https://github.com/kissggj123/meow",true,364,""],
-  ["EternalRocks","EternalRocks worm","N/A",0,0,"2017-05-31","https://github.com/kissggj123/EternalRocks",true,20677,""],
-  ["Go-Hosts","Go Hosts","N/A",0,0,"2017-05-11","https://github.com/kissggj123/Go-Hosts",true,119,"https://play.google.com/store/apps/details?id=com.lerist.go_hosts"],
-  ["Route","A Script for you to setup VPN Server and Create Connection With your devices","N/A",1,0,"2017-03-05","https://github.com/kissggj123/Route",false,39,""],
-  ["BaiduPanDownload","\u767e\u5ea6\u7f51\u76d8\u4e0d\u9650\u901f\u4e0b\u8f7d\u5de5\u5177","C#",0,0,"2016-12-18","https://github.com/kissggj123/BaiduPanDownload",true,248,""],
-  ["setup-ipsec-vpn","Scripts to build your own IPsec VPN server, with IPsec/L2TP and Cisco IPsec on Ubuntu, Debian and CentOS","Shell",0,0,"2016-07-08","https://github.com/kissggj123/setup-ipsec-vpn",true,375,""],
-  ["MineTraft","\u81ea\u5236MC\uff0c\u76ee\u524d\u5f00\u653eLinux\u5e73\u53f0","C",0,0,"2015-05-28","https://github.com/kissggj123/MineTraft",false,6721,""],
-  ["WireLurkerCleaner-","","N/A",0,0,"2014-11-09","https://github.com/kissggj123/WireLurkerCleaner-",false,0,""]
+  ['kissggj123.github.com','兔可可纪念日','HTML',0,0,'2026-10-01','https://github.com/kissggj123/kissggj123.github.com',false,165561,'https://so.menglolita.com/'],
+  ['NIO-Dash-iOS','蔚来车辆看板 — macOS 菜单栏应用，自动拉取车况与换电记录','Swift',0,0,'2026-08-31','https://github.com/kissggj123/NIO-Dash-iOS',true,4113,''],
+  ['kissggj123','A British Angora rabbit breeder','N/A',0,0,'2026-08-03','https://github.com/kissggj123/kissggj123',false,15,''],
+  ['poke-tui','🌴 Chat with your Poke AI assistant from the terminal','N/A',0,0,'2026-05-29','https://github.com/kissggj123/poke-tui',true,51,''],
+  ['Perler_beads','兔可可的拼豆世界 - 拼豆设计器','Dart',0,0,'2026-03-28','https://github.com/kissggj123/Perler_beads',false,1997,''],
+  ['Asahi-Steam-M1','在M1上通过Fedora Asahi Remix游玩Steam游戏','N/A',1,0,'2024-10-13','https://github.com/kissggj123/Asahi-Steam-M1',false,46,''],
+  ['awesome-shizuku','Awesome list of Android apps making use of Shizuku','N/A',0,0,'2023-10-27','https://github.com/kissggj123/awesome-shizuku',true,114,''],
+  ['hackp5g9','本项目可以帮助小鹏P5和小鹏G9开启adb和网络adb','N/A',0,0,'2023-09-09','https://github.com/kissggj123/hackp5g9',true,262,''],
+  ['ArcPy-multiexport','The tool is an automated multi-process image export tool implemented using the built-in ArcPy library provided by ArcGIS','Python',0,0,'2023-09-02','https://github.com/kissggj123/ArcPy-multiexport',false,39,''],
+  ['holoiso','SteamOS 3 (Holo) archiso configuration','N/A',1,0,'2022-05-03','https://github.com/kissggj123/holoiso',true,106,''],
+  ['MTMR-presets','💈 [My TouchBar My rules] Share your preset!','N/A',0,0,'2021-06-26','https://github.com/kissggj123/MTMR-presets',true,8208,'https://github.com/toxblh/mtmr'],
+  ['jd-base','','JavaScript',0,0,'2021-06-04','https://github.com/kissggj123/jd-base',true,448,''],
+  ['Funkin','','N/A',0,0,'2021-05-17','https://github.com/kissggj123/Funkin',true,473144,''],
+  ['New_JD-FreeFuck-Fix','github_SuperManito_JD-FreeFuck','Shell',0,0,'2021-04-25','https://github.com/kissggj123/New_JD-FreeFuck-Fix',true,25080,''],
+  ['JD-FreeFuck-Fix','《JD薅羊毛》一键部署 For Linux','Shell',0,0,'2021-04-24','https://github.com/kissggj123/JD-FreeFuck-Fix',true,25551,'https://github.com/kissggj123/JD-FreeFuck'],
+  ['OpenWrt-AC1750','','Shell',0,0,'2021-04-14','https://github.com/kissggj123/OpenWrt-AC1750',false,5,''],
+  ['one_click_script','一键安装 trojan v2ray xray. Install v2ray / xray (VLESS) and trojan (trojan-go) script','N/A',0,0,'2021-02-13','https://github.com/kissggj123/one_click_script',true,369054,''],
+  ['fancyss_history_package','科学上网插件的离线安装包储存在这里','N/A',0,0,'2021-02-08','https://github.com/kissggj123/fancyss_history_package',true,1938832,''],
+  ['big-sur-plz','','N/A',0,0,'2020-06-23','https://github.com/kissggj123/big-sur-plz',true,3,''],
+  ['macOS-BigSur-Patcher','macOS Big Sur Patcher ','Objective-C',0,0,'2020-06-23','https://github.com/kissggj123/macOS-BigSur-Patcher',true,190611,'https://so.menglolita.com'],
+  ['ArchWSL','ArchLinux as a WSL Instance. Supports multiple install.','N/A',0,0,'2020-04-03','https://github.com/kissggj123/ArchWSL',true,274,'https://git.io/archwsl'],
+  ['EdgeWebBrowser','Experimental C# Windows Forms WebBrowser based on Edge','N/A',0,0,'2020-03-08','https://github.com/kissggj123/EdgeWebBrowser',true,396,''],
+  ['0','','N/A',0,0,'2020-01-04','https://github.com/kissggj123/0',true,426,''],
+  ['Hippy','A cross platform framework designed for Web developer. Introduction video - https://v.qq.com/x/page/i3038urj2mt.html','N/A',0,0,'2019-12-30','https://github.com/kissggj123/Hippy',true,59922,''],
+  ['evil-huawei','Evil Huawei - 华为作过的恶','N/A',0,0,'2019-12-06','https://github.com/kissggj123/evil-huawei',true,14672,'https://evil-huawei.github.io/evil-huawei/'],
+  ['cockpit','Add content management functionality to any site - plug & play / headless / api-first CMS','N/A',0,0,'2019-11-17','https://github.com/kissggj123/cockpit',true,22041,'http://getcockpit.com'],
+  ['EpicSurvivalGameSeries','Third-person Survival Game for Unreal Engine 4.','N/A',0,0,'2019-10-26','https://github.com/kissggj123/EpicSurvivalGameSeries',true,1359805,'https://www.tomlooman.com/survival-sample-game-for-ue4/'],
+  ['AutoGetFeaturesCefSharpBrowserDesktopPC',':1st_place_medal: :new:  :zap:   :+1:   :cn: Chinese + :egypt: Egypt | Example Custom Windows Desktop PC for Project Supported  C# ( CefSharp Web Browser )  More CefSharp Version Auto Get Fast Chromium Web Browser (http://createbrowser.github.io/)','N/A',0,0,'2019-10-21','https://github.com/kissggj123/AutoGetFeaturesCefSharpBrowserDesktopPC',true,30123,'https://createbrowser.github.io/AutoGetFeaturesCefSharpBrowserDesktopPC/PayPal.html'],
+  ['iptv','看HBO直播 + 集各广电直播源 + 一键管理 IPTV 直播频道脚本 mpeg ts => hls','N/A',0,0,'2019-10-05','https://github.com/kissggj123/iptv',true,1960,''],
+  ['ipwndfu','open-source jailbreaking tool for many iOS devices','N/A',0,0,'2019-09-29','https://github.com/kissggj123/ipwndfu',true,1892,''],
+  ['Panda-Learning','学习强国 xuexiqiangguo  全网最好用学习强国助手：Panda_Learning 萌萌的熊猫帮你搞定学习强国','N/A',0,0,'2019-09-07','https://github.com/kissggj123/Panda-Learning',true,838500,''],
+  ['Notepads','A modern, stylish text editor with minimum design.','C#',0,0,'2019-08-21','https://github.com/kissggj123/Notepads',true,19564,''],
+  ['open-deepnude','Open source reverse-engineered clone of DeepNude','Python',0,0,'2019-07-01','https://github.com/kissggj123/open-deepnude',true,490,''],
+  ['DeepNewdsForAndroid','DeepNudes & deep nudes Android Source Code','Java',0,0,'2019-06-29','https://github.com/kissggj123/DeepNewdsForAndroid',true,76559,''],
+  ['fullstack','React/ApolloGraphQL/Node/Mongo demo written in Typescript','TypeScript',0,0,'2019-06-12','https://github.com/kissggj123/fullstack',true,1242,''],
+  ['onedrive-sample-apibrowser-dotnet','OneDrive API Browser Sample for Desktop','C#',0,0,'2019-05-11','https://github.com/kissggj123/onedrive-sample-apibrowser-dotnet',true,72,''],
+  ['Java-RPG-Maker-MV-Decrypter','You can decrypt whole RPG-Maker MV Directories with this Program, it also has a GUI.','Java',0,0,'2019-05-04','https://github.com/kissggj123/Java-RPG-Maker-MV-Decrypter',true,311,''],
+  ['ARPG','虚幻项目','C++',0,0,'2019-04-23','https://github.com/kissggj123/ARPG',true,54432,''],
+  ['go-bilibili','哔哩哔哩 bilibili 网站后台工程 源码','Go',0,0,'2019-04-22','https://github.com/kissggj123/go-bilibili',true,0,''],
+  ['Playnite','Open source video game library manager with support for 3rd party libraries like Steam, GOG, Origin, Battle.net and Uplay. Including game emulation support, providing one unified interface for your games.','C#',0,0,'2019-04-21','https://github.com/kissggj123/Playnite',true,34246,'https://playnite.link'],
+  ['huginn','Create agents that monitor and act on your behalf.  Your agents are standing by!','Ruby',0,0,'2019-04-20','https://github.com/kissggj123/huginn',true,7647,''],
+  ['DesktopBridgeToUWP-Samples','This repo contains the samples that demonstrate the usage patterns for the Desktop Conversion extensions.','N/A',0,0,'2019-04-17','https://github.com/kissggj123/DesktopBridgeToUWP-Samples',true,61262,''],
+  ['bilibili-helper','哔哩哔哩 (bilibili.com) 辅助工具，可以替换播放器、去广告、推送通知并进行一些快捷操作','JavaScript',0,0,'2019-04-01','https://github.com/kissggj123/bilibili-helper',true,9245,'https://bilibili-helper.github.io'],
+  ['DarkSouls_Work','［Unity］《黑暗之魂》复刻项目','C#',0,1,'2019-03-27','https://github.com/kissggj123/DarkSouls_Work',false,47163,''],
+  ['ChromeAppHeroes','🌈Chrome插件英雄榜, 为优秀的Chrome插件写一本中文说明书, 让Chrome插件英雄们造福人类~  ChromePluginHeroes, Write a Chinese manual for the excellent Chrome plugin, let the Chrome plugin heroes benefit the human~','Python',0,0,'2019-03-24','https://github.com/kissggj123/ChromeAppHeroes',true,23813,'https://zhaoolee.gitbooks.io/chrome/content/'],
+  ['bye-flash-hello-html5','天朝某些视频网站使用HTML5播放视频的油猴脚本','JavaScript',0,0,'2019-03-24','https://github.com/kissggj123/bye-flash-hello-html5',true,37,'https://greasyfork.org/zh-CN/scripts/30879-bye-flash-hello-html5-%E5%86%8D%E8%A7%81flash-%E4%BD%A0%E5%A5%BDhtml5'],
+  ['DMSkin-for-WPF','WPF Borderless Window | Custom Controls & Styles | MVVM Support','C#',0,0,'2019-03-16','https://github.com/kissggj123/DMSkin-for-WPF',true,56264,'http://www.dmskin.com'],
+  ['Dress','好耶  是女装','Ruby',0,0,'2019-02-23','https://github.com/kissggj123/Dress',true,907127,''],
+  ['GirlDress','看到女装的项目的issue建议妹子建一个男装的项目，但是考虑到github的女性用户 数量貌似并不能达到女装的效果2333总之先建一个。','N/A',0,0,'2019-02-22','https://github.com/kissggj123/GirlDress',true,14836,''],
+  ['bangumi-data','Raw data for Japanese Anime','JavaScript',0,0,'2019-02-13','https://github.com/kissggj123/bangumi-data',true,6032,''],
+  ['airAnime','一款不错的轻量化集合番剧搜索程序，基于 PHP 7.0+','PHP',0,0,'2019-02-13','https://github.com/kissggj123/airAnime',true,5484,'http://airanime.applinzi.com/'],
+  ['bilimini','藏起来！哔哩哔哩','JavaScript',0,0,'2019-01-30','https://github.com/kissggj123/bilimini',true,3423,''],
+  ['bangumi-list','大陆版权新番播放地址聚合站 V2','JavaScript',0,0,'2019-01-29','https://github.com/kissggj123/bangumi-list',true,959,'http://bgmlist.com/'],
+  ['Musish','Apple Music...ish ','JavaScript',0,0,'2019-01-28','https://github.com/kissggj123/Musish',true,4593,'https://musi.sh'],
+  ['DarkSoul','模仿黑魂','C#',0,0,'2018-12-26','https://github.com/kissggj123/DarkSoul',true,272461,''],
+  ['irreader','irreader 网空阅读器，订阅你的订阅。','HTML',0,0,'2018-12-13','https://github.com/kissggj123/irreader',true,25938,'http://irreader.netqon.com'],
+  ['DMSkin-CloudMusic','网易云音乐-用WPF来做网易云音乐客户端会怎么样?','C#',0,0,'2018-11-28','https://github.com/kissggj123/DMSkin-CloudMusic',true,4947,''],
+  ['bnetlauncher','Launcher utility to help start battle.net games with the steam overlay.','C#',0,0,'2018-11-24','https://github.com/kissggj123/bnetlauncher',true,343,'http://madalien.com/stuff/bnetlauncher/'],
+  ['Moricolor-for-Typecho','Typecho Theme Moricolor - 森之色','JavaScript',0,0,'2018-11-14','https://github.com/kissggj123/Moricolor-for-Typecho',true,2387,'https://null.yumoe.com/2-0/'],
+  ['Downloader','A library for resuming and multi-part/multi-threaded downloads in .NET written in C#','N/A',0,0,'2018-08-29','https://github.com/kissggj123/Downloader',true,519,''],
+  ['Mosaic','用多张小图构成大图，每个小图作为大图的某个像素点。最后形成一种马赛克的效果(或者说是蒙太奇效果?)','MATLAB',0,0,'2018-08-14','https://github.com/kissggj123/Mosaic',true,13662,''],
+  ['NSPower','NSPower - Switch title installer/manager (evolution of eNXhop)','C++',0,0,'2018-08-02','https://github.com/kissggj123/NSPower',true,189,''],
+  ['MoRecall','一个支持QQ/TIM撤回的程序','C#',3,0,'2018-08-01','https://github.com/kissggj123/MoRecall',false,54518,''],
+  ['DNSset-win','DNS设置工具 尝试支持了dnscrypt','C#',0,0,'2018-07-30','https://github.com/kissggj123/DNSset-win',false,1082,''],
+  ['hekate','Nintendo Switch Bootloader - CTCaer mod','C',0,0,'2018-07-23','https://github.com/kissggj123/hekate',true,1053,''],
+  ['Gta-5-in-Unity','Gta 5 made in Unity','ASP',0,0,'2018-07-23','https://github.com/kissggj123/Gta-5-in-Unity',true,108780,'https://nickwasused.com'],
+  ['MagiskManager','Companion Android application for Magisk','Java',0,0,'2018-07-18','https://github.com/kissggj123/MagiskManager',true,8594,''],
+  ['NXPlay','Multimedia player for Nintendo Switch (audio only, video soon)','C++',0,0,'2018-07-16','https://github.com/kissggj123/NXPlay',true,1695,''],
+  ['Pinguy-Builder','Tool to remaster *buntu systems','Python',0,0,'2018-07-10','https://github.com/kissggj123/Pinguy-Builder',true,126745,''],
+  ['Offline-PS4-Remote-Play','Enjoy playing on your PS4 from your computer (WLAN/Ad-hoc) without the need of an Internet connection.','C#',0,0,'2018-04-28','https://github.com/kissggj123/Offline-PS4-Remote-Play',true,1290,''],
+  ['dns-over-tls','Quick DNS-over-TLS Proxy prototype using C# / .NET Core / .NET Framework / UWP / Windows Services','C#',0,0,'2018-04-10','https://github.com/kissggj123/dns-over-tls',true,100,''],
+  ['Edi','Edi - The open source text editor IDE based on AvalonDock and AvalonEdit','C#',0,0,'2018-04-09','https://github.com/kissggj123/Edi',true,14831,'https://dirkster99.github.io/Edi/'],
+  ['mastodon','Your self-hosted, globally interconnected microblogging community','Ruby',0,0,'2018-03-02','https://github.com/kissggj123/mastodon',true,55088,'https://joinmastodon.org'],
+  ['markdown-here','Google Chrome, Firefox, and Thunderbird extension that lets you write email in Markdown and render it before sending.','JavaScript',0,0,'2018-02-28','https://github.com/kissggj123/markdown-here',true,16142,'http://markdown-here.com'],
+  ['Darkest-Dungeon-Unity','Darkest Dungeon port in Unity. Almost completely identical to the original. Platforms: PC/Android.','C#',0,0,'2017-12-27','https://github.com/kissggj123/Darkest-Dungeon-Unity',true,184227,''],
+  ['libtransistor','Open source toolchain for Switch development','C++',0,0,'2017-11-21','https://github.com/kissggj123/libtransistor',true,203,''],
+  ['monopoly','A realtime multiplayer javascript-based monopoly game','N/A',0,0,'2017-11-20','https://github.com/kissggj123/monopoly',true,32189,''],
+  ['pegaswitch','PegaSwitch is an exploit toolkit for the Nintendo Switch','JavaScript',0,0,'2017-11-19','https://github.com/kissggj123/pegaswitch',true,1372,'https://pegaswit.ch/'],
+  ['DesignerProtect','autosave and backup photoshop,sai,sa2 editing files.photoshop backup,sai backup','N/A',0,0,'2017-10-01','https://github.com/kissggj123/DesignerProtect',true,8658,''],
+  ['1-2-Switch','1-2-Switch recreation project using Microsoft Small Basic.','N/A',0,0,'2017-09-25','https://github.com/kissggj123/1-2-Switch',true,170,''],
+  ['ChaturbateRecorder','','Python',0,0,'2017-08-29','https://github.com/kissggj123/ChaturbateRecorder',true,22,''],
+  ['arcore-android-sdk','Google ARCore SDK for Android','N/A',0,0,'2017-08-28','https://github.com/kissggj123/arcore-android-sdk',true,831,'https://developers.google.com/ar'],
+  ['CageTheUnicorn','Debugging/emulating environment for Switch code','Python',0,0,'2017-08-18','https://github.com/kissggj123/CageTheUnicorn',true,473,''],
+  ['bilibili2rss','利用 RSS 订阅 B 站 UP主','PHP',0,0,'2017-08-15','https://github.com/kissggj123/bilibili2rss',true,4,''],
+  ['LoungeChair','','C#',1,0,'2017-08-03','https://github.com/kissggj123/LoungeChair',true,16,''],
+  ['LoungeChairAPI','','C#',0,1,'2017-08-02','https://github.com/kissggj123/LoungeChairAPI',false,15,''],
+  ['Nintendo_Switch_Reverse_Engineering','A look at inner workings of Joycon and Nintendo Switch','C',0,0,'2017-07-18','https://github.com/kissggj123/Nintendo_Switch_Reverse_Engineering',true,31264,''],
+  ['Love-Bangumi','一个可以让你可以更加科学地补番的软件。/ A software which can be used to watch bangumi more comfortably.','C#',0,0,'2017-07-12','https://github.com/kissggj123/Love-Bangumi',true,6280,'https://wuhan5.cc/love-bangumi/'],
+  ['Edi-Setup','Holds all necessary files to build a setup via WiX Toolset','Batchfile',0,0,'2017-06-05','https://github.com/kissggj123/Edi-Setup',true,6523,''],
+  ['MenglolitaHost','修改Host的小工具','C#',8,6,'2017-05-27','https://github.com/kissggj123/MenglolitaHost',false,67392,''],
+  ['EternalRocks','EternalRocks worm','N/A',0,0,'2017-05-25','https://github.com/kissggj123/EternalRocks',true,20677,''],
+  ['Go-Hosts','Go Hosts','N/A',0,0,'2017-05-06','https://github.com/kissggj123/Go-Hosts',true,119,'https://play.google.com/store/apps/details?id=com.lerist.go_hosts'],
+  ['imewlconverter','一款开源免费的输入法词库转换程序','C#',0,0,'2017-04-26','https://github.com/kissggj123/imewlconverter',true,55380,''],
+  ['MineTraft','自制MC，目前开放Linux平台','C',0,0,'2017-02-05','https://github.com/kissggj123/MineTraft',false,6721,''],
+  ['MOBS','一款基于Chromium开发的轻便浏览器','C#',4,0,'2017-01-15','https://github.com/kissggj123/MOBS',false,41717,''],
+  ['BaiduPanDownload','百度网盘不限速下载工具','C#',0,0,'2016-12-12','https://github.com/kissggj123/BaiduPanDownload',true,248,''],
+  ['dnscrypt-win-client','Windows front end for DNSCrypt Proxy','C#',0,0,'2016-07-01','https://github.com/kissggj123/dnscrypt-win-client',true,1843,''],
+  ['-Hidden-Tear','全球首款开源勒索软件-–-Hidden-Tear','C#',1,0,'2015-09-18','https://github.com/kissggj123/-Hidden-Tear',true,270,''],
+  ['meow','猫の输入法，喵！','C++',0,0,'2015-02-20','https://github.com/kissggj123/meow',true,364,''],
+  ['meidou','樱花庄的宠物女孩AI女仆酱实体化，女仆妹抖酱，美豆酱，暂时的目标是桌面助手','Python',0,0,'2014-04-23','https://github.com/kissggj123/meidou',true,8616,'']
     ];
 
-    const _bcosLangColors = {
         'C#': '#178600', 'JavaScript': '#f1e05a', 'Python': '#3572A5', 'C++': '#f34b7d',
         'C': '#555555', 'Java': '#b07219', 'HTML': '#e34c26', 'Shell': '#89e051',
         'PHP': '#4F5D95', 'Ruby': '#701516', 'Swift': '#F05138', 'Dart': '#00B4AB',
@@ -9845,7 +8082,7 @@
             #bcos-te-textarea::selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
             #bcos-te-textarea::-moz-selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
             #bcos-te-highlight { color: #d4d4d4 !important; }
-            .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: .3rem; cursor: pointer; width: 70px; height: 85px; padding: .5rem; border-radius: 4px; transition: background .15s, transform .1s; will-change: transform; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+            .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; gap: .3rem; cursor: pointer; width: 70px; padding: .5rem; border-radius: 4px; transition: background .15s, transform .1s; will-change: transform; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
             .bcos-desktop-icon:hover { background: rgba(0,0,0,.12); }
             .bcos-desktop-icon:active { transform: scale(0.92) translateZ(0); }
             .bcos-desktop-icon-emoji { font-size: 2rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
@@ -11177,8 +9414,7 @@
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         _bcos.history = []; _bcos.histIdx = -1; _bcos.mode = 'boot'; _bcos.winZ = 100; _bcos.wins = {}; _bcos.activeWin = null;
         _bcosInitMeFolder();
-        _bcosLaunchDesktop();
-        ov.classList.add('active');
+        _bcosBoot(ov);
     }
 
     function closeBcosOS() {
@@ -11195,6 +9431,7 @@
                 <div style="position:absolute;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;z-index:999999;">
                     <img src="./dist/Bunny CC_Profile.JPG" style="width:120px;height:120px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(255,255,255,0.2);margin-bottom:2rem;border:3px solid #333;" onerror="this.src=''" alt="avatar"/>
                     <h2 style="margin:0 0 2rem;font-weight:400;color:#aaa;">System Halted.</h2>
+                    <button onclick="showBcosOS(); tryAutoFullscreen();" style="background:#222;color:#fff;border:1px solid #555;padding:12px 32px;border-radius:24px;font-size:1.1rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
                         ⏻ Reboot (重新开机)
                     </button>
                 </div>
@@ -11232,40 +9469,6 @@
         return _bcosThemeDesktop[id] || _bcosThemeDesktop.bunny;
     }
 
-
-
-    window._bcosApplyDesktopTheme = function() {
-        const bg = document.getElementById('bcos-desktop-bg');
-        if (!bg) return;
-        let customBg = localStorage.getItem('bcosCustomBg');
-        if (customBg) {
-            if (window.BUILTIN_WALLPAPERS) {
-                const wp = window.BUILTIN_WALLPAPERS.find(w => w.file === customBg);
-                if (wp && wp.b64) {
-                    if (window.wpBlobCache && window.wpBlobCache[wp.file]) {
-                        bg.style.background = `url(${window.wpBlobCache[wp.file]}) center/cover no-repeat`;
-                    } else if (window.loadWallpaperBlob) {
-                        if (window.WP_PLACEHOLDER && window.WP_PLACEHOLDER[wp.file]) {
-                            bg.style.background = `url(${window.WP_PLACEHOLDER[wp.file]}) center/cover no-repeat`;
-                        }
-                        window.loadWallpaperBlob(wp, null, null).then(blob => {
-                            if (!window.wpBlobCache) window.wpBlobCache = {};
-                            const url = URL.createObjectURL(blob);
-                            window.wpBlobCache[wp.file] = url;
-                            if (localStorage.getItem('bcosCustomBg') === customBg) {
-                                bg.style.background = `url(${url}) center/cover no-repeat`;
-                            }
-                        }).catch(e => console.error(e));
-                    }
-                    return;
-                }
-            }
-            bg.style.background = `url(${customBg}) center/cover no-repeat`;
-        } else {
-            const dt = _bcosGetDesktopTheme();
-            bg.style.background = dt.wallpaper;
-        }
-    };
     function _bcosLaunchDesktop() {
         if (_bcos.clockInterval) clearInterval(_bcos.clockInterval);
         _bcos.mode = 'desktop';
@@ -11275,7 +9478,7 @@
         const meX = 60 + Math.random() * 80;
         const meY = 40 + Math.random() * 60;
         ov.innerHTML = `<div id="bcos-desktop">
-            <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${localStorage.getItem('bcosCustomBg') ? `url(${localStorage.getItem('bcosCustomBg')}) center/cover no-repeat` : dt.wallpaper};">
+            <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">${dt.icons.files}</div><div class="bcos-desktop-icon-label">Files</div></div>
@@ -11326,7 +9529,6 @@
         if (bg) bg.addEventListener('click', () => { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show'); });
         _bcosBindEsc();
         _bcosShowOOBE(ov);
-        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
         setTimeout(() => _bcosOpenApp('terminal'), 300);
     }
 
@@ -11430,7 +9632,6 @@
             console.error('bcos app render error:', err);
         }
         _bcosUpdateTaskbar();
-        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
     }
 
     function _bcosFocusWin(app) {
@@ -11537,104 +9738,26 @@
         content.style.padding = '0';
         content.style.overflow = 'auto';
         content.style.height = '100%';
-        content.style.background = '#161b22';
-        content.style.color = '#e6edf3';
-        
-        let customBg = localStorage.getItem('bcosCustomBg') || '';
-        let html = '<div style="padding:1.5rem;max-width:800px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
-        html += '<h2 style="color:var(--accent);margin-top:0;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;">⚙️ BCOS System Settings (系统设置)</h2>';
-        
-        // Themes
-        html += '<h3 style="margin-bottom:.8rem;color:#ddd;font-size:1rem;">🎨 桌面氛围主题与强调色</h3>';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:2rem;">';
-        for (const [id, t] of Object.entries(_bcosThemeDesktop)) {
-            const current = document.documentElement.getAttribute('data-theme') || 'bunny';
-            const border = current === id ? `3px solid ${t.accent}` : '3px solid transparent';
-            html += `<div onclick="setTheme('${id}'); if(window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); if(window._bcosRenderSettingsApp) window._bcosRenderSettingsApp(this.closest('#bcos-settings-host').parentNode);" style="width:48px;height:48px;border-radius:12px;background:${t.wallpaper};cursor:pointer;border:${border};box-shadow:0 4px 10px rgba(0,0,0,.4);" title="${t.label}"></div>`;
+        const host = document.createElement('div');
+        host.id = 'bcos-settings-host';
+        host.style.padding = '.8rem';
+        host.style.color = 'var(--text)';
+        const el = document.getElementById('view-settings');
+        if (el) {
+            if (!el._origParent) {
+                el._origParent = el.parentNode;
+                el._origNextSibling = el.nextSibling;
+            }
+            el.style.display = 'block';
+            el.classList.add('active');
+            host.appendChild(el);
         }
-        html += '</div>';
-
-        // Wallpapers
-        html += '<h3 style="margin-bottom:.8rem;color:#ddd;font-size:1rem;">🖼️ 桌面壁纸 (沿用车机锁屏图库)</h3>';
-        html += '<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:12px;margin-bottom:1rem;max-height:350px;overflow-y:auto;padding-right:8px;">';
-        if (window.BUILTIN_WALLPAPERS) {
-            window.BUILTIN_WALLPAPERS.forEach(w => {
-                let thumbSrc = (window.wpBlobCache && window.wpBlobCache[w.file]) || (window.WP_PLACEHOLDER && window.WP_PLACEHOLDER[w.file]) || w.file;
-                const activeStyle = (customBg === w.file) ? `border:2px solid var(--accent);` : `border:2px solid rgba(255,255,255,0.1);`;
-                html += `<div onclick="
-                    localStorage.setItem('bcosCustomBg', '${w.file}');
-                    if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
-                    if (window._bcosRenderSettingsApp) window._bcosRenderSettingsApp(this.closest('#bcos-settings-host').parentNode);
-                " style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;${activeStyle}aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name}">
-                <div style="background:rgba(0,0,0,0.6);color:#fff;font-size:10px;padding:4px 6px;position:absolute;bottom:0;width:100%;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.name}</div>
-                </div>`;
-            });
-        }
-        html += `<div onclick="
-            localStorage.removeItem('bcosCustomBg');
-            if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
-            if (window._bcosRenderSettingsApp) window._bcosRenderSettingsApp(this.closest('#bcos-settings-host').parentNode);
-        " style="cursor:pointer;border-radius:8px;border:2px dashed rgba(255,255,255,0.3);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#888;font-size:12px;transition:0.2s;"><span style="font-size:24px;margin-bottom:4px;">🔄</span>恢复默认跟随主题</div>`;
-        html += '</div>';
-
-        html += '<div style="display:flex;gap:8px;margin-bottom:2rem;">';
-        html += `<input type="text" id="bcos-custom-bg-input" value="${!window.BUILTIN_WALLPAPERS?.find(w=>w.file===customBg) ? customBg : ''}" placeholder="或在此输入自定义壁纸 URL (HTTPS网络图片)" style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 12px;border-radius:6px;font-size:13px;outline:none;">`;
-        html += `<button onclick="
-            const val = document.getElementById('bcos-custom-bg-input').value.trim();
-            if (val) localStorage.setItem('bcosCustomBg', val);
-            else localStorage.removeItem('bcosCustomBg');
-            if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
-            if (window._bcosRenderSettingsApp) window._bcosRenderSettingsApp(this.closest('#bcos-settings-host').parentNode);
-        " style="background:var(--accent);color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">应用网络图片</button>`;
-        html += '</div>';
-        
-        // Classic Settings Ported
-        html += '<h3 style="margin-bottom:.8rem;color:#ddd;font-size:1rem;">🛠️ 全局首选项 (大富翁生态)</h3>';
-        html += '<div style="background:rgba(255,255,255,0.03);padding:1.2rem;border-radius:12px;display:flex;flex-direction:column;gap:16px;font-size:14px;border:1px solid rgba(255,255,255,0.05);">';
-        
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-        html += '<span>🔤 字体缩放比例 (影响所有应用)</span>';
-        html += `<div style="display:flex;align-items:center;gap:10px;"><input type="range" min="80" max="200" step="5" value="${localStorage.getItem('fontScale')||100}" oninput="if(window.setFontScale) setFontScale(this.value); this.nextElementSibling.textContent=this.value+'%';" style="width:150px;accent-color:var(--accent);"><span style="color:var(--accent);font-weight:bold;width:40px;text-align:right;">${localStorage.getItem('fontScale')||100}%</span></div>`;
-        html += '</div>';
-        
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-        html += '<span>📱 移动端 Tab 栏模式</span>';
-        html += `<select onchange="if(window.setTabBarMode) setTabBarMode(this.value)" style="background:rgba(0,0,0,0.5);color:#fff;border:1px solid #444;padding:6px 10px;border-radius:6px;"><option value="always">始终显示</option><option value="auto-collapse">自动折叠</option><option value="hidden">隐藏</option></select>`;
-        html += '</div>';
-
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-        html += '<span>🖥️ PC 侧边栏模式</span>';
-        html += `<select onchange="if(window.setSidebarMode) setSidebarMode(this.value)" style="background:rgba(0,0,0,0.5);color:#fff;border:1px solid #444;padding:6px 10px;border-radius:6px;"><option value="auto">自动折叠(悬停展开)</option><option value="auto-hide">自动隐藏(点击恢复)</option><option value="locked-open">始终展开</option><option value="locked-collapsed">始终折叠</option></select>`;
-        html += '</div>';
-
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-        html += '<span>🐰 侧边栏头像风格</span>';
-        html += `<div><button onclick="if(window.setSidebarAvatar) setSidebarAvatar('emoji')" style="background:#333;color:#fff;border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:6px;">🐰 Emoji</button><button onclick="if(window.setSidebarAvatar) setSidebarAvatar('photo')" style="background:#333;color:#fff;border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;">📷 照片</button></div>`;
-        html += '</div>';
-
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-        html += '<span>👾 像素字体模式</span>';
-        html += `<button onclick="if(window.togglePixelFont) togglePixelFont(); this.style.opacity=0.5;" style="background:#333;color:#fff;border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;">切换</button>`;
-        html += '</div>';
-
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-        html += '<span>✨ 鼠标光效跟随</span>';
-        html += `<button onclick="if(window.toggleMouseBunny) toggleMouseBunny(); this.style.opacity=0.5;" style="background:#333;color:#fff;border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;">切换</button>`;
-        html += '</div>';
-
-        html += '</div></div>';
-        
-        content.innerHTML = html;
-        
-        // Restore select values
-        setTimeout(() => {
-            const tm = localStorage.getItem('tabBarMode') || 'always';
-            const sm = localStorage.getItem('sidebarMode') || 'auto';
-            const sels = content.querySelectorAll('select');
-            if (sels[0]) sels[0].value = tm;
-            if (sels[1]) sels[1].value = sm;
-        }, 50);
+        content.appendChild(host);
+        if (typeof renderGodPanel === 'function' && godModeActive) renderGodPanel();
+        if (typeof renderSaveSlots === 'function') renderSaveSlots();
+        if (typeof updateNotifyBtn === 'function') updateNotifyBtn();
     }
+
     function _bcosRenderLogsApp(content) {
         content.style.padding = '0';
         content.style.overflow = 'auto';
@@ -12245,7 +10368,7 @@
             return '<div class="item"><label>设置与偏好项</label><span class="node-val">' + _bcosEscape(p) + '</span></div>';
         }).join('\n        ');
 
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9373 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9373 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.2.9370 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.2.9370 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
     function _bcosExtractDiffRules(defaultHtml, currentHtml) {
@@ -14023,9 +12146,9 @@ const START_DATE = '2024/03/12 00:00:00';
         }
 
         const savedTheme = targetTheme || localStorage.getItem('car_theme') || safeGetItem('bcos_car_theme', 'theme-xpeng');
-        const tIdx = THEMES.findIndex(t => t.id === savedTheme);
+        const tIdx = CAR_THEMES.findIndex(t => t.id === savedTheme);
         currentThemeIdx = tIdx !== -1 ? tIdx : 0;
-        el.className = THEMES[currentThemeIdx].id;
+        el.className = CAR_THEMES[currentThemeIdx].id;
 
         el.innerHTML = `<!-- Wallpaper Background Layer -->
         <div class="car-wallpaper-layer" id="car-wallpaper-layer"></div>
@@ -14175,7 +12298,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9373</div>
+                                <div class="car-diag-val">💻 bcos v7.8.2.9370</div>
                             </div>
                         </div>
                     </div>
@@ -14367,10 +12490,6 @@ const START_DATE = '2024/03/12 00:00:00';
                         <button class="car-icon-btn wp-mode-btn" id="wp-mode-single" onclick="setWallpaperMode('single')" style="flex:1;justify-content:center;">
                             🖼️ 固定单张壁纸
                         </button>
-    window.loadWallpaperBlob = loadWallpaperBlob;
-    window.wpBlobCache = wpBlobCache;
-    window.WP_PLACEHOLDER = WP_PLACEHOLDER;
-
                         <button class="car-icon-btn wp-mode-btn" id="wp-mode-theme" onclick="setWallpaperMode('theme')" style="flex:1;justify-content:center;">
                             🎨 纯净座舱色彩 (无壁纸)
                         </button>
@@ -14410,8 +12529,6 @@ const START_DATE = '2024/03/12 00:00:00';
                         <label class="car-input-label">轮播切换间隔</label>
                         <select id="select-wp-interval" class="car-input-control" onchange="changeWallpaperInterval(this.value)">
                             <option value="1">每 1 分钟切换</option>
-    window.BUILTIN_WALLPAPERS = BUILTIN_WALLPAPERS;
-
                             <option value="3">每 3 分钟切换</option>
                             <option value="5" selected>每 5 分钟切换 (推荐)</option>
                             <option value="15">每 15 分钟切换</option>
@@ -14532,9 +12649,6 @@ const START_DATE = '2024/03/12 00:00:00';
     window.nextWallpaper = nextWallpaper;
     window.selectWallpaperByIdx = selectWallpaperByIdx;
     window.fetchWallpaperManifest = fetchWallpaperManifest;
-
-    window.showBcosCarLockscreen = showBcosCarLockscreen;
-    window.closeBcosCarLockscreen = closeBcosCarLockscreen;
 
 })();
 
@@ -18411,19 +16525,7 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.3.9373', title:'系统设置重磅升级 & 锁屏无缝互通', items:[
-            '🎨 系统设置壁纸库互通：BCOS 系统设置现已全面接入车机锁屏的高清壁纸库！直接在 BCOS 中浏览、预览并一键应用内置的星空/插画/极光等 14 款极品壁纸（完美支持 .b64 离线缓存高速加载）！',
-            '🚀 默认直开全屏桌面：听取反馈，去除了繁琐的黑底代码 Boot 动画，现在打开网页或点击重新开机，将以毫秒级速度直接进入 BCOS 全景桌面环境！',
-            '🛠️ 全局首选项回归：系统设置中补全了之前精简掉的“Tab 栏模式”、“侧边栏模式”与“头像风格”设置，全面满足自定义需求',
-            '🐞 修复了在 BCOS 桌面点击【车机锁屏】图标时偶尔报 CAR_THEMES 变量未定义的错误',
-        ]},
-        { ver:'v7.8.3.9373', title:'系统设置重构与纯净开机体验升级', items:[
-            '🎨 重构系统设置布局：彻底废弃老旧的设置页面粗暴移植，为 bcos 量身定制了全新的系统设置窗口，支持自定义壁纸 URL，可随时切换 10 款内置主题或应用专属壁纸！',
-            '🚀 纯净开机体验：彻底移除老旧的 Classic UI 入口及相关的 "关于作者" 入口，解决了重复点击导致系统多次挂载产生重复弹窗的严重漏洞',
-            '✨ 完美全屏启动：修复了开机强制触发全屏导致的浏览器安全告警，现在将在关机后通过友好的系统已停止界面，以用户点击“重新开机”按钮的方式平滑获取全屏权限',
-            '📏 桌面图标完美对齐：修复了桌面图标文字过长换行时导致的列不对齐与排版错乱问题',
-        ]},
-        { ver:'v7.8.3.9373', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
+        { ver:'v7.8.2.9370', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
             '🖥️ 网页与PWA直接启动全屏 bcos 操作系统：无论是普通网页直接访问、本地 file:// 访问还是 PWA 桌面应用，均默认直开现代化 bcos 桌面操作系统并自动进入全屏！全新 macOS/Linux 红黄绿三色窗口控制、窗口最小化与任务栏恢复、右下角系统托盘（实时电池电量 ⚡ 88%、⛶ 全屏切换、🚗 车机锁屏一键直达），支持 11 款窗口化多任务独立运行！',
             '🛠️ 彻底修复空指针中断与 TDZ 连锁报错：重构座舱锁屏后台事件绑定与 DOM 检测，彻底根除 `#car-root` 空指针导致整段脚本执行中断的致命异常，彻底解决 `_fontScaleRafId`、`textSelectDisabled`、`CHANGELOG`、`trailCanvas`、`MILESTONES`、`SAVE_SLOTS` 等变量因 Temporal Dead Zone 未初始化报错的问题',
             '🌐 本地与跨域访问安全加固：智能检测当前运行环境，修复本地 `file:///` 协议加载 manifest.json 及 ServiceWorker 注册引发的 CORS origin null 拦截报错，保障本地双击离线直接可用与线上 HTTPS 完美运作',
@@ -18913,6 +17015,4 @@ const START_DATE = '2024/03/12 00:00:00';
         tick();
         setInterval(tick, 1000);
     }
-    </script>
-</body>
-</html>
+    
