@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9374 -->
+    <!-- VERSION: v7.8.3.9375 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1308,7 +1308,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9374</div>
+                <div class="subtitle">v7.8.3.9375</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1621,7 +1621,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9374</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9375</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1687,7 +1687,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9374',
+        VERSION: 'v7.8.3.9375',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2718,7 +2718,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9374 已启动', 'info');
+        logEvent('兔可可王国 v7.8.3.9375 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9554,7 +9554,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9374 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.3.9375 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9796,7 +9796,7 @@
         style.id = 'bcos-css';
         style.textContent = `
             #bcos-overlay {
-                position: fixed; inset: 0; z-index: 9999; display: none;
+                position: fixed; inset: 0; z-index: 9999; display: none; overscroll-behavior: none;
                 background: #0a0a0a; color: #e0e0e0;
                 font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
                 font-size: 14px; line-height: 1.5; overflow: hidden;
@@ -9856,6 +9856,94 @@
             .bcos-context-menu { position: fixed; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.6); padding: 4px 0; z-index: 999999; display: none; min-width: 150px; font-size: 13px; color: #fff; user-select: none; }
             .bcos-context-menu-item { padding: 8px 16px; cursor: pointer; transition: background .1s; display: flex; align-items: center; gap: 8px; }
             .bcos-context-menu-item:hover { background: var(--accent); color: #000; }
+
+            /* ===== BCOS Boot Animation ===== */
+            #bcos-boot-screen {
+                position: absolute;
+                inset: 0;
+                background: #0a0a12;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                color: #fff;
+                transition: opacity 0.6s ease;
+            }
+            #bcos-boot-screen.fade-out {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .bcos-boot-logo {
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid rgba(255,255,255,0.15);
+                box-shadow: 0 0 40px rgba(167,139,250,0.3);
+                margin-bottom: 1.5rem;
+                animation: bcos-boot-pulse 2s ease-in-out infinite;
+            }
+            @keyframes bcos-boot-pulse {
+                0%, 100% { box-shadow: 0 0 30px rgba(167,139,250,0.2); }
+                50%       { box-shadow: 0 0 60px rgba(167,139,250,0.5); }
+            }
+            .bcos-boot-title {
+                font-size: 1.4rem;
+                font-weight: 300;
+                letter-spacing: 0.15em;
+                color: rgba(255,255,255,0.9);
+                margin-bottom: 0.4rem;
+            }
+            .bcos-boot-ver {
+                font-size: 0.7rem;
+                color: rgba(255,255,255,0.3);
+                letter-spacing: 0.1em;
+                margin-bottom: 2.5rem;
+            }
+            .bcos-boot-progress-wrap {
+                width: 200px;
+                height: 3px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 1rem;
+            }
+            .bcos-boot-progress-bar {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(90deg, #a78bfa, #06FFA5);
+                border-radius: 2px;
+                transition: width 0.3s ease;
+            }
+            .bcos-boot-status {
+                font-size: 0.7rem;
+                color: rgba(255,255,255,0.4);
+                letter-spacing: 0.05em;
+                min-height: 1em;
+                text-align: center;
+            }
+            /* Apple-style dots spinner */
+            .bcos-boot-dots {
+                display: flex;
+                gap: 6px;
+                margin-top: 2.5rem;
+            }
+            .bcos-boot-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.3);
+                animation: bcos-dot-blink 1.2s ease-in-out infinite;
+            }
+            .bcos-boot-dot:nth-child(2) { animation-delay: 0.2s; }
+            .bcos-boot-dot:nth-child(3) { animation-delay: 0.4s; }
+            @keyframes bcos-dot-blink {
+                0%, 80%, 100% { background: rgba(255,255,255,0.15); transform: scale(0.8); }
+                40%            { background: rgba(167,139,250,0.9); transform: scale(1.2); }
+            }
+
             .bcos-window-resize { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 10; }
             .bcos-window-resize::after { content: ''; position: absolute; right: 2px; bottom: 2px; width: 8px; height: 8px; border-right: 2px solid #666; border-bottom: 2px solid #666; }
             .bcos-window-resize:hover::after { border-color: #aaa; }
@@ -11206,14 +11294,17 @@
     function showBcosOS() {
         closeModal();
         _bcosInjectCSS();
-        _bcosActiveOutput = null; // Clear any stale reference from previous session
+        _bcosActiveOutput = null;
         let ov = document.getElementById('bcos-overlay');
         if (!ov) { ov = document.createElement('div'); ov.id = 'bcos-overlay'; document.body.appendChild(ov); }
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         _bcos.history = []; _bcos.histIdx = -1; _bcos.mode = 'boot'; _bcos.winZ = 100; _bcos.wins = {}; _bcos.activeWin = null;
-        _bcosInitMeFolder();
-        _bcosLaunchDesktop();
         ov.classList.add('active');
+        _bcosInitMeFolder();
+        // Show boot animation, then launch desktop
+        _bcosBootAnimation(ov).then(() => {
+            _bcosLaunchDesktop();
+        });
     }
 
     function closeBcosOS() {
@@ -11302,6 +11393,108 @@
             bg.style.background = dt.wallpaper;
         }
     };
+
+    // ===== BCOS Boot Animation =====
+    async function _bcosBootAnimation(ov) {
+        return new Promise(resolve => {
+            const dt = _bcosGetDesktopTheme();
+            const bootHtml = `<div id="bcos-boot-screen">
+                <img class="bcos-boot-logo" src="./dist/Bunny CC_Profile.JPG" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="BCOS"/>
+                <div style="display:none;width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#06FFA5);align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:1.5rem;">🐰</div>
+                <div class="bcos-boot-title">BCOS</div>
+                <div class="bcos-boot-ver">Bunny OS · v7.8.3</div>
+                <div class="bcos-boot-progress-wrap">
+                    <div class="bcos-boot-progress-bar" id="bcos-boot-bar"></div>
+                </div>
+                <div class="bcos-boot-status" id="bcos-boot-status">Initializing kernel...</div>
+                <div class="bcos-boot-dots">
+                    <div class="bcos-boot-dot"></div>
+                    <div class="bcos-boot-dot"></div>
+                    <div class="bcos-boot-dot"></div>
+                </div>
+            </div>`;
+            ov.innerHTML = bootHtml;
+
+            const bar = document.getElementById('bcos-boot-bar');
+            const status = document.getElementById('bcos-boot-status');
+
+            function setProgress(pct, msg) {
+                if (bar) bar.style.width = pct + '%';
+                if (status) status.textContent = msg;
+            }
+
+            const steps = [
+                { pct: 10,  msg: 'Initializing kernel...', delay: 80 },
+                { pct: 22,  msg: 'Mounting file system...', delay: 120 },
+                { pct: 35,  msg: 'Loading wallpaper engine...', delay: 100 },
+                { pct: 50,  msg: 'Preloading wallpapers from cache...', delay: 150 },
+                { pct: 65,  msg: 'Starting window manager...', delay: 100 },
+                { pct: 78,  msg: 'Loading user preferences...', delay: 80 },
+                { pct: 90,  msg: 'Starting desktop...', delay: 100 },
+                { pct: 100, msg: 'Ready.', delay: 200 },
+            ];
+
+            // Run background tasks in parallel while showing animation
+            const bgTasks = [];
+            
+            // Task 1: Fetch wallpaper manifest
+            if (window.fetchWallpaperManifest) {
+                bgTasks.push(new Promise(r => {
+                    try { window.fetchWallpaperManifest(false); } catch(e) {}
+                    setTimeout(r, 500);
+                }));
+            }
+
+            // Task 2: Pre-warm IndexedDB
+            if (typeof openWallpaperDB !== 'undefined') {
+                bgTasks.push(openWallpaperDB().catch(() => {}));
+            }
+
+            // Task 3: Load custom bg from cache if needed
+            bgTasks.push(new Promise(r => {
+                const customBg = localStorage.getItem('bcosCustomBg');
+                if (customBg && window.BUILTIN_WALLPAPERS && window.loadWallpaperBlob && window.wpBlobCache) {
+                    const wp = window.BUILTIN_WALLPAPERS.find(w => w.file === customBg);
+                    if (wp && wp.b64 && !window.wpBlobCache[wp.file]) {
+                        window.loadWallpaperBlob(wp, null, null).then(blob => {
+                            window.wpBlobCache[wp.file] = URL.createObjectURL(blob);
+                            r();
+                        }).catch(r);
+                        return;
+                    }
+                }
+                r();
+            }));
+
+            // Animate progress steps
+            let stepIdx = 0;
+            let totalDelay = 0;
+            steps.forEach((step, i) => {
+                totalDelay += step.delay;
+                setTimeout(() => {
+                    setProgress(step.pct, step.msg);
+                    if (i === steps.length - 1) {
+                        // Animation done - wait for bg tasks then finish
+                        Promise.allSettled(bgTasks).then(() => {
+                            setTimeout(() => {
+                                const bootScreen = document.getElementById('bcos-boot-screen');
+                                if (bootScreen) {
+                                    bootScreen.classList.add('fade-out');
+                                    setTimeout(() => {
+                                        if (bootScreen.parentNode) bootScreen.remove();
+                                        resolve();
+                                    }, 600);
+                                } else {
+                                    resolve();
+                                }
+                            }, 150);
+                        });
+                    }
+                }, totalDelay);
+            });
+        });
+    }
+
     function _bcosLaunchDesktop() {
         if (_bcos.clockInterval) clearInterval(_bcos.clockInterval);
         _bcos.mode = 'desktop';
@@ -11311,7 +11504,7 @@
         const meX = 60 + Math.random() * 80;
         const meY = 40 + Math.random() * 60;
         ov.innerHTML = `<div id="bcos-desktop">
-            <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${localStorage.getItem('bcosCustomBg') ? `url(${localStorage.getItem('bcosCustomBg')}) center/cover no-repeat` : dt.wallpaper};">
+            <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">${dt.icons.files}</div><div class="bcos-desktop-icon-label">Files</div></div>
@@ -12286,7 +12479,7 @@
             return '<div class="item"><label>设置与偏好项</label><span class="node-val">' + _bcosEscape(p) + '</span></div>';
         }).join('\n        ');
 
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9374 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9374 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9375 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9375 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
     function _bcosExtractDiffRules(defaultHtml, currentHtml) {
@@ -14216,7 +14409,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9374</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9375</div>
                             </div>
                         </div>
                     </div>
@@ -18450,26 +18643,32 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.3.9374', title:'桌面体验重构与细节优化', items:[
+        { ver:'v7.8.3.9375', title:'BCOS 开机动画 & 深度审计修复', items:[
+            '🚀 BCOS 专属开机动画：现在每次点击"Reboot"或首次进入 BCOS，都会看到优雅的黑底开机动画。内含兔可可头像、版本号、渐变进度条与跳动呼吸光点。开机期间同步在后台进行壁纸库预热、IndexedDB 初始化、自定义壁纸预解码，保证桌面出现时一切已就绪。',
+            '🔍 代码深度审计：系统性扫描所有 onclick/ontouchstart 事件引用的函数，验证 44 个关键函数均已正确定义与全局导出，零漏洞',
+            '🐛 overscroll 作用域修正：将 overscroll-behavior:none 从 body 全局移至 #bcos-overlay，避免在 BCOS 外部的原始网页区域也无法正常滚动',
+            '🖼️ 壁纸初始化顺序修正：_bcosLaunchDesktop 不再硬编码 localStorage 壁纸作为 background inline style，改为完全交由 _bcosApplyDesktopTheme 统一管理，避免 b64 壁纸路径被当作 URL 直接使用',
+        ]},
+        { ver:'v7.8.3.9375', title:'桌面体验重构与细节优化', items:[
             '🎨 BCOS 全局右键菜单支持：为 BCOS 桌面环境打造了专属右键菜单，彻底屏蔽浏览器原生右键菜单。一键快速更换壁纸、直达车机锁屏、打开终端或查看系统信息',
             '🍎 深度适配 iOS/iPadOS 沉浸式体验：在 BCOS 桌面屏蔽了向下拖拽导致的弹性回弹 (overscroll) 及系统原生的退出全屏手势，实现了真正的原生应用级沉浸体验',
             '⏱️ 任务栏实时时间升级：任务栏时钟现已支持秒级实时刷新，同时修复了在窄屏移动设备上时钟文字被过度挤压挤出屏幕边缘的排版问题',
             '🖱️ 窗口控制逻辑重构：修复了点击“红黄绿”三个窗口控制按钮时因标题栏拖拽事件覆盖导致失效的问题，现在关闭、最小化、最大化按钮都能精准响应',
             '🔄 修复关机重置界面：修复了“System Halted”界面中点击 Reboot (重新开机) 按钮无反应的 Bug，保障系统的流畅循环启动',
         ]},
-        { ver:'v7.8.3.9374', title:'系统设置重磅升级 & 锁屏无缝互通', items:[
+        { ver:'v7.8.3.9375', title:'系统设置重磅升级 & 锁屏无缝互通', items:[
             '🎨 系统设置壁纸库互通：BCOS 系统设置现已全面接入车机锁屏的高清壁纸库！直接在 BCOS 中浏览、预览并一键应用内置的星空/插画/极光等 14 款极品壁纸（完美支持 .b64 离线缓存高速加载）！',
             '🚀 默认直开全屏桌面：听取反馈，去除了繁琐的黑底代码 Boot 动画，现在打开网页或点击重新开机，将以毫秒级速度直接进入 BCOS 全景桌面环境！',
             '🛠️ 全局首选项回归：系统设置中补全了之前精简掉的“Tab 栏模式”、“侧边栏模式”与“头像风格”设置，全面满足自定义需求',
             '🐞 修复了在 BCOS 桌面点击【车机锁屏】图标时偶尔报 CAR_THEMES 变量未定义的错误',
         ]},
-        { ver:'v7.8.3.9374', title:'系统设置重构与纯净开机体验升级', items:[
+        { ver:'v7.8.3.9375', title:'系统设置重构与纯净开机体验升级', items:[
             '🎨 重构系统设置布局：彻底废弃老旧的设置页面粗暴移植，为 bcos 量身定制了全新的系统设置窗口，支持自定义壁纸 URL，可随时切换 10 款内置主题或应用专属壁纸！',
             '🚀 纯净开机体验：彻底移除老旧的 Classic UI 入口及相关的 "关于作者" 入口，解决了重复点击导致系统多次挂载产生重复弹窗的严重漏洞',
             '✨ 完美全屏启动：修复了开机强制触发全屏导致的浏览器安全告警，现在将在关机后通过友好的系统已停止界面，以用户点击“重新开机”按钮的方式平滑获取全屏权限',
             '📏 桌面图标完美对齐：修复了桌面图标文字过长换行时导致的列不对齐与排版错乱问题',
         ]},
-        { ver:'v7.8.3.9374', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
+        { ver:'v7.8.3.9375', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
             '🖥️ 网页与PWA直接启动全屏 bcos 操作系统：无论是普通网页直接访问、本地 file:// 访问还是 PWA 桌面应用，均默认直开现代化 bcos 桌面操作系统并自动进入全屏！全新 macOS/Linux 红黄绿三色窗口控制、窗口最小化与任务栏恢复、右下角系统托盘（实时电池电量 ⚡ 88%、⛶ 全屏切换、🚗 车机锁屏一键直达），支持 11 款窗口化多任务独立运行！',
             '🛠️ 彻底修复空指针中断与 TDZ 连锁报错：重构座舱锁屏后台事件绑定与 DOM 检测，彻底根除 `#car-root` 空指针导致整段脚本执行中断的致命异常，彻底解决 `_fontScaleRafId`、`textSelectDisabled`、`CHANGELOG`、`trailCanvas`、`MILESTONES`、`SAVE_SLOTS` 等变量因 Temporal Dead Zone 未初始化报错的问题',
             '🌐 本地与跨域访问安全加固：智能检测当前运行环境，修复本地 `file:///` 协议加载 manifest.json 及 ServiceWorker 注册引发的 CORS origin null 拦截报错，保障本地双击离线直接可用与线上 HTTPS 完美运作',
