@@ -10144,6 +10144,42 @@
             .bcos-anni-ms-item.next { border-left: 3px solid #ff6b9d; background: rgba(255,107,157,.08); font-weight: 700; }
 
             /* ===== BCOS Car Cockpit Lockscreen CSS (Fully Synchronized with car.html) ===== */
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            overscroll-behavior: none !important;
+            -webkit-user-select: none;
+            user-select: none;
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            position: fixed !important;
+            inset: 0 !important;
+            overflow: hidden !important;
+            background: #000;
+            color: #e6f7ff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            touch-action: none !important;
+            -webkit-overflow-scrolling: auto !important;
+        }
+
+        html.bcos-carlock-active,
+        body.bcos-carlock-active {
+            overflow: hidden !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            position: fixed !important;
+            inset: 0 !important;
+            overscroll-behavior: none !important;
+            -webkit-overflow-scrolling: auto !important;
+            touch-action: none !important;
+        }
+
         /* Vehicle Touchscreen Specific Optimizations */
         #bcos-car-lockscreen, #car-root {
             -webkit-touch-callout: none;
@@ -10227,19 +10263,6 @@
             --car-text-dim: #6b7280;
         }
 
-        html.bcos-carlock-active,
-        body.bcos-carlock-active {
-            overflow: hidden !important;
-            width: 100% !important;
-            height: 100% !important;
-            max-height: 100% !important;
-            position: fixed !important;
-            inset: 0 !important;
-            overscroll-behavior: none !important;
-            -webkit-overflow-scrolling: auto !important;
-            touch-action: none !important;
-        }
-
         #bcos-car-lockscreen, #car-root {
             z-index: 100000;
             position: fixed;
@@ -10259,9 +10282,6 @@
             box-sizing: border-box;
             touch-action: none !important;
             overscroll-behavior: none !important;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
             background: var(--car-bg);
             /* GPU-composite to its own layer — prevents iOS repaint jitter */
             transform: translateZ(0);
@@ -10340,15 +10360,6 @@
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             overflow: hidden;
-        }
-
-        /* The lockscreen is an interactive UI: moving its entire content layer
-           for burn-in protection makes WebKit repaint the full viewport on taps. */
-        #bcos-car-lockscreen .car-content-layer {
-            animation: none;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            will-change: auto;
         }
 
         /* Header / Top Status Bar */
@@ -11784,9 +11795,7 @@
             transform: translateX(-50%) translateY(0) !important;
         }
 
-    
-
-        `;
+`;
         document.head.appendChild(style);
     }
 
@@ -16399,6 +16408,7 @@ const START_DATE = '2024/03/12 00:00:00';
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
+        _bcosInjectCSS();
 
         let el = document.getElementById('bcos-car-lockscreen');
         if (!el) {
@@ -16920,6 +16930,15 @@ const START_DATE = '2024/03/12 00:00:00';
         const blur = localStorage.getItem('car_wp_blur') || '1';
         updateWallpaperBlur(blur);
         updateLockscreenAvatar();
+
+        // First touch anywhere attempts to engage wake lock
+        const firstInteraction = () => {
+            acquireWakeLock();
+            window.removeEventListener('click', firstInteraction);
+            window.removeEventListener('touchstart', firstInteraction);
+        };
+        window.addEventListener('click', firstInteraction);
+        window.addEventListener('touchstart', firstInteraction);
     }
 
     function closeBcosCarLockscreen() {
