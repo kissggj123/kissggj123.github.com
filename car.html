@@ -1323,7 +1323,7 @@
             <footer class="car-bottom-bar" id="car-bottom-bar">
                 <div class="car-slider-track" id="car-track">
                     <div class="car-slider-fill" id="car-slider-fill"></div>
-                    <div class="car-slider-text">🔓 滑动解锁退出锁屏</div>
+                    <div class="car-slider-text">👉 滑动滑块解锁退出锁屏</div>
                     <div class="car-slider-thumb" id="car-thumb">🐰</div>
                 </div>
             </footer>
@@ -1340,7 +1340,7 @@
             <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">兔可可专属车机锁屏已暂停，请选择下一步操作：</p>
             
             <div class="car-modal-grid">
-                <a class="car-modal-btn" href="./index.html?bcos=desktop">
+                <a class="car-modal-btn" href="./index.html?bcos=desktop" onclick="if(window.closeBcosCarLockscreen){closeBcosCarLockscreen();return false;}">
                     <span class="icon">🖥️</span>
                     <span>bcos 桌面系统</span>
                 </a>
@@ -1742,6 +1742,8 @@
             if (rangeTypeEl) rangeTypeEl.textContent = `${carBatteryData.standard} 预估续航`;
             if (topBatEl) topBatEl.textContent = `🔋 ${carBatteryData.soc}% · ${carBatteryData.range} km (${carBatteryData.standard})`;
             if (modeEl) modeEl.textContent = carBatteryData.mode;
+            const netEl = document.getElementById('car-net-status');
+            if (netEl) netEl.textContent = navigator.onLine ? '📶 在线就绪' : '📴 离线模式';
             if (tempEl) tempEl.textContent = `🌤️ ${carBatteryData.temp}°C / 舒适`;
 
             if (fillEl) {
@@ -2544,6 +2546,18 @@
         // --- WakeLock & Anti-Sleep Heartbeat (Android Car Screen Protection) ---
         let wakeLockObj = null;
         let keepAliveTimer = null;
+        
+        function releaseWakeLock() {
+            if (wakeLockObj) {
+                try { wakeLockObj.release(); } catch(e) {}
+                wakeLockObj = null;
+            }
+            if (keepAliveTimer) {
+                clearInterval(keepAliveTimer);
+                keepAliveTimer = null;
+            }
+        }
+
         async function acquireWakeLock() {
             if ('wakeLock' in navigator) {
                 try {
@@ -2753,24 +2767,45 @@
                 thumb.style.transition = 'none';
             };
 
+            const fillEl = document.getElementById('car-slider-fill');
+            const textEl = track.querySelector('.car-slider-text');
+
             const onMove = (clientX) => {
                 if (!isDragging) return;
                 const deltaX = clientX - startX;
                 currentX = Math.max(0, Math.min(deltaX, maxSlide));
                 thumb.style.transform = `translateX(${currentX}px)`;
 
-                if (maxSlide > 0 && currentX / maxSlide > 0.70) {
-                    isDragging = false;
-                    thumb.style.transform = `translateX(${maxSlide}px)`;
-                    unlockScreen();
+                if (maxSlide > 0) {
+                    const progress = currentX / maxSlide;
+                    if (fillEl) fillEl.style.width = `${Math.min(100, Math.max(0, progress * 100))}%`;
+                    if (textEl) textEl.style.opacity = `${Math.max(0, 1 - progress * 1.6)}`;
+
+                    if (progress > 0.70) {
+                        isDragging = false;
+                        thumb.style.transform = `translateX(${maxSlide}px)`;
+                        if (fillEl) fillEl.style.width = '100%';
+                        if (textEl) textEl.style.opacity = '0';
+                        unlockScreen();
+                    }
                 }
             };
 
             const onEnd = () => {
                 if (!isDragging) return;
                 isDragging = false;
-                thumb.style.transition = 'transform .25s ease';
+                thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
                 thumb.style.transform = 'translateX(0px)';
+                if (fillEl) {
+                    fillEl.style.transition = 'width .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
+                    fillEl.style.width = '0%';
+                    setTimeout(() => { if (fillEl) fillEl.style.transition = 'none'; }, 300);
+                }
+                if (textEl) {
+                    textEl.style.transition = 'opacity .28s ease';
+                    textEl.style.opacity = '1';
+                    setTimeout(() => { if (textEl) textEl.style.transition = 'none'; }, 300);
+                }
             };
 
             thumb.addEventListener('touchstart', (e) => {
@@ -2845,9 +2880,14 @@
             document.getElementById('car-menu-modal').classList.remove('active');
             const thumb = document.getElementById('car-thumb');
             if (thumb) {
-                thumb.style.transition = 'transform .25s ease';
+                thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
                 thumb.style.transform = 'translateX(0px)';
             }
+            const fillEl = document.getElementById('car-slider-fill');
+            if (fillEl) { fillEl.style.transition = 'width .28s ease'; fillEl.style.width = '0%'; }
+            const track = document.getElementById('car-track');
+            const textEl = track ? track.querySelector('.car-slider-text') : null;
+            if (textEl) { textEl.style.transition = 'opacity .28s ease'; textEl.style.opacity = '1'; }
         }
         function openAddAnniversaryModal() {
             closeMenuModal();

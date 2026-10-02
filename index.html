@@ -14193,6 +14193,8 @@ const START_DATE = '2024/03/12 00:00:00';
             if (rangeTypeEl) rangeTypeEl.textContent = `${carBatteryData.standard} 预估续航`;
             if (topBatEl) topBatEl.textContent = `🔋 ${carBatteryData.soc}% · ${carBatteryData.range} km (${carBatteryData.standard})`;
             if (modeEl) modeEl.textContent = carBatteryData.mode;
+            const netEl = document.getElementById('car-net-status');
+            if (netEl) netEl.textContent = navigator.onLine ? '📶 在线就绪' : '📴 离线模式';
             if (tempEl) tempEl.textContent = `🌤️ ${carBatteryData.temp}°C / 舒适`;
 
             if (fillEl) {
@@ -14995,6 +14997,18 @@ const START_DATE = '2024/03/12 00:00:00';
         // --- WakeLock & Anti-Sleep Heartbeat (Android Car Screen Protection) ---
         let wakeLockObj = null;
         let keepAliveTimer = null;
+        
+        function releaseWakeLock() {
+            if (wakeLockObj) {
+                try { wakeLockObj.release(); } catch(e) {}
+                wakeLockObj = null;
+            }
+            if (keepAliveTimer) {
+                clearInterval(keepAliveTimer);
+                keepAliveTimer = null;
+            }
+        }
+
         async function acquireWakeLock() {
             if ('wakeLock' in navigator) {
                 try {
@@ -15204,24 +15218,45 @@ const START_DATE = '2024/03/12 00:00:00';
                 thumb.style.transition = 'none';
             };
 
+            const fillEl = document.getElementById('car-slider-fill');
+            const textEl = track.querySelector('.car-slider-text');
+
             const onMove = (clientX) => {
                 if (!isDragging) return;
                 const deltaX = clientX - startX;
                 currentX = Math.max(0, Math.min(deltaX, maxSlide));
                 thumb.style.transform = `translateX(${currentX}px)`;
 
-                if (maxSlide > 0 && currentX / maxSlide > 0.70) {
-                    isDragging = false;
-                    thumb.style.transform = `translateX(${maxSlide}px)`;
-                    unlockScreen();
+                if (maxSlide > 0) {
+                    const progress = currentX / maxSlide;
+                    if (fillEl) fillEl.style.width = `${Math.min(100, Math.max(0, progress * 100))}%`;
+                    if (textEl) textEl.style.opacity = `${Math.max(0, 1 - progress * 1.6)}`;
+
+                    if (progress > 0.70) {
+                        isDragging = false;
+                        thumb.style.transform = `translateX(${maxSlide}px)`;
+                        if (fillEl) fillEl.style.width = '100%';
+                        if (textEl) textEl.style.opacity = '0';
+                        unlockScreen();
+                    }
                 }
             };
 
             const onEnd = () => {
                 if (!isDragging) return;
                 isDragging = false;
-                thumb.style.transition = 'transform .25s ease';
+                thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
                 thumb.style.transform = 'translateX(0px)';
+                if (fillEl) {
+                    fillEl.style.transition = 'width .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
+                    fillEl.style.width = '0%';
+                    setTimeout(() => { if (fillEl) fillEl.style.transition = 'none'; }, 300);
+                }
+                if (textEl) {
+                    textEl.style.transition = 'opacity .28s ease';
+                    textEl.style.opacity = '1';
+                    setTimeout(() => { if (textEl) textEl.style.transition = 'none'; }, 300);
+                }
             };
 
             thumb.addEventListener('touchstart', (e) => {
@@ -15296,9 +15331,14 @@ const START_DATE = '2024/03/12 00:00:00';
             document.getElementById('car-menu-modal').classList.remove('active');
             const thumb = document.getElementById('car-thumb');
             if (thumb) {
-                thumb.style.transition = 'transform .25s ease';
+                thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
                 thumb.style.transform = 'translateX(0px)';
             }
+            const fillEl = document.getElementById('car-slider-fill');
+            if (fillEl) { fillEl.style.transition = 'width .28s ease'; fillEl.style.width = '0%'; }
+            const track = document.getElementById('car-track');
+            const textEl = track ? track.querySelector('.car-slider-text') : null;
+            if (textEl) { textEl.style.transition = 'opacity .28s ease'; textEl.style.opacity = '1'; }
         }
         function openAddAnniversaryModal() {
             closeMenuModal();
@@ -15821,7 +15861,7 @@ const START_DATE = '2024/03/12 00:00:00';
         if (el) el.remove();
         if (displayTimer) { clearInterval(displayTimer); displayTimer = null; }
         if (wallpaperTimer) { clearInterval(wallpaperTimer); wallpaperTimer = null; }
-        clearTimeout(autoFadeTimer);
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
         releaseWakeLock();
         showToast('已退出车机锁屏');
     }
@@ -15852,6 +15892,9 @@ const START_DATE = '2024/03/12 00:00:00';
     window.cycleTheme = cycleTheme;
     window.nextQuote = nextQuote;
     window.unlockScreen = unlockScreen;
+    window.toggleFullscreen = toggleFullscreen;
+    window.closeModalOnBg = closeModalOnBg;
+    window.releaseWakeLock = releaseWakeLock;
     window.triggerWallpaperFileInput = triggerWallpaperFileInput;
     window.handleWallpaperUpload = handleWallpaperUpload;
     window.promptAddWallpaperUrl = promptAddWallpaperUrl;
@@ -19746,6 +19789,12 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.3.9379', title:'深度全量审计 & 双端严格 100% 互通同步', items:[
+            '🛡️ 修复隐藏的退出锁屏隐患：补齐缺失的 releaseWakeLock() 函数定义，彻底避免退出锁屏时因引用未定义函数导致抛错或常亮守护定时器泄漏',
+            '🕹️ 解锁滑块拟物流光反馈：重构触屏滑块微交互，拖动滑块时轨道内部同步渲染出随动流光高亮进度（.car-slider-fill），提示文字自然平滑隐入（opacity 动态渐隐），松手或回弹均具有弹性阻尼动画',
+            '📡 车辆动力与网络诊断自适应：车辆状态栏网络指示灯（NETWORK LINK）实时接入 navigator.onLine，支持在线与离线自适应切换',
+            '🔒 严格双端（car.html & index.html）双向对齐：样式规范、事件监听、3 位毫秒实时计算、模态弹窗及响应式规则实现 100% 同步，确保独立访问或由 BCOS 内部拉起体验完全一致',
+        ]},
         { ver:'v7.8.3.9379', title:'提示气泡纵向异常拉伸根治 & 双端同步完善', items:[
             '🐛 根治提示框异常拉伸变长：彻底修复点击设置电量或切换状态时，车机锁屏提示弹窗（Toast）在部分浏览器与移动端中被错误计算为全屏高度（800px纵向拉伸变成巨型黑框）的严重问题',
             '🔧 修复机理：由于父容器具备 GPU 变换与弹性伸缩属性，WebKit 将未显式约束 top 的 fixed 子元素误判为自静态顶栏至 bottom:5rem 之间的全高延伸。现严格施加 top: auto !important、height: auto !important、max-height: 52px、width: max-content 约束，保证其在任何环境下均稳固维持为精致紧凑的胶囊浮窗',
