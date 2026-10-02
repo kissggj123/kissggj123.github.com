@@ -10489,7 +10489,7 @@
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
             gap: clamp(0.75rem, 1.8vw, 1.5rem);
-            align-items: center;
+            align-items: stretch;
             padding: clamp(0.3rem, 1vh, 0.8rem) 0;
             overflow-y: auto;
             overscroll-behavior: contain;
@@ -11677,6 +11677,51 @@
                 width: 36px;
                 height: 36px;
             }
+        }
+
+        /* Portrait cockpit screens: keep the dashboard readable in a vertical
+           flow while the center area, rather than the whole page, scrolls. */
+        @media (max-aspect-ratio: 4 / 5) {
+            #bcos-car-lockscreen, #car-root {
+                padding: max(.55rem, env(safe-area-inset-top, .55rem)) max(.7rem, env(safe-area-inset-right, .7rem)) max(.55rem, env(safe-area-inset-bottom, .55rem)) max(.7rem, env(safe-area-inset-left, .7rem));
+            }
+            .car-top-bar { min-height: 34px; padding-bottom: .35rem; gap: .4rem; }
+            .car-brand { font-size: .78rem; gap: .3rem; }
+            .car-gear-badge, #car-top-battery, #car-wakelock-badge, #car-wp-badge { display: none !important; }
+            .car-mini-trigger { padding: .22rem .45rem; font-size: .72rem; }
+            .car-main-grid { grid-template-columns: minmax(0, 1fr); align-items: start; gap: .6rem; padding: .45rem 0 .6rem; }
+            .car-hero-col { justify-content: flex-start; }
+            .car-clock-box { margin-bottom: .5rem; }
+            .car-digital-clock { font-size: clamp(2.25rem, 10vw, 4.1rem); }
+            .car-digital-date { font-size: .72rem; margin-top: .25rem; gap: .35rem; }
+            .car-hero-card { padding: .7rem .8rem; border-radius: 15px; }
+            .car-hero-content-split { gap: .6rem; }
+            .car-hero-title { font-size: .76rem; flex-wrap: wrap; }
+            .car-hero-days { font-size: clamp(2.35rem, 11vw, 3.7rem); }
+            .car-hero-unit { font-size: .9rem; }
+            .car-hero-time { font-size: .86rem; min-height: 1.25rem; line-height: 1.25rem; margin-bottom: .45rem; }
+            .car-hero-progress-box { padding: .5rem .6rem; }
+            .car-progress-header { font-size: .68rem; }
+            .car-gauge-ring-wrap { width: 76px; height: 76px; }
+            .car-gauge-pct { font-size: 1.05rem; }
+            .car-hero-gauge-col { gap: .35rem; padding: .15rem 0 .15rem .5rem; }
+            .car-vital-chip { min-width: 48px; padding: 2px 4px; }
+            .car-vital-chip .vital-val { font-size: .59rem; }
+            .car-side-col { height: auto; max-height: none; gap: .6rem; justify-content: flex-start; }
+            .car-widget-card { padding: .65rem .75rem; border-radius: 14px; }
+            .car-companion-action-pill, .car-eq-container { display: none; }
+            .car-diag-grid { gap: .35rem; }
+            .car-diag-item { padding: .35rem .45rem; }
+            .car-milestone-card { flex: none; }
+            .car-milestone-scroller { flex: none; min-height: 0; max-height: min(28dvh, 250px); }
+            .car-bottom-bar { flex-shrink: 0; padding-top: .35rem; }
+            .car-slider-track { height: 42px; }
+        }
+
+        @media (max-width: 480px) and (max-aspect-ratio: 4 / 5) {
+            .car-hero-gauge-col { display: none; }
+            .car-hero-badge-tag { display: none; }
+            .car-diag-grid { grid-template-columns: 1fr; }
         }
 
                 /* Toast Notification: Strict capsule pill, impossible to stretch vertically or horizontally */
