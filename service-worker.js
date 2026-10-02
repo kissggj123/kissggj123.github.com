@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.3.9379 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v7.8.3.9379';
+// Service Worker - Bunny CC v7.8.3.9380 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.3.9380';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 

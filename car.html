@@ -891,6 +891,19 @@
             max-height: 88vh;
             overflow-y: auto;
         }
+        
+        @media (max-width: 600px) {
+            .car-modal {
+                padding: 1.2rem 1.2rem !important;
+                border-radius: 16px !important;
+                max-height: 90vh !important;
+            }
+            .car-modal-grid {
+                grid-template-columns: 1fr !important;
+                gap: .6rem !important;
+            }
+        }
+
         .car-modal-overlay.active .car-modal {
             transform: translateY(0);
         }
@@ -1112,41 +1125,49 @@
             }
         }
 
-        /* Toast Notification (Strictly constrained capsule pill — never stretches vertically) */
+                /* Toast Notification: Strict capsule pill, impossible to stretch vertically or horizontally */
         .car-toast {
-            position: fixed;
+            position: fixed !important;
             top: auto !important;
             bottom: 5.2rem !important;
             left: 50% !important;
             right: auto !important;
-            transform: translateX(-50%) translateY(8px);
+            transform: translateX(-50%) translateY(8px) !important;
             width: max-content !important;
-            max-width: min(88vw, 440px) !important;
+            min-width: 0 !important;
+            max-width: min(86vw, 420px) !important;
             height: auto !important;
-            max-height: 52px !important;
-            box-sizing: border-box;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            background: rgba(10, 20, 40, 0.96);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1.5px solid var(--car-accent);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), 0 0 20px var(--car-glow);
-            color: var(--car-text);
-            padding: .55rem 1.4rem;
-            border-radius: 24px;
-            font-size: .85rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            z-index: 2000;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity .25s cubic-bezier(0.2, 0.9, 0.3, 1), transform .25s cubic-bezier(0.2, 0.9, 0.3, 1);
+            min-height: 0 !important;
+            max-height: 48px !important;
+            box-sizing: border-box !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: .55rem 1.4rem !important;
+            margin: 0 !important;
+            border-radius: 24px !important;
+            background: rgba(10, 20, 40, 0.96) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1.5px solid var(--car-accent) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px var(--car-glow) !important;
+            color: var(--car-text) !important;
+            font-size: .85rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.3px !important;
+            z-index: 999999 !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: opacity .25s cubic-bezier(0.2, 0.9, 0.3, 1), transform .25s cubic-bezier(0.2, 0.9, 0.3, 1), visibility .25s !important;
         }
         .car-toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateX(-50%) translateY(0) !important;
         }
 
     </style>
@@ -1301,7 +1322,7 @@
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9379</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9380</div>
                             </div>
                         </div>
                     </div>
