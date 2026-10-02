@@ -193,15 +193,12 @@
             pointer-events: none;
         }
 
-        /* Anti burn-in continuous subtle micro-drift */
-        @keyframes carAntiBurnIn {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(3px, -2px); }
-            50% { transform: translate(-2px, 3px); }
-            75% { transform: translate(-3px, -1px); }
-            100% { transform: translate(0, 0); }
-        }
-        .car-content-layer {
+        /* The lockscreen is an interactive UI: moving its entire content layer
+           for burn-in protection makes WebKit recomposite and repaint the full viewport on taps/gestures.
+           Keep content layer stationary to eliminate touch and PWA viewport jitter. */
+        .car-content-layer,
+        #bcos-car-lockscreen .car-content-layer,
+        #car-root .car-content-layer {
             position: relative;
             z-index: 2;
             width: 100%;
@@ -209,8 +206,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            animation: carAntiBurnIn 45s ease-in-out infinite;
-            will-change: transform;
+            animation: none !important;
+            transform: none !important;
+            -webkit-transform: none !important;
+            will-change: auto !important;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             overflow: hidden;
