@@ -663,6 +663,43 @@
             box-shadow: 0 0 18px var(--car-glow);
             flex-shrink: 0;
             animation: carRabbitPulse 4s ease-in-out infinite;
+            overflow: hidden;
+        }
+        .car-brand-avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .car-brand-avatar .car-avatar-img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            vertical-align: middle;
+            margin-right: 4px;
+            display: inline-block;
+        }
+        .car-companion-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        .car-thumb-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-select: none;
         }
         @keyframes carRabbitPulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 16px var(--car-glow); }
@@ -851,6 +888,7 @@
             box-shadow: 0 0 16px var(--car-glow);
             transition: transform 0.1s ease-out;
             touch-action: none;
+            overflow: hidden;
         }
         .car-slider-thumb:active {
             cursor: grabbing;
@@ -1182,7 +1220,7 @@
             <!-- Top Status Bar -->
             <header class="car-top-bar" id="car-top-bar">
                 <div class="car-brand">
-                    <span>🐰 BCOS COCKPIT</span>
+                    <span><span id="car-brand-avatar" class="car-brand-avatar">🐰</span> BCOS COCKPIT</span>
                     <span class="car-badge" id="car-theme-name">小鹏赛博</span>
                     <span class="car-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
                     <span class="car-badge clickable" id="car-top-battery" onclick="openBatteryModal()" title="点击手动修改电量和续航">
@@ -1266,7 +1304,7 @@
                 <div class="car-side-col">
                     <!-- Companion Quote Card -->
                     <div class="car-widget-card car-companion-box" onclick="nextQuote()">
-                        <div class="car-rabbit-avatar">🐰</div>
+                        <div class="car-rabbit-avatar" id="car-companion-avatar">🐰</div>
                         <div>
                             <div style="font-size:.7rem;color:var(--car-accent);margin-bottom:.2rem;font-weight:700;">🐰 兔可可座舱伴侣 (点击切换寄语)</div>
                             <div class="car-quote-text" id="car-quote">"道路千万条，安全第一条，兔兔与你一路同行~"</div>
@@ -1322,7 +1360,7 @@
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9381</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9382</div>
                             </div>
                         </div>
                     </div>
@@ -1392,6 +1430,10 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <span>🎨 切换座舱氛围主题</span>
                     <button class="car-icon-btn" onclick="cycleTheme()">切换主题</button>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>🐰 头像风格 (Emoji / 照片)</span>
+                    <button class="car-icon-btn" id="toggle-avatar-btn" onclick="toggleLockscreenAvatar()">🐰 Emoji模式</button>
                 </div>
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <span>⛶ 切换浏览器全屏</span>
@@ -1721,6 +1763,61 @@
             localStorage.setItem('car_show_top_actions', next ? 'true' : 'false');
             applyTopActionsState(next);
             showToast(next ? '✓ 顶部操作按键已常驻显示' : '✓ 顶部操作按键已隐藏（可在设置中随时恢复）');
+        }
+
+        // --- Lockscreen Avatar Management (Sync with Sidebar Avatar style: Emoji / Photo) ---
+        function updateLockscreenAvatar(targetMode) {
+            const mode = targetMode || localStorage.getItem('sidebarAvatar') || 'emoji';
+            
+            // 1. Top Brand bar avatar
+            const brandAvatar = document.getElementById('car-brand-avatar');
+            if (brandAvatar) {
+                if (mode === 'photo') {
+                    brandAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-avatar-img" onerror="this.parentElement.textContent=\'🐰\'">';
+                } else {
+                    brandAvatar.textContent = '🐰';
+                }
+            }
+
+            // 2. Cockpit companion box avatar
+            const compAvatar = document.getElementById('car-companion-avatar');
+            if (compAvatar) {
+                if (mode === 'photo') {
+                    compAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-companion-avatar-img" onerror="this.parentElement.textContent=\'🐰\'">';
+                } else {
+                    compAvatar.textContent = '🐰';
+                }
+            }
+
+            // 3. Slider thumb avatar
+            const thumbAvatar = document.getElementById('car-thumb');
+            if (thumbAvatar) {
+                if (mode === 'photo') {
+                    thumbAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-thumb-img" draggable="false" onerror="this.parentElement.textContent=\'🐰\'">';
+                } else {
+                    thumbAvatar.textContent = '🐰';
+                }
+            }
+
+            // 4. Quick Actions toggle button in car navigation modal
+            const avatarToggleBtn = document.getElementById('toggle-avatar-btn');
+            if (avatarToggleBtn) {
+                avatarToggleBtn.textContent = mode === 'photo' ? '📷 照片模式' : '🐰 Emoji模式';
+            }
+        }
+
+        function toggleLockscreenAvatar() {
+            const current = localStorage.getItem('sidebarAvatar') || 'emoji';
+            const next = current === 'photo' ? 'emoji' : 'photo';
+            if (typeof setSidebarAvatar === 'function') {
+                setSidebarAvatar(next);
+            } else if (typeof window.setSidebarAvatar === 'function') {
+                window.setSidebarAvatar(next);
+            } else {
+                localStorage.setItem('sidebarAvatar', next);
+                updateLockscreenAvatar(next);
+            }
+            showToast(next === 'photo' ? '🐰 已切换为兔可可写真照片头像' : '🐰 已切换为经典 Emoji 头像');
         }
 
         // --- EV Battery & Range Management ---
@@ -2966,6 +3063,7 @@
             updateWallpaperDim(dim);
             const blur = localStorage.getItem('car_wp_blur') || '1';
             updateWallpaperBlur(blur);
+            updateLockscreenAvatar();
 
             // Offline service worker registration
             if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
@@ -2981,6 +3079,9 @@
             window.addEventListener('click', firstInteraction);
             window.addEventListener('touchstart', firstInteraction);
         };
+
+        window.updateLockscreenAvatar = updateLockscreenAvatar;
+        window.toggleLockscreenAvatar = toggleLockscreenAvatar;
     </script>
     <canvas id="car-keepalive-canvas" width="1" height="1" style="display:none;position:fixed;pointer-events:none;"></canvas>
 </body>
