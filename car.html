@@ -26,7 +26,7 @@
     <link rel="apple-touch-icon" href="./icon/512.png">
     <link rel="apple-touch-icon" sizes="192x192" href="./icon/192.png">
     <title>🚗 兔可可车机锁屏 · BCOS Cockpit Screen</title>
-    <style>
+        <style>
         * {
             box-sizing: border-box;
             margin: 0;
@@ -37,102 +37,124 @@
             overscroll-behavior: none;
             -webkit-user-select: none;
             user-select: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            color: #e6f7ff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        }
+        /* Vehicle Touchscreen Specific Optimizations */
+        #bcos-car-lockscreen, #car-root {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: pan-y;
+        }
+        #bcos-car-lockscreen button, #car-root button,
+        #bcos-car-lockscreen .clickable, #car-root .clickable {
+            min-height: 44px;
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+        #bcos-car-lockscreen .car-slider-thumb, #car-root .car-slider-thumb {
+            touch-action: none;
+            cursor: grab;
+        }
+        #bcos-car-lockscreen .car-slider-thumb:active, #car-root .car-slider-thumb:active {
+            cursor: grabbing;
         }
         :root {
             --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
             --car-accent: #00eaff;
             --car-accent2: #a78bfa;
             --car-glow: rgba(0, 234, 255, 0.45);
-            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-panel: rgba(10, 20, 40, 0.74);
             --car-border: rgba(0, 234, 255, 0.25);
             --car-text: #e6f7ff;
             --car-text-dim: #7f9eb2;
             --car-wp-dim: rgba(5, 8, 17, 0.45);
             --car-wp-blur: 1px;
         }
-        body.theme-xpeng {
+        #bcos-car-lockscreen.theme-xpeng, body.theme-xpeng {
             --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
             --car-accent: #00eaff;
             --car-accent2: #a78bfa;
             --car-glow: rgba(0, 234, 255, 0.45);
-            --car-panel: rgba(10, 20, 40, 0.72);
+            --car-panel: rgba(10, 20, 40, 0.74);
             --car-border: rgba(0, 234, 255, 0.25);
             --car-text: #e6f7ff;
             --car-text-dim: #7f9eb2;
         }
-        body.theme-bunny {
+        #bcos-car-lockscreen.theme-bunny, body.theme-bunny {
             --car-bg: radial-gradient(circle at 50% 30%, #301726 0%, #150912 75%, #0a0408 100%);
             --car-accent: #ff6b9d;
             --car-accent2: #ffd166;
             --car-glow: rgba(255, 107, 157, 0.45);
-            --car-panel: rgba(40, 15, 30, 0.72);
+            --car-panel: rgba(40, 15, 30, 0.74);
             --car-border: rgba(255, 107, 157, 0.3);
             --car-text: #fff0f5;
             --car-text-dim: #c48b9f;
         }
-        body.theme-aurora {
+        #bcos-car-lockscreen.theme-aurora, body.theme-aurora {
             --car-bg: radial-gradient(circle at 50% 30%, #082623 0%, #041412 75%, #020807 100%);
             --car-accent: #06ffa5;
             --car-accent2: #38bdf8;
             --car-glow: rgba(6, 255, 165, 0.45);
-            --car-panel: rgba(6, 32, 28, 0.72);
+            --car-panel: rgba(6, 32, 28, 0.74);
             --car-border: rgba(6, 255, 165, 0.3);
             --car-text: #e6fffb;
             --car-text-dim: #7bb3aa;
         }
-        body.theme-carbon {
+        #bcos-car-lockscreen.theme-carbon, body.theme-carbon {
             --car-bg: radial-gradient(circle at 50% 30%, #2b1114 0%, #120708 75%, #080304 100%);
             --car-accent: #ff334b;
             --car-accent2: #fbbf24;
             --car-glow: rgba(255, 51, 75, 0.45);
-            --car-panel: rgba(35, 12, 16, 0.72);
+            --car-panel: rgba(35, 12, 16, 0.74);
             --car-border: rgba(255, 51, 75, 0.3);
             --car-text: #fff1f2;
             --car-text-dim: #c2888f;
         }
-        body.theme-stealth {
+        #bcos-car-lockscreen.theme-stealth, body.theme-stealth {
             --car-bg: #000000;
             --car-accent: #d1d5db;
             --car-accent2: #6b7280;
             --car-glow: rgba(255, 255, 255, 0.12);
-            --car-panel: rgba(20, 20, 20, 0.85);
+            --car-panel: rgba(20, 20, 20, 0.88);
             --car-border: rgba(255, 255, 255, 0.15);
             --car-text: #e5e7eb;
             --car-text-dim: #6b7280;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-            color: var(--car-text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        #car-root {
+        #bcos-car-lockscreen, #car-root {
+            z-index: 100000;
             position: fixed;
             inset: 0;
-            background: var(--car-bg);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 1.2rem 1.8rem;
-            transition: background 0.6s ease, color 0.4s ease;
             overflow: hidden;
-            /* GPU compositing to prevent iOS repaints */
+            box-sizing: border-box;
+            touch-action: pan-y;
+            overscroll-behavior: none;
+            background: var(--car-bg);
+            /* GPU-composite to its own layer — prevents iOS repaint jitter */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             will-change: transform;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+            /* Entrance fade hides the brief DOM-injection flash on mobile */
+            animation: carLockscreenEntrance 0.25s ease-out both;
+        }
+        @keyframes carLockscreenEntrance {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
-        /* Wallpaper Engine Layers
-           position:absolute keeps layers in same compositing context as #car-root,
-           avoiding iOS Safari compositor split that causes jitter. */
+        /* Wallpaper Engine Layers */
         .car-wallpaper-layer {
             position: absolute;
             inset: 0;
@@ -167,9 +189,9 @@
         .car-wallpaper-overlay {
             position: absolute;
             inset: 0;
-            background: var(--car-wp-dim);
-            backdrop-filter: blur(var(--car-wp-blur));
-            -webkit-backdrop-filter: blur(var(--car-wp-blur));
+            background: var(--car-wp-dim, rgba(5, 8, 17, 0.45));
+            backdrop-filter: blur(var(--car-wp-blur, 1px));
+            -webkit-backdrop-filter: blur(var(--car-wp-blur, 1px));
             z-index: 1;
             pointer-events: none;
         }
@@ -194,6 +216,7 @@
             will-change: transform;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+            overflow: hidden;
         }
 
         /* Header / Top Status Bar */
@@ -201,32 +224,37 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: .8rem;
+            padding-bottom: .7rem;
             border-bottom: 1px solid var(--car-border);
             transition: opacity .4s ease;
+            flex-shrink: 0;
+            z-index: 10;
         }
         .car-brand {
             display: flex;
             align-items: center;
             gap: .6rem;
             font-size: .95rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--car-accent);
-            text-shadow: 0 0 12px var(--car-glow);
+            text-shadow: 0 0 14px var(--car-glow);
             flex-wrap: wrap;
+            letter-spacing: 0.5px;
         }
         .car-badge {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--car-border);
-            padding: .15rem .55rem;
-            border-radius: 12px;
+            padding: .2rem .6rem;
+            border-radius: 14px;
             font-size: .75rem;
             color: var(--car-accent2);
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: .3rem;
-            transition: all .2s;
+            gap: .35rem;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .car-badge.clickable {
             cursor: pointer;
@@ -234,16 +262,17 @@
         .car-badge.clickable:hover {
             border-color: var(--car-accent);
             color: var(--car-accent);
+            box-shadow: 0 0 12px var(--car-glow);
             transform: translateY(-1px);
         }
 
-        /* Top actions buttons - Hidden by default for pristine cockpit dashboard */
+        /* Top actions buttons */
         .car-top-actions {
             display: none;
             align-items: center;
             gap: .5rem;
         }
-        body.show-top-actions .car-top-actions {
+        #bcos-car-lockscreen.show-top-actions, body.show-top-actions .car-top-actions {
             display: flex;
         }
         .car-top-status-right {
@@ -259,16 +288,18 @@
             cursor: pointer;
             padding: .25rem .6rem;
             border-radius: 10px;
-            opacity: 0.6;
+            opacity: 0.7;
             transition: all .2s;
             display: inline-flex;
             align-items: center;
             gap: .3rem;
+            backdrop-filter: blur(8px);
         }
         .car-mini-trigger:hover {
             opacity: 1;
             border-color: var(--car-accent);
             color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
             transform: scale(1.05);
         }
 
@@ -276,7 +307,7 @@
             background: var(--car-panel);
             border: 1px solid var(--car-border);
             color: var(--car-text);
-            padding: .35rem .7rem;
+            padding: .35rem .75rem;
             border-radius: 8px;
             font-size: .8rem;
             cursor: pointer;
@@ -288,18 +319,19 @@
         .car-icon-btn:hover, .car-icon-btn:active {
             border-color: var(--car-accent);
             color: var(--car-accent);
-            box-shadow: 0 0 10px var(--car-glow);
+            box-shadow: 0 0 12px var(--car-glow);
         }
 
         /* Main Cockpit Split Layout */
         .car-main-grid {
             flex: 1;
+            min-height: 0;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
-            gap: 1.5rem;
+            gap: 1.25rem;
             align-items: center;
-            padding: 1rem 0;
-            min-height: 0;
+            padding: .6rem 0;
+            overflow: hidden;
         }
         @media (max-width: 900px) {
             .car-main-grid {
@@ -314,28 +346,30 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            min-height: 0;
         }
         .car-clock-box {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
         .car-digital-clock {
-            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-size: clamp(3.2rem, 7.2vw, 6.2rem);
             font-weight: 900;
-            font-family: "Courier New", Courier, monospace, "Segoe UI";
+            font-family: 'SF Mono', 'Courier New', Courier, monospace, "Segoe UI";
             letter-spacing: 2px;
             line-height: 1;
             color: var(--car-accent);
-            text-shadow: 0 0 25px var(--car-glow);
+            text-shadow: 0 0 28px var(--car-glow);
             font-variant-numeric: tabular-nums;
         }
         .car-digital-date {
-            font-size: clamp(0.95rem, 2vw, 1.35rem);
+            font-size: clamp(0.95rem, 1.8vw, 1.3rem);
             color: var(--car-text-dim);
-            margin-top: .5rem;
+            margin-top: .45rem;
             display: flex;
             align-items: center;
             gap: .8rem;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.5px;
             flex-wrap: wrap;
         }
 
@@ -343,13 +377,24 @@
         .car-hero-card {
             background: var(--car-panel);
             border: 1px solid var(--car-border);
-            border-radius: 18px;
-            padding: 1.4rem 1.6rem;
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.12);
             position: relative;
             overflow: hidden;
+            transition: border-color .3s ease, box-shadow .3s ease;
+        }
+        .car-hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--car-accent), var(--car-accent2), transparent);
+            opacity: 0.8;
         }
         .car-hero-card::after {
             content: '';
@@ -363,7 +408,7 @@
             pointer-events: none;
         }
         .car-hero-title {
-            font-size: .95rem;
+            font-size: .92rem;
             font-weight: 700;
             color: var(--car-accent);
             display: flex;
@@ -374,36 +419,40 @@
             display: flex;
             align-items: baseline;
             gap: .6rem;
-            margin: .4rem 0 .2rem 0;
+            margin: .35rem 0 .15rem 0;
         }
         .car-hero-days {
-            font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+            font-size: clamp(2.8rem, 5.2vw, 4.4rem);
             font-weight: 900;
             line-height: 1;
-            font-family: monospace;
-            background: linear-gradient(135deg, var(--car-accent) 0%, var(--car-accent2) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            background: linear-gradient(135deg, var(--car-accent) 0%, #ffffff 40%, var(--car-accent2) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px var(--car-glow);
+            filter: drop-shadow(0 0 16px var(--car-glow));
+            letter-spacing: -1px;
         }
         .car-hero-unit {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 800;
             color: var(--car-text-dim);
             letter-spacing: 1px;
         }
         .car-hero-time {
-            font-size: 1.15rem;
+            font-size: 1.12rem;
             font-weight: 700;
             color: var(--car-accent2);
-            font-family: monospace;
-            margin-bottom: .8rem;
+            font-family: 'SF Mono', Consolas, Monaco, monospace;
+            margin-bottom: .75rem;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
         }
         .car-hero-progress-box {
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: 12px;
-            padding: .75rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: .7rem .95rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         .car-progress-header {
             display: flex;
@@ -411,10 +460,11 @@
             font-size: .8rem;
             color: var(--car-text-dim);
             margin-bottom: .4rem;
+            font-weight: 600;
         }
         .car-progress-bar-bg {
             height: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 6px;
             overflow: hidden;
             position: relative;
@@ -423,39 +473,56 @@
             height: 100%;
             background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
             border-radius: 6px;
-            box-shadow: 0 0 10px var(--car-glow);
+            box-shadow: 0 0 12px var(--car-glow);
             transition: width .5s ease;
+            position: relative;
+        }
+        .car-progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            animation: progressGlint 2.8s ease-in-out infinite;
+        }
+        @keyframes progressGlint {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
         }
 
-        /* Right Column: Widgets */
+        /* Right Column: Side Widgets (Protected from Overflow) */
         .car-side-col {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: .75rem;
             height: 100%;
-            justify-content: center;
+            max-height: 100%;
+            min-height: 0;
+            justify-content: space-between;
         }
         .car-widget-card {
             background: var(--car-panel);
             border: 1px solid var(--car-border);
             border-radius: 16px;
-            padding: 1.1rem 1.3rem;
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-            transition: border-color .3s;
+            padding: .85rem 1.15rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            transition: border-color .3s ease, box-shadow .3s ease;
+            position: relative;
+            overflow: hidden;
         }
         .car-widget-card:hover {
             border-color: var(--car-accent);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 15px var(--car-glow);
         }
         .car-widget-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: .6rem;
+            margin-bottom: .5rem;
         }
         .car-widget-header .title {
-            font-size: .85rem;
+            font-size: .82rem;
             font-weight: 700;
             color: var(--car-text-dim);
             text-transform: uppercase;
@@ -467,9 +534,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: .6rem 0 .8rem 0;
+            padding: .4rem 0 .6rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: .7rem;
+            margin-bottom: .6rem;
         }
         .car-battery-left {
             display: flex;
@@ -513,10 +580,10 @@
         .car-battery-soc-val {
             font-size: 1.85rem;
             font-weight: 900;
-            font-family: monospace;
+            font-family: 'SF Mono', monospace;
             line-height: 1;
             color: var(--car-accent);
-            text-shadow: 0 0 10px var(--car-glow);
+            text-shadow: 0 0 12px var(--car-glow);
         }
         .car-battery-soc-val .unit {
             font-size: .95rem;
@@ -531,7 +598,7 @@
             font-size: 1.35rem;
             font-weight: 900;
             color: var(--car-accent2);
-            font-family: monospace;
+            font-family: 'SF Mono', monospace;
             line-height: 1;
         }
         .car-battery-range-val .unit {
@@ -573,13 +640,13 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 0 15px var(--car-glow);
+            box-shadow: 0 0 18px var(--car-glow);
             flex-shrink: 0;
             animation: carRabbitPulse 4s ease-in-out infinite;
         }
         @keyframes carRabbitPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 15px var(--car-glow); }
-            50% { transform: scale(1.08); box-shadow: 0 0 25px var(--car-glow); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 16px var(--car-glow); }
+            50% { transform: scale(1.08); box-shadow: 0 0 26px var(--car-glow); }
         }
         .car-quote-text {
             font-size: .88rem;
@@ -592,19 +659,24 @@
         .car-diag-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: .65rem;
+            gap: .55rem;
         }
         .car-diag-item {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: .5rem .7rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: .45rem .65rem;
             border-radius: 10px;
+            transition: border-color .2s;
+        }
+        .car-diag-item:hover {
+            border-color: rgba(255, 255, 255, 0.15);
         }
         .car-diag-label {
             font-size: .65rem;
             color: var(--car-text-dim);
             letter-spacing: 0.5px;
             margin-bottom: .2rem;
+            font-weight: 600;
         }
         .car-diag-val {
             font-size: .85rem;
@@ -639,13 +711,21 @@
             100% { transform: scaleY(1); }
         }
 
-        /* Milestone Horizontal/Vertical Scroller */
+        /* Milestone Scroller Layout Fix (Prevent Overlap) */
+        .car-milestone-card {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
         .car-milestone-scroller {
-            max-height: 140px;
+            flex: 1;
+            min-height: 50px;
+            max-height: 125px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: .4rem;
+            gap: .35rem;
             padding-right: .3rem;
         }
         .car-milestone-scroller::-webkit-scrollbar {
@@ -664,6 +744,11 @@
             background: rgba(255, 255, 255, 0.03);
             border-radius: 8px;
             border-left: 3px solid transparent;
+            transition: background .2s, transform .15s;
+        }
+        .car-ms-row:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(2px);
         }
         .car-ms-row.reached {
             border-left-color: #00ff41;
@@ -673,6 +758,7 @@
             border-left-color: var(--car-accent);
             background: rgba(0, 234, 255, 0.08);
             font-weight: 700;
+            box-shadow: 0 0 12px rgba(0, 234, 255, 0.15);
         }
 
         /* Bottom Unlock Slider Track */
@@ -680,24 +766,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-top: .8rem;
+            padding-top: .6rem;
             border-top: 1px solid var(--car-border);
             transition: opacity .4s ease;
+            flex-shrink: 0;
+            z-index: 10;
+            margin-top: auto;
         }
         .car-slider-track {
             position: relative;
             width: min(440px, 92%);
             height: 52px;
-            background: rgba(10, 20, 40, 0.85);
+            background: rgba(10, 20, 40, 0.88);
             border: 1px solid var(--car-border);
             border-radius: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.1);
             user-select: none;
             touch-action: pan-y;
             overflow: hidden;
+            transition: border-color .3s, box-shadow .3s;
+        }
+        .car-slider-track:hover {
+            border-color: var(--car-accent);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 0 14px var(--car-glow);
         }
         .car-slider-text {
             font-size: .88rem;
@@ -720,15 +814,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             cursor: grab;
-            box-shadow: 0 0 15px var(--car-glow);
+            box-shadow: 0 0 16px var(--car-glow);
             transition: transform 0.1s ease-out;
             touch-action: none;
         }
         .car-slider-thumb:active {
             cursor: grabbing;
-            transform: scale(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 0 24px var(--car-glow);
         }
 
         /* Modals & Dialogs */
@@ -813,21 +908,28 @@
         .car-wp-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: .75rem;
-            max-height: 250px;
+            gap: .8rem;
+            max-height: 52vh;
             overflow-y: auto;
-            margin: .8rem 0;
-            padding: .3rem;
+            padding: .4rem;
         }
         .car-wp-item {
             position: relative;
-            aspect-ratio: 16 / 9;
             border-radius: 10px;
             overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
             cursor: pointer;
+            aspect-ratio: 16/9;
+            background: rgba(0, 0, 0, 0.4);
             transition: all .2s;
-            background: #090e17;
+        }
+        .car-wp-item:hover {
+            transform: scale(1.03);
+            border-color: var(--car-accent2);
+        }
+        .car-wp-item.active {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 15px var(--car-glow);
         }
         .car-wp-item img {
             width: 100%;
@@ -835,21 +937,18 @@
             object-fit: cover;
             display: block;
         }
-        .car-wp-item.active {
-            border-color: var(--car-accent);
-            box-shadow: 0 0 14px var(--car-glow);
-        }
         .car-wp-item .label {
             position: absolute;
             bottom: 0;
-            inset-inline: 0;
-            background: rgba(0,0,0,.75);
-            font-size: .65rem;
-            padding: .2rem .3rem;
-            text-overflow: ellipsis;
+            left: 0;
+            right: 0;
+            padding: .2rem .4rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            font-size: .68rem;
             white-space: nowrap;
             overflow: hidden;
-            text-align: center;
+            text-overflow: ellipsis;
+            color: #fff;
         }
         .car-wp-item .badge {
             position: absolute;
@@ -858,80 +957,150 @@
             background: var(--car-accent);
             color: #000;
             font-size: .6rem;
-            font-weight: bold;
+            font-weight: 800;
             padding: 1px 4px;
             border-radius: 4px;
         }
 
-        /* Form Inputs in Modals */
-        .car-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: .3rem;
-            margin-bottom: .8rem;
+        /* Form Controls inside modals */
+        .car-form-section {
+            margin-bottom: 1.2rem;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .car-input-label {
-            font-size: .75rem;
-            color: var(--car-text-dim);
-            font-weight: 600;
+        .car-form-title {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-accent2);
+            margin-bottom: .6rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
+        .car-input-group {
+            margin-bottom: .8rem;
+        }
+        .car-input-label {
+            display: block;
+            font-size: .75rem;
+            color: var(--car-text-dim);
+            margin-bottom: .3rem;
+        }
         .car-input-control {
             width: 100%;
-            background: #070c14;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            padding: .6rem .8rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--car-border);
             border-radius: 8px;
-            outline: none;
+            padding: .5rem .8rem;
+            color: var(--car-text);
             font-size: .9rem;
+            outline: none;
+            box-sizing: border-box;
             transition: border-color .2s;
         }
         .car-input-control:focus {
             border-color: var(--car-accent);
+        }
+        .car-range-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .car-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            cursor: pointer;
             box-shadow: 0 0 10px var(--car-glow);
         }
-        .car-tag-row {
-            display: flex;
-            gap: .4rem;
-            flex-wrap: wrap;
-            margin-top: .4rem;
-        }
-        .car-quick-tag {
-            font-size: .72rem;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: .2rem .5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .car-quick-tag:hover {
-            border-color: var(--car-accent);
-            color: var(--car-accent);
+
+        /* Responsive Breakpoint for Limited Height Screens (Laptops, Car Consoles, Tablets) */
+        @media (max-height: 760px) {
+            #bcos-car-lockscreen, #car-root {
+                padding: .65rem 1.2rem;
+            }
+            .car-top-bar {
+                padding-bottom: .4rem;
+            }
+            .car-digital-clock {
+                font-size: clamp(2.4rem, 5.8vw, 4.2rem);
+            }
+            .car-clock-box {
+                margin-bottom: .5rem;
+            }
+            .car-hero-card {
+                padding: .85rem 1.15rem;
+            }
+            .car-hero-days {
+                font-size: clamp(2.2rem, 4.2vw, 3.2rem);
+            }
+            .car-hero-time {
+                font-size: 1rem;
+                margin-bottom: .5rem;
+            }
+            .car-hero-progress-box {
+                padding: .5rem .8rem;
+            }
+            .car-side-col {
+                gap: .45rem;
+            }
+            .car-widget-card {
+                padding: .6rem .95rem;
+            }
+            .car-battery-hero {
+                padding: .25rem 0 .45rem 0;
+                margin-bottom: .4rem;
+            }
+            .car-battery-soc-val {
+                font-size: 1.5rem;
+            }
+            .car-diag-grid {
+                gap: .4rem;
+            }
+            .car-milestone-scroller {
+                min-height: 40px;
+                max-height: 85px;
+            }
+            .car-bottom-bar {
+                padding-top: .4rem;
+            }
+            .car-slider-track {
+                height: 44px;
+            }
+            .car-slider-thumb {
+                width: 36px;
+                height: 36px;
+            }
         }
 
-        /* Toast */
+        /* Toast Notification */
         .car-toast {
             position: fixed;
-            top: 2rem;
+            bottom: 5rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(10, 20, 40, 0.95);
             border: 1px solid var(--car-accent);
             box-shadow: 0 0 20px var(--car-glow);
-            color: #fff;
-            padding: .5rem 1.2rem;
+            color: var(--car-text);
+            padding: .6rem 1.4rem;
             border-radius: 20px;
             font-size: .85rem;
+            font-weight: 600;
             z-index: 2000;
             pointer-events: none;
             opacity: 0;
             transition: opacity .3s;
         }
         .car-toast.show { opacity: 1; }
+
     </style>
 </head>
 <body class="theme-xpeng">
@@ -1084,13 +1253,13 @@
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9377</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9378</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Milestones Scroller -->
-                    <div class="car-widget-card">
+                    <div class="car-widget-card car-milestone-card">
                         <div class="car-widget-header">
                             <span class="title">🎯 历程纪念日里程碑</span>
                             <span style="font-size:.7rem;color:var(--car-accent2);cursor:pointer;" onclick="openAddAnniversaryModal()">➕ 自定义</span>
@@ -1723,6 +1892,7 @@
 
         let allWallpapers = [...BUILTIN_WALLPAPERS];
         let currentWallpaperIdx = 0;
+        let displayTimer = null;
         let wallpaperTimer = null;
 
         function getCustomWallpapers() {
@@ -2415,18 +2585,20 @@
             const lunarEl = document.getElementById('car-lunar');
             if (lunarEl) lunarEl.textContent = getSimpleLunar(now);
 
-            // 3. Days Counted & Milliseconds
+            // 3. Days Counted & Milliseconds (Precision: 3 decimal places)
             const totalDays = Math.floor(diff / 86400000);
             const rHours = Math.floor((diff % 86400000) / 3600000);
             const rMins = Math.floor((diff % 3600000) / 60000);
             const rSecs = Math.floor((diff % 60000) / 1000);
-            const rMs = Math.floor((diff % 1000) / 100);
+            const rMs = String(diff % 1000).padStart(3, '0');
 
             const daysEl = document.getElementById('car-days');
             if (daysEl) daysEl.textContent = totalDays;
 
             const timeEl = document.getElementById('car-time');
-            if (timeEl) timeEl.textContent = `${String(rHours).padStart(2,'0')}时 ${String(rMins).padStart(2,'0')}分 ${String(rSecs).padStart(2,'0')}秒 .${rMs}`;
+            if (timeEl) {
+                timeEl.textContent = `${String(rHours).padStart(2,'0')}时 ${String(rMins).padStart(2,'0')}分 ${String(rSecs).padStart(2,'0')}秒 .${rMs}`;
+            }
 
             // 4. Next Milestone Countdown & Progress
             const nextM = MILESTONES.find(item => totalDays < item.days);
@@ -2650,7 +2822,8 @@
             loadBatteryData();
             updateDisplay();
             renderMilestones();
-            setInterval(updateDisplay, 100);
+            if (displayTimer) clearInterval(displayTimer);
+            displayTimer = setInterval(updateDisplay, 30);
             initSlider();
             acquireWakeLock();
             resetAutoFade();
