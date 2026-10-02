@@ -16,6 +16,22 @@
 
 ---
 
+## 📸 界面预览 (Screenshots)
+
+### 🚗 智能座舱中控车机锁屏 (Cockpit Screen)
+> 统一 28px 对称药丸胶囊状态栏 · 阶段达成率 HUD 环形仪表 · 车辆动力与 WLTP/实估双标准续航遥测 · 底部防误触滑动解锁
+![智能座舱车机锁屏](docs/screenshots/cockpit-lockscreen.png)
+
+### 🖥️ bcos 虚拟系统桌面 (Cockpit Desktop)
+> 沉浸式宽屏中控桌面 · 窗口化多任务与车机快捷应用 · 专属座舱壁纸与实时状态监控栏
+![bcos 虚拟系统桌面](docs/screenshots/bcos-desktop.png)
+
+### ⚙️ bcos 快捷控制中心与上下文菜单 (Context Menu & Start Menu)
+> 一键直达终端、文件创作、车机锁屏 HUD、多主题切换与个性化外观
+![bcos 快捷控制中心](docs/screenshots/bcos-menu.png)
+
+---
+
 ## 🚗 核心系统模块
 
 ### 1. 智能座舱车机锁屏 (Cockpit Screen)
