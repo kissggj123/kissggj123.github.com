@@ -632,6 +632,7 @@
             filter: drop-shadow(0 0 20px var(--car-glow));
             letter-spacing: -2px;
             font-variant-numeric: tabular-nums;
+            transition: filter 1.2s ease, opacity 1.2s ease;
         }
         .car-hero-unit {
             font-size: 1.15rem;
@@ -3338,7 +3339,11 @@
             if (clockEl && clockEl.textContent !== clockStr) clockEl.textContent = clockStr;
 
             // OLED Anti-Burn-In: periodic discrete micro-shift (1-2px) at the start of each minute
-            if (s === '00' && now.getMilliseconds() < 60) {
+            const currentMinute = now.getMinutes();
+            if (lastPixelShiftMinute === -1) {
+                lastPixelShiftMinute = currentMinute;
+            } else if (currentMinute !== lastPixelShiftMinute) {
+                lastPixelShiftMinute = currentMinute;
                 applyPixelShift();
             }
 
@@ -3574,11 +3579,14 @@
         let hideTimer = null;
         let lastInteractionTime = Date.now();
         let pixelShiftIdx = 0;
+        let lastPixelShiftMinute = -1;
         const PIXEL_SHIFT_COORDS = [
             [0, 0], [1, -1], [-1, 1], [1, 1], [-1, -1], [0, 1], [-1, 0], [1, 0]
         ];
 
         function applyPixelShift() {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
             const isInteracting = (Date.now() - lastInteractionTime) < 8000;
             const anyModalActive = document.querySelector('.car-modal-overlay.active');
             if (isInteracting || anyModalActive) {
@@ -3587,29 +3595,34 @@
             }
             pixelShiftIdx = (pixelShiftIdx + 1) % PIXEL_SHIFT_COORDS.length;
             const [dx, dy] = PIXEL_SHIFT_COORDS[pixelShiftIdx];
-            const clockBox = document.querySelector('#bcos-car-lockscreen .car-clock-box, #car-root .car-clock-box');
-            const heroCard = document.querySelector('#bcos-car-lockscreen .car-hero-card, #car-root .car-hero-card');
+            const clockBox = root.querySelector('.car-clock-box');
+            const heroCard = root.querySelector('.car-hero-card');
             if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${dx}px, ${dy}px)`;
             if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${-dx}px, ${-dy}px)`;
         }
 
         function resetPixelShift() {
-            const clockBox = document.querySelector('#bcos-car-lockscreen .car-clock-box, #car-root .car-clock-box');
-            const heroCard = document.querySelector('#bcos-car-lockscreen .car-hero-card, #car-root .car-hero-card');
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
+            const clockBox = root.querySelector('.car-clock-box');
+            const heroCard = root.querySelector('.car-hero-card');
             if (clockBox && clockBox.style.transform) clockBox.style.transform = '';
             if (heroCard && heroCard.style.transform) heroCard.style.transform = '';
         }
 
         function resetAutoFade() {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
             lastInteractionTime = Date.now();
             resetPixelShift();
-            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
-            if (root) root.classList.remove('car-idle-dimmed');
+            if (root.classList.contains('car-idle-dimmed')) {
+                root.classList.remove('car-idle-dimmed');
+            }
 
             const topBar = document.getElementById('car-top-bar');
             const bottomBar = document.getElementById('car-bottom-bar');
-            if (topBar) topBar.style.opacity = '1';
-            if (bottomBar) bottomBar.style.opacity = '1';
+            if (topBar && topBar.style.opacity !== '1') topBar.style.opacity = '1';
+            if (bottomBar && bottomBar.style.opacity !== '1') bottomBar.style.opacity = '1';
 
             clearTimeout(hideTimer);
             hideTimer = setTimeout(() => {
@@ -3622,9 +3635,11 @@
             }, 6000);
         }
 
-        window.addEventListener('mousemove', resetAutoFade);
-        window.addEventListener('touchstart', resetAutoFade);
-        window.addEventListener('click', resetAutoFade);
+        window.addEventListener('mousemove', resetAutoFade, { passive: true });
+        window.addEventListener('touchstart', resetAutoFade, { passive: true });
+        window.addEventListener('touchmove', resetAutoFade, { passive: true });
+        window.addEventListener('click', resetAutoFade, { passive: true });
+        window.addEventListener('keydown', resetAutoFade, { passive: true });
 
         // Double-click/tap background to toggle unlock or quick switch
         let lastTap = 0;

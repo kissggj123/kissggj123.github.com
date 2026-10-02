@@ -10763,6 +10763,7 @@
             filter: drop-shadow(0 0 20px var(--car-glow));
             letter-spacing: -2px;
             font-variant-numeric: tabular-nums;
+            transition: filter 1.2s ease, opacity 1.2s ease;
         }
         .car-hero-unit {
             font-size: 1.15rem;
@@ -13162,6 +13163,7 @@
         else {
             localStorage.setItem('sidebarAvatar', next);
             if (typeof updateLockscreenAvatar === 'function') updateLockscreenAvatar(next);
+            else if (typeof window.updateLockscreenAvatar === 'function') window.updateLockscreenAvatar(next);
         }
         showToast(next === 'photo' ? '🐰 伴侣头像已切换为写真照片' : '🐰 伴侣头像已切换为 Emoji');
     }
@@ -16078,7 +16080,11 @@ const START_DATE = '2024/03/12 00:00:00';
             if (clockEl && clockEl.textContent !== clockStr) clockEl.textContent = clockStr;
 
             // OLED Anti-Burn-In: periodic discrete micro-shift (1-2px) at the start of each minute
-            if (s === '00' && now.getMilliseconds() < 60) {
+            const currentMinute = now.getMinutes();
+            if (lastPixelShiftMinute === -1) {
+                lastPixelShiftMinute = currentMinute;
+            } else if (currentMinute !== lastPixelShiftMinute) {
+                lastPixelShiftMinute = currentMinute;
                 applyPixelShift();
             }
 
@@ -16316,11 +16322,14 @@ const START_DATE = '2024/03/12 00:00:00';
         let hideTimer = null;
         let lastInteractionTime = Date.now();
         let pixelShiftIdx = 0;
+        let lastPixelShiftMinute = -1;
         const PIXEL_SHIFT_COORDS = [
             [0, 0], [1, -1], [-1, 1], [1, 1], [-1, -1], [0, 1], [-1, 0], [1, 0]
         ];
 
         function applyPixelShift() {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
             const isInteracting = (Date.now() - lastInteractionTime) < 8000;
             const anyModalActive = document.querySelector('.car-modal-overlay.active');
             if (isInteracting || anyModalActive) {
@@ -16329,29 +16338,34 @@ const START_DATE = '2024/03/12 00:00:00';
             }
             pixelShiftIdx = (pixelShiftIdx + 1) % PIXEL_SHIFT_COORDS.length;
             const [dx, dy] = PIXEL_SHIFT_COORDS[pixelShiftIdx];
-            const clockBox = document.querySelector('#bcos-car-lockscreen .car-clock-box, #car-root .car-clock-box');
-            const heroCard = document.querySelector('#bcos-car-lockscreen .car-hero-card, #car-root .car-hero-card');
+            const clockBox = root.querySelector('.car-clock-box');
+            const heroCard = root.querySelector('.car-hero-card');
             if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${dx}px, ${dy}px)`;
             if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${-dx}px, ${-dy}px)`;
         }
 
         function resetPixelShift() {
-            const clockBox = document.querySelector('#bcos-car-lockscreen .car-clock-box, #car-root .car-clock-box');
-            const heroCard = document.querySelector('#bcos-car-lockscreen .car-hero-card, #car-root .car-hero-card');
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
+            const clockBox = root.querySelector('.car-clock-box');
+            const heroCard = root.querySelector('.car-hero-card');
             if (clockBox && clockBox.style.transform) clockBox.style.transform = '';
             if (heroCard && heroCard.style.transform) heroCard.style.transform = '';
         }
 
         function resetAutoFade() {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
             lastInteractionTime = Date.now();
             resetPixelShift();
-            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
-            if (root) root.classList.remove('car-idle-dimmed');
+            if (root.classList.contains('car-idle-dimmed')) {
+                root.classList.remove('car-idle-dimmed');
+            }
 
             const topBar = document.getElementById('car-top-bar');
             const bottomBar = document.getElementById('car-bottom-bar');
-            if (topBar) topBar.style.opacity = '1';
-            if (bottomBar) bottomBar.style.opacity = '1';
+            if (topBar && topBar.style.opacity !== '1') topBar.style.opacity = '1';
+            if (bottomBar && bottomBar.style.opacity !== '1') bottomBar.style.opacity = '1';
 
             clearTimeout(hideTimer);
             hideTimer = setTimeout(() => {
@@ -16364,9 +16378,11 @@ const START_DATE = '2024/03/12 00:00:00';
             }, 6000);
         }
 
-        window.addEventListener('mousemove', resetAutoFade);
-        window.addEventListener('touchstart', resetAutoFade);
-        window.addEventListener('click', resetAutoFade);
+        window.addEventListener('mousemove', resetAutoFade, { passive: true });
+        window.addEventListener('touchstart', resetAutoFade, { passive: true });
+        window.addEventListener('touchmove', resetAutoFade, { passive: true });
+        window.addEventListener('click', resetAutoFade, { passive: true });
+        window.addEventListener('keydown', resetAutoFade, { passive: true });
 
         // Double-click/tap background to toggle unlock or quick switch
         let lastTap = 0;
@@ -16391,9 +16407,6 @@ const START_DATE = '2024/03/12 00:00:00';
         });
 
         // --- Modals ---
-        function unlockScreen() {
-            openMenuModal();
-        }
         function openMenuModal() {
             document.getElementById('car-menu-modal').classList.add('active');
         }
@@ -17000,6 +17013,8 @@ const START_DATE = '2024/03/12 00:00:00';
         if (displayTimer) { clearInterval(displayTimer); displayTimer = null; }
         if (wallpaperTimer) { clearInterval(wallpaperTimer); wallpaperTimer = null; }
         if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+        lastPixelShiftMinute = -1;
+        resetPixelShift();
         releaseWakeLock();
         document.documentElement.classList.remove('bcos-carlock-active');
         document.body.classList.remove('bcos-carlock-active');
@@ -17047,6 +17062,9 @@ const START_DATE = '2024/03/12 00:00:00';
     window.toggleFullscreen = toggleFullscreen;
     window.closeModalOnBg = closeModalOnBg;
     window.releaseWakeLock = releaseWakeLock;
+    window.acquireWakeLock = acquireWakeLock;
+    window.quickCycleDriveMode = quickCycleDriveMode;
+    window.quickAdjustCabinTemp = quickAdjustCabinTemp;
     window.triggerWallpaperFileInput = triggerWallpaperFileInput;
     window.handleWallpaperUpload = handleWallpaperUpload;
     window.promptAddWallpaperUrl = promptAddWallpaperUrl;
@@ -17060,10 +17078,10 @@ const START_DATE = '2024/03/12 00:00:00';
     window.fetchWallpaperManifest = fetchWallpaperManifest;
 
     window.showBcosCarLockscreen = showBcosCarLockscreen;
-        window.BUILTIN_WALLPAPERS = BUILTIN_WALLPAPERS;
-        window.loadWallpaperBlob = loadWallpaperBlob;
-        window.wpBlobCache = wpBlobCache;
-        window.WP_PLACEHOLDER = WP_PLACEHOLDER;
+    window.BUILTIN_WALLPAPERS = BUILTIN_WALLPAPERS;
+    window.loadWallpaperBlob = loadWallpaperBlob;
+    window.wpBlobCache = wpBlobCache;
+    window.WP_PLACEHOLDER = WP_PLACEHOLDER;
     window.closeBcosCarLockscreen = closeBcosCarLockscreen;
 
 })();
@@ -20969,7 +20987,8 @@ const START_DATE = '2024/03/12 00:00:00';
     const CHANGELOG = [
         { ver:'v7.8.3.9390', title:'座舱锁屏遥测绑定修复、OLED智能微位移防烧屏与PWA强制刷新', items:[
             '🖼️ 修复座舱锁屏 WALLPAPER 遥测状态错误绑定：重构 DOM ID 绑定为 car-wp-status，阻断电池网络监听器对壁纸卡片的误写覆盖，并实现顶部徽章与中控卡片双向同步显示壁纸模式',
-            '🛡️ 优化 OLED 防烧屏微位移机制（Pixel Shift）：废弃旧版全屏持续动画，改为每整分钟对高亮时钟与核心卡片执行 1~2px 离散微米级位移（8点循环），触控、拖拽、操作弹窗即刻瞬时归零，并在静置6秒后启动柔和暗屏保护，零卡顿零重绘抖动',
+            '⚡ 补全座舱锁屏中控卡片交互绑定：修复 DRIVE MODE 动力模式循环、CABIN TEMP 温度调节与常亮保持在主系统锁屏容器内的作用域导出，杜绝点击报错',
+            '🛡️ 优化 OLED 防烧屏微位移机制（Pixel Shift）：废弃旧版全屏持续动画，采用分钟级精准离散微位移（8点循环）与高亮纪念日/时钟平滑过渡，触控、拖拽、操作弹窗即刻瞬时归零，并在静置6秒后启动柔和暗屏保护，零卡顿零重绘抖动',
             '🔄 升级 Service Worker 缓存至 v7.8.3.9390 并更新 Web Manifest，强制刷新离线客户端缓存与 PWA 容器'
         ]}
     ];
