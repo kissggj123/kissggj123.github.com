@@ -76,7 +76,7 @@
             --car-wp-dim: rgba(5, 8, 17, 0.45);
             --car-wp-blur: 1px;
         }
-        #bcos-car-lockscreen.theme-xpeng, body.theme-xpeng {
+        #bcos-car-lockscreen.theme-xpeng, #car-root.theme-xpeng, body.theme-xpeng {
             --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
             --car-accent: #00eaff;
             --car-accent2: #a78bfa;
@@ -86,7 +86,7 @@
             --car-text: #e6f7ff;
             --car-text-dim: #7f9eb2;
         }
-        #bcos-car-lockscreen.theme-bunny, body.theme-bunny {
+        #bcos-car-lockscreen.theme-bunny, #car-root.theme-bunny, body.theme-bunny {
             --car-bg: radial-gradient(circle at 50% 30%, #301726 0%, #150912 75%, #0a0408 100%);
             --car-accent: #ff6b9d;
             --car-accent2: #ffd166;
@@ -96,7 +96,7 @@
             --car-text: #fff0f5;
             --car-text-dim: #c48b9f;
         }
-        #bcos-car-lockscreen.theme-aurora, body.theme-aurora {
+        #bcos-car-lockscreen.theme-aurora, #car-root.theme-aurora, body.theme-aurora {
             --car-bg: radial-gradient(circle at 50% 30%, #082623 0%, #041412 75%, #020807 100%);
             --car-accent: #06ffa5;
             --car-accent2: #38bdf8;
@@ -106,7 +106,7 @@
             --car-text: #e6fffb;
             --car-text-dim: #7bb3aa;
         }
-        #bcos-car-lockscreen.theme-carbon, body.theme-carbon {
+        #bcos-car-lockscreen.theme-carbon, #car-root.theme-carbon, body.theme-carbon {
             --car-bg: radial-gradient(circle at 50% 30%, #2b1114 0%, #120708 75%, #080304 100%);
             --car-accent: #ff334b;
             --car-accent2: #fbbf24;
@@ -116,7 +116,7 @@
             --car-text: #fff1f2;
             --car-text-dim: #c2888f;
         }
-        #bcos-car-lockscreen.theme-stealth, body.theme-stealth {
+        #bcos-car-lockscreen.theme-stealth, #car-root.theme-stealth, body.theme-stealth {
             --car-bg: #000000;
             --car-accent: #d1d5db;
             --car-accent2: #6b7280;
@@ -272,7 +272,9 @@
             align-items: center;
             gap: .5rem;
         }
-        #bcos-car-lockscreen.show-top-actions, body.show-top-actions .car-top-actions {
+        #bcos-car-lockscreen.show-top-actions .car-top-actions,
+        #car-root.show-top-actions .car-top-actions,
+        body.show-top-actions .car-top-actions {
             display: flex;
         }
         .car-top-status-right {
@@ -425,12 +427,14 @@
             font-size: clamp(2.8rem, 5.2vw, 4.4rem);
             font-weight: 900;
             line-height: 1;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-            background: linear-gradient(135deg, var(--car-accent) 0%, #ffffff 40%, var(--car-accent2) 100%);
+            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            background: linear-gradient(135deg, var(--car-accent) 10%, #ffffff 50%, var(--car-accent2) 90%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 16px var(--car-glow));
-            letter-spacing: -1px;
+            filter: drop-shadow(0 0 20px var(--car-glow));
+            letter-spacing: -2px;
+            font-variant-numeric: tabular-nums;
         }
         .car-hero-unit {
             font-size: 1.15rem;
@@ -446,6 +450,13 @@
             margin-bottom: .75rem;
             font-variant-numeric: tabular-nums;
             letter-spacing: 0.5px;
+        }
+        .car-ms-frac {
+            font-size: 0.72em;
+            opacity: 0.65;
+            font-weight: 600;
+            letter-spacing: 0;
+            margin-left: 2px;
         }
         .car-hero-progress-box {
             background: rgba(0, 0, 0, 0.4);
@@ -507,13 +518,22 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-            transition: border-color .3s ease, box-shadow .3s ease;
+            transition: border-color .3s ease, box-shadow .3s ease, transform .2s ease;
             position: relative;
             overflow: hidden;
+        }
+        .car-widget-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            pointer-events: none;
         }
         .car-widget-card:hover {
             border-color: var(--car-accent);
             box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 15px var(--car-glow);
+            transform: translateY(-1px);
         }
         .car-widget-header {
             display: flex;
@@ -792,6 +812,18 @@
         .car-slider-track:hover {
             border-color: var(--car-accent);
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 0 14px var(--car-glow);
+        }
+        .car-slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            opacity: 0.2;
+            border-radius: 26px;
+            transition: none;
+            pointer-events: none;
         }
         .car-slider-text {
             font-size: .88rem;
@@ -1080,26 +1112,42 @@
             }
         }
 
-        /* Toast Notification */
+        /* Toast Notification (Strictly constrained capsule pill — never stretches vertically) */
         .car-toast {
             position: fixed;
-            bottom: 5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(10, 20, 40, 0.95);
-            border: 1px solid var(--car-accent);
-            box-shadow: 0 0 20px var(--car-glow);
+            top: auto !important;
+            bottom: 5.2rem !important;
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) translateY(8px);
+            width: max-content !important;
+            max-width: min(88vw, 440px) !important;
+            height: auto !important;
+            max-height: 52px !important;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: rgba(10, 20, 40, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid var(--car-accent);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), 0 0 20px var(--car-glow);
             color: var(--car-text);
-            padding: .6rem 1.4rem;
-            border-radius: 20px;
+            padding: .55rem 1.4rem;
+            border-radius: 24px;
             font-size: .85rem;
             font-weight: 600;
+            letter-spacing: 0.3px;
             z-index: 2000;
             pointer-events: none;
             opacity: 0;
-            transition: opacity .3s;
+            transition: opacity .25s cubic-bezier(0.2, 0.9, 0.3, 1), transform .25s cubic-bezier(0.2, 0.9, 0.3, 1);
         }
-        .car-toast.show { opacity: 1; }
+        .car-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
 
     </style>
 </head>
@@ -1253,7 +1301,7 @@
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9378</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9379</div>
                             </div>
                         </div>
                     </div>
@@ -1274,7 +1322,8 @@
             <!-- Bottom Unlock Slider Track -->
             <footer class="car-bottom-bar" id="car-bottom-bar">
                 <div class="car-slider-track" id="car-track">
-                    <div class="car-slider-text">👉 滑动滑块解锁退出锁屏</div>
+                    <div class="car-slider-fill" id="car-slider-fill"></div>
+                    <div class="car-slider-text">🔓 滑动解锁退出锁屏</div>
                     <div class="car-slider-thumb" id="car-thumb">🐰</div>
                 </div>
             </footer>
@@ -1590,12 +1639,17 @@
         ];
         let currentQuoteIdx = 0;
 
+        let carToastTimer = null;
         function showToast(msg) {
             const t = document.getElementById('car-toast');
             if (!t) return;
+            if (carToastTimer) clearTimeout(carToastTimer);
             t.textContent = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2500);
+            carToastTimer = setTimeout(() => {
+                t.classList.remove('show');
+                carToastTimer = null;
+            }, 2400);
         }
 
         // --- Theme Management ---
@@ -1607,6 +1661,10 @@
             applyTheme();
         }
         function applyTheme() {
+            const carRoot = document.getElementById('car-root');
+            if (carRoot) {
+                carRoot.className = THEMES[currentThemeIdx].id;
+            }
             document.body.className = THEMES[currentThemeIdx].id;
             const badge = document.getElementById('car-theme-name');
             if (badge) badge.textContent = THEMES[currentThemeIdx].name;
@@ -1624,16 +1682,20 @@
             applyTopActionsState(show);
         }
         function applyTopActionsState(show) {
+            const lockEl = document.getElementById('car-root') || document.getElementById('bcos-car-lockscreen');
+            const target = lockEl || document.body;
             if (show) {
-                document.body.classList.add('show-top-actions');
+                target.classList.add('show-top-actions');
             } else {
-                document.body.classList.remove('show-top-actions');
+                target.classList.remove('show-top-actions');
             }
             const btn = document.getElementById('toggle-top-btn');
             if (btn) btn.textContent = show ? '常驻显示中 (点击隐藏)' : '已隐藏 (点击显示)';
         }
         function toggleTopActions() {
-            const current = document.body.classList.contains('show-top-actions');
+            const lockEl = document.getElementById('car-root') || document.getElementById('bcos-car-lockscreen');
+            const target = lockEl || document.body;
+            const current = target.classList.contains('show-top-actions');
             const next = !current;
             localStorage.setItem('car_show_top_actions', next ? 'true' : 'false');
             applyTopActionsState(next);
@@ -2597,7 +2659,7 @@
 
             const timeEl = document.getElementById('car-time');
             if (timeEl) {
-                timeEl.textContent = `${String(rHours).padStart(2,'0')}时 ${String(rMins).padStart(2,'0')}分 ${String(rSecs).padStart(2,'0')}秒 .${rMs}`;
+                timeEl.innerHTML = `${String(rHours).padStart(2,'0')}时 ${String(rMins).padStart(2,'0')}分 ${String(rSecs).padStart(2,'0')}秒 <span class="car-ms-frac">.${rMs}</span>`;
             }
 
             // 4. Next Milestone Countdown & Progress
@@ -2752,22 +2814,24 @@
 
         // Double-click/tap background to toggle unlock or quick switch
         let lastTap = 0;
-        const carRootEl = document.getElementById('car-root');
-        if (carRootEl) {
-            carRootEl.addEventListener('click', (e) => {
-                if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('#car-track') || e.target.closest('.car-modal') || e.target.closest('.clickable')) return;
-                const now = Date.now();
-                if (now - lastTap < 350) {
-                    // Double tap opens menu
-                    unlockScreen();
-                }
-                lastTap = now;
-            });
-        }
+        document.addEventListener('click', (e) => {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root || !root.contains(e.target)) return;
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('#car-track') || e.target.closest('.car-modal') || e.target.closest('.clickable')) return;
+            const now = Date.now();
+            if (now - lastTap < 350) {
+                // Double tap opens menu
+                unlockScreen();
+            }
+            lastTap = now;
+        });
 
         // ESC key to unlock
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') unlockScreen();
+            if (e.key === 'Escape') {
+                const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+                if (root) unlockScreen();
+            }
         });
 
         // --- Modals ---
@@ -2831,6 +2895,7 @@
             // Load wallpapers & manifest
             const savedIdx = localStorage.getItem('car_wp_current_idx');
             if (savedIdx !== null) currentWallpaperIdx = parseInt(savedIdx, 10) || 0;
+            applyCurrentWallpaper();
             fetchWallpaperManifest(false);
             restartWallpaperTimer();
             prefetchRemainingWallpapers();
