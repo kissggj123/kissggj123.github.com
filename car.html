@@ -34,22 +34,27 @@
             -webkit-tap-highlight-color: transparent;
         }
         html, body {
-            overscroll-behavior: none;
+            overscroll-behavior: none !important;
             -webkit-user-select: none;
             user-select: none;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            position: fixed !important;
+            inset: 0 !important;
+            overflow: hidden !important;
             background: #000;
             color: #e6f7ff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            touch-action: none !important;
+            -webkit-overflow-scrolling: auto !important;
         }
         /* Vehicle Touchscreen Specific Optimizations */
         #bcos-car-lockscreen, #car-root {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
-            touch-action: pan-y;
+            touch-action: none !important;
         }
         #bcos-car-lockscreen button, #car-root button,
         #bcos-car-lockscreen .clickable, #car-root .clickable {
@@ -136,11 +141,11 @@
             bottom: 0;
             width: 100%;
             height: 100%;
-            height: 100dvh;
+            max-height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 1.2rem 1.8rem;
+            padding: max(0.75rem, env(safe-area-inset-top, 0.75rem)) max(1.2rem, env(safe-area-inset-right, 1.2rem)) max(0.75rem, env(safe-area-inset-bottom, 0.75rem)) max(1.2rem, env(safe-area-inset-left, 1.2rem));
             overflow: hidden;
             box-sizing: border-box;
             touch-action: none !important;
@@ -230,27 +235,46 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: .7rem;
+            padding-bottom: clamp(0.4rem, 1vh, 0.75rem);
             border-bottom: 1px solid var(--car-border);
             transition: opacity .4s ease;
             flex-shrink: 0;
+            min-height: 40px;
+            gap: 0.6rem;
             z-index: 10;
         }
         .car-brand {
             display: flex;
             align-items: center;
-            gap: .6rem;
-            font-size: .95rem;
+            gap: .5rem;
+            font-size: clamp(0.85rem, 1.6vw, 0.95rem);
             font-weight: 800;
             color: var(--car-accent);
             text-shadow: 0 0 14px var(--car-glow);
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            min-width: 0;
+            flex: 1;
             letter-spacing: 0.5px;
+        }
+        .car-brand::-webkit-scrollbar {
+            display: none;
+        }
+        .car-brand-title {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-badge {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--car-border);
-            padding: .2rem .6rem;
+            padding: .15rem .55rem;
             border-radius: 14px;
             font-size: .75rem;
             color: var(--car-accent2);
@@ -261,6 +285,8 @@
             transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-badge.clickable {
             cursor: pointer;
@@ -286,7 +312,9 @@
         .car-top-status-right {
             display: flex;
             align-items: center;
-            gap: .6rem;
+            gap: .5rem;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-mini-trigger {
             background: rgba(255, 255, 255, 0.06);
@@ -302,6 +330,8 @@
             align-items: center;
             gap: .3rem;
             backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-mini-trigger:hover {
             opacity: 1;
@@ -323,6 +353,8 @@
             align-items: center;
             gap: .3rem;
             transition: all .2s;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-icon-btn:hover, .car-icon-btn:active {
             border-color: var(--car-accent);
@@ -336,19 +368,22 @@
             min-height: 0;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
-            gap: 1.25rem;
+            gap: clamp(0.75rem, 1.8vw, 1.5rem);
             align-items: center;
-            padding: .6rem 0;
-            overflow: hidden;
+            padding: clamp(0.3rem, 1vh, 0.8rem) 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scrollbar-width: none;
+        }
+        .car-main-grid::-webkit-scrollbar {
+            display: none;
         }
         @media (max-width: 900px) {
             .car-main-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
-                overflow-y: auto;
-                overscroll-behavior: contain;
-                -webkit-overflow-scrolling: touch;
-                touch-action: pan-y;
             }
         }
 
@@ -358,12 +393,13 @@
             flex-direction: column;
             justify-content: center;
             min-height: 0;
+            min-width: 0;
         }
         .car-clock-box {
-            margin-bottom: 1rem;
+            margin-bottom: clamp(0.4rem, 1.4vh, 1.1rem);
         }
         .car-digital-clock {
-            font-size: clamp(3.2rem, 7.2vw, 6.2rem);
+            font-size: clamp(2.4rem, 5.5vw, 5.2rem);
             font-weight: 900;
             font-family: 'SF Mono', 'Courier New', Courier, monospace, "Segoe UI";
             letter-spacing: 2px;
@@ -373,12 +409,12 @@
             font-variant-numeric: tabular-nums;
         }
         .car-digital-date {
-            font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+            font-size: clamp(0.85rem, 1.5vw, 1.25rem);
             color: var(--car-text-dim);
-            margin-top: .45rem;
+            margin-top: .4rem;
             display: flex;
             align-items: center;
-            gap: .8rem;
+            gap: .6rem;
             font-weight: 600;
             letter-spacing: 0.5px;
             flex-wrap: wrap;
@@ -389,7 +425,7 @@
             background: var(--car-panel);
             border: 1px solid var(--car-border);
             border-radius: 20px;
-            padding: 1.25rem 1.5rem;
+            padding: clamp(0.75rem, 1.6vh, 1.25rem) clamp(0.9rem, 1.8vw, 1.5rem);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.12);
@@ -1098,7 +1134,7 @@
         .car-slider-track {
             position: relative;
             width: min(440px, 92%);
-            height: 52px;
+            height: clamp(44px, 6vh, 52px);
             background: rgba(10, 20, 40, 0.88);
             border: 1px solid var(--car-border);
             border-radius: 26px;
@@ -1107,7 +1143,8 @@
             justify-content: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.1);
             user-select: none;
-            touch-action: pan-y;
+            touch-action: none !important;
+            overscroll-behavior: none !important;
             overflow: hidden;
             transition: border-color .3s, box-shadow .3s;
         }
@@ -1168,7 +1205,7 @@
             cursor: grab;
             box-shadow: 0 0 16px var(--car-glow);
             transition: transform 0.1s ease-out;
-            touch-action: none;
+            touch-action: none !important;
             overflow: hidden;
         }
         .car-slider-thumb:active {
@@ -1177,9 +1214,87 @@
             box-shadow: 0 0 24px var(--car-glow);
         }
 
+        /* Responsive Breakpoints Across Devices & Heights */
+        @media (max-width: 1100px) {
+            #car-top-battery {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 800px) {
+            #car-wakelock-badge {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 640px) {
             .car-hero-gauge-col {
                 display: none !important;
+            }
+            .car-brand {
+                font-size: 0.85rem;
+            }
+            #car-theme-name {
+                display: none !important;
+            }
+        }
+
+        @media (max-height: 800px) {
+            #car-root, #bcos-car-lockscreen {
+                padding: max(0.5rem, env(safe-area-inset-top, 0.5rem)) max(0.9rem, env(safe-area-inset-right, 0.9rem)) max(0.5rem, env(safe-area-inset-bottom, 0.5rem)) max(0.9rem, env(safe-area-inset-left, 0.9rem));
+            }
+            .car-top-bar {
+                padding-bottom: 0.35rem;
+                min-height: 36px;
+            }
+            .car-main-grid {
+                padding: 0.25rem 0;
+                gap: 0.8rem;
+            }
+            .car-clock-box {
+                margin-bottom: 0.35rem;
+            }
+            .car-digital-clock {
+                font-size: clamp(2.1rem, 4.8vw, 3.8rem);
+            }
+            .car-hero-card {
+                padding: 0.7rem 0.95rem;
+                border-radius: 16px;
+            }
+            .car-hero-days-val {
+                font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+            }
+            .car-gauge-box {
+                width: 76px;
+                height: 76px;
+            }
+            .car-widget-card {
+                padding: 0.5rem 0.8rem;
+                border-radius: 14px;
+            }
+            .car-side-col {
+                gap: 0.45rem;
+            }
+            .car-battery-soc-val {
+                font-size: 1.45rem;
+            }
+            .car-battery-range-val {
+                font-size: 1.05rem;
+            }
+            .car-diag-grid {
+                gap: 0.35rem;
+            }
+            .car-diag-item {
+                padding: 0.3rem 0.5rem;
+            }
+            .car-milestone-scroller {
+                max-height: 90px;
+            }
+            .car-bottom-bar {
+                padding-top: 0.35rem;
+            }
+            .car-slider-track {
+                height: 44px;
             }
         }
 
@@ -1199,6 +1314,8 @@
             pointer-events: none;
             transition: opacity .25s ease, visibility .25s ease;
             padding: 1.5rem;
+            touch-action: none !important;
+            overscroll-behavior: none !important;
         }
         .car-modal-overlay.active {
             opacity: 1 !important;
@@ -1217,6 +1334,9 @@
             transition: transform .3s ease;
             max-height: 88vh;
             overflow-y: auto;
+            overscroll-behavior: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
         }
         
         @media (max-width: 600px) {
@@ -1680,7 +1800,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" title="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.3.9384</div>
+                                <div class="car-diag-val">bcos v7.8.3.9385</div>
                             </div>
                         </div>
                     </div>
@@ -2259,6 +2379,9 @@
 
         function closeBatteryModal() {
             document.getElementById('car-battery-modal').classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
 
         function selectRangeStandard(std) {
@@ -2900,6 +3023,9 @@
         function closeWallpaperModal() {
             const modal = document.getElementById('car-wallpaper-modal');
             if (modal) modal.classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
 
         function triggerWallpaperFileInput() {
@@ -3084,7 +3210,12 @@
         }
 
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') acquireWakeLock();
+            if (document.visibilityState === 'visible') {
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+                acquireWakeLock();
+            }
         });
 
         // --- Fullscreen API (Cross-Vendor for Android Car Browsers) ---
@@ -3355,7 +3486,12 @@
                 if (isDragging && e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onMove(e.touches[0].clientX);
+                    return;
                 }
+                if (e.target.closest('.car-modal') || e.target.closest('.car-main-grid') || e.target.closest('.car-milestone-scroller')) {
+                    return;
+                }
+                if (e.cancelable) e.preventDefault();
             }, { passive: false });
             window.addEventListener('touchend', onEnd);
             window.addEventListener('touchcancel', onEnd);
@@ -3418,6 +3554,9 @@
         }
         function closeMenuModal() {
             document.getElementById('car-menu-modal').classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
             const thumb = document.getElementById('car-thumb');
             if (thumb) {
                 thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
@@ -3435,10 +3574,16 @@
         }
         function closeAddAnniversaryModal() {
             document.getElementById('car-add-modal').classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
         function closeModalOnBg(e) {
             if (e.target.classList.contains('car-modal-overlay')) {
                 e.target.classList.remove('active');
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
             }
         }
 

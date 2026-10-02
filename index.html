@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9384 -->
+    <!-- VERSION: v7.8.3.9385 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1328,7 +1328,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9384</div>
+                <div class="subtitle">v7.8.3.9385</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1641,7 +1641,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9384</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9385</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1707,7 +1707,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9384',
+        VERSION: 'v7.8.3.9385',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2461,6 +2461,7 @@
         if (document.hidden) {
             if (_perfMonitor._rafId) { cancelAnimationFrame(_perfMonitor._rafId); _perfMonitor._rafId = null; _perfMonitor._activeRAF = false; }
         } else {
+            if (document.getElementById('bcos-car-lockscreen')) return;
             _perfMonitor.startRAF();
         }
     });
@@ -2738,7 +2739,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9384 已启动', 'info');
+        logEvent('兔可可王国 v7.8.3.9385 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9575,7 +9576,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9384 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.3.9385 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -10248,11 +10249,11 @@
             bottom: 0;
             width: 100%;
             height: 100%;
-            height: 100dvh;
+            max-height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 1.2rem 1.8rem;
+            padding: max(0.75rem, env(safe-area-inset-top, 0.75rem)) max(1.2rem, env(safe-area-inset-right, 1.2rem)) max(0.75rem, env(safe-area-inset-bottom, 0.75rem)) max(1.2rem, env(safe-area-inset-left, 1.2rem));
             overflow: hidden;
             box-sizing: border-box;
             touch-action: none !important;
@@ -10345,27 +10346,46 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: .7rem;
+            padding-bottom: clamp(0.4rem, 1vh, 0.75rem);
             border-bottom: 1px solid var(--car-border);
             transition: opacity .4s ease;
             flex-shrink: 0;
+            min-height: 40px;
+            gap: 0.6rem;
             z-index: 10;
         }
         .car-brand {
             display: flex;
             align-items: center;
-            gap: .6rem;
-            font-size: .95rem;
+            gap: .5rem;
+            font-size: clamp(0.85rem, 1.6vw, 0.95rem);
             font-weight: 800;
             color: var(--car-accent);
             text-shadow: 0 0 14px var(--car-glow);
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            min-width: 0;
+            flex: 1;
             letter-spacing: 0.5px;
+        }
+        .car-brand::-webkit-scrollbar {
+            display: none;
+        }
+        .car-brand-title {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-badge {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--car-border);
-            padding: .2rem .6rem;
+            padding: .15rem .55rem;
             border-radius: 14px;
             font-size: .75rem;
             color: var(--car-accent2);
@@ -10376,6 +10396,8 @@
             transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-badge.clickable {
             cursor: pointer;
@@ -10401,7 +10423,9 @@
         .car-top-status-right {
             display: flex;
             align-items: center;
-            gap: .6rem;
+            gap: .5rem;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-mini-trigger {
             background: rgba(255, 255, 255, 0.06);
@@ -10417,6 +10441,8 @@
             align-items: center;
             gap: .3rem;
             backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-mini-trigger:hover {
             opacity: 1;
@@ -10438,6 +10464,8 @@
             align-items: center;
             gap: .3rem;
             transition: all .2s;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .car-icon-btn:hover, .car-icon-btn:active {
             border-color: var(--car-accent);
@@ -10451,19 +10479,22 @@
             min-height: 0;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
-            gap: 1.25rem;
+            gap: clamp(0.75rem, 1.8vw, 1.5rem);
             align-items: center;
-            padding: .6rem 0;
-            overflow: hidden;
+            padding: clamp(0.3rem, 1vh, 0.8rem) 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scrollbar-width: none;
+        }
+        .car-main-grid::-webkit-scrollbar {
+            display: none;
         }
         @media (max-width: 900px) {
             .car-main-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
-                overflow-y: auto;
-                overscroll-behavior: contain;
-                -webkit-overflow-scrolling: touch;
-                touch-action: pan-y;
             }
         }
 
@@ -10473,12 +10504,13 @@
             flex-direction: column;
             justify-content: center;
             min-height: 0;
+            min-width: 0;
         }
         .car-clock-box {
-            margin-bottom: 1rem;
+            margin-bottom: clamp(0.4rem, 1.4vh, 1.1rem);
         }
         .car-digital-clock {
-            font-size: clamp(3.2rem, 7.2vw, 6.2rem);
+            font-size: clamp(2.4rem, 5.5vw, 5.2rem);
             font-weight: 900;
             font-family: 'SF Mono', 'Courier New', Courier, monospace, "Segoe UI";
             letter-spacing: 2px;
@@ -10488,12 +10520,12 @@
             font-variant-numeric: tabular-nums;
         }
         .car-digital-date {
-            font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+            font-size: clamp(0.85rem, 1.5vw, 1.25rem);
             color: var(--car-text-dim);
-            margin-top: .45rem;
+            margin-top: .4rem;
             display: flex;
             align-items: center;
-            gap: .8rem;
+            gap: .6rem;
             font-weight: 600;
             letter-spacing: 0.5px;
             flex-wrap: wrap;
@@ -10504,7 +10536,7 @@
             background: var(--car-panel);
             border: 1px solid var(--car-border);
             border-radius: 20px;
-            padding: 1.25rem 1.5rem;
+            padding: clamp(0.75rem, 1.6vh, 1.25rem) clamp(0.9rem, 1.8vw, 1.5rem);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.12);
@@ -11213,7 +11245,7 @@
         .car-slider-track {
             position: relative;
             width: min(440px, 92%);
-            height: 52px;
+            height: clamp(44px, 6vh, 52px);
             background: rgba(10, 20, 40, 0.88);
             border: 1px solid var(--car-border);
             border-radius: 26px;
@@ -11222,7 +11254,8 @@
             justify-content: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.1);
             user-select: none;
-            touch-action: pan-y;
+            touch-action: none !important;
+            overscroll-behavior: none !important;
             overflow: hidden;
             transition: border-color .3s, box-shadow .3s;
         }
@@ -11283,7 +11316,7 @@
             cursor: grab;
             box-shadow: 0 0 16px var(--car-glow);
             transition: transform 0.1s ease-out;
-            touch-action: none;
+            touch-action: none !important;
             overflow: hidden;
         }
         .car-slider-thumb:active {
@@ -11292,9 +11325,87 @@
             box-shadow: 0 0 24px var(--car-glow);
         }
 
+        /* Responsive Breakpoints Across Devices & Heights */
+        @media (max-width: 1100px) {
+            #car-top-battery {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 800px) {
+            #car-wakelock-badge {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 640px) {
             .car-hero-gauge-col {
                 display: none !important;
+            }
+            .car-brand {
+                font-size: 0.85rem;
+            }
+            #car-theme-name {
+                display: none !important;
+            }
+        }
+
+        @media (max-height: 800px) {
+            #car-root, #bcos-car-lockscreen {
+                padding: max(0.5rem, env(safe-area-inset-top, 0.5rem)) max(0.9rem, env(safe-area-inset-right, 0.9rem)) max(0.5rem, env(safe-area-inset-bottom, 0.5rem)) max(0.9rem, env(safe-area-inset-left, 0.9rem));
+            }
+            .car-top-bar {
+                padding-bottom: 0.35rem;
+                min-height: 36px;
+            }
+            .car-main-grid {
+                padding: 0.25rem 0;
+                gap: 0.8rem;
+            }
+            .car-clock-box {
+                margin-bottom: 0.35rem;
+            }
+            .car-digital-clock {
+                font-size: clamp(2.1rem, 4.8vw, 3.8rem);
+            }
+            .car-hero-card {
+                padding: 0.7rem 0.95rem;
+                border-radius: 16px;
+            }
+            .car-hero-days-val {
+                font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+            }
+            .car-gauge-box {
+                width: 76px;
+                height: 76px;
+            }
+            .car-widget-card {
+                padding: 0.5rem 0.8rem;
+                border-radius: 14px;
+            }
+            .car-side-col {
+                gap: 0.45rem;
+            }
+            .car-battery-soc-val {
+                font-size: 1.45rem;
+            }
+            .car-battery-range-val {
+                font-size: 1.05rem;
+            }
+            .car-diag-grid {
+                gap: 0.35rem;
+            }
+            .car-diag-item {
+                padding: 0.3rem 0.5rem;
+            }
+            .car-milestone-scroller {
+                max-height: 90px;
+            }
+            .car-bottom-bar {
+                padding-top: 0.35rem;
+            }
+            .car-slider-track {
+                height: 44px;
             }
         }
 
@@ -11314,6 +11425,8 @@
             pointer-events: none;
             transition: opacity .25s ease, visibility .25s ease;
             padding: 1.5rem;
+            touch-action: none !important;
+            overscroll-behavior: none !important;
         }
         .car-modal-overlay.active {
             opacity: 1 !important;
@@ -11332,6 +11445,9 @@
             transition: transform .3s ease;
             max-height: 88vh;
             overflow-y: auto;
+            overscroll-behavior: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
         }
         .car-modal-overlay.active .car-modal {
             transform: translateY(0);
@@ -12789,7 +12905,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.3.9384</span>
+                <span class="bcos-ctx-ver">v7.8.3.9385</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -14192,7 +14308,7 @@
             return '<div class="item"><label>设置与偏好项</label><span class="node-val">' + _bcosEscape(p) + '</span></div>';
         }).join('\n        ');
 
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9384 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9384 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9385 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9385 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
     function _bcosExtractDiffRules(defaultHtml, currentHtml) {
@@ -14976,6 +15092,9 @@ const START_DATE = '2024/03/12 00:00:00';
 
         function closeBatteryModal() {
             document.getElementById('car-battery-modal').classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
 
         function selectRangeStandard(std) {
@@ -15617,6 +15736,9 @@ const START_DATE = '2024/03/12 00:00:00';
         function closeWallpaperModal() {
             const modal = document.getElementById('car-wallpaper-modal');
             if (modal) modal.classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
 
         function triggerWallpaperFileInput() {
@@ -15801,7 +15923,14 @@ const START_DATE = '2024/03/12 00:00:00';
         }
 
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') acquireWakeLock();
+            if (document.visibilityState === 'visible') {
+                if (document.getElementById('bcos-car-lockscreen')) {
+                    window.scrollTo(0, 0);
+                    document.documentElement.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                }
+                acquireWakeLock();
+            }
         });
 
         // --- Fullscreen API (Cross-Vendor for Android Car Browsers) ---
@@ -16072,6 +16201,13 @@ const START_DATE = '2024/03/12 00:00:00';
                 if (isDragging && e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onMove(e.touches[0].clientX);
+                    return;
+                }
+                if (document.getElementById('bcos-car-lockscreen')) {
+                    if (e.target.closest('.car-modal') || e.target.closest('.car-main-grid') || e.target.closest('.car-milestone-scroller')) {
+                        return;
+                    }
+                    if (e.cancelable) e.preventDefault();
                 }
             }, { passive: false });
             window.addEventListener('touchend', onEnd);
@@ -16135,6 +16271,9 @@ const START_DATE = '2024/03/12 00:00:00';
         }
         function closeMenuModal() {
             document.getElementById('car-menu-modal').classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
             const thumb = document.getElementById('car-thumb');
             if (thumb) {
                 thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
@@ -16152,10 +16291,16 @@ const START_DATE = '2024/03/12 00:00:00';
         }
         function closeAddAnniversaryModal() {
             document.getElementById('car-add-modal').classList.remove('active');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
         function closeModalOnBg(e) {
             if (e.target.classList.contains('car-modal-overlay')) {
                 e.target.classList.remove('active');
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
             }
         }
 
@@ -16185,6 +16330,9 @@ const START_DATE = '2024/03/12 00:00:00';
         document.documentElement.dataset.carlockScrollY = String(_lockScrollY);
         document.documentElement.classList.add('bcos-carlock-active');
         document.body.classList.add('bcos-carlock-active');
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
 
         let el = document.getElementById('bcos-car-lockscreen');
         if (!el) {
@@ -16379,7 +16527,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" title="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.3.9384</div>
+                                <div class="car-diag-val">bcos v7.8.3.9385</div>
                             </div>
                         </div>
                     </div>
@@ -16717,6 +16865,12 @@ const START_DATE = '2024/03/12 00:00:00';
         releaseWakeLock();
         document.documentElement.classList.remove('bcos-carlock-active');
         document.body.classList.remove('bcos-carlock-active');
+        if (typeof _perfMonitor !== 'undefined' && !_perfMonitor._activeRAF) {
+            _perfMonitor.startRAF();
+        }
+        if (typeof mouseBunnyEnabled !== 'undefined' && mouseBunnyEnabled && typeof _trailRAFRunning !== 'undefined' && !_trailRAFRunning) {
+            restartTrailRAF();
+        }
         const _savedScrollY = parseInt(document.documentElement.dataset.carlockScrollY || '0', 10);
         if (!isNaN(_savedScrollY) && _savedScrollY > 0) {
             window.scrollTo(0, _savedScrollY);
@@ -19565,6 +19719,7 @@ const START_DATE = '2024/03/12 00:00:00';
         // Visibility change: clear stale trail when returning from background
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) return;
+            if (document.getElementById('bcos-car-lockscreen')) return;
             // Page became visible — clear any stale trail content and restart RAF
             if (mouseBunnyEnabled && !eggInkPersistMode) {
                 _lastTrailFrameTime = 0;
@@ -20674,6 +20829,14 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.3.9385', title:'全尺寸设备与车载大屏自适应响应式、彻底根除设置弹窗与后台唤醒抖动', items:[
+            '📱 全尺寸设备自适应响应式（Adaptive）：顶部状态栏重构为柔性单行横向滑移容器，防溢出徽章按断点自适应隐藏（1100px/800px/640px），告别 iPad 1180x820 等横屏设备徽章换行导致的主屏下移与纵向物理溢出',
+            '📐 流体卡片与仪表比例重构：全面引入 clamp() 动态计算数字时钟、纪念日天数、伴侣卡片与遥测布局，在中矮屏（@media (max-height: 800px)）下自动进入精巧座舱紧凑模式',
+            '🛑 根除设置弹窗关闭后的残留抖动：模态框关闭、遮罩空白点击及锁屏进入处强制同步 window.scrollTo(0, 0) 与 scrollTop 清零，彻底消除移动端软键盘/输入法关闭引起的 WebKit fixed 容器脱节抖动',
+            '⚡ 深度阻断后台切回（visibilitychange）动画撕裂：切回前台时严格静默后台粒子画布 RAF 与 perfMonitor 性能监视器，阻断锁屏背后的高频 GPU 图层重绘抖动',
+            '🔒 全域非滚动区 touchmove 事件拦截：在非模态框与非滚动区精准被动阻断（passive: false），杜绝移动浏览器橡皮筋弹性拖拽物理引擎触发',
+            '🔄 严格双向 100% 同步：car.html、car.css 与 index.html 全量对齐自适应断点、紧凑尺寸、滚动清零与事件防御'
+        ]},
         { ver:'v7.8.3.9384', title:'彻底消除iOS/Android锁屏视口抖动、修复car.html导航模态框层级与渲染防抖优化', items:[
             '🛡️ 视口与背景滚动全维度锁定：进入车机锁屏时深度冻结页面底层滚动与回弹弹性抖动（overscroll-behavior: none 与 position: fixed），退出锁屏丝滑还原原滚动位移',
             '⚡ 消除触摸手势与视口伸缩冲突：滑块拖拽禁用被动监听（passive: false）阻断浏览器手势拦截，主屏全域禁用 touch-action: none 消除地址栏高度频繁重绘抖动',
