@@ -18,7 +18,7 @@
         if (location.protocol !== 'file:') {
             const mLink = document.createElement('link');
             mLink.rel = 'manifest';
-            mLink.href = './manifest.json';
+            mLink.href = './manifest-car.json';
             document.head.appendChild(mLink);
         }
     </script>
@@ -955,9 +955,13 @@
             font-size: 1.5rem;
             box-shadow: 0 0 18px var(--car-glow);
             flex-shrink: 0;
-            animation: carRabbitPulse 4s ease-in-out infinite;
             overflow: hidden;
-            transition: all .3s cubic-bezier(0.2, 0.9, 0.3, 1);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            animation: carRabbitPulse 4s ease-in-out infinite;
+            will-change: transform;
         }
         .car-rabbit-avatar.avatar-photo {
             background: transparent !important;
@@ -965,6 +969,8 @@
             box-shadow: 0 0 20px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
         .car-slider-thumb.thumb-photo {
             background: transparent !important;
@@ -972,6 +978,8 @@
             box-shadow: 0 0 20px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
         .car-title-avatar-img {
             width: 16px;
@@ -1001,6 +1009,11 @@
             vertical-align: middle;
             margin-right: 4px;
             display: inline-block;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            contain: paint;
         }
         .car-companion-avatar-img {
             width: 100%;
@@ -1008,6 +1021,9 @@
             border-radius: 50%;
             object-fit: cover;
             display: block;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
         .car-thumb-img {
             width: 100%;
@@ -1018,10 +1034,17 @@
             pointer-events: none;
             -webkit-user-drag: none;
             user-select: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
         @keyframes carRabbitPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 16px var(--car-glow); }
-            50% { transform: scale(1.08); box-shadow: 0 0 26px var(--car-glow); }
+            0%, 100% {
+                transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+            }
+            50% {
+                transform: translate3d(0, 0, 0) scale3d(1.05, 1.05, 1);
+            }
         }
         .car-quote-text {
             font-size: .88rem;
@@ -1080,11 +1103,19 @@
             align-items: flex-end;
             gap: 3px;
             height: 16px;
+            contain: layout paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
         }
         .car-eq-bar {
             width: 3px;
             background: var(--car-accent);
             border-radius: 2px;
+            transform-origin: bottom center;
+            -webkit-transform-origin: bottom center;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
             animation: eqBounce 1.2s ease-in-out infinite alternate;
         }
         .car-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
@@ -1094,11 +1125,11 @@
         .car-eq-bar:nth-child(5) { height: 70%; animation-delay: 0.15s; }
         .car-eq-bar:nth-child(6) { height: 45%; animation-delay: 0.35s; }
         @keyframes eqBounce {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1); }
+            0% { transform: scaleY(0.25) translateZ(0); }
+            100% { transform: scaleY(1) translateZ(0); }
         }
 
-        /* Milestone Scroller Layout Fix (Prevent Overlap) */
+        /* Milestone Scroller Layout Fix (Prevent Overlap & Block Pull-Down Refresh) */
         .car-milestone-card {
             flex: 1;
             min-height: 0;
@@ -1111,6 +1142,10 @@
             /* Fill the remaining card height so lower milestones are not clipped. */
             max-height: none;
             overflow-y: auto;
+            overscroll-behavior: contain !important;
+            overscroll-behavior-y: contain !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y !important;
             display: flex;
             flex-direction: column;
             gap: .35rem;
@@ -1203,6 +1238,9 @@
             margin-top: auto;
         }
         .car-slider-track {
+            contain: paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
             position: relative;
             width: min(440px, 92%);
             height: clamp(44px, 6vh, 52px);
@@ -1247,16 +1285,21 @@
             transition: opacity .2s;
         }
         .slider-arrow {
-            opacity: 0.6;
+            display: inline-block;
+            color: var(--car-accent);
+            opacity: 0.4;
             letter-spacing: -1px;
-            animation: sliderArrowMove 1.5s infinite;
+            animation: sliderArrowMove 1.5s ease-in-out infinite;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform, opacity;
         }
         .slider-arrow:last-child {
             animation-delay: 0.75s;
         }
         @keyframes sliderArrowMove {
-            0%, 100% { transform: translateX(0); opacity: 0.4; }
-            50% { transform: translateX(4px); opacity: 1; color: var(--car-accent); }
+            0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+            50% { transform: translate3d(4px, 0, 0); opacity: 1; }
         }
         .slider-hint-text {
             font-weight: 600;
@@ -1278,10 +1321,14 @@
             transition: transform 0.1s ease-out;
             touch-action: none !important;
             overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
         .car-slider-thumb:active {
             cursor: grabbing;
-            transform: scale(1.08);
+            transform: translate3d(0, 0, 0) scale(1.08);
             box-shadow: 0 0 24px var(--car-glow);
         }
 
@@ -1903,6 +1950,131 @@
             transform: translateX(-50%) translateY(0) !important;
         }
 
+        /* Safari Immersive Fullscreen Fallback */
+        body.safari-pseudo-fullscreen,
+        body.safari-pseudo-fullscreen #bcos-car-lockscreen,
+        body.safari-pseudo-fullscreen #car-root {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            z-index: 999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Mobile CPU & GPU Hardware Acceleration Compositing */
+        #bcos-car-lockscreen,
+        #car-root {
+            contain: strict;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+            will-change: transform, opacity;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .car-wallpaper-layer,
+        .car-content-layer,
+        .car-clock-box,
+        .car-digital-clock,
+        .car-slider-thumb,
+        .car-slider-track {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        /* Minimalist Clean Lockscreen Mode (Reference Screenshot Match) */
+        .car-minimalist-mode .car-hero-card,
+        .car-minimalist-mode .car-side-col {
+            display: none !important;
+        }
+        .car-minimalist-mode .car-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            grid-template-columns: 1fr !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            padding: 0 0 0 clamp(1.2rem, 3.5vw, 3.5rem) !important;
+            margin: auto 0 !important;
+        }
+        .car-minimalist-mode .car-hero-col {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+        }
+        .car-minimalist-mode .car-clock-box {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            padding: 0 !important;
+            margin: auto 0 !important;
+            align-self: flex-start !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            transform: translateZ(0) !important;
+            -webkit-transform: translateZ(0) !important;
+        }
+        .car-minimalist-mode .car-digital-clock {
+            font-size: clamp(3.2rem, 7.8vw, 6.4rem) !important;
+            letter-spacing: 3px !important;
+            line-height: 1 !important;
+            color: var(--car-accent) !important;
+            text-shadow: 0 0 32px var(--car-glow), 0 3px 14px rgba(0, 0, 0, 0.85) !important;
+            font-variant-numeric: tabular-nums !important;
+        }
+        .car-minimalist-mode .car-digital-date {
+            font-size: clamp(0.9rem, 1.8vw, 1.35rem) !important;
+            margin-top: clamp(0.6rem, 1.6vh, 1.1rem) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        /* Mobile Portrait adaptive layout for minimalist mode */
+        @media (max-width: 900px), (max-aspect-ratio: 6 / 5) {
+            .car-minimalist-mode .car-main-grid {
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                padding: 0 !important;
+            }
+            .car-minimalist-mode .car-hero-col {
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .car-minimalist-mode .car-clock-box {
+                align-items: center !important;
+                align-self: center !important;
+                text-align: center !important;
+            }
+            .car-minimalist-mode .car-digital-clock {
+                font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+            }
+            .car-minimalist-mode .car-digital-date {
+                justify-content: center !important;
+                font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+            }
+        }
+
+
     </style>
 </head>
 <body class="theme-xpeng">
@@ -1936,6 +2108,12 @@
 
                 <!-- Optional Top Action Buttons (Hidden by default for genuine cockpit feel) -->
                 <div class="car-top-actions" id="car-top-actions">
+                    <button class="car-icon-btn" onclick="toggleMinimalistMode()" title="切换极简锁屏模式" id="top-minimal-btn">
+                        <span>✨ 极简</span>
+                    </button>
+                    <button class="car-icon-btn" onclick="installCarPWA()" title="安装为独立 PWA 应用" id="top-install-btn">
+                        <span>📥 安装</span>
+                    </button>
                     <button class="car-icon-btn" onclick="cycleTheme()" title="切换车机氛围主题">
                         <span>🎨 主题</span>
                     </button>
@@ -1961,7 +2139,7 @@
             <main class="car-main-grid">
                 <!-- Left: Big Digital Clock & Hero Anniversary -->
                 <div class="car-hero-col">
-                    <div class="car-clock-box">
+                    <div class="car-clock-box" ondblclick="toggleMinimalistMode()" title="双击切换极简/标准锁屏模式" style="cursor:pointer;">
                         <div class="car-digital-clock" id="car-clock">--:--:--</div>
                         <div class="car-digital-date">
                             <span id="car-date">----年--月--日 星期-</span>
@@ -2086,7 +2264,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.3.9391</div>
+                                <div class="car-diag-val">bcos v7.8.3.9393</div>
                             </div>
                         </div>
                     </div>
@@ -2128,6 +2306,10 @@
             <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">兔可可专属车机锁屏已暂停，请选择下一步操作：</p>
             
             <div class="car-modal-grid">
+                <button type="button" class="car-modal-btn" onclick="toggleMinimalistMode(); closeMenuModal();" style="border-color:var(--car-accent);background:rgba(0,234,255,0.08);">
+                    <span class="icon">✨</span>
+                    <span style="color:var(--car-accent);font-weight:700;">切换极简时钟模式</span>
+                </button>
                 <a class="car-modal-btn" href="./index.html?bcos=desktop" onclick="if(window.closeBcosCarLockscreen){closeBcosCarLockscreen();return false;}">
                     <span class="icon">🖥️</span>
                     <span>bcos 桌面系统</span>
@@ -2156,6 +2338,14 @@
 
             <!-- Toggles & Quick Actions -->
             <div style="margin-bottom:1rem;display:flex;flex-direction:column;gap:.6rem;">
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>✨</span> 极简全屏锁屏模式 (纯净时间壁纸)</span>
+                    <button type="button" class="car-icon-btn" id="toggle-minimal-btn" onclick="toggleMinimalistMode()">已关闭 (点击开启)</button>
+                </div>
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>📥</span> 安装车机为独立应用 (PWA)</span>
+                    <button type="button" class="car-icon-btn" onclick="installCarPWA()">安装应用</button>
+                </div>
                 <div class="car-setting-item">
                     <span class="car-setting-label"><span>🎨</span> 切换座舱氛围主题</span>
                     <button type="button" class="car-icon-btn" onclick="cycleTheme()">切换主题</button>
@@ -3125,8 +3315,17 @@
                 showWallpaperBlob(layer, badge, cur, token, objUrl);
             }).catch(err => {
                 if (ctrl.signal.aborted || token !== wpLoadToken) return;
-                // 下载失败 (如用户添加的跨域 URL 无 CORS 头): 回退 Image 直连加载
-                console.warn('Wallpaper fetch failed, fallback to direct Image load:', cur.file, err);
+                // 下载失败 (如用户添加的跨域 URL 无 CORS 头或 file:// 协议): 回退 Image 或本地占位图
+                console.warn('Wallpaper fetch failed, fallback to direct Image/placeholder:', cur.file, err);
+                const placeholder = WP_PLACEHOLDER[cur.file];
+                if (cur.b64 && placeholder) {
+                    layer.style.backgroundImage = `url("${placeholder}")`;
+                    layer.classList.remove('wp-loading');
+                    layer.classList.add('active');
+                    updateWallpaperBadge(`🖼️ ${cur.name}`);
+                    highlightActiveThumbnail();
+                    return;
+                }
                 const img = new Image();
                 img.onload = () => {
                     if (token !== wpLoadToken) return;
@@ -3140,7 +3339,11 @@
                 };
                 img.onerror = () => {
                     layer.classList.remove('wp-loading');
-                    updateWallpaperBadge(`🖼️ ${cur.name} · 加载失败`);
+                    if (placeholder) {
+                        layer.style.backgroundImage = `url("${placeholder}")`;
+                        layer.classList.add('active');
+                    }
+                    updateWallpaperBadge(`🖼️ ${cur.name}`);
                 };
                 img.src = cur.file;
             });
@@ -3523,21 +3726,54 @@
             }
         });
 
-        // --- Fullscreen API (Cross-Vendor for Android Car Browsers) ---
+        // --- Fullscreen API (Cross-Vendor for iOS Safari & Android Car Browsers) ---
         function toggleFullscreen() {
             const doc = document;
             const el = document.documentElement;
-            const isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+            const isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
             const icon = document.getElementById('car-fs-icon');
+
             if (!isFull) {
-                const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-                if (rfs) rfs.call(el).catch(() => {});
-                if (icon) icon.textContent = '⛶ 退出全屏';
+                const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+                if (rfs) {
+                    const res = rfs.call(el);
+                    if (res && typeof res.then === 'function') {
+                        res.then(() => {
+                            if (icon) icon.textContent = '⛶ 退出全屏';
+                            showToast('已进入全屏沉浸模式');
+                        }).catch(() => {
+                            handleSafariFullscreen();
+                        });
+                    } else {
+                        if (icon) icon.textContent = '⛶ 退出全屏';
+                        showToast('已进入全屏模式');
+                    }
+                } else {
+                    handleSafariFullscreen();
+                }
             } else {
-                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
-                if (efs) efs.call(doc).catch(() => {});
+                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.webkitCancelFullScreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+                if (efs) {
+                    efs.call(doc).catch(() => {});
+                }
+                document.body.classList.remove('safari-pseudo-fullscreen');
                 if (icon) icon.textContent = '⛶ 全屏';
+                showToast('已退出全屏');
             }
+        }
+
+        function handleSafariFullscreen() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const icon = document.getElementById('car-fs-icon');
+            if (isStandalone) {
+                showToast('📱 当前已作为独立 App 运行，享受 100% 沉浸全屏！');
+                return;
+            }
+            const isPseudo = document.body.classList.toggle('safari-pseudo-fullscreen');
+            if (icon) icon.textContent = isPseudo ? '⛶ 退出全屏' : '⛶ 全屏';
+            window.scrollTo(0, 1);
+            setTimeout(() => window.scrollTo(0, 0), 100);
+            showToast('💡 Safari 全屏技巧：点底部分享 ⎋ →「添加到主屏幕」，即可享受真正的全屏 App 体验！');
         }
 
         // --- Quotes ---
@@ -3570,12 +3806,12 @@
             const start = new Date(START_DATE);
             const diff = now - start;
 
-            // 1. Digital Clock (HH:mm:ss)
+            // 1. Digital Clock (HH : mm : ss)
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             const clockEl = document.getElementById('car-clock');
-            const clockStr = `${h}:${m}:${s}`;
+            const clockStr = `${h} : ${m} : ${s}`;
             if (clockEl && clockEl.textContent !== clockStr) clockEl.textContent = clockStr;
 
             // OLED Anti-Burn-In: periodic discrete micro-shift (1-2px) at the start of each minute
@@ -3599,6 +3835,11 @@
             if (lunarEl && !lunarEl.dataset.init) {
                 lunarEl.textContent = getSimpleLunar(now);
                 lunarEl.dataset.init = '1';
+            }
+
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (root && root.classList.contains('car-minimalist-mode')) {
+                return; // 极简模式下跳过非显示组件的重绘，彻底杜绝发热与抖动
             }
 
             // 3. Days Counted & Milliseconds (Precision: 3 decimal places)
@@ -3756,7 +3997,7 @@
                 if (!isDragging) return;
                 const deltaX = clientX - startX;
                 currentX = Math.max(0, Math.min(deltaX, maxSlide));
-                thumb.style.transform = `translateX(${currentX}px)`;
+                thumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
 
                 if (maxSlide > 0) {
                     const progress = currentX / maxSlide;
@@ -3765,7 +4006,7 @@
 
                     if (progress > 0.70) {
                         isDragging = false;
-                        thumb.style.transform = `translateX(${maxSlide}px)`;
+                        thumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
                         if (fillEl) fillEl.style.width = '100%';
                         if (textEl) textEl.style.opacity = '0';
                         unlockScreen();
@@ -3777,7 +4018,7 @@
                 if (!isDragging) return;
                 isDragging = false;
                 thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
-                thumb.style.transform = 'translateX(0px)';
+                thumb.style.transform = 'translate3d(0, 0, 0)';
                 if (fillEl) {
                     fillEl.style.transition = 'width .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
                     fillEl.style.width = '0%';
@@ -3790,21 +4031,45 @@
                 }
             };
 
+            let touchStartY = 0;
             thumb.addEventListener('touchstart', (e) => {
                 if (e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onStart(e.touches[0].clientX);
                 }
             }, { passive: false });
+
+            window.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) {
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
             window.addEventListener('touchmove', (e) => {
                 if (isDragging && e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onMove(e.touches[0].clientX);
                     return;
                 }
-                if (e.target.closest('.car-modal') || e.target.closest('.car-main-grid') || e.target.closest('.car-milestone-scroller')) {
+                const scroller = e.target.closest('.car-milestone-scroller, .car-modal, .car-wp-grid');
+                if (scroller && e.touches && e.touches[0]) {
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = currentY - touchStartY;
+                    const isAtTop = scroller.scrollTop <= 0;
+                    const isAtBottom = (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1);
+                    // Prevent pulling DOWN when already at top (stops iOS Chrome from exiting fullscreen / triggering refresh)
+                    if (deltaY > 0 && isAtTop) {
+                        if (e.cancelable) e.preventDefault();
+                        return;
+                    }
+                    // Prevent pulling UP when already at bottom
+                    if (deltaY < 0 && isAtBottom) {
+                        if (e.cancelable) e.preventDefault();
+                        return;
+                    }
                     return;
                 }
+                // Disallow dragging/pulling non-scrollable parts of the lockscreen on iOS
                 if (e.cancelable) e.preventDefault();
             }, { passive: false });
             window.addEventListener('touchend', onEnd);
@@ -3837,8 +4102,8 @@
             const [dx, dy] = PIXEL_SHIFT_COORDS[pixelShiftIdx];
             const clockBox = root.querySelector('.car-clock-box');
             const heroCard = root.querySelector('.car-hero-card');
-            if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${dx}px, ${dy}px)`;
-            if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${-dx}px, ${-dy}px)`;
+            if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate3d(${dx}px, ${dy}px, 0)`;
+            if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate3d(${-dx}px, ${-dy}px, 0)`;
         }
 
         function resetPixelShift() {
@@ -3962,6 +4227,67 @@
             showToast('✓ 纪念日添加成功！');
         }
 
+        // --- Minimalist Mode (Clean Time, Date, Lunar, Custom Wallpaper) ---
+        function toggleMinimalistMode() {
+            const root = document.getElementById('car-root');
+            if (!root) return;
+            const isMin = root.classList.toggle('car-minimalist-mode');
+            localStorage.setItem('car_minimalist_mode', isMin ? 'true' : 'false');
+            updateMinimalistButtonState(isMin);
+            showToast(isMin ? '✨ 已开启极简锁屏模式 (双击时钟或滑动唤醒菜单)' : '🚗 已切换回标准座舱锁屏模式');
+        }
+
+        function applyMinimalistMode(enabled) {
+            const root = document.getElementById('car-root');
+            if (!root) return;
+            if (enabled) {
+                root.classList.add('car-minimalist-mode');
+            } else {
+                root.classList.remove('car-minimalist-mode');
+            }
+            updateMinimalistButtonState(enabled);
+        }
+
+        function updateMinimalistButtonState(enabled) {
+            const btn = document.getElementById('toggle-minimal-btn');
+            if (btn) btn.textContent = enabled ? '已开启极简 (点击切回标准)' : '已关闭 (点击开启极简)';
+            const topBtn = document.getElementById('top-minimal-btn');
+            if (topBtn) topBtn.style.color = enabled ? 'var(--car-accent)' : '';
+        }
+
+        // --- PWA Installation Support for car.html ---
+        let carInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            carInstallPrompt = e;
+            const topBtn = document.getElementById('top-install-btn');
+            if (topBtn) topBtn.style.display = 'inline-flex';
+        });
+
+        function installCarPWA() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            if (isStandalone) {
+                showToast('✓ 当前已作为独立 PWA 应用运行');
+                return;
+            }
+            if (carInstallPrompt) {
+                carInstallPrompt.prompt();
+                carInstallPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        showToast('✓ 感谢安装兔可可车机锁屏！');
+                    }
+                    carInstallPrompt = null;
+                });
+                return;
+            }
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                showToast('💡 iOS 安装提示：点击 Safari 底部分享图标 ⎋ → 选择「添加到主屏幕」即可安装！');
+            } else {
+                showToast('💡 安装提示：请点击浏览器右上角菜单 →「安装应用」或「添加到主屏幕」');
+            }
+        }
+
         // --- Init ---
         window.onload = () => {
             loadSavedTheme();
@@ -3990,6 +4316,27 @@
             updateWallpaperBlur(blur);
             updateLockscreenAvatar();
 
+            // Apply minimalist lockscreen mode if URL param or saved
+            const urlParams = new URLSearchParams(location.search);
+            const initMin = urlParams.get('minimalist') === '1' || localStorage.getItem('car_minimalist_mode') === 'true';
+            applyMinimalistMode(initMin);
+
+            // Double-tap clock to toggle minimalist mode on touch devices
+            let _lastClockTap = 0;
+            const clockEl = document.querySelector('.car-clock-box');
+            if (clockEl) {
+                clockEl.addEventListener('touchend', (e) => {
+                    const now = Date.now();
+                    if (now - _lastClockTap < 350) {
+                        e.preventDefault();
+                        toggleMinimalistMode();
+                        _lastClockTap = 0;
+                    } else {
+                        _lastClockTap = now;
+                    }
+                });
+            }
+
             // Offline service worker registration
             if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
                 navigator.serviceWorker.register('./service-worker.js').catch(() => {});
@@ -4007,6 +4354,8 @@
 
         window.updateLockscreenAvatar = updateLockscreenAvatar;
         window.toggleLockscreenAvatar = toggleLockscreenAvatar;
+        window.toggleMinimalistMode = toggleMinimalistMode;
+        window.installCarPWA = installCarPWA;
     </script>
     <canvas id="car-keepalive-canvas" width="1" height="1" style="display:none;position:fixed;pointer-events:none;"></canvas>
 </body>

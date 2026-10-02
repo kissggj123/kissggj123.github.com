@@ -945,9 +945,13 @@
             font-size: 1.5rem;
             box-shadow: 0 0 18px var(--car-glow);
             flex-shrink: 0;
-            animation: carRabbitPulse 4s ease-in-out infinite;
             overflow: hidden;
-            transition: all .3s cubic-bezier(0.2, 0.9, 0.3, 1);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            animation: carRabbitPulse 4s ease-in-out infinite;
+            will-change: transform;
         }
         .car-rabbit-avatar.avatar-photo {
             background: transparent !important;
@@ -955,6 +959,8 @@
             box-shadow: 0 0 20px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
         .car-slider-thumb.thumb-photo {
             background: transparent !important;
@@ -962,6 +968,8 @@
             box-shadow: 0 0 20px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
         .car-title-avatar-img {
             width: 16px;
@@ -991,6 +999,11 @@
             vertical-align: middle;
             margin-right: 4px;
             display: inline-block;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            contain: paint;
         }
         .car-companion-avatar-img {
             width: 100%;
@@ -998,6 +1011,9 @@
             border-radius: 50%;
             object-fit: cover;
             display: block;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
         .car-thumb-img {
             width: 100%;
@@ -1008,10 +1024,17 @@
             pointer-events: none;
             -webkit-user-drag: none;
             user-select: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
         @keyframes carRabbitPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 16px var(--car-glow); }
-            50% { transform: scale(1.08); box-shadow: 0 0 26px var(--car-glow); }
+            0%, 100% {
+                transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+            }
+            50% {
+                transform: translate3d(0, 0, 0) scale3d(1.05, 1.05, 1);
+            }
         }
         .car-quote-text {
             font-size: .88rem;
@@ -1070,11 +1093,19 @@
             align-items: flex-end;
             gap: 3px;
             height: 16px;
+            contain: layout paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
         }
         .car-eq-bar {
             width: 3px;
             background: var(--car-accent);
             border-radius: 2px;
+            transform-origin: bottom center;
+            -webkit-transform-origin: bottom center;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
             animation: eqBounce 1.2s ease-in-out infinite alternate;
         }
         .car-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
@@ -1084,11 +1115,11 @@
         .car-eq-bar:nth-child(5) { height: 70%; animation-delay: 0.15s; }
         .car-eq-bar:nth-child(6) { height: 45%; animation-delay: 0.35s; }
         @keyframes eqBounce {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1); }
+            0% { transform: scaleY(0.25) translateZ(0); }
+            100% { transform: scaleY(1) translateZ(0); }
         }
 
-        /* Milestone Scroller Layout Fix (Prevent Overlap) */
+        /* Milestone Scroller Layout Fix (Prevent Overlap & Block Pull-Down Refresh) */
         .car-milestone-card {
             flex: 1;
             min-height: 0;
@@ -1101,6 +1132,10 @@
             /* Fill the remaining card height so lower milestones are not clipped. */
             max-height: none;
             overflow-y: auto;
+            overscroll-behavior: contain !important;
+            overscroll-behavior-y: contain !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y !important;
             display: flex;
             flex-direction: column;
             gap: .35rem;
@@ -1193,6 +1228,9 @@
             margin-top: auto;
         }
         .car-slider-track {
+            contain: paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
             position: relative;
             width: min(440px, 92%);
             height: clamp(44px, 6vh, 52px);
@@ -1237,16 +1275,21 @@
             transition: opacity .2s;
         }
         .slider-arrow {
-            opacity: 0.6;
+            display: inline-block;
+            color: var(--car-accent);
+            opacity: 0.4;
             letter-spacing: -1px;
-            animation: sliderArrowMove 1.5s infinite;
+            animation: sliderArrowMove 1.5s ease-in-out infinite;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform, opacity;
         }
         .slider-arrow:last-child {
             animation-delay: 0.75s;
         }
         @keyframes sliderArrowMove {
-            0%, 100% { transform: translateX(0); opacity: 0.4; }
-            50% { transform: translateX(4px); opacity: 1; color: var(--car-accent); }
+            0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+            50% { transform: translate3d(4px, 0, 0); opacity: 1; }
         }
         .slider-hint-text {
             font-weight: 600;
@@ -1268,10 +1311,14 @@
             transition: transform 0.1s ease-out;
             touch-action: none !important;
             overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
         .car-slider-thumb:active {
             cursor: grabbing;
-            transform: scale(1.08);
+            transform: translate3d(0, 0, 0) scale(1.08);
             box-shadow: 0 0 24px var(--car-glow);
         }
 
@@ -1891,4 +1938,128 @@
             opacity: 1 !important;
             visibility: visible !important;
             transform: translateX(-50%) translateY(0) !important;
+        }
+
+        /* Safari Immersive Fullscreen Fallback */
+        body.safari-pseudo-fullscreen,
+        body.safari-pseudo-fullscreen #bcos-car-lockscreen,
+        body.safari-pseudo-fullscreen #car-root {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            z-index: 999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Mobile CPU & GPU Hardware Acceleration Compositing */
+        #bcos-car-lockscreen,
+        #car-root {
+            contain: strict;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+            will-change: transform, opacity;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .car-wallpaper-layer,
+        .car-content-layer,
+        .car-clock-box,
+        .car-digital-clock,
+        .car-slider-thumb,
+        .car-slider-track {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        /* Minimalist Clean Lockscreen Mode (Reference Screenshot Match) */
+        .car-minimalist-mode .car-hero-card,
+        .car-minimalist-mode .car-side-col {
+            display: none !important;
+        }
+        .car-minimalist-mode .car-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            grid-template-columns: 1fr !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            padding: 0 0 0 clamp(1.2rem, 3.5vw, 3.5rem) !important;
+            margin: auto 0 !important;
+        }
+        .car-minimalist-mode .car-hero-col {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+        }
+        .car-minimalist-mode .car-clock-box {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            padding: 0 !important;
+            margin: auto 0 !important;
+            align-self: flex-start !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            transform: translateZ(0) !important;
+            -webkit-transform: translateZ(0) !important;
+        }
+        .car-minimalist-mode .car-digital-clock {
+            font-size: clamp(3.2rem, 7.8vw, 6.4rem) !important;
+            letter-spacing: 3px !important;
+            line-height: 1 !important;
+            color: var(--car-accent) !important;
+            text-shadow: 0 0 32px var(--car-glow), 0 3px 14px rgba(0, 0, 0, 0.85) !important;
+            font-variant-numeric: tabular-nums !important;
+        }
+        .car-minimalist-mode .car-digital-date {
+            font-size: clamp(0.9rem, 1.8vw, 1.35rem) !important;
+            margin-top: clamp(0.6rem, 1.6vh, 1.1rem) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        /* Mobile Portrait adaptive layout for minimalist mode */
+        @media (max-width: 900px), (max-aspect-ratio: 6 / 5) {
+            .car-minimalist-mode .car-main-grid {
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                padding: 0 !important;
+            }
+            .car-minimalist-mode .car-hero-col {
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .car-minimalist-mode .car-clock-box {
+                align-items: center !important;
+                align-self: center !important;
+                text-align: center !important;
+            }
+            .car-minimalist-mode .car-digital-clock {
+                font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+            }
+            .car-minimalist-mode .car-digital-date {
+                justify-content: center !important;
+                font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+            }
         }

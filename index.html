@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9391 -->
+    <!-- VERSION: v7.8.3.9393 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -14,12 +14,12 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="兔可可王国 · bcos 🐰">
     <meta name="twitter:description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.3.9391">
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.3.9391">
-    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.3.9391">
-    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.3.9391">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.3.9391">
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.3.9391">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.3.9393">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.3.9393">
+    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.3.9393">
+    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.3.9393">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.3.9393">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.3.9393">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" media="print" onload="this.media='all'">
@@ -748,10 +748,41 @@
         #avatar-img { cursor: pointer; transition: transform .3s cubic-bezier(.4,0,.2,1); -webkit-user-drag: none; user-drag: none; -webkit-touch-callout: none; display: block; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         #avatar-img:hover { transform: scale(1.05); }
         #avatar-img:active { transform: scale(0.95); }
-        /* Avatar container: ensure circular clipping on all screen sizes — clip-path is more robust than overflow:hidden */
-        .avatar-container { width:120px; height:120px; margin:0 auto; border-radius:50%; overflow:hidden; -webkit-border-radius:50%; aspect-ratio:1; border:3px solid var(--accent); box-shadow:0 0 20px var(--shadow); position:relative; clip-path: circle(50%); -webkit-clip-path: circle(50%); touch-action: none; -webkit-tap-highlight-color: transparent; }
-        .avatar-container img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; -webkit-border-radius:50%; clip-path: circle(50%); -webkit-clip-path: circle(50%); }
-        .avatar-container #avatar-fallback { border-radius:50%; clip-path: circle(50%); -webkit-clip-path: circle(50%); }
+        /* Avatar container: hardware-composited circular clipping with anti-aliasing mask to prevent subpixel jitter */
+        .avatar-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            -webkit-border-radius: 50%;
+            aspect-ratio: 1;
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 20px var(--shadow);
+            position: relative;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            contain: paint;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
+        }
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .avatar-container #avatar-fallback { border-radius: 50%; }
         .avatar-burst { position: fixed; pointer-events: none; z-index: 9997; }
         @keyframes sparkle {
             0% { transform: translate(0,0) scale(1) rotate(0); opacity: 1; }
@@ -909,42 +940,8 @@
         .load-text { color: var(--text); font-size: .9rem; font-weight: 700; }
         @keyframes bounceIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 60% { transform: scale(1.2) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
 
-        /* ==================== Mobile Tab Bar ==================== */
-        .tab-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
-            display: none; align-items: center; justify-content: space-around;
-            height: calc(var(--tab-h) + var(--safe-bottom)); padding-bottom: var(--safe-bottom);
-            background: var(--bg2); border-top: 1px solid var(--border);
-            backdrop-filter: blur(20px);
-        }
-        .tab-item { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; height: 100%; padding-top: 8px; color: var(--text2); transition: color var(--transition); -webkit-tap-highlight-color: transparent; user-select: none; }
-        .tab-item .tab-icon { font-size: 1.4rem; }
-        .tab-item .tab-label { font-size: .6rem; font-weight: 700; }
-        .tab-item.active { color: var(--accent); }
-        .tab-item.active .tab-icon { transform: translateY(-2px); transition: transform var(--transition); }
-
-        /* Tab bar collapse/hide */
-        .tab-bar { transition: height var(--transition), transform .3s ease; overflow: hidden; }
-        .tab-bar.collapsed { height: 36px; padding-bottom: 0; }
-        .tab-bar.collapsed .tab-label { display: none; }
-        .tab-bar.collapsed .tab-icon { font-size: 1.2rem; }
-        .tab-bar.collapsed .tab-item { padding-top: 0; justify-content: center; height: 100%; }
-        .tab-bar.hidden { transform: translateY(100%); }
-        .tab-bar-handle {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 4px; background: var(--text2); border-radius: 2px;
-            opacity: .3; cursor: pointer; transition: opacity var(--transition);
-        }
-        .tab-bar-handle:hover { opacity: .8; }
-        #tab-fab {
-            position: fixed; bottom: 16px; right: 16px; z-index: 300;
-            width: 48px; height: 48px; border-radius: 50%;
-            background: var(--accent); display: none;
-            align-items: center; justify-content: center;
-            font-size: 1.4rem; cursor: pointer; color: #fff;
-            box-shadow: 0 4px 16px rgba(0,0,0,.3);
-        }
-        #tab-fab.show { display: flex; animation: bounceIn .3s ease; }
+        /* Obsolete mobile tab-bar fully decommissioned for performance */
+        .tab-bar, #tab-fab { display: none !important; }
 
         /* ==================== Responsive ==================== */
         /* Global: prevent pinch-zoom and double-tap zoom; allow pan */
@@ -961,8 +958,7 @@
             body { overflow-y: auto; overflow-x: hidden; }
             .app { flex-direction: column; height: auto; min-height: 100vh; }
             .sidebar { display: none; }
-            .content { flex: 1; padding: .75rem; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 1rem); }
-            .tab-bar { display: flex; }
+            .content { flex: 1; padding: .75rem; padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem)); }
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .anniversary-days { font-size: 2.2rem; }
             .card { padding: .75rem; }
@@ -975,8 +971,7 @@
             body { overflow-y: auto; overflow-x: hidden; }
             .app { flex-direction: column; height: auto; min-height: 100vh; }
             .sidebar { display: none; }
-            .content { flex: 1; padding: 1rem; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 1rem); }
-            .tab-bar { display: flex; }
+            .content { flex: 1; padding: 1rem; padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem)); }
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .anniversary-days { font-size: 2.5rem; }
             .card { padding: 1rem; }
@@ -988,7 +983,7 @@
                 width: 100%;
                 max-width: 100%;
                 padding: 1rem;
-                padding-bottom: calc(var(--tab-h, 0px) + var(--safe-bottom, 0px) + 1rem);
+                padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
                 animation: slideUpSheet .3s ease-out;
             }
             .modal-drag-handle { display: block; }
@@ -1008,22 +1003,9 @@
         @media (min-width: 1920px) {
             .content { max-width: 1600px; margin: 0 auto; }
         }
-        /* PWA Standalone Mode: Respect user preference & screen width */
+        /* PWA Standalone Mode: Retain full screen layout */
         @media (display-mode: standalone) and (max-width: 768px) {
-            /* Only show tab-bar in standalone mode on mobile screens when NOT hidden */
-            .tab-bar:not(.hidden) { display: flex; }
             .sidebar { display: none; }
-        }
-        @media (display-mode: standalone) and (min-width: 769px) {
-            /* On desktop PWA, retain PC sidebar and strictly keep tab-bar hidden */
-            .tab-bar { display: none !important; }
-        }
-        /* When hidden, strictly enforce display:none !important */
-        .tab-bar.hidden {
-            display: none !important;
-            transform: translateY(150%) !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
         }
         body.in-bcos .tab-bar,
         body.in-bcos #tab-fab {
@@ -1328,7 +1310,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9391</div>
+                <div class="subtitle">v7.8.3.9393</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1641,7 +1623,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9391</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9393</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1655,27 +1637,6 @@
             </section>
         </main>
     </div>
-
-    <!-- Mobile Tab Bar -->
-    <nav class="tab-bar">
-        <div class="tab-bar-handle" onclick="toggleTabBar()"></div>
-        <div class="tab-item active" data-view="home" onclick="navigateTo('home')">
-            <span class="tab-icon">🏠</span><span class="tab-label">首页</span>
-        </div>
-        <div class="tab-item" data-view="monopoly" onclick="navigateTo('monopoly')">
-            <span class="tab-icon">🎲</span><span class="tab-label">大富翁</span>
-        </div>
-        <div class="tab-item" data-view="anniversary" onclick="navigateTo('anniversary')">
-            <span class="tab-icon">💕</span><span class="tab-label">纪念</span>
-        </div>
-        <div class="tab-item" data-view="logs" onclick="navigateTo('logs')">
-            <span class="tab-icon">📜</span><span class="tab-label">日志</span>
-        </div>
-        <div class="tab-item" data-view="settings" onclick="navigateTo('settings')">
-            <span class="tab-icon">⚙️</span><span class="tab-label">设置</span>
-        </div>
-    </nav>
-    <div id="tab-fab" onclick="showTabBar()">🐰</div>
 
     <!-- Fullscreen map modal -->
     <div id="fs-map-overlay" style="position:fixed;inset:0;z-index:600;display:none;background:rgba(0,0,0,.9);">
@@ -1707,7 +1668,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9391',
+        VERSION: 'v7.8.3.9393',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2739,7 +2700,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9391 已启动', 'info');
+        logEvent('兔可可王国 v7.8.3.9393 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9576,7 +9537,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9391 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.3.9393 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9872,7 +9833,8 @@
             .bcos-desktop-icon:active { transform: scale(0.92) translateZ(0); }
             .bcos-desktop-icon-emoji { font-size: 2rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
             .bcos-desktop-icon-label { font-size: 11px; color: #fff; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.7); font-weight: 600; }
-            .bcos-window { position: absolute; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; box-shadow: 0 8px 32px rgba(0,0,0,.5); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; will-change: transform; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+            .bcos-window { position: absolute; background: rgba(18, 22, 34, 0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; box-shadow: 0 10px 36px rgba(0,0,0,.65); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; overflow: hidden; will-change: transform; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: border-color .2s, box-shadow .2s; }
+            .bcos-window.active-window { border-color: var(--accent, #FF6B9D) !important; box-shadow: 0 14px 44px rgba(0,0,0,.7), 0 0 18px rgba(var(--accent-rgb, 255,107,157), 0.28) !important; }
             .bcos-window.maximized { width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important; transform: none !important; border-radius: 0; border: none; }
 
             /* ===== Modern BCOS Acrylic Context Menu ===== */
@@ -10070,36 +10032,73 @@
             .bcos-window-resize { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 10; }
             .bcos-window-resize::after { content: ''; position: absolute; right: 2px; bottom: 2px; width: 8px; height: 8px; border-right: 2px solid #666; border-bottom: 2px solid #666; }
             .bcos-window-resize:hover::after { border-color: #aaa; }
-            .bcos-window-titlebar { background: #2a2a2a; padding: .4rem .6rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid #333; border-radius: 4px 4px 0 0; user-select: none; -webkit-user-select: none; }
-            .bcos-window-title { font-size: 12px; color: #e0e0e0; font-weight: bold; }
-            .bcos-window-controls { display: flex; gap: .3rem; }
-            .bcos-window-btn { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; border: none; font-size: 0; padding: 0; will-change: transform; }
-            .bcos-window-close { background: #ff5555; }
-            .bcos-window-close:hover { background: #ff7777; transform: scale(1.15) translateZ(0); }
-            .bcos-window-content { flex: 1; overflow: auto; padding: .5rem; }
-            .bcos-taskbar { height: 36px; background: #0a0a0a; border-top: 1px solid #333; display: flex; align-items: center; padding: 0 .5rem; gap: .3rem; transform: translateZ(0); }
-            .bcos-start-btn { background: #1a1a1a; border: 1px solid #333; color: #00ff41; padding: .2rem .6rem; cursor: pointer; font-family: inherit; font-size: 12px; border-radius: 3px; display: flex; align-items: center; gap: .3rem; }
-            .bcos-start-btn:hover { background: #2a2a2a; }
-            .bcos-taskbar-items { flex: 1; display: flex; gap: .2rem; overflow: hidden; }
-            .bcos-taskbar-item { background: #1a1a1a; border: 1px solid #333; color: #888; padding: .2rem .5rem; font-size: 11px; cursor: pointer; border-radius: 3px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-            .bcos-taskbar-item.active { background: #2a2a2a; color: #00ff41; border-color: #00ff41; }
-            .bcos-taskbar-clock { color: #888; font-size: 12px; padding: 0 .5rem; flex-shrink: 0; white-space: nowrap; }
-            .bcos-start-menu { position: absolute; bottom: 36px; left: .5rem; width: 200px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; box-shadow: 0 -4px 16px rgba(0,0,0,.5); padding: .3rem; z-index: 1000; display: none; }
+            .bcos-window-titlebar { background: linear-gradient(90deg, rgba(var(--accent-rgb, 255,107,157), 0.14) 0%, rgba(26, 30, 44, 0.95) 45%, rgba(18, 22, 34, 0.98) 100%); padding: .45rem .7rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 8px 8px 0 0; user-select: none; -webkit-user-select: none; touch-action: none; }
+            .bcos-window-title { font-size: 12.5px; color: var(--text, #fff); font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; margin: 0 .4rem; }
+            .bcos-window-controls { display: flex; align-items: center; gap: .45rem; flex-shrink: 0; }
+            .bcos-window-btn { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; border: none; font-size: 0; padding: 0; position: relative; will-change: transform; display: inline-flex; align-items: center; justify-content: center; touch-action: manipulation; }
+            .bcos-window-btn::before { content: ''; position: absolute; inset: -8px; cursor: pointer; }
+            .bcos-window-close, .bcos-win-btn-close { background: #ff5555; }
+            .bcos-window-close:hover, .bcos-win-btn-close:hover { background: #ff7777; transform: scale(1.15) translateZ(0); }
+            .bcos-win-btn-min { background: #ffbd2e; }
+            .bcos-win-btn-max { background: #27c93f; }
+            .bcos-window-content { flex: 1; overflow: auto; padding: .5rem; color: var(--text, #e2e8f0); }
+            .bcos-taskbar { height: 38px; background: rgba(10, 14, 22, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; padding: 0 .5rem; gap: .35rem; transform: translateZ(0); }
+            .bcos-start-btn { background: rgba(var(--accent-rgb, 255,107,157), 0.12); border: 1px solid rgba(var(--accent-rgb, 255,107,157), 0.35); color: var(--accent, #FF6B9D); padding: .25rem .65rem; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 600; border-radius: 5px; display: flex; align-items: center; gap: .35rem; transition: all .2s; }
+            .bcos-start-btn:hover { background: rgba(var(--accent-rgb, 255,107,157), 0.22); border-color: var(--accent, #FF6B9D); box-shadow: 0 0 10px rgba(var(--accent-rgb, 255,107,157), 0.3); }
+            .bcos-taskbar-items { flex: 1; display: flex; gap: .25rem; overflow: hidden; }
+            .bcos-taskbar-item { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #94a3b8; padding: .25rem .55rem; font-size: 11px; cursor: pointer; border-radius: 5px; max-width: 125px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: all .2s; }
+            .bcos-taskbar-item:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+            .bcos-taskbar-item.active { background: rgba(var(--accent-rgb, 255,107,157), 0.18); color: var(--accent, #FF6B9D); border-color: var(--accent, #FF6B9D); box-shadow: 0 0 10px rgba(var(--accent-rgb, 255,107,157), 0.25); }
+            .bcos-taskbar-clock { color: #94a3b8; font-size: 12px; padding: 0 .5rem; flex-shrink: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
+            .bcos-start-menu { position: absolute; bottom: 42px; left: .5rem; width: 210px; background: rgba(18, 22, 34, 0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(var(--accent-rgb, 255,107,157), 0.25); border-radius: 8px; box-shadow: 0 -6px 28px rgba(0,0,0,.65), 0 0 14px rgba(var(--accent-rgb, 255,107,157), 0.18); padding: .35rem; z-index: 1000; display: none; }
             .bcos-start-menu.show { display: block; }
-            .bcos-start-menu-item { display: flex; align-items: center; gap: .5rem; padding: .4rem .5rem; cursor: pointer; border-radius: 3px; font-size: 12px; color: #e0e0e0; }
-            .bcos-start-menu-item:hover { background: #2a2a2a; }
-            .bcos-start-menu-separator { height: 1px; background: #333; margin: .3rem 0; }
+            .bcos-start-menu-item { display: flex; align-items: center; gap: .5rem; padding: .4rem .55rem; cursor: pointer; border-radius: 5px; font-size: 12px; color: #e2e8f0; transition: all .15s; }
+            .bcos-start-menu-item:hover { background: rgba(var(--accent-rgb, 255,107,157), 0.18); color: var(--accent, #FF6B9D); }
+            .bcos-start-menu-separator { height: 1px; background: rgba(255, 255, 255, 0.08); margin: .3rem 0; }
             .bcos-mini-terminal { background: #0a0a0a; color: #e0e0e0; padding: .5rem; font-family: inherit; font-size: 12px; height: 100%; overflow-y: auto; }
             .bcos-mini-terminal-input { background: transparent; border: none; outline: none; color: #e0e0e0; font-family: inherit; font-size: 12px; flex: 1; caret-color: #00ff41; }
             .bcos-file-item { display: flex; align-items: center; gap: .5rem; padding: .3rem .4rem; cursor: pointer; border-radius: 3px; font-size: 12px; }
             .bcos-file-item:hover { background: #2a2a2a; }
             .bcos-file-name { color: #00aaff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .bcos-file-meta { color: #666; font-size: 10px; white-space: nowrap; }
-            @media (max-width: 600px) {
-                #bcos-screen { padding: .5rem; font-size: 12px; }
-                .bcos-desktop-icon { width: 60px; }
-                .bcos-desktop-icon-emoji { font-size: 1.5rem; }
-                .bcos-window { min-width: 240px; }
+            @media (max-width: 768px) {
+                #bcos-screen { padding: .35rem; font-size: 12px; }
+                .bcos-desktop-icon { width: 58px; height: 75px; }
+                .bcos-desktop-icon-emoji { font-size: 1.6rem; }
+                .bcos-window {
+                    min-width: 0 !important;
+                    max-width: calc(100vw - 12px) !important;
+                    width: calc(100vw - 12px) !important;
+                    max-height: calc(100vh - 70px) !important;
+                }
+                .bcos-window-titlebar {
+                    padding: .5rem .6rem !important;
+                    min-height: 38px !important;
+                }
+                .bcos-window-btn {
+                    width: 24px !important;
+                    height: 24px !important;
+                    min-width: 24px !important;
+                    min-height: 24px !important;
+                }
+                .bcos-window-btn::before {
+                    inset: -10px !important;
+                }
+                .bcos-window-close::after, .bcos-win-btn-close::after {
+                    content: '✕' !important;
+                    font-size: 12px !important;
+                    font-weight: 800 !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    line-height: 1 !important;
+                }
+                .bcos-window-content {
+                    padding: .45rem !important;
+                    overflow-x: auto !important;
+                    -webkit-overflow-scrolling: touch !important;
+                }
             }
             /* Carrot cursor for bcos desktop mode — force override all third-party cursors */
             #bcos-overlay.bcos-desktop-mode,
@@ -11080,9 +11079,13 @@
             font-size: 1.5rem;
             box-shadow: 0 0 18px var(--car-glow);
             flex-shrink: 0;
-            animation: carRabbitPulse 4s ease-in-out infinite;
             overflow: hidden;
-            transition: all .3s cubic-bezier(0.2, 0.9, 0.3, 1);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            animation: carRabbitPulse 4s ease-in-out infinite;
+            will-change: transform;
         }
         .car-rabbit-avatar.avatar-photo {
             background: transparent !important;
@@ -11090,6 +11093,8 @@
             box-shadow: 0 0 20px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
         .car-slider-thumb.thumb-photo {
             background: transparent !important;
@@ -11097,6 +11102,8 @@
             box-shadow: 0 0 20px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
         .car-title-avatar-img {
             width: 16px;
@@ -11126,6 +11133,11 @@
             vertical-align: middle;
             margin-right: 4px;
             display: inline-block;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            contain: paint;
         }
         .car-companion-avatar-img {
             width: 100%;
@@ -11133,6 +11145,9 @@
             border-radius: 50%;
             object-fit: cover;
             display: block;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
         .car-thumb-img {
             width: 100%;
@@ -11143,10 +11158,17 @@
             pointer-events: none;
             -webkit-user-drag: none;
             user-select: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
         @keyframes carRabbitPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 16px var(--car-glow); }
-            50% { transform: scale(1.08); box-shadow: 0 0 26px var(--car-glow); }
+            0%, 100% {
+                transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+            }
+            50% {
+                transform: translate3d(0, 0, 0) scale3d(1.05, 1.05, 1);
+            }
         }
         .car-quote-text {
             font-size: .88rem;
@@ -11205,11 +11227,19 @@
             align-items: flex-end;
             gap: 3px;
             height: 16px;
+            contain: layout paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
         }
         .car-eq-bar {
             width: 3px;
             background: var(--car-accent);
             border-radius: 2px;
+            transform-origin: bottom center;
+            -webkit-transform-origin: bottom center;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
             animation: eqBounce 1.2s ease-in-out infinite alternate;
         }
         .car-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
@@ -11219,11 +11249,11 @@
         .car-eq-bar:nth-child(5) { height: 70%; animation-delay: 0.15s; }
         .car-eq-bar:nth-child(6) { height: 45%; animation-delay: 0.35s; }
         @keyframes eqBounce {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1); }
+            0% { transform: scaleY(0.25) translateZ(0); }
+            100% { transform: scaleY(1) translateZ(0); }
         }
 
-        /* Milestone Scroller Layout Fix (Prevent Overlap) */
+        /* Milestone Scroller Layout Fix (Prevent Overlap & Block Pull-Down Refresh) */
         .car-milestone-card {
             flex: 1;
             min-height: 0;
@@ -11236,6 +11266,10 @@
             /* Fill the remaining card height so lower milestones are not clipped. */
             max-height: none;
             overflow-y: auto;
+            overscroll-behavior: contain !important;
+            overscroll-behavior-y: contain !important;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y !important;
             display: flex;
             flex-direction: column;
             gap: .35rem;
@@ -11328,6 +11362,9 @@
             margin-top: auto;
         }
         .car-slider-track {
+            contain: paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
             position: relative;
             width: min(440px, 92%);
             height: clamp(44px, 6vh, 52px);
@@ -11372,16 +11409,21 @@
             transition: opacity .2s;
         }
         .slider-arrow {
-            opacity: 0.6;
+            display: inline-block;
+            color: var(--car-accent);
+            opacity: 0.4;
             letter-spacing: -1px;
-            animation: sliderArrowMove 1.5s infinite;
+            animation: sliderArrowMove 1.5s ease-in-out infinite;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform, opacity;
         }
         .slider-arrow:last-child {
             animation-delay: 0.75s;
         }
         @keyframes sliderArrowMove {
-            0%, 100% { transform: translateX(0); opacity: 0.4; }
-            50% { transform: translateX(4px); opacity: 1; color: var(--car-accent); }
+            0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+            50% { transform: translate3d(4px, 0, 0); opacity: 1; }
         }
         .slider-hint-text {
             font-weight: 600;
@@ -11403,10 +11445,14 @@
             transition: transform 0.1s ease-out;
             touch-action: none !important;
             overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
         .car-slider-thumb:active {
             cursor: grabbing;
-            transform: scale(1.08);
+            transform: translate3d(0, 0, 0) scale(1.08);
             box-shadow: 0 0 24px var(--car-glow);
         }
 
@@ -12021,6 +12067,130 @@
             opacity: 1 !important;
             visibility: visible !important;
             transform: translateX(-50%) translateY(0) !important;
+        }
+
+        /* Safari Immersive Fullscreen Fallback */
+        body.safari-pseudo-fullscreen,
+        body.safari-pseudo-fullscreen #bcos-car-lockscreen,
+        body.safari-pseudo-fullscreen #car-root {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            z-index: 999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Mobile CPU & GPU Hardware Acceleration Compositing */
+        #bcos-car-lockscreen,
+        #car-root {
+            contain: strict;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+            will-change: transform, opacity;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .car-wallpaper-layer,
+        .car-content-layer,
+        .car-clock-box,
+        .car-digital-clock,
+        .car-slider-thumb,
+        .car-slider-track {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        /* Minimalist Clean Lockscreen Mode (Reference Screenshot Match) */
+        .car-minimalist-mode .car-hero-card,
+        .car-minimalist-mode .car-side-col {
+            display: none !important;
+        }
+        .car-minimalist-mode .car-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            grid-template-columns: 1fr !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            padding: 0 0 0 clamp(1.2rem, 3.5vw, 3.5rem) !important;
+            margin: auto 0 !important;
+        }
+        .car-minimalist-mode .car-hero-col {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+        }
+        .car-minimalist-mode .car-clock-box {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            padding: 0 !important;
+            margin: auto 0 !important;
+            align-self: flex-start !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            transform: translateZ(0) !important;
+            -webkit-transform: translateZ(0) !important;
+        }
+        .car-minimalist-mode .car-digital-clock {
+            font-size: clamp(3.2rem, 7.8vw, 6.4rem) !important;
+            letter-spacing: 3px !important;
+            line-height: 1 !important;
+            color: var(--car-accent) !important;
+            text-shadow: 0 0 32px var(--car-glow), 0 3px 14px rgba(0, 0, 0, 0.85) !important;
+            font-variant-numeric: tabular-nums !important;
+        }
+        .car-minimalist-mode .car-digital-date {
+            font-size: clamp(0.9rem, 1.8vw, 1.35rem) !important;
+            margin-top: clamp(0.6rem, 1.6vh, 1.1rem) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        /* Mobile Portrait adaptive layout for minimalist mode */
+        @media (max-width: 900px), (max-aspect-ratio: 6 / 5) {
+            .car-minimalist-mode .car-main-grid {
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                padding: 0 !important;
+            }
+            .car-minimalist-mode .car-hero-col {
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .car-minimalist-mode .car-clock-box {
+                align-items: center !important;
+                align-self: center !important;
+                text-align: center !important;
+            }
+            .car-minimalist-mode .car-digital-clock {
+                font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+            }
+            .car-minimalist-mode .car-digital-date {
+                justify-content: center !important;
+                font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+            }
         }
 
 `;
@@ -13211,7 +13381,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.3.9391</span>
+                <span class="bcos-ctx-ver">v7.8.3.9393</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -13492,6 +13662,16 @@
 
     window._bcosApplyDesktopTheme = function() {
         const bg = document.getElementById('bcos-desktop-bg');
+        const overlay = document.getElementById('bcos-overlay');
+        const taskbar = overlay ? overlay.querySelector('.bcos-taskbar') : null;
+        const dt = _bcosGetDesktopTheme();
+        if (overlay && dt) {
+            overlay.style.setProperty('--bcos-accent', dt.accent);
+            overlay.style.setProperty('--bcos-taskbar-bg', dt.taskbarBg);
+        }
+        if (taskbar && dt) {
+            taskbar.style.background = dt.taskbarBg;
+        }
         if (!bg) return;
         let customBg = localStorage.getItem('bcosCustomBg');
         if (customBg) {
@@ -13518,7 +13698,6 @@
             }
             bg.style.background = `url(${customBg}) center/cover no-repeat`;
         } else {
-            const dt = _bcosGetDesktopTheme();
             bg.style.background = dt.wallpaper;
         }
     };
@@ -13760,20 +13939,23 @@
         const container = document.getElementById('bcos-windows');
         if (!container) return;
         const win = document.createElement('div');
-        win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
+        win.className = 'bcos-window active-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
         const offset = Object.keys(_bcos.wins).length * 28;
-        const maxW = Math.min(cfg.w, Math.max(320, window.innerWidth - 16));
-        const maxH = Math.min(cfg.h, Math.max(260, window.innerHeight - 70));
-        const leftX = Math.max(8, Math.min(30 + offset, Math.max(10, window.innerWidth - maxW - 8)));
-        const topY = Math.max(8, Math.min(20 + offset, Math.max(10, window.innerHeight - maxH - 50)));
+        const isMobile = window.innerWidth <= 768;
+        const maxW = isMobile ? Math.min(cfg.w, window.innerWidth - 12) : Math.min(cfg.w, Math.max(320, window.innerWidth - 16));
+        const maxH = isMobile ? Math.min(cfg.h, window.innerHeight - 80) : Math.min(cfg.h, Math.max(260, window.innerHeight - 70));
+        const leftX = isMobile ? 6 : Math.max(8, Math.min(30 + offset, Math.max(10, window.innerWidth - maxW - 8)));
+        const topY = isMobile ? Math.max(10, Math.min(16 + ((offset * 0.6) % 60), window.innerHeight - maxH - 50)) : Math.max(8, Math.min(20 + offset, Math.max(10, window.innerHeight - maxH - 50)));
         win.style.cssText += `left:0;top:0;width:${maxW}px;height:${maxH}px;transform:translate3d(${leftX}px, ${topY}px, 0);`;
         win._bcosTX = leftX; win._bcosTY = topY;
         win._bcosOrigW = maxW; win._bcosOrigH = maxH;
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-win-btn-close" title="关闭" onmousedown="event.stopPropagation(); _bcosCloseWin('${app}')" ontouchstart="event.stopPropagation(); _bcosCloseWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-min" title="最小化" onmousedown="event.stopPropagation(); _bcosMinimizeWin('${app}')" ontouchstart="event.stopPropagation(); _bcosMinimizeWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-max" title="最大化" onmousedown="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)" ontouchstart="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)"></button></div><span class="bcos-window-title">${cfg.t}</span><div style="width:42px;"></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-win-btn-close" title="关闭" onmousedown="event.stopPropagation(); _bcosCloseWin('${app}')" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosCloseWin('${app}')" onclick="event.stopPropagation(); _bcosCloseWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-min" title="最小化" onmousedown="event.stopPropagation(); _bcosMinimizeWin('${app}')" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosMinimizeWin('${app}')" onclick="event.stopPropagation(); _bcosMinimizeWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-max" title="最大化" onmousedown="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosToggleMaximize('${winId}',event)" onclick="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)"></button></div><span class="bcos-window-title">${cfg.t}</span><div style="width:42px;"></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
         container.appendChild(win);
         _bcos.wins[app] = winId;
         _bcos.activeWin = app;
+        document.querySelectorAll('.bcos-window').forEach(w => { if (w !== win) w.classList.remove('active-window'); });
         win.addEventListener('mousedown', () => _bcosFocusWin(app));
+        win.addEventListener('touchstart', () => _bcosFocusWin(app), { passive: true });
         const content = document.getElementById(winId + '-content');
         try {
             if (app === 'terminal') _bcosRenderDesktopTerminal(content);
@@ -13801,12 +13983,15 @@
         if (w.style.display === 'none') w.style.display = 'flex';
         w.style.zIndex = ++_bcos.winZ;
         _bcos.activeWin = app;
+        document.querySelectorAll('.bcos-window').forEach(win => win.classList.remove('active-window'));
+        w.classList.add('active-window');
         _bcosUpdateTaskbar();
     }
     function _bcosMinimizeWin(app) {
         const w = document.getElementById(_bcos.wins[app]);
         if (!w) return;
         w.style.display = 'none';
+        w.classList.remove('active-window');
         if (_bcos.activeWin === app) _bcos.activeWin = null;
         _bcosUpdateTaskbar();
     }
@@ -14030,13 +14215,25 @@
         // Don't start drag if clicking on window controls (close button)
         if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
         const win = document.getElementById(winId); if (!win) return;
+        document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
+        win.classList.add('active-window');
         const r = win.getBoundingClientRect();
         // Use transform instead of left/top for GPU-accelerated dragging
         win._bcosTX = r.left; win._bcosTY = r.top;
         win.style.left = '0'; win.style.top = '0';
         win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
         const ox = e.clientX - win._bcosTX, oy = e.clientY - win._bcosTY;
-        function mv(ev) { win._bcosTX = ev.clientX - ox; win._bcosTY = ev.clientY - oy; win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`; }
+        function mv(ev) {
+            const isMobile = window.innerWidth <= 768;
+            const curW = win.offsetWidth || 300;
+            const minX = isMobile ? 0 : -curW + 60;
+            const maxX = Math.max(0, window.innerWidth - (isMobile ? curW : 60));
+            const minY = 0;
+            const maxY = Math.max(0, window.innerHeight - 44);
+            win._bcosTX = Math.max(minX, Math.min(maxX, ev.clientX - ox));
+            win._bcosTY = Math.max(minY, Math.min(maxY, ev.clientY - oy));
+            win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
+        }
         function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
         document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up); e.preventDefault();
     }
@@ -14044,12 +14241,26 @@
         // Don't start drag if touching window controls (close button)
         if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
         const win = document.getElementById(winId); if (!win || !e.touches[0]) return;
+        document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
+        win.classList.add('active-window');
         const r = win.getBoundingClientRect();
         win._bcosTX = r.left; win._bcosTY = r.top;
         win.style.left = '0'; win.style.top = '0';
         win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
         const t = e.touches[0]; const ox = t.clientX - win._bcosTX, oy = t.clientY - win._bcosTY;
-        function mv(ev) { if (!ev.touches[0]) return; win._bcosTX = ev.touches[0].clientX - ox; win._bcosTY = ev.touches[0].clientY - oy; win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`; }
+        function mv(ev) {
+            if (!ev.touches[0]) return;
+            const touch = ev.touches[0];
+            const isMobile = window.innerWidth <= 768;
+            const curW = win.offsetWidth || 300;
+            const minX = isMobile ? 0 : -curW + 60;
+            const maxX = Math.max(0, window.innerWidth - (isMobile ? curW : 60));
+            const minY = 0; // Never allow dragging above top of viewport
+            const maxY = Math.max(0, window.innerHeight - 44);
+            win._bcosTX = Math.max(minX, Math.min(maxX, touch.clientX - ox));
+            win._bcosTY = Math.max(minY, Math.min(maxY, touch.clientY - oy));
+            win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
+        }
         function up() { document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up); }
         document.addEventListener('touchmove',mv,{passive:false}); document.addEventListener('touchend',up); e.preventDefault();
     }
@@ -14172,18 +14383,29 @@
     function _bcosOpenCatWindow(repo) {
         _bcosEggCheck();
         const winId = 'bcos-win-cat-' + repo[0].replace(/[^a-zA-Z0-9]/g,'');
-        if (document.getElementById(winId)) { const w = document.getElementById(winId); w.style.zIndex = ++_bcos.winZ; return; }
+        if (document.getElementById(winId)) {
+            const w = document.getElementById(winId);
+            w.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(win => win.classList.remove('active-window'));
+            w.classList.add('active-window');
+            return;
+        }
         const lc = _bcosLangColors[repo[2]] || '#e0e0e0';
         const container = document.getElementById('bcos-windows');
         if (!container) return;
         const win = document.createElement('div');
-        win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
-        const cx = 80+Math.random()*100, cy = 50+Math.random()*80;
-        win.style.cssText += `left:0;top:0;width:380px;height:320px;transform:translate3d(${cx}px, ${cy}px, 0);`;
+        win.className = 'bcos-window active-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
+        const isMobile = window.innerWidth <= 768;
+        const winW = isMobile ? Math.min(380, window.innerWidth - 12) : 380;
+        const winH = isMobile ? Math.min(320, window.innerHeight - 80) : 320;
+        const cx = isMobile ? 6 : Math.max(10, Math.min(80+Math.random()*60, window.innerWidth - winW - 20));
+        const cy = isMobile ? 24 : Math.max(10, Math.min(50+Math.random()*60, window.innerHeight - winH - 60));
+        win.style.cssText += `left:0;top:0;width:${winW}px;height:${winH}px;transform:translate3d(${cx}px, ${cy}px, 0);`;
         win._bcosTX = cx; win._bcosTY = cy;
+        win._bcosOrigW = winW; win._bcosOrigH = winH;
         const safeRepoUrl = _bcosEscape(repo[6]);
         const safeLang = _bcosEscape(repo[2]);
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><span class="bcos-window-title">📄 ${_bcosEscape(repo[0])}</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseCatWin('${winId}')"></button></div></div><div class="bcos-window-content" style="padding:.6rem;font-size:12px;">
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" title="关闭" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosCloseCatWin('${winId}')" onmousedown="event.stopPropagation(); _bcosCloseCatWin('${winId}')" onclick="event.stopPropagation(); _bcosCloseCatWin('${winId}')"></button></div><span class="bcos-window-title">📄 ${_bcosEscape(repo[0])}</span><div style="width:24px;"></div></div><div class="bcos-window-content" style="padding:.6rem;font-size:12px;">
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Repo:</span> ${_bcosEscape(repo[0])}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Desc:</span> ${repo[1]?_bcosEscape(repo[1].substring(0,80)):'<span style="color:#666;">// None</span>'}</div>
             <div style="margin-bottom:.3rem;"><span style="color:#00ff41;">Lang:</span> <span style="color:${lc};">${safeLang}</span></div>
@@ -14194,7 +14416,17 @@
             <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;" onclick="window.open('${safeRepoUrl}','_blank')">🌐 Open on GitHub</button></div>
         </div>`;
         container.appendChild(win);
-        win.addEventListener('mousedown', () => { win.style.zIndex = ++_bcos.winZ; });
+        document.querySelectorAll('.bcos-window').forEach(w => { if (w !== win) w.classList.remove('active-window'); });
+        win.addEventListener('mousedown', () => {
+            win.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
+            win.classList.add('active-window');
+        });
+        win.addEventListener('touchstart', () => {
+            win.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
+            win.classList.add('active-window');
+        }, { passive: true });
     }
 
     function _bcosRenderMonitor(content) {
@@ -14820,23 +15052,44 @@
             current = '在虚拟纪元的曙光中，兔可可王国从一片数字草原上崛起。这不是现实中的城市，而是一座由爱与想象构筑的永恒之国。\n兔可可是这个王国的灵魂化身——一位超越了现实边界的安哥拉兔，从像素中诞生，在数据中成长，最终成为万民爱戴的永恒市长。\n每一栋建筑都是一段记忆，每一位市民都是一个故事，而兔可可的温柔与柔软绒毛，是这座虚拟王国最真实的魔法。';
         }
         var winId = 'bcos-win-anni-edit';
-        if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
+        if (document.getElementById(winId)) {
+            var ew = document.getElementById(winId);
+            ew.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(function(w){ w.classList.remove('active-window'); });
+            ew.classList.add('active-window');
+            return;
+        }
         var container = document.getElementById('bcos-windows');
         if (!container) return;
         var win = document.createElement('div');
-        win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
-        var cx = 80+Math.random()*60, cy = 50+Math.random()*40;
-        win.style.cssText += 'left:0;top:0;width:380px;height:320px;transform:translate3d(' + cx + 'px,' + cy + 'px,0);';
+        win.className = 'bcos-window active-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
+        var isMobile = window.innerWidth <= 768;
+        var winW = isMobile ? Math.min(380, window.innerWidth - 12) : 380;
+        var winH = isMobile ? Math.min(320, window.innerHeight - 80) : 320;
+        var cx = isMobile ? 6 : Math.max(10, Math.min(80+Math.random()*60, window.innerWidth - winW - 20));
+        var cy = isMobile ? 24 : Math.max(10, Math.min(50+Math.random()*40, window.innerHeight - winH - 60));
+        win.style.cssText += 'left:0;top:0;width:' + winW + 'px;height:' + winH + 'px;transform:translate3d(' + cx + 'px,' + cy + 'px,0);';
         win._bcosTX = cx; win._bcosTY = cy;
-        win.innerHTML = '<div class="bcos-window-titlebar" onmousedown="_bcosDragStart(\'' + winId + '\',event)" ondblclick="_bcosToggleMaximize(\'' + winId + '\',event)" ontouchstart="_bcosTouchDragStart(\'' + winId + '\',event)"><span class="bcos-window-title">✏️ 编辑纪念日内容</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseCatWin(\'' + winId + '\')"></button></div></div>' +
+        win._bcosOrigW = winW; win._bcosOrigH = winH;
+        win.innerHTML = '<div class="bcos-window-titlebar" onmousedown="_bcosDragStart(\'' + winId + '\',event)" ondblclick="_bcosToggleMaximize(\'' + winId + '\',event)" ontouchstart="_bcosTouchDragStart(\'' + winId + '\',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" title="关闭" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosCloseCatWin(\'' + winId + '\')" onmousedown="event.stopPropagation(); _bcosCloseCatWin(\'' + winId + '\')" onclick="event.stopPropagation(); _bcosCloseCatWin(\'' + winId + '\')"></button></div><span class="bcos-window-title">✏️ 编辑纪念日内容</span><div style="width:24px;"></div></div>' +
             '<div class="bcos-window-content" style="padding:.5rem;display:flex;flex-direction:column;height:calc(100% - 32px);">' +
             '<textarea id="bcos-anni-edit-textarea" style="flex:1;background:#1a1a2e;color:#e0e0e0;border:1px solid #333;border-radius:4px;padding:.5rem;font-size:12px;line-height:1.6;resize:none;outline:none;font-family:sans-serif;">' + _bcosEscape(current) + '</textarea>' +
             '<div style="display:flex;gap:.4rem;margin-top:.4rem;justify-content:flex-end;">' +
-            '<button onclick="_bcosSaveAnniversary()" style="background:#FF6B9D;color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:11px;">保存</button>' +
+            '<button onclick="_bcosSaveAnniversary()" style="background:var(--accent,#FF6B9D);color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:11px;">保存</button>' +
             '<button onclick="_bcosCloseCatWin(\'' + winId + '\')" style="background:#333;color:#aaa;border:1px solid #444;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:11px;">取消</button>' +
             '</div></div>';
         container.appendChild(win);
-        win.addEventListener('mousedown', function() { win.style.zIndex = ++_bcos.winZ; });
+        document.querySelectorAll('.bcos-window').forEach(function(w){ if (w !== win) w.classList.remove('active-window'); });
+        win.addEventListener('mousedown', function() {
+            win.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(function(w){ w.classList.remove('active-window'); });
+            win.classList.add('active-window');
+        });
+        win.addEventListener('touchstart', function() {
+            win.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(function(w){ w.classList.remove('active-window'); });
+            win.classList.add('active-window');
+        }, { passive: true });
     }
     function _bcosSaveAnniversary() {
         var ta = document.getElementById('bcos-anni-edit-textarea');
@@ -15193,6 +15446,9 @@ const START_DATE = '2024/03/12 00:00:00';
             const badge = document.getElementById('car-theme-name');
             if (badge) badge.textContent = THEMES[currentThemeIdx].name;
             localStorage.setItem('bcos_car_theme', THEMES[currentThemeIdx].id);
+            if (typeof logEvent === 'function') {
+                logEvent(`🎨 [bcos座舱锁屏] 切换座舱主题: ${THEMES[currentThemeIdx].name}`, 'info');
+            }
         }
         function cycleTheme() {
             currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
@@ -15316,6 +15572,9 @@ const START_DATE = '2024/03/12 00:00:00';
             localStorage.setItem('car_range_standard', carBatteryData.standard);
             localStorage.setItem('car_drive_mode', carBatteryData.mode);
             localStorage.setItem('car_cabin_temp', carBatteryData.temp);
+            if (typeof logEvent === 'function') {
+                logEvent(`⚡ [bcos座舱锁屏] 更新电量遥测: SoC ${carBatteryData.soc}% · 续航 ${carBatteryData.range} km (${carBatteryData.standard}) · 温度 ${carBatteryData.temp}°C`, 'info');
+            }
         }
 
         function quickCycleDriveMode() {
@@ -15843,8 +16102,17 @@ const START_DATE = '2024/03/12 00:00:00';
                 showWallpaperBlob(layer, badge, cur, token, objUrl);
             }).catch(err => {
                 if (ctrl.signal.aborted || token !== wpLoadToken) return;
-                // 下载失败 (如用户添加的跨域 URL 无 CORS 头): 回退 Image 直连加载
-                console.warn('Wallpaper fetch failed, fallback to direct Image load:', cur.file, err);
+                // 下载失败 (如用户添加的跨域 URL 无 CORS 头或 file:// 协议): 回退 Image 或本地占位图
+                console.warn('Wallpaper fetch failed, fallback to direct Image/placeholder:', cur.file, err);
+                const placeholder = WP_PLACEHOLDER[cur.file];
+                if (cur.b64 && placeholder) {
+                    layer.style.backgroundImage = `url("${placeholder}")`;
+                    layer.classList.remove('wp-loading');
+                    layer.classList.add('active');
+                    updateWallpaperBadge(`🖼️ ${cur.name}`);
+                    highlightActiveThumbnail();
+                    return;
+                }
                 const img = new Image();
                 img.onload = () => {
                     if (token !== wpLoadToken) return;
@@ -15858,7 +16126,11 @@ const START_DATE = '2024/03/12 00:00:00';
                 };
                 img.onerror = () => {
                     layer.classList.remove('wp-loading');
-                    updateWallpaperBadge(`🖼️ ${cur.name} · 加载失败`);
+                    if (placeholder) {
+                        layer.style.backgroundImage = `url("${placeholder}")`;
+                        layer.classList.add('active');
+                    }
+                    updateWallpaperBadge(`🖼️ ${cur.name}`);
                 };
                 img.src = cur.file;
             });
@@ -15900,7 +16172,12 @@ const START_DATE = '2024/03/12 00:00:00';
             currentWallpaperIdx = (currentWallpaperIdx + 1) % allWallpapers.length;
             localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
             applyCurrentWallpaper();
-            if (isUserAction) showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
+            if (isUserAction) {
+                showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
+                if (typeof logEvent === 'function') {
+                    logEvent(`🖼️ [bcos座舱锁屏] 切换下一张壁纸: ${allWallpapers[currentWallpaperIdx]?.name || '未知壁纸'}`, 'info');
+                }
+            }
         }
 
         function prevWallpaper(isUserAction) {
@@ -15908,7 +16185,12 @@ const START_DATE = '2024/03/12 00:00:00';
             currentWallpaperIdx = (currentWallpaperIdx - 1 + allWallpapers.length) % allWallpapers.length;
             localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
             applyCurrentWallpaper();
-            if (isUserAction) showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
+            if (isUserAction) {
+                showToast(`切换壁纸: ${allWallpapers[currentWallpaperIdx].name}`);
+                if (typeof logEvent === 'function') {
+                    logEvent(`🖼️ [bcos座舱锁屏] 切换上一张壁纸: ${allWallpapers[currentWallpaperIdx]?.name || '未知壁纸'}`, 'info');
+                }
+            }
         }
 
         function selectWallpaperByIdx(idx) {
@@ -15917,6 +16199,9 @@ const START_DATE = '2024/03/12 00:00:00';
             applyCurrentWallpaper();
             highlightActiveThumbnail();
             showToast(`已选择壁纸: ${allWallpapers[idx].name}`);
+            if (typeof logEvent === 'function') {
+                logEvent(`🖼️ [bcos座舱锁屏] 选择座舱壁纸: ${allWallpapers[idx]?.name || '未知壁纸'}`, 'info');
+            }
         }
 
         function setWallpaperMode(mode) {
@@ -16203,9 +16488,11 @@ const START_DATE = '2024/03/12 00:00:00';
                     wakeLockObj = await navigator.wakeLock.request('screen');
                     const b = document.getElementById('car-wakelock-badge');
                     if (b) b.textContent = '💡 常亮保持: 开启';
+                    if (typeof logEvent === 'function') logEvent('💡 [bcos座舱锁屏] 屏幕常亮唤醒锁 (WakeLock API) 激活成功', 'info');
                     wakeLockObj.addEventListener('release', () => {
                         const b2 = document.getElementById('car-wakelock-badge');
                         if (b2) b2.textContent = '💡 常亮保持: 备用守护';
+                        if (typeof logEvent === 'function') logEvent('⚠️ [bcos座舱锁屏] 屏幕常亮锁释放，自动切换为 Canvas 心跳保活守护', 'warn');
                         startKeepAliveHeartbeat();
                     });
                     return;
@@ -16243,21 +16530,54 @@ const START_DATE = '2024/03/12 00:00:00';
             }
         });
 
-        // --- Fullscreen API (Cross-Vendor for Android Car Browsers) ---
+        // --- Fullscreen API (Cross-Vendor for iOS Safari, Mac, and Android Car Browsers) ---
         function toggleFullscreen() {
             const doc = document;
             const el = document.documentElement;
-            const isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+            const isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
             const icon = document.getElementById('car-fs-icon');
+
             if (!isFull) {
-                const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-                if (rfs) rfs.call(el).catch(() => {});
-                if (icon) icon.textContent = '⛶ 退出全屏';
+                const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+                if (rfs) {
+                    const res = rfs.call(el);
+                    if (res && typeof res.then === 'function') {
+                        res.then(() => {
+                            if (icon) icon.textContent = '⛶ 退出全屏';
+                            showToast('已进入全屏沉浸模式');
+                        }).catch(() => {
+                            handleSafariFullscreen();
+                        });
+                    } else {
+                        if (icon) icon.textContent = '⛶ 退出全屏';
+                        showToast('已进入全屏模式');
+                    }
+                } else {
+                    handleSafariFullscreen();
+                }
             } else {
-                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
-                if (efs) efs.call(doc).catch(() => {});
+                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.webkitCancelFullScreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+                if (efs) {
+                    efs.call(doc).catch(() => {});
+                }
+                document.body.classList.remove('safari-pseudo-fullscreen');
                 if (icon) icon.textContent = '⛶ 全屏';
+                showToast('已退出全屏');
             }
+        }
+
+        function handleSafariFullscreen() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const icon = document.getElementById('car-fs-icon');
+            if (isStandalone) {
+                showToast('📱 当前已作为独立 App 运行，享受 100% 沉浸全屏！');
+                return;
+            }
+            const isPseudo = document.body.classList.toggle('safari-pseudo-fullscreen');
+            if (icon) icon.textContent = isPseudo ? '⛶ 退出全屏' : '⛶ 全屏';
+            window.scrollTo(0, 1);
+            setTimeout(() => window.scrollTo(0, 0), 100);
+            showToast('💡 Safari 全屏技巧：点底部分享 ⎋ →「添加到主屏幕」，即可享受真正的全屏 App 体验！');
         }
 
         // --- Quotes ---
@@ -16290,12 +16610,12 @@ const START_DATE = '2024/03/12 00:00:00';
             const start = new Date(START_DATE);
             const diff = now - start;
 
-            // 1. Digital Clock (HH:mm:ss)
+            // 1. Digital Clock (HH : mm : ss)
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             const clockEl = document.getElementById('car-clock');
-            const clockStr = `${h}:${m}:${s}`;
+            const clockStr = `${h} : ${m} : ${s}`;
             if (clockEl && clockEl.textContent !== clockStr) clockEl.textContent = clockStr;
 
             // OLED Anti-Burn-In: periodic discrete micro-shift (1-2px) at the start of each minute
@@ -16319,6 +16639,11 @@ const START_DATE = '2024/03/12 00:00:00';
             if (lunarEl && !lunarEl.dataset.init) {
                 lunarEl.textContent = getSimpleLunar(now);
                 lunarEl.dataset.init = '1';
+            }
+
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (root && root.classList.contains('car-minimalist-mode')) {
+                return; // 极简模式下跳过非显示组件的重绘，彻底杜绝发热与抖动
             }
 
             // 3. Days Counted & Milliseconds (Precision: 3 decimal places)
@@ -16476,7 +16801,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 if (!isDragging) return;
                 const deltaX = clientX - startX;
                 currentX = Math.max(0, Math.min(deltaX, maxSlide));
-                thumb.style.transform = `translateX(${currentX}px)`;
+                thumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
 
                 if (maxSlide > 0) {
                     const progress = currentX / maxSlide;
@@ -16485,7 +16810,7 @@ const START_DATE = '2024/03/12 00:00:00';
 
                     if (progress > 0.70) {
                         isDragging = false;
-                        thumb.style.transform = `translateX(${maxSlide}px)`;
+                        thumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
                         if (fillEl) fillEl.style.width = '100%';
                         if (textEl) textEl.style.opacity = '0';
                         unlockScreen();
@@ -16497,7 +16822,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 if (!isDragging) return;
                 isDragging = false;
                 thumb.style.transition = 'transform .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
-                thumb.style.transform = 'translateX(0px)';
+                thumb.style.transform = 'translate3d(0, 0, 0)';
                 if (fillEl) {
                     fillEl.style.transition = 'width .28s cubic-bezier(0.2, 0.9, 0.3, 1)';
                     fillEl.style.width = '0%';
@@ -16510,22 +16835,45 @@ const START_DATE = '2024/03/12 00:00:00';
                 }
             };
 
+            let touchStartY = 0;
             thumb.addEventListener('touchstart', (e) => {
                 if (e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onStart(e.touches[0].clientX);
                 }
             }, { passive: false });
+
+            window.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) {
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
             window.addEventListener('touchmove', (e) => {
                 if (isDragging && e.touches && e.touches[0]) {
                     if (e.cancelable) e.preventDefault();
                     onMove(e.touches[0].clientX);
                     return;
                 }
-                if (document.getElementById('bcos-car-lockscreen')) {
-                    if (e.target.closest('.car-modal') || e.target.closest('.car-main-grid') || e.target.closest('.car-milestone-scroller')) {
+                const scroller = e.target.closest('.car-milestone-scroller, .car-modal, .car-wp-grid');
+                if (scroller && e.touches && e.touches[0]) {
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = currentY - touchStartY;
+                    const isAtTop = scroller.scrollTop <= 0;
+                    const isAtBottom = (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1);
+                    // Prevent pulling DOWN when already at top (stops iOS Chrome from exiting fullscreen / triggering refresh)
+                    if (deltaY > 0 && isAtTop) {
+                        if (e.cancelable) e.preventDefault();
                         return;
                     }
+                    // Prevent pulling UP when already at bottom
+                    if (deltaY < 0 && isAtBottom) {
+                        if (e.cancelable) e.preventDefault();
+                        return;
+                    }
+                    return;
+                }
+                if (document.getElementById('bcos-car-lockscreen')) {
                     if (e.cancelable) e.preventDefault();
                 }
             }, { passive: false });
@@ -16559,8 +16907,8 @@ const START_DATE = '2024/03/12 00:00:00';
             const [dx, dy] = PIXEL_SHIFT_COORDS[pixelShiftIdx];
             const clockBox = root.querySelector('.car-clock-box');
             const heroCard = root.querySelector('.car-hero-card');
-            if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${dx}px, ${dy}px)`;
-            if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${-dx}px, ${-dy}px)`;
+            if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate3d(${dx}px, ${dy}px, 0)`;
+            if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate3d(${-dx}px, ${-dy}px, 0)`;
         }
 
         function resetPixelShift() {
@@ -16679,6 +17027,40 @@ const START_DATE = '2024/03/12 00:00:00';
             saveCustomAnniversaries(list);
             closeAddAnniversaryModal();
             showToast('✓ 纪念日添加成功！');
+            if (typeof logEvent === 'function') {
+                logEvent(`💕 [bcos座舱锁屏] 新增自定义纪念日: ${icon} ${name} (${date})`, 'info');
+            }
+        }
+
+        // --- Minimalist Mode (Clean Time, Date, Lunar, Custom Wallpaper) ---
+        function toggleMinimalistMode() {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
+            const isMin = root.classList.toggle('car-minimalist-mode');
+            localStorage.setItem('car_minimalist_mode', isMin ? 'true' : 'false');
+            updateMinimalistButtonState(isMin);
+            showToast(isMin ? '✨ 已开启极简锁屏模式 (纯净时钟与壁纸)' : '🚗 已恢复标准座舱锁屏仪表');
+            if (typeof logEvent === 'function') {
+                logEvent(`✨ [bcos座舱锁屏] 切换极简模式: ${isMin ? '开启 (聚焦数字时钟/日期)' : '关闭 (恢复标准座舱仪表)'}`, 'info');
+            }
+        }
+
+        function applyMinimalistMode(enabled) {
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (!root) return;
+            if (enabled) {
+                root.classList.add('car-minimalist-mode');
+            } else {
+                root.classList.remove('car-minimalist-mode');
+            }
+            updateMinimalistButtonState(enabled);
+        }
+
+        function updateMinimalistButtonState(enabled) {
+            const btn = document.getElementById('toggle-minimal-btn');
+            if (btn) btn.textContent = enabled ? '已开启极简 (点击切回标准)' : '已关闭 (点击开启极简)';
+            const topBtn = document.getElementById('top-minimal-btn');
+            if (topBtn) topBtn.style.color = enabled ? 'var(--car-accent)' : '';
         }
 
         // --- Init ---
@@ -16709,6 +17091,14 @@ const START_DATE = '2024/03/12 00:00:00';
         THEMES.forEach(t => el.classList.remove(t.id));
         el.classList.add(THEMES[currentThemeIdx].id);
 
+        window._bcosCarLockOpenTime = Date.now();
+        const isMin = localStorage.getItem('car_minimalist_mode') === 'true';
+        if (typeof logEvent === 'function') {
+            logEvent(`🔒 [bcos座舱锁屏] 启动座舱锁屏界面 (主题: ${THEMES[currentThemeIdx]?.name || '默认'}, 极简模式: ${isMin ? '开启' : '关闭'})`, 'info');
+            logEvent(`📱 [bcos座舱锁屏] 视口就绪: ${window.innerWidth}x${window.innerHeight} (DPR: ${window.devicePixelRatio || 1}, 方向: ${window.innerWidth > window.innerHeight ? '横屏' : '竖屏'})`, 'info');
+            logEvent(`🚀 [bcos座舱锁屏] 硬件合成加速: 移动端 GPU 3D Compositing / 图层隔离已就绪`, 'info');
+        }
+
         el.innerHTML = `<!-- Wallpaper Background Layer -->
         <div class="car-wallpaper-layer" id="car-wallpaper-layer"></div>
         <div class="car-wallpaper-overlay" id="car-wallpaper-overlay"></div>
@@ -16738,6 +17128,9 @@ const START_DATE = '2024/03/12 00:00:00';
 
                 <!-- Optional Top Action Buttons (Hidden by default for genuine cockpit feel) -->
                 <div class="car-top-actions" id="car-top-actions">
+                    <button class="car-icon-btn" onclick="toggleMinimalistMode()" title="切换极简锁屏模式" id="top-minimal-btn">
+                        <span>✨ 极简</span>
+                    </button>
                     <button class="car-icon-btn" onclick="cycleTheme()" title="切换车机氛围主题">
                         <span>🎨 主题</span>
                     </button>
@@ -16763,7 +17156,7 @@ const START_DATE = '2024/03/12 00:00:00';
             <main class="car-main-grid">
                 <!-- Left: Big Digital Clock & Hero Anniversary -->
                 <div class="car-hero-col">
-                    <div class="car-clock-box">
+                    <div class="car-clock-box" ondblclick="toggleMinimalistMode()" title="双击切换极简/标准锁屏模式" style="cursor:pointer;">
                         <div class="car-digital-clock" id="car-clock">--:--:--</div>
                         <div class="car-digital-date">
                             <span id="car-date">----年--月--日 星期-</span>
@@ -16888,7 +17281,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.3.9391</div>
+                                <div class="car-diag-val">bcos v7.8.3.9393</div>
                             </div>
                         </div>
                     </div>
@@ -16930,6 +17323,10 @@ const START_DATE = '2024/03/12 00:00:00';
             <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">兔可可专属车机锁屏已暂停，请选择下一步操作：</p>
             
             <div class="car-modal-grid">
+                <button type="button" class="car-modal-btn" onclick="toggleMinimalistMode(); closeMenuModal();" style="border-color:var(--car-accent);background:rgba(0,234,255,0.08);">
+                    <span class="icon">✨</span>
+                    <span style="color:var(--car-accent);font-weight:700;">切换极简时钟模式</span>
+                </button>
                 <a class="car-modal-btn" href="javascript:void(0)" onclick="closeBcosCarLockscreen();showBcosOS();setTimeout(_bcosLaunchDesktop,100);">
                     <span class="icon">🖥️</span>
                     <span>bcos 桌面系统</span>
@@ -16958,6 +17355,10 @@ const START_DATE = '2024/03/12 00:00:00';
 
             <!-- Toggles & Quick Actions -->
             <div style="margin-bottom:1rem;display:flex;flex-direction:column;gap:.6rem;">
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>✨</span> 极简全屏锁屏模式 (纯净时间壁纸)</span>
+                    <button type="button" class="car-icon-btn" id="toggle-minimal-btn" onclick="toggleMinimalistMode()">已关闭 (点击开启)</button>
+                </div>
                 <div class="car-setting-item">
                     <span class="car-setting-label"><span>🎨</span> 切换座舱氛围主题</span>
                     <button type="button" class="car-icon-btn" onclick="cycleTheme()">切换主题</button>
@@ -17226,6 +17627,27 @@ const START_DATE = '2024/03/12 00:00:00';
         updateWallpaperBlur(blur);
         updateLockscreenAvatar();
 
+        // Apply minimalist lockscreen mode if URL param or saved
+        const urlParams = new URLSearchParams(location.search);
+        const initMin = urlParams.get('minimalist') === '1' || localStorage.getItem('car_minimalist_mode') === 'true';
+        applyMinimalistMode(initMin);
+
+        // Double-tap clock to toggle minimalist mode on touch devices
+        let _lastClockTap = 0;
+        const clockEl = document.querySelector('#bcos-car-lockscreen .car-clock-box');
+        if (clockEl) {
+            clockEl.addEventListener('touchend', (e) => {
+                const now = Date.now();
+                if (now - _lastClockTap < 350) {
+                    e.preventDefault();
+                    toggleMinimalistMode();
+                    _lastClockTap = 0;
+                } else {
+                    _lastClockTap = now;
+                }
+            });
+        }
+
         // First touch anywhere attempts to engage wake lock
         const firstInteraction = () => {
             acquireWakeLock();
@@ -17257,6 +17679,10 @@ const START_DATE = '2024/03/12 00:00:00';
         if (!isNaN(_savedScrollY) && _savedScrollY > 0) {
             window.scrollTo(0, _savedScrollY);
         }
+        if (typeof logEvent === 'function') {
+            const dwell = window._bcosCarLockOpenTime ? Math.max(1, Math.round((Date.now() - window._bcosCarLockOpenTime) / 1000)) : 0;
+            logEvent(`🔓 [bcos座舱锁屏] 滑块解锁退出锁屏 (锁屏驻留时长: ${dwell}秒)`, 'info');
+        }
         showToast('已退出车机锁屏');
     }
 
@@ -17285,6 +17711,8 @@ const START_DATE = '2024/03/12 00:00:00';
     window.toggleTopActions = toggleTopActions;
     window.updateLockscreenAvatar = updateLockscreenAvatar;
     window.toggleLockscreenAvatar = toggleLockscreenAvatar;
+    window.toggleMinimalistMode = toggleMinimalistMode;
+    window.applyMinimalistMode = applyMinimalistMode;
     window.cycleTheme = cycleTheme;
     window.nextQuote = nextQuote;
     window.unlockScreen = unlockScreen;
@@ -17386,18 +17814,39 @@ const START_DATE = '2024/03/12 00:00:00';
         }
         // System-created edit.lock shows garbage content (easter egg)
         const winId = 'bcos-win-editlock';
-        if (document.getElementById(winId)) { document.getElementById(winId).style.zIndex = ++_bcos.winZ; return; }
+        if (document.getElementById(winId)) {
+            const w = document.getElementById(winId);
+            w.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(win => win.classList.remove('active-window'));
+            w.classList.add('active-window');
+            return;
+        }
         const container = document.getElementById('bcos-windows');
         if (!container) return;
         const win = document.createElement('div');
-        win.className = 'bcos-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
-        const cx = 100+Math.random()*80, cy = 60+Math.random()*60;
-        win.style.cssText += 'left:0;top:0;width:360px;height:240px;transform:translate3d(' + cx + 'px,' + cy + 'px,0);';
+        win.className = 'bcos-window active-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
+        const isMobile = window.innerWidth <= 768;
+        const winW = isMobile ? Math.min(360, window.innerWidth - 12) : 360;
+        const winH = isMobile ? Math.min(240, window.innerHeight - 80) : 240;
+        const cx = isMobile ? 6 : Math.max(10, Math.min(100+Math.random()*60, window.innerWidth - winW - 20));
+        const cy = isMobile ? 24 : Math.max(10, Math.min(60+Math.random()*60, window.innerHeight - winH - 60));
+        win.style.cssText += `left:0;top:0;width:${winW}px;height:${winH}px;transform:translate3d(${cx}px, ${cy}px, 0);`;
         win._bcosTX = cx; win._bcosTY = cy;
+        win._bcosOrigW = winW; win._bcosOrigH = winH;
         const garbage = Array.from({length: 12}, () => Array.from({length: 32}, () => String.fromCharCode(33 + Math.floor(Math.random() * 94))).join('')).join('\n');
-        win.innerHTML = '<div class="bcos-window-titlebar" onmousedown="_bcosDragStart(\'' + winId + '\',event)" ontouchstart="_bcosTouchDragStart(\'' + winId + '\',event)"><span class="bcos-window-title">🔒 ' + _bcosEscape(name) + '</span><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" onclick="_bcosCloseCatWin(\'' + winId + '\')"></button></div></div><div class="bcos-window-content" style="padding:.5rem;font-family:monospace;font-size:10px;color:#f44;overflow:auto;word-break:break-all;">' + _bcosEscape(garbage) + '</div>';
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-window-close" title="关闭" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosCloseCatWin('${winId}')" onmousedown="event.stopPropagation(); _bcosCloseCatWin('${winId}')" onclick="event.stopPropagation(); _bcosCloseCatWin('${winId}')"></button></div><span class="bcos-window-title">🔒 ${_bcosEscape(name)}</span><div style="width:24px;"></div></div><div class="bcos-window-content" style="padding:.5rem;font-family:monospace;font-size:10px;color:#f44;overflow:auto;word-break:break-all;">${_bcosEscape(garbage)}</div>`;
         container.appendChild(win);
-        win.addEventListener('mousedown', () => { win.style.zIndex = ++_bcos.winZ; });
+        document.querySelectorAll('.bcos-window').forEach(w => { if (w !== win) w.classList.remove('active-window'); });
+        win.addEventListener('mousedown', () => {
+            win.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
+            win.classList.add('active-window');
+        });
+        win.addEventListener('touchstart', () => {
+            win.style.zIndex = ++_bcos.winZ;
+            document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
+            win.classList.add('active-window');
+        }, { passive: true });
     }
 
     // === Syntax highlighter for TextEditor ===
@@ -21214,6 +21663,16 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.3.9393', title:'纯净极简锁屏内置切换、消除锁屏抽搐抖动、移除非必要Tab栏、移动端GPU加速与BCOS运行日志深度集成', items:[
+            '【此改动适用于 index.html / car.html】[极简锁屏] 废除独立 clean.html，极简锁屏模式作为原生能力内置于 index.html 和 car.html 中，保留顶部胶囊状态栏与底部解锁滑块，隐去中央繁琐仪表与右侧面板，数字时钟与日期农历优雅浮空呈现，去除外层毛玻璃边框，支持中控设置、顶部徽章、双击时钟/触屏双击随时随地秒切',
+            '【此改动适用于 index.html / car.html】[消抖除错] 彻底消除锁屏抽搐抖动（Zero-Jitter）：OLED 防烧屏微位移与底部滑块拖拽全面升级为 GPU 硬件级变换（translate3d / translateZ(0) / will-change），极简模式短路跳过隐藏组件 30ms 高频重排，壁纸加载失败增加本地 Base64 降级防闪烁',
+            '【此改动适用于 index.html / car.html】[硬件加速] 启用移动端 CPU/GPU 硬件加速与渲染隔离（contain: strict / perspective: 1000px），强制浏览器分配独立硬件图层，杜绝复杂混合模式下的重绘伪影与移动端发热',
+            '【此改动适用于 index.html / car.html】[全端自适应] 完美适配横竖屏模式（横屏靠左纵向居中、竖屏全对称居中），适配 iOS Safari 沉浸式伪全屏与 PWA 离线运行，阻断 Chrome/Safari 下拉橡皮筋手势冲突',
+            '【此改动适用于 index.html】[性能优化] 彻底从 DOM 中移除初次启动未完全加载完成前的旧版移动端 PWA 底部 Tab 栏（.tab-bar / #tab-fab），消除首屏加载阶段闪烁，精简 DOM 与首屏绘制耗时',
+            '【此改动适用于 index.html】[调试日志] bcos 虚拟系统运行日志全面集成座舱锁屏全生命周期事件（logEvent）：记录锁屏启动/退出驻留时长、横竖屏视口参数、GPU 硬件加速状态、主题切换、电量与续航遥测更新、壁纸切换、常亮锁申请与心跳保活等，极大提升排错效率',
+            '【此改动适用于 index.html】[窗口触控] 优化 bcos 桌面窗口在移动端下的交互：标题长文本自动省略截断、按钮防挤压并扩展触控热区、支持 touchstart 瞬时响应关闭，增加窗口拖拽严格边界检测防止拖出屏幕外',
+            '【此改动适用于 car.html】[独立锁屏] 独立车机端内深度打通极简模式无缝切换，支持桌面快捷参数（car.html?minimalist=1）与 PWA 添加到主屏幕'
+        ]},
         { ver:'v7.8.3.9391', title:'车机锁屏错位修复、统一状态栏胶囊与卡片选择器、原生字体回退', items:[
             '【新增】统一胶囊状态徽章设计：顶部状态栏重构为规范的 28px 对称药丸胶囊微组件，左右高度对齐、圆角统一，支持微发光悬浮动效与 Cyber 悬浮提示',
             '【新增】现代化座舱多选卡片选择器（Option Selector）：工况标准（WLTP / 实估）与壁纸模式（自动轮播 / 固定壁纸 / 纯净色彩）重构为网格微拟物卡片，自带状态图标、副标题描述与激活蓝光对勾',
