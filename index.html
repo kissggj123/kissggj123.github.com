@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9380 -->
+    <!-- VERSION: v7.8.3.9381 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -22,7 +22,10 @@
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.2.9370">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap">
+    </noscript>
     <link rel="stylesheet" href="./car.css">
     <!-- PWA -->
     <meta name="theme-color" content="#FFF0F5">
@@ -1005,9 +1008,26 @@
         @media (min-width: 1920px) {
             .content { max-width: 1600px; margin: 0 auto; }
         }
-        @media (display-mode: standalone) {
-            .tab-bar { display: flex; }
+        /* PWA Standalone Mode: Respect user preference & screen width */
+        @media (display-mode: standalone) and (max-width: 768px) {
+            /* Only show tab-bar in standalone mode on mobile screens when NOT hidden */
+            .tab-bar:not(.hidden) { display: flex; }
             .sidebar { display: none; }
+        }
+        @media (display-mode: standalone) and (min-width: 769px) {
+            /* On desktop PWA, retain PC sidebar and strictly keep tab-bar hidden */
+            .tab-bar { display: none !important; }
+        }
+        /* When hidden, strictly enforce display:none !important */
+        .tab-bar.hidden {
+            display: none !important;
+            transform: translateY(150%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        body.in-bcos .tab-bar,
+        body.in-bcos #tab-fab {
+            display: none !important;
         }
         @keyframes slideUpSheet {
             from { transform: translateY(100%); }
@@ -1308,7 +1328,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9380</div>
+                <div class="subtitle">v7.8.3.9381</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1621,7 +1641,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9380</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9381</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1687,7 +1707,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9380',
+        VERSION: 'v7.8.3.9381',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2718,7 +2738,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9380 已启动', 'info');
+        logEvent('兔可可王国 v7.8.3.9381 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9554,7 +9574,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9380 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.3.9381 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -12909,19 +12929,26 @@
         html += `<select onchange="if(window.setSidebarMode) setSidebarMode(this.value)" style="background:rgba(0,0,0,0.5);color:#fff;border:1px solid #444;padding:6px 10px;border-radius:6px;"><option value="auto">自动折叠(悬停展开)</option><option value="auto-hide">自动隐藏(点击恢复)</option><option value="locked-open">始终展开</option><option value="locked-collapsed">始终折叠</option></select>`;
         html += '</div>';
 
+        const curAvatar = localStorage.getItem('sidebarAvatar') || 'emoji';
+        const isPixel = localStorage.getItem('pixelFont') === '1' || document.body.classList.contains('pixel-font');
+        const isMouse = localStorage.getItem('mouseBunny') !== '0';
+
         html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
         html += '<span>🐰 侧边栏头像风格</span>';
-        html += `<div><button onclick="if(window.setSidebarAvatar) setSidebarAvatar('emoji')" style="background:#333;color:#fff;border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:6px;">🐰 Emoji</button><button onclick="if(window.setSidebarAvatar) setSidebarAvatar('photo')" style="background:#333;color:#fff;border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;">📷 照片</button></div>`;
+        html += `<div>` +
+            `<button onclick="window.setSidebarAvatar && window.setSidebarAvatar('emoji'); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${curAvatar==='emoji'?'var(--accent)':'#333'};color:${curAvatar==='emoji'?'#000':'#fff'};border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:6px;font-weight:${curAvatar==='emoji'?'bold':'normal'};">🐰 Emoji</button>` +
+            `<button onclick="window.setSidebarAvatar && window.setSidebarAvatar('photo'); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${curAvatar==='photo'?'var(--accent)':'#333'};color:${curAvatar==='photo'?'#000':'#fff'};border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:${curAvatar==='photo'?'bold':'normal'};">📷 照片</button>` +
+            `</div>`;
         html += '</div>';
 
         html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
         html += '<span>👾 像素字体模式</span>';
-        html += `<button onclick="if(window.togglePixelFont) togglePixelFont(); this.style.opacity=0.5;" style="background:#333;color:#fff;border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;">切换</button>`;
+        html += `<button onclick="window.togglePixelFont && window.togglePixelFont(); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${isPixel?'var(--accent)':'#333'};color:${isPixel?'#000':'#fff'};border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:${isPixel?'bold':'normal'};">${isPixel?'✅ 已开启':'❌ 已关闭'}</button>`;
         html += '</div>';
 
         html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
         html += '<span>✨ 鼠标光效跟随</span>';
-        html += `<button onclick="if(window.toggleMouseBunny) toggleMouseBunny(); this.style.opacity=0.5;" style="background:#333;color:#fff;border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;">切换</button>`;
+        html += `<button onclick="window.toggleMouseBunny && window.toggleMouseBunny(); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${isMouse?'var(--accent)':'#333'};color:${isMouse?'#000':'#fff'};border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:${isMouse?'bold':'normal'};">${isMouse?'✅ 已开启':'❌ 已关闭'}</button>`;
         html += '</div>';
 
         html += '</div></div>';
@@ -13547,7 +13574,7 @@
             return '<div class="item"><label>设置与偏好项</label><span class="node-val">' + _bcosEscape(p) + '</span></div>';
         }).join('\n        ');
 
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9380 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9380 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9381 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9381 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
     function _bcosExtractDiffRules(defaultHtml, currentHtml) {
@@ -15544,7 +15571,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item">
                                 <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9380</div>
+                                <div class="car-diag-val">💻 bcos v7.8.3.9381</div>
                             </div>
                         </div>
                     </div>
@@ -16594,8 +16621,14 @@ const START_DATE = '2024/03/12 00:00:00';
         const lastOOBEVersion = safeGetItem('bcos_oobe_version', '');
         if (lastOOBEVersion === _BCOS_VER) return; // Already seen this version
         const dt = _bcosGetDesktopTheme();
+        const curLog = (typeof CHANGELOG !== 'undefined' && CHANGELOG[0]) ? CHANGELOG[0] : null;
+        const whatsNewHtml = curLog ? ('<div style="background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.5rem .7rem;text-align:left;max-height:135px;overflow-y:auto;font-size:11px;line-height:1.5;margin-top:.6rem;">' +
+            '<div style="font-weight:bold;color:' + dt.accent + ';margin-bottom:.3rem;">🌟 ' + curLog.ver + ' · ' + curLog.title + '</div>' +
+            curLog.items.map(it => '<div style="margin-bottom:.2rem;">' + it + '</div>').join('') +
+            '</div>') : '';
+
         const steps = [
-            { title: '🐰 Welcome to bcos', body: 'You are now running <b style="color:' + dt.accent + ';">Bunny OS</b> ' + _BCOS_VER + '.<br><br>A Linux-style operating system running entirely in your browser.<br><br>Let\'s take a quick tour!' },
+            { title: '🐰 Welcome to bcos ' + _BCOS_VER, body: 'You are now running <b style="color:' + dt.accent + ';">Bunny OS</b> ' + _BCOS_VER + '.<br>A Linux-style web operating system in your browser.' + whatsNewHtml },
             { title: '⌨️ Terminal', body: 'The <b style="color:#00ff41;">Terminal</b> is your command center.<br><br>Type <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">help</code> to see all available commands.<br><br>Try <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">ls</code>, <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">neofetch</code>, or <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">cat YumikoToys</code>.' },
             { title: '📁 Files', body: 'The <b style="color:#00ff41;">File Manager</b> lets you browse 177 GitHub repositories.<br><br>Click any repo to see details, or double-click to open it on GitHub.<br><br>You can also use <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">ls</code> in the terminal.' },
             { title: '🖥️ Desktop', body: 'Your desktop has apps:<br><br>🐰 Terminal &nbsp; 🌸 Files &nbsp; 💖 Monitor<br>🌐 Browser &nbsp; 🎀 About<br><br>Use the <b style="color:' + dt.accent + ';">🐰 bcos</b> button in the taskbar to open the start menu.' },
@@ -16607,7 +16640,7 @@ const START_DATE = '2024/03/12 00:00:00';
         function renderStep() {
             const s = steps[_bcosOOBEStep];
             const isLast = _bcosOOBEStep === steps.length - 1;
-            overlay.innerHTML = '<div style="background:#1a1a1a;border:1px solid ' + dt.accent + ';border-radius:8px;padding:1.5rem;max-width:340px;text-align:center;color:#e0e0e0;font-family:inherit;">' +
+            overlay.innerHTML = '<div style="background:#1a1a1a;border:1px solid ' + dt.accent + ';border-radius:8px;padding:1.5rem;max-width:390px;text-align:center;color:#e0e0e0;font-family:inherit;">' +
                 '<h2 style="color:' + dt.accent + ';margin:0 0 .8rem;font-size:1.1rem;">' + s.title + '</h2>' +
                 '<div style="font-size:13px;line-height:1.6;margin-bottom:1rem;">' + s.body + '</div>' +
                 '<div style="display:flex;gap:.3rem;justify-content:center;margin-bottom:.5rem;">' +
@@ -17096,6 +17129,16 @@ const START_DATE = '2024/03/12 00:00:00';
             if (photoBtn) photoBtn.classList.remove('btn-primary');
         }
     }
+    
+    // Global exports for Settings & Preferences
+    window.setSidebarAvatar = typeof setSidebarAvatar !== 'undefined' ? setSidebarAvatar : window.setSidebarAvatar;
+    window.togglePixelFont = typeof togglePixelFont !== 'undefined' ? togglePixelFont : window.togglePixelFont;
+    window.toggleMouseBunny = typeof toggleMouseBunny !== 'undefined' ? toggleMouseBunny : window.toggleMouseBunny;
+    window.setTabBarMode = typeof setTabBarMode !== 'undefined' ? setTabBarMode : window.setTabBarMode;
+    window.setSidebarMode = typeof setSidebarMode !== 'undefined' ? setSidebarMode : window.setSidebarMode;
+    window.setFontScale = typeof setFontScale !== 'undefined' ? setFontScale : window.setFontScale;
+    window.toggleTextSelect = typeof toggleTextSelect !== 'undefined' ? toggleTextSelect : window.toggleTextSelect;
+
     function setSidebarAvatar(mode) {
         safeSetItem('sidebarAvatar', mode);
         applySidebarAvatar(mode);
@@ -19566,9 +19609,11 @@ const START_DATE = '2024/03/12 00:00:00';
             // Listen for SW updates and force reload to clear stale cache
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'SW_UPDATED') {
-                    console.log('Service Worker updated to', event.data.version, '- reloading...');
-                    // Force reload to load new cached assets
-                    setTimeout(() => location.reload(), 500);
+                    console.log('Service Worker updated to', event.data.version);
+                    // Non-intrusive update: show clean toast instead of freezing page on blank reload
+                    if (window.showToast) {
+                        showToast(`✓ 已在后台静默就绪 (${event.data.version})，再次打开即为最新版`);
+                    }
                 }
             });
             // Handle controller change (new SW took over)
@@ -19797,481 +19842,13 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.3.9380', title:'提示框形态与层级终极修复 & 移动竖屏全量适配', items:[
-            '🐛 根治提示框巨大化/拉伸撑满屏幕Bug：定位到在带有 CSS transform 变换的父容器中，缺少强制尺寸约束与顶底锚定的 position:fixed 元素会在 WebKit 弹性布局下产生非预期拉伸。现已将 .car-toast 从变换容器中剥离直接挂载到 document.body 视口顶层，并施加 top: auto !important、height: auto !important、max-height: 48px !important、width: max-content !important 的终极物理约束，确保在任何分辨率、横竖屏与设备上永远保持紧凑胶囊药丸形态',
-            '📐 移动端竖屏模态框优化：针对手机竖屏环境（iPhone / Android）为所有中控弹窗（电量设置、壁纸管理、纪念日添加）增加 @media (max-width: 600px) 响应式规则，间距更紧凑，避免内容溢出屏幕',
-            '🛡️ 锁屏入口样式注入防护：在 showBcosCarLockscreen 入口顶部无条件确保 _bcosInjectCSS() 预执行，彻底消除任何未加载 CSS 导致的裸样式渲染',
-            '🔒 双端（car.html & index.html）双向 100% 绝对一致：全量同步所有修复与样式定义',
-        ]},
-        { ver:'v7.8.3.9380', title:'深度全量审计 & 双端严格 100% 互通同步', items:[
-            '🛡️ 修复隐藏的退出锁屏隐患：补齐缺失的 releaseWakeLock() 函数定义，彻底避免退出锁屏时因引用未定义函数导致抛错或常亮守护定时器泄漏',
-            '🕹️ 解锁滑块拟物流光反馈：重构触屏滑块微交互，拖动滑块时轨道内部同步渲染出随动流光高亮进度（.car-slider-fill），提示文字自然平滑隐入（opacity 动态渐隐），松手或回弹均具有弹性阻尼动画',
-            '📡 车辆动力与网络诊断自适应：车辆状态栏网络指示灯（NETWORK LINK）实时接入 navigator.onLine，支持在线与离线自适应切换',
-            '🔒 严格双端（car.html & index.html）双向对齐：样式规范、事件监听、3 位毫秒实时计算、模态弹窗及响应式规则实现 100% 同步，确保独立访问或由 BCOS 内部拉起体验完全一致',
-        ]},
-        { ver:'v7.8.3.9380', title:'提示气泡纵向异常拉伸根治 & 双端同步完善', items:[
-            '🐛 根治提示框异常拉伸变长：彻底修复点击设置电量或切换状态时，车机锁屏提示弹窗（Toast）在部分浏览器与移动端中被错误计算为全屏高度（800px纵向拉伸变成巨型黑框）的严重问题',
-            '🔧 修复机理：由于父容器具备 GPU 变换与弹性伸缩属性，WebKit 将未显式约束 top 的 fixed 子元素误判为自静态顶栏至 bottom:5rem 之间的全高延伸。现严格施加 top: auto !important、height: auto !important、max-height: 52px、width: max-content 约束，保证其在任何环境下均稳固维持为精致紧凑的胶囊浮窗',
-            '✨ 交互防抖增强：为车机 Toast 增加定时器锁与重入清理机制，避免高频点击导致的状态错乱与微抖动',
-            '🔄 car.html 与 index.html 100% 严格双向像素级同步',
-        ]},
-        { ver:'v7.8.3.9380', title:'毫秒精度 3 位小数 & 车机座舱 UI 双端极致升级', items:[
-            '⏱️ 纪元时间高精升级：伴随时间毫秒级高精度展示，从原来的 1 位小数升级为完整 3 位小数（如 10时 20分 50秒 .327），结合 33 FPS 实时平滑刷新，呈现如同超跑数字仪表盘般的科幻流光动效',
-            '🎨 双端 UI 极致同步（car.html & index.html）：全面重构两端座舱锁屏布局规范与视觉系统，实现 100% 像素级对齐',
-            '📐 彻底根治中控与中屏底部重叠：针对纵向高度较紧凑的屏幕（车载中控屏、iPad、平板及小窗口），增加自适应弹性收缩布局与 @media (max-height: 760px) 响应式规则，里程碑列表自适应滚动，底部滑动解锁轨道绝不再与内容发生穿插遮挡',
-            '✨ 视觉质感全方位跃升：卡片加入深邃纳米微晶高反光镜面玻璃质感（微光外发光 + 顶部霓虹渐变勾边），里程碑达成进度条增添高光掠影扫光动画，数字时钟字距与等宽排版（tabular-nums）全面优化',
-        ]},
-        { ver:'v7.8.3.9380', title:'iOS & 安卓锁屏抽搐根治 (移动端深度优化)', items:[
-            '🐛 根治 iOS/安卓 BCOS 开启车机锁屏时画面抽搐问题：彻底根除了 8 处引发移动端渲染抖动的代码路径，Windows/macOS 行为不受任何影响',
-            '🔧 修复原因①：applyTheme() 与 applyTopActionsState() 此前直接操作 document.body.className，在 iOS WebKit 中会触发全页 CSS 变量重计算与 layout reflow cascade，抖动由此而来。现已限定为只修改 #bcos-car-lockscreen 自身的 class',
-            '🔧 修复原因②：.car-wallpaper-layer / .car-wallpaper-overlay 使用 position:fixed 嵌套在另一个 position:fixed (#bcos-car-lockscreen) 内部，iOS 合成器将其拆分为独立合成层并单独重绘，造成帧间撕裂。已改为 position:absolute，确保壁纸层与父容器在同一合成层内',
-            '🔧 修复原因③：#bcos-car-lockscreen 的 transition: background 0.6s ease 在每次 DOM 注入时触发，产生首帧色彩闪变。已移除首次挂载的过渡，仅保留用户主动切换主题时的动效',
-            '⚡ 所有关键层（#bcos-car-lockscreen / .car-wallpaper-layer / .car-content-layer）均已添加 transform:translateZ(0) 与 will-change:transform，强制 GPU 合成，iOS/安卓上渲染性能大幅提升',
-            '✨ 新增 0.25s 淡入入场动画，彻底遮蔽移动端 DOM 注入时的白屏闪光',
-        ]},
-        { ver:'v7.8.3.9380', title:'车机锁屏全量同步 & 触屏终极优化', items:[
-            '🐞 修复锁屏初始化崩溃：彻底根除 startDisplayTicker 未定义报错，车机锁屏进入时数字时钟（毫秒级响应）、公农历、电量状态及里程碑列表瞬间满血加载',
-            '🏎️ 全量同步车机座舱样式库：将 car.html 完整的原生座舱样式与主题变量无缝同步至 BCOS 主系统，彻底解决壁纸层缺少定位属性导致的排版塌陷与位移问题',
-            '🖼️ 杜绝壁纸切换抽搐与闪烁：重构壁纸加载与缓存管线，命中 IndexedDB/内存缓存时直接无缝渐变呈现，不再反复穿插低清占位图与 shimmer 动画，切换如丝般顺滑',
-            '🚗 深度优化触屏车机操控：滑块加入 touchcancel 容错与 70% 舒适滑动解锁阈值，按键扩大至中控触屏黄金标准尺寸（44px+），彻底禁用边缘手势干扰',
-        ]},
-        { ver:'v7.8.3.9380', title:'BCOS 开机动画 & 深度审计修复', items:[
-            '🚀 BCOS 专属开机动画：现在每次点击"Reboot"或首次进入 BCOS，都会看到优雅的黑底开机动画。内含兔可可头像、版本号、渐变进度条与跳动呼吸光点。开机期间同步在后台进行壁纸库预热、IndexedDB 初始化、自定义壁纸预解码，保证桌面出现时一切已就绪。',
-            '🔍 代码深度审计：系统性扫描所有 onclick/ontouchstart 事件引用的函数，验证 44 个关键函数均已正确定义与全局导出，零漏洞',
-            '🐛 overscroll 作用域修正：将 overscroll-behavior:none 从 body 全局移至 #bcos-overlay，避免在 BCOS 外部的原始网页区域也无法正常滚动',
-            '🖼️ 壁纸初始化顺序修正：_bcosLaunchDesktop 不再硬编码 localStorage 壁纸作为 background inline style，改为完全交由 _bcosApplyDesktopTheme 统一管理，避免 b64 壁纸路径被当作 URL 直接使用',
-        ]},
-        { ver:'v7.8.3.9380', title:'桌面体验重构与细节优化', items:[
-            '🎨 BCOS 全局右键菜单支持：为 BCOS 桌面环境打造了专属右键菜单，彻底屏蔽浏览器原生右键菜单。一键快速更换壁纸、直达车机锁屏、打开终端或查看系统信息',
-            '🍎 深度适配 iOS/iPadOS 沉浸式体验：在 BCOS 桌面屏蔽了向下拖拽导致的弹性回弹 (overscroll) 及系统原生的退出全屏手势，实现了真正的原生应用级沉浸体验',
-            '⏱️ 任务栏实时时间升级：任务栏时钟现已支持秒级实时刷新，同时修复了在窄屏移动设备上时钟文字被过度挤压挤出屏幕边缘的排版问题',
-            '🖱️ 窗口控制逻辑重构：修复了点击“红黄绿”三个窗口控制按钮时因标题栏拖拽事件覆盖导致失效的问题，现在关闭、最小化、最大化按钮都能精准响应',
-            '🔄 修复关机重置界面：修复了“System Halted”界面中点击 Reboot (重新开机) 按钮无反应的 Bug，保障系统的流畅循环启动',
-        ]},
-        { ver:'v7.8.3.9380', title:'系统设置重磅升级 & 锁屏无缝互通', items:[
-            '🎨 系统设置壁纸库互通：BCOS 系统设置现已全面接入车机锁屏的高清壁纸库！直接在 BCOS 中浏览、预览并一键应用内置的星空/插画/极光等 14 款极品壁纸（完美支持 .b64 离线缓存高速加载）！',
-            '🚀 默认直开全屏桌面：听取反馈，去除了繁琐的黑底代码 Boot 动画，现在打开网页或点击重新开机，将以毫秒级速度直接进入 BCOS 全景桌面环境！',
-            '🛠️ 全局首选项回归：系统设置中补全了之前精简掉的“Tab 栏模式”、“侧边栏模式”与“头像风格”设置，全面满足自定义需求',
-            '🐞 修复了在 BCOS 桌面点击【车机锁屏】图标时偶尔报 CAR_THEMES 变量未定义的错误',
-        ]},
-        { ver:'v7.8.3.9380', title:'系统设置重构与纯净开机体验升级', items:[
-            '🎨 重构系统设置布局：彻底废弃老旧的设置页面粗暴移植，为 bcos 量身定制了全新的系统设置窗口，支持自定义壁纸 URL，可随时切换 10 款内置主题或应用专属壁纸！',
-            '🚀 纯净开机体验：彻底移除老旧的 Classic UI 入口及相关的 "关于作者" 入口，解决了重复点击导致系统多次挂载产生重复弹窗的严重漏洞',
-            '✨ 完美全屏启动：修复了开机强制触发全屏导致的浏览器安全告警，现在将在关机后通过友好的系统已停止界面，以用户点击“重新开机”按钮的方式平滑获取全屏权限',
-            '📏 桌面图标完美对齐：修复了桌面图标文字过长换行时导致的列不对齐与排版错乱问题',
-        ]},
-        { ver:'v7.8.3.9380', title:'bcos 全屏桌面系统深度重构 · 网页直开全屏 · 14款壁纸国内离线秒开与GitHub Actions自动部署', items:[
-            '🖥️ 网页与PWA直接启动全屏 bcos 操作系统：无论是普通网页直接访问、本地 file:// 访问还是 PWA 桌面应用，均默认直开现代化 bcos 桌面操作系统并自动进入全屏！全新 macOS/Linux 红黄绿三色窗口控制、窗口最小化与任务栏恢复、右下角系统托盘（实时电池电量 ⚡ 88%、⛶ 全屏切换、🚗 车机锁屏一键直达），支持 11 款窗口化多任务独立运行！',
-            '🛠️ 彻底修复空指针中断与 TDZ 连锁报错：重构座舱锁屏后台事件绑定与 DOM 检测，彻底根除 `#car-root` 空指针导致整段脚本执行中断的致命异常，彻底解决 `_fontScaleRafId`、`textSelectDisabled`、`CHANGELOG`、`trailCanvas`、`MILESTONES`、`SAVE_SLOTS` 等变量因 Temporal Dead Zone 未初始化报错的问题',
-            '🌐 本地与跨域访问安全加固：智能检测当前运行环境，修复本地 `file:///` 协议加载 manifest.json 及 ServiceWorker 注册引发的 CORS origin null 拦截报错，保障本地双击离线直接可用与线上 HTTPS 完美运作',
-            '🖼️ 14款座舱壁纸全面优化与模糊占位 (Blur-up)：新增 11 款精美壁纸（双人成行、空洞骑士、原野星辉、深邃星云等），全面完成 1920px 渐进式 JPEG 压缩 (体积压缩85%+) 并生成 0 秒 blur-up 微占位图，结合 IndexedDB 永久本地缓存，国内网络无加速下秒开不黑屏',
-            '🤖 GitHub Actions 自动化部署流水线：新增 `.github/workflows/deploy-wallpapers.yml`，在 GitHub 网页版或 Git 提交上传新壁纸到 `wallpaper/` 目录时，云端自动触发 Pillow 渐进式无损压缩、占位图生成与 manifest 自动部署',
-            '📱 安卓车机浏览器与文件管理器唤醒：锁屏上传壁纸按键采用标准 W3C `<label>` 与 `showPicker()` 结合，完美兼容小鹏/蔚来/特斯拉/比亚迪等车机浏览器与各类安卓系统，点击必出文件管理/相册选择',
-            '🚗 智能座舱锁屏同款界面与功能完整同步：car.html 与 index.html 锁屏界面 100% 同步，支持电量/续航 (WLTP/实估双标准) 手动与预估调节、动态 EQ 律动、5 套座舱氛围主题、手势滑动解锁与导航中心'
-        ]},
-        { ver:'v7.8.1.9365', title:'bcos 纪念日系统深度集成 & 智能座舱车机锁屏 (car.html) 全新上线', items:[
-            '💕 bcos 纪念日系统深度融合：bcos 操作系统全面支持纪念日体系！新增桌面图标与开始菜单【💕 纪念日】GUI 应用、终端命令 `anniversary` / `anni`、虚拟文件系统 `/me/anniversary.txt` 与 `/desktop/anniversary`，实时计算兔可可相伴精准天数与里程碑倒计时',
-            '🚗 智能座舱车机锁屏 (car.html)：专为车载大屏（特斯拉/小鹏/蔚来/理想/比亚迪等车机浏览器）量身定制的独立锁屏与屏保！支持常亮防熄屏 (Screen WakeLock API)、防烧屏微漂移技术 (Anti-Burn-in Drift)、5 套科技/甜美智能座舱主题、超大数字仪表时钟与手势滑动解锁 (Slide to Unlock)',
-            '🔗 多维外部链接直达与模式切换：支持通过 `car.html`、`?car`、`?bcos=car`、`?bcos=desktop`、终端命令 `car` / `lock` / `screensaver`、系统设置默认视图 (carlock) 以及 PWA 快捷方式无缝直达车机锁屏',
-            '🚩 纪念日里程碑体系扩充：统一扩展 100天/180天(半周年)/300天/1周年/500天/2周年/1000天千日里程碑/3周年/4周年/1500天/5周年/2000天/10周年/10000天万日之约与自定义纪念日',
-        ]},
-        { ver:'v7.8.1.9364', title:'全量功能 AI 自动托管适配：交易所/银行/载具店/巫师/新闻台/赌场全功能自动化&全空指针防护', items:[
-            '🛡️ 全局 mono.properties 可选链防死锁：全量修复了所有咒卡 (引力/磁场/税稽查) 中的 properties[i].owner 隐患，达成 0 报错稳定运行',
-            '🎮 截图面板 11 大功能全自动运行：AI 全自动托管系统现已全面接管【交易所做多做空、银行清偿债务、载具店自动购车、卡牌店抽卡、巫师黑客封印领跑对手、新闻台发布利好、赌场小试身手、拍卖行智能竞价】，实现真正的全功能自动化！',
-        ]},
-        { ver:'v7.8.1.9363', title:'重构 AI 全自动托管：自动抽取背包卡牌、全自动拍卖竞价/交易应对与无干预挂机', items:[
-            '🛡️ 全量 null.owner 防护修复：彻底修复 handleAuction、triggerTile、aiTurn 及 magnetic_field 咒卡中的 properties[i].owner 报错，防止任何界面或交易阶段崩溃',
-            '🎒 背包手牌自动转移 & 抽卡：全自动托管模式下，系统每回合自动将卡牌包 (cardInventory) 中的卡牌无缝转移至大富翁手牌中，资金充裕时还会自动在商店抽神卡！',
-            '🔨 全自动拍卖竞价与交易应对：当触发拍卖行 (Auction) 或 AI 发起交易时，托管系统自动分析产出价值进行智能竞拍、加价或接受/拒绝交易，达成 100% 无干预极速挂机！',
-        ]},
-        { ver:'v7.8.1.9362', title:'修复 null.owner 托管卡死 Error & 升级全自动托管智购垄断与收益最大化策略', items:[
-            '🐛 修复 properties[i].owner 报错：为 executeAutoPilot、getPlayerPropertyValue、processLandmarkDividends 及 CARD_POOL 全量加入 mono.properties[i]?.owner 可选链防护，彻底解决了连续托管数局后报 TypeError 卡死的问题',
-            '🧠 智购套系垄断 (Monopoly-Piece Priority)：托管模式自动分析区域地产持有度，若购买该地产可完成或扩大套系垄断（获得地标分红与租金加成），将突破普通预算限制优先强制购买',
-            '💎 极速财富增长 (Profit Maximization)：托管系统在每回合自动优先释放手牌中的暴富金币卡、双重强化卡、股市拉升卡与免费升级卡，实现挂机资产指数级增长',
-        ]},
-        { ver:'v7.8.1.9361', title:'新增地产大亨商业帝国玩法：地标商业分红 & 幸运7点数神技 & 股市拉升/地产圣盾新卡入池', items:[
-            '🏛️ 商业地标与分红机制：拥有单区域全部地产或 2 处 Lv.5 满级建筑时自动解锁「🏛️ 商业地标」，每 2 回合自动产出 +1200💰~3600💰 商业高额红利分红',
-            '🎯 幸运 7 点数神技：当掷骰点数和为 7 时触发「🎯 幸运 7」特技，奖励 +800💰 现金并有 35% 几率免费抽取一张稀有手牌',
-            '🃏 全新战略卡牌入池：新增「📈 股市拉升」（使指定股票暴涨40%）与「🏰 地产圣盾」（5回合全场名下地产免疫毁损与降级），极大地丰富了大富翁局势博弈深度',
-        ]},
-        { ver:'v7.8.1.9360', title:'AI 思考卡死手动跳过按钮 & 看门狗 8s 强制解除 & 交易弹窗关闭解锁救济', items:[
-            '⏭️ 新增手动跳过 AI 按钮：在 AI 思考与掷骰期间，控制面板显著位置新增「⏭️ 跳过 AI (恢复游戏)」与「⏭️ 跳过回合」按钮，玩家随时可以一键解除卡死',
-            '🛡️ Watchdog 8s 极速救济：看门狗超时调优至 8s，若 AI 或任何回合陷入超时等待，自动重置 rolling/pendingTrade 状态并流畅推进 nextTurn()',
-            '🤝 交易弹窗关闭解锁：修复 AI 发起交易弹窗被关闭时未清除 pendingTrade 标志导致的死锁，彻底解决 AI 思考概率卡死的问题',
-        ]},
-        { ver:'v7.8.1.9359', title:'资金≤0破产资产全释放 & 动态租金倍率封顶20% & PC端手牌实时刷新 & 新增「✨ 双重强化」卡牌', items:[
-            '☠️ 破产条件与资产全释放：金币降至 0 或负数 (且资产清算/紧急贷款后仍≤0) 时立即触发破产，名下所有地产 100% 释放归还公开市场 (owner=-1, level=0)，供其他玩家自由购买',
-            '💰 动态价格与租金倍率上限：任何单笔租金/惩罚/价格倍率计算最高不超过场上最富裕活跃玩家金币的 20% (getMaxMoneyCap)，杜绝指数级通胀导致无辜瞬间破产',
-            '✨ 手牌实时刷新与双重强化卡：新增「✨ 双重强化」卡牌（随机强化手牌中 2 张卡牌效果），PC端/移动端手牌 UI 实时刷新并展示金色亮光 border、✨ 标识与【已强化】特效倍增',
-        ]},
-        { ver:'v7.8.1.9358', title:'玩家入狱死局 Bug 彻底修复 & 监禁应对面板自动弹出 & AutoPilot 自动解禁 & 看门狗防卡死加固', items:[
-            '🐛 玩家入狱死局修复：彻底修复 playerIdx===0 监禁状态下 UI 隐藏操作按钮导致游戏卡死无响应的严重缺陷，现在将渲染「⚖️ 应对监狱处分」按钮，并在回合开始时自动弹出解禁选择弹窗',
-            '🤖 AutoPilot 智能解禁：为全自动托管模式集成入狱决策（优先出狱卡 → 其次保释金 → 尝试掷双数越狱），彻底消除了托管状态下进监狱导致卡死的缺陷',
-            '🛡️ 看门狗与全状态防死局：针对封印 (banned)、住院 (hospital)、混乱及长时间未响应回合加固 Watchdog 救济机制，确保游戏永远流畅循环',
-        ]},
-        { ver:'v7.8.1.9357', title:'TextEditor 独立纯查找 (Find) 增强 & 关键词高亮 & Ctrl+F 快捷键 & 全局版本升级', items:[
-            '🔍 独立纯查找功能：TextEditor 底部面板新增专属「🔍 查找」按钮与「▲/▼」上一个/下一个遍历控件，不填写替换词时即可进行纯文本查找',
-            '✨ 全局金色高亮与计数：输入查找词时，编辑器自动将全文所有匹配项亮黄色高亮，并实时显示匹配计数指示器 (例如 (1/5))',
-            '⌨️ 快捷键支持：支持 Ctrl+F / Cmd+F 一键聚焦查找框，Enter 跳转下一个匹配，Shift+Enter 跳转上一个匹配，自动滚动至目标视口',
-        ]},
-        { ver:'v7.8.1.9356', title:'真实 DOM 动态提取 & 精准节点文本 1-to-1 映射 & 复合词防误替换加固 & 全局版本升级', items:[
-            '🌐 真实 DOM 文本动态提取：重构 _bcosGetEggReadme，从真实的 document.body 中动态扫描提取全量主题卡片、侧边栏导航与设置选项节点，做到 100% 同步网页最新元素',
-            '🎯 精准 Full-Node 节点映射：给 DOM 差异提取出的规则赋予 exact 精准匹配标志，防止用「设置」替换时误将「⚙️ 偏好设置」替换为「偏好糖果棒棒糖」等误伤问题',
-            '🔒 复合词防污染保护：在 _bcosEggApplyReal 中建立短词与组合短语隔离机制，保护「偏好设置」、「系统设置」等复合词免受子词替换影响',
-        ]},
-        { ver:'v7.8.1.9355', title:'bcos 终端 theme 命令实时响应与 GUI 桌面实时重绘 & 全局版本升级', items:[
-            '✨ bcos 终端主题命令响应：在 bcos 终端或 GUI 模式中执行 theme <id> 命令时，触发 _bcosApplyThemeStyle 实时刷新当前终端输出色、桌面壁纸渐变、Accent 强调色与 Emoji 图标套件',
-            '🌐 状态全自动同步：实现 bcos 内置终端与外层真实网页 DOM data-theme 的无缝实时双向同步',
-        ]},
-        { ver:'v7.8.1.9354', title:'bcos 桌面背景监听空指针防护 & 大富翁放弃购买自动竞拍规则增强 & 全局版本升级', items:[
-            '🏠 大富翁经典规则补全：玩家/AI放弃原价购买地产时，自动触发 startEnhancedAuction 全员竞拍机制，提升资源争夺趣味性与规则严密度',
-            '🛡️ bcos 桌面空指针防护：加固 _bcosLaunchDesktop 对 bcos-desktop-bg DOM 元素的挂载判空防护，彻底消除可能存在的事件监听 null 异常',
-        ]},
-        { ver:'v7.8.1.9353', title:'bcos 伪代码全量真实选项扩充 & F12 级 DOM 差异提取应用引擎 & UI美化 & 全局版本升级', items:[
-            '💻 F12 开发者工具级伪代码修改：全面重构 _bcosGetEggReadme 伪代码 HTML，完整收录真实网页的首页、导航选项、大富翁玩法、卡牌模式、系统设置、主题皮肤及作者版权信息',
-            '⚡ 自动文本 Diff 提取引擎：新增 _bcosExtractDiffRules 差异解析函数，用户在 TextEditor 中像 Chrome DevTools 一样修改任何标签文字，点击「✨ 应用到真实页面」即可自动识别差异并同步更新真实 DOM 文本',
-            '🎨 伪代码 UI 视觉设计大跃升：引入 Cyberpunk / Modern Dark 玻璃拟态设计，配齐柔和渐变、高精边框卡片与 Badge 徽章，完美重塑 Live Preview 浏览体验',
-        ]},
-        { ver:'v7.8.1.9352', title:'bcos彩蛋文本全黑不可见修复 & 替换规则持久化与自动提取 & 离线适配 & 全局版本升级', items:[
-            '👁️ TextEditor 彩蛋全黑文本修复：修正高亮层 #bcos-te-highlight 的默认 color 为 #d4d4d4，并配置 #bcos-te-textarea::selection 选区半透明高亮，彻底修复触发彩蛋/代码高亮后文本全黑不可见的 BUG',
-            '✨ 替换规则自动提取与持久化：在「✨ 应用到真实页面」时自动抓取查找/替换框内容，移除关闭编辑器时对 _bcosEggReplacements 的误清空，并且应用后自动退出 bcos 呈现真实页面',
-        ]},
-        { ver:'v7.8.1.9351', title:'bcos 全系统巡检 & Window Manager 空指针防御加固 & 全局版本升级', items:[
-            '🖥️ bcos 窗口管理器空指针防御：补全 _bcosEditAnniversary 与 _bcosOpenEditLockWindow 弹窗容器空指针防护 (if (!container) return;)，防止非 GUI 模式下渲染异常',
-            '🌐 bcos 浏览器与应用生命周期巡检：验证 bcos 浏览器、文件管理器、文本编辑器、终端与纪念日页面间的状态同步与闭环清理',
-            '🧹 进程与定时器生命周期闭环：全面确认 closeBcosOS 时对 _bcosMonitorTimer、_bcosAnniversaryTimer 及 _bcosTeHlTimer 的强行回收机制',
-        ]},
-        { ver:'v7.8.1.9350', title:'PWA Service Worker 离线网络防护 & 异常降级优化 & 全局版本升级', items:[
-            '🌐 PWA 离线防护增强：修复 Service Worker 资源请求在离线模式下的二次 fetch 捕获逻辑，避免极值网络环境下的 Uncaught Promise Rejection 报错',
-            '🔒 性能与稳健性提升：全面核验大富翁事件日志与玩家资金历史记录，确保所有动态数组均配备严格的 shift() 长度熔断',
-            '✨ 全局防跌落保障：完善 PWA 和网页各模块的开箱即用与跨设备离线适配',
-        ]},
-        { ver:'v7.8.1.9349', title:'bcos虚拟文件系统路径解析修复 & 终端命令相对路径支持 & 全局版本升级', items:[
-            '📁 bcos VFS 相对路径修复：新增 _bcosGetVFSNodeAndParent 节点解析器，全面修复 cd 子目录后 touch / mkdir / rm 在根目录误创误删的路径偏离 BUG',
-            '💻 终端路径感知增强：touch/mkdir/rm 等命令全面支持基于 _bcosCwd 当前工作目录的相对路径、父级路径 (..) 及波浪号 (~) 路径解析',
-            '⚡ 终端高频操作优化：改进 pathCmds 的 Tab 自动补全逻辑，在任何深度子目录下均能精准提示与补全文件名',
-        ]},
-        { ver:'v7.8.1.9348', title:'Monopoly租金叠加消除 & AI还价参数对齐 & 放弃购买公开竞拍 & 性能优化', items:[
-            '🛠️ 交易还价参数对齐：修复 AI 交易还价弹窗中 givePropVal / wantPropVal 参数传递与逻辑错位问题',
-            '💰 租金叠加消除：修正 calculateRent 与 triggerTile 之间重合乘算收租令/全息伪装的重复计算 BUG',
-            '🔨 放弃购买公开竞拍：玩家放弃买地 (skipBuy) 时自动触发全场公开拍卖，符合经典 Monopoly 竞拍规则',
-            '⚡ 性能渲染优化：优化 renderMonopolyPartial 批处理机制，减少不必要的全地图重绘与 DOM 抖动开销',
-        ]},
-        { ver:'v7.8.1.9347', title:'安全加固 + Monitor性能优化 + 定时器泄漏修复 + 空指针防护', items:[
-            '🛡️ 修复Markdown渲染器HTML模式XSS漏洞：未净化HTML直接渲染可导致脚本注入，现已剥离script标签和事件处理器',
-            '⚡ System Monitor性能大幅优化：静态部分（仓库统计/语言分布/GPU信息）仅渲染一次，动态部分（CPU/内存/DOM节点）使用textContent定向更新',
-            '⚡ Monitor DOM节点计数优化：从document.querySelectorAll('*')全文档遍历改为bcos-overlay范围内的querySelectorAll，减少90%+遍历开销',
-            '⚡ Monitor静态值预计算：cpuCores/devMem/gpuShort/netType等在渲染时计算一次，不再每2秒重复计算',
-            '🔌 修复TextEditor定时器泄漏：高亮防抖定时器_teHlTimer提升为全局_bcosTeHlTimer，窗口关闭时正确清理',
-            '🔌 修复closeBcosOS清理遗漏：关闭bcos时未清理_bcosAnniversaryTimer和_bcosTeHlTimer',
-            '🔧 修复bcos关闭后重新打开白屏：closeBcosOS未重置_bcosBooting标志，导致重新启动时_bbcosBoot直接返回',
-            '🔧 修复_bcosOpenApp空指针：container未检查null直接调用appendChild',
-            '🔧 修复_bcosOpenCatWindow空指针：container未检查null直接调用appendChild',
-        ]},
-        { ver:'v7.8.1.9346', title:'TextEditor代码高亮升级 + 开机日志增强 + Markdown渲染增强 + Bug修复 + 性能优化', items:[
-            '📝 TextEditor新增行号显示：左侧gutter栏实时显示行号，滚动同步',
-            '📝 TextEditor新增语言选择器：支持手动切换Auto/JS/TS/HTML/CSS/JSON/MD/Python/Shell',
-            '📝 TextEditor新增TypeScript语法高亮支持：含interface/type/enum等TS关键字',
-            '📝 TextEditor高亮防抖优化：100ms debounce减少大文件输入时的重绘频率',
-            '📝 TextEditor高亮安全检查：添加isConnected检测防止操作已分离DOM元素',
-            '📝 TextEditor打开/新建/me文件夹点击文件时自动重置语言选择器并触发高亮',
-            '📝 语法高亮引擎重构：关键字匹配从逐个循环改为单次正则交替，性能提升3-5倍',
-            '📝 语法高亮引擎加固：整体try-catch包裹，异常时降级为纯文本显示',
-            '📝 语法高亮增强：JS新增模板字符串高亮、CSS新增@规则高亮、Python新增三引号字符串和函数定义高亮、Shell新增$变量高亮',
-            '📝 Markdown渲染增强：代码块支持语法高亮（```lang标记）、新增表格渲染、删除线~~text~~、任务列表- [x]/- [ ]、__bold__语法',
-            '📝 修复Markdown渲染Bug：图片正则必须在链接正则之前执行，否则图片语法被错误匹配为链接',
-            '📝 Markdown渲染器加固：整体try-catch包裹，异常时显示错误信息而非白屏',
-            '🖥️ bcos开机日志大幅扩充：从38条增至63条，新增内核参数/安全模块/音频驱动/电源管理/TLS握手/文件系统检查/窗口管理器/D-Bus等详细启动信息',
-            '🛡️ 修复cat命令XSS漏洞：语言名repo[2]和更新日期repo[5]未转义直接输出到innerHTML',
-            '🛡️ 修复System Monitor XSS漏洞：topLangs语言名未转义直接输出到innerHTML',
-            '⚡ Levenshtein距离算法优化：2D矩阵改为双1D数组，内存分配减少50%+',
-            '⚡ _bcosFuzzy优化：跳过长度差异>2的候选词，避免不必要的Levenshtein计算',
-            '🔧 me文件夹点击文件修复：正确设置filename输入框、openName和语言选择器',
-        ]},
-        { ver:'v7.8.1.9345', title:'bcos终端ls修复 + Tab路径补全 + Markdown渲染修复', items:[
-            '🔧 修复ls在~/desktop/me目录下不显示文件：showBcosOS时预初始化me文件夹',
-            '⌨️ Tab补全增强：cd/ls/cat等路径命令支持文件系统目录名补全，不再只匹配仓库名',
-            '📝 修复Markdown渲染显示原始HTML：HTML内容直接渲染，Markdown内容先提取代码块再转义',
-        ]},
-        { ver:'v7.8.1.9344', title:'bcos终端触发优化 + 安全修复 + 性能优化 + 内存泄漏修复', items:[
-            '🔧 bcos终端命令执行优化：提取通用触发检查函数，终端命令也可触发系统文件生成',
-            '🛡️ _bcosEscape安全加固：新增单引号和双引号转义，防止属性上下文XSS',
-            '⚡ TreeWalker性能优化：替换真实页面时跳过bcos覆盖层节点，减少不必要的DOM遍历',
-            '🔌 内存泄漏修复：关闭浏览器窗口时清理纪念日定时器',
-            '🧹 内存泄漏修复：关闭TextEditor时清空替换规则数组',
-            '🧹 内存泄漏修复：关闭浏览器时清理预览应用栏',
-            '🗑️ 移除死代码：清理未调用的_bcosCloseEggPreview函数',
-            '⚡ 预览应用栏防重复：添加存在性检查，防止多次创建',
-            '⚡ 自动补全优化：空输入时快速返回，避免打印全部命令列表',
-        ]},
-        { ver:'v7.8.1.9343', title:'修复OOBE不显示bug', items:[
-            '🔧 修复OOBE覆盖层不显示：renderStep在overlay挂载到DOM前调用导致getElementById返回null',
-            '🔧 改用overlay.querySelector并先挂载再渲染，确保按钮事件正确绑定',
-        ]},
-        { ver:'v7.8.1.9342', title:'终端cd修复 + 编辑器文件选择 + 浏览器链接修复 + 预览优化', items:[
-            '🔧 修复桌面终端cd后提示符不显示当前目录：动态更新bcos-mt-prompt-path',
-            '📂 TextEditor新增文件选择下拉框：列出me文件夹所有文件，点击直接打开',
-            '🔒 修复bcos浏览器链接file://前缀：拦截非http/https链接点击',
-            '🔄 修复浏览器地址栏预览后不刷新：更新URL栏显示当前预览地址',
-            '📝 TextEditor预览改为bcos内置浏览器渲染，支持查找替换功能',
-        ]},
-        { ver:'v7.8.1.9341', title:'bcos纪念日页面 + 窗体缩放 + 胡萝卜鼠标 + OOBE版本追踪 + Markdown渲染', items:[
-            '💕 bcos浏览器新增纪念日收藏夹：实时天数计数器、时分秒倒计时、里程碑列表、下一纪念日倒计时',
-            '📖 纪念日内容可编辑：高级模式下可编辑王国传承文本，localStorage持久化保存',
-            '📝 TextEditor Apply普通模式渲染Markdown：支持标题/代码块/链接/列表/引用/粗体斜体等',
-            '🖥️ bcos窗体自适应缩放：支持拖拽调整窗口大小',
-            '🔲 bcos双击标题栏放大/还原窗口：保存原始位置和尺寸',
-            '🥕 bcos桌面模式胡萝卜鼠标：SVG光标强制覆盖第三方鼠标，解决闪烁问题',
-            '🔄 bcos OOBE版本追踪：每次版本更新后自动显示引导（含首次访问页面）',
-            '📰 bcos新闻页面文本修正',
-        ]},
-        { ver:'v7.8.1.9340', title:'bcos终端cd命令 + 侧边栏折叠bug修复 + 更新日志清理', items:[
-            '📂 bcos终端新增cd命令：支持 cd me, cd desktop, cd .., cd ~ 等目录导航',
-            '📁 bcos终端ls增强：根据当前目录显示内容，desktop目录显示可执行应用列表',
-            '🔤 bcos终端pwd增强：显示当前工作目录路径',
-            '🔤 bcos终端cat增强：支持基于当前目录的相对路径文件查看',
-            '🖥️ bcos虚拟文件系统新增desktop目录：包含texteditor/browser/files/monitor/about/terminal应用',
-            '⚡ 终端prompt实时显示当前目录：cd后提示符路径立即更新',
-            '🔧 修复侧边栏始终折叠时首次点击跳回首页：初始化时禁用transition避免布局抖动',
-            '🔧 修复侧边栏pin按钮点击触发logo导航：添加event.stopPropagation防止事件冒泡',
-            '📝 更新日志清理：移除所有不必要的内部实现说明',
-        ]},
-        { ver:'v7.8.1.9339', title:'bcos GitHub页面内置显示 + TextEditor优化', items:[
-            '🐙 GitHub收藏夹改为内置页面：在bcos浏览器内显示模拟GitHub页面（GitHub无法iframe嵌入因X-Frame-Options）',
-            '📊 GitHub页面显示：用户头像、177仓库统计、按star排序的Top6仓库列表、语言标签颜色、可点击仓库名跳转真实GitHub',
-            '📄 TextEditor新增New按钮：创建空白文件，清空编辑器',
-            '📂 TextEditor Open优化：文件不存在时自动创建空文件并打开，不再显示not found',
-            '💾 TextEditor Save优化：需要输入文件名，保存后显示字符数确认',
-            '⌨️ TextEditor Enter键支持：在文件名输入框按Enter直接打开文件',
-            '📋 TextEditor状态栏：所有操作有3秒状态反馈（Opened/Saved/Created等）',
-        ]},
-        { ver:'v7.8.1.9338', title:'bcos浏览器收藏夹 + README内容更新 + 桌面GitHub图标移除', items:[
-            '📖 README内容更新：me文件夹的readme.md现在显示GitHub Profile README的完整内容（CanguroMIO介绍、语言工具标签、社交链接等）',
-            '❌ 桌面移除GitHub图标：GitHub入口改为浏览器收藏夹中的真实链接',
-            '🌐 浏览器新增收藏夹栏：7个书签（Kingdom/GitHub/BunnySearch/BunnyWiki/BunnyShop/BunnyNews/BunnyPlay）',
-            '🔍 BunnySearch：虚构搜索引擎，输入关键词显示模拟搜索结果',
-            '📖 BunnyWiki：虚构百科，可展开的安哥拉兔/饮食/住房/bcos百科条目',
-            '🛒 BunnyShop：虚构商店，4个商品可加入购物车（Add to Cart交互）',
-            '📰 BunnyNews：虚构新闻站，4条每日兔兔新闻（日期实时显示）',
-            '🎮 BunnyPlay：虚构游戏站，4个迷你互动游戏（弹窗反馈）',
-            '🐙 GitHub收藏夹：唯一真实链接，点击在新窗口打开GitHub仓库页',
-            '🔒 地址栏实时更新：点击收藏夹后URL栏显示当前bunny://地址',
-        ]},
-        { ver:'v7.8.1.9337', title:'bcos文件系统增强: touch命令 + cat虚拟文件支持 + ./前缀', items:[
-            '📝 新增touch命令：创建空文件，支持多级路径（如 touch me/notes.txt）',
-            '📖 cat命令支持虚拟文件系统：可直接cat me/readme.md查看文件内容',
-            '🏃 新增./前缀支持：终端输入./texteditor等可直接启动桌面应用',
-            '❓ help文本新增touch命令说明',
-        ]},
-        { ver:'v7.8.1.9336', title:'bcos系统大改版: Angora rabbit art + Browser + OOBE + TextEditor', items:[
-            '🐰 终端字符画替换为安哥拉兔ASCII art（终端启动/返回/桌面About共用）',
-            '🌐 终端中文文本全部移除改为英文，Bunny可可系统→Bunny OS',
-            '📌 bcos版本号跟随全局CONFIG.VERSION，不再硬编码1.0.0',
-            '👤 设置按钮文本改为"关于作者"',
-            '📁 新增mkdir/mk/rm命令和虚拟文件系统，支持多级路径操作',
-            '🌐 新增浏览器应用：默认显示伪兔可可王国网页，可被TextEditor实时修改',
-            '📊 Monitor增强：使用navigator.hardwareConcurrency/deviceMemory/performance.memory/connection获取真实系统信息，获取不到时动态随机显示',
-            '🖥️ 新增OOBE开机引导：4步功能介绍（Welcome→Terminal→Files→Desktop），localStorage记录不再重复',
-            '📂 桌面右侧随机位置新增me文件夹：含readme.md和texteditor应用',
-            '📝 TextEditor应用：空白启动，支持Open/Save/Apply，可编辑文件并实时应用到浏览器',
-        ]},
-        { ver:'v7.8.1.9335', title:'bcos安全加固 & 性能优化 & 错误处理', items:[
-            '🛡️ 修复bcos终端XSS漏洞：cat/ls/recent/popular/tree命令未转义语言名和日期字段，文件管理器窗口未转义URL和语言',
-            '🛡️ cat命令Homepage/URL的onclick handler未转义单引号，可能导致HTML注入',
-            '🔒 侧边栏头像照片拖拽修复：添加draggable=false和-webkit-user-drag:none',
-            '🔧 _bcosExec添加try-catch和异步Promise错误处理：命令异常不再静默失败',
-            '🔧 _bcosPrint添加isConnected检查：防止输出到已分离的DOM元素',
-            '🔧 _bcosBackToTerminal清除_bcosActiveOutput：防止桌面终端引用残留',
-            '🔧 _bcosOpenApp添加try-catch错误边界：应用渲染失败时显示错误信息而非空白窗口',
-            '🔧 桌面终端异步命令catch不再静默吞错：错误信息打印到终端',
-            '⚡ 移除sidebar/tab-bar的持久will-change：这两个元素转换不频繁，无需常驻GPU层',
-            '⚡ content-visibility优化：contain-intrinsic-size改用auto模式减少滚动跳跃，延迟到第5个卡片起',
-            '⚡ FPS监控RAF添加visibilitychange暂停：页面隐藏时停止requestAnimationFrame节省CPU/GPU',
-            '🔧 _bcosFuzzy空输入快速返回：避免空字符串触发Levenshtein全量计算',
-        ]},
-        { ver:'v7.8.1.9333', title:'GPU层优化 & bcos桌面bug修复 & 破产清理', items:[
-            '⚡ 移除过度will-change声明：游戏UI和bcos桌面静态元素移除不必要的GPU层提示，降低内存开销',
-            '⚡ 仅保留动画元素的will-change：窗口拖拽、图标交互保留，静态容器改用translateZ(0)单层提升',
-            '🔄 修复_bcosBackToTerminal重复boot：从桌面返回终端不再重放1.5s启动序列，保留命令历史',
-            '🔌 修复_bcosActiveOutput竞态条件：同步命令不再清除异步输出引用，避免输出丢失到错误终端',
-            '🪟 修复_bcosCloseWin未清理输出引用：关闭终端窗口时正确清除_bcosActiveOutput',
-            '📱 修复移动端关闭按钮失效：titlebar的touchstart preventDefault阻断close按钮click，添加target检查',
-            '🛡️ 修复破产玩家手牌未清空：checkBankruptcy添加p.cards=[]和_extraTurn=false清理',
-            '📊 System Monitor增强：新增JS Heap实时内存监控(Chrome)和DOM节点计数',
-            '🔧 修复window.location.reload(true)废弃参数：改为reload()',
-            '🧹 showBcosOS添加_bcosActiveOutput清理：防止跨会话引用残留',
-        ]},
-        { ver:'v7.8.1.9332', title:'bcos GPU加速优化 & gpu命令 & 系统监控增强', items:[
-            '🖥️ 新增gpu命令：查看GPU硬件信息、bcos GPU优化状态、游戏GPU管线、渲染架构',
-            '⚡ bcos窗口拖拽改用translate3d()：GPU合成层拖拽，消除layout reflow',
-            '⚡ bcos元素GPU合成层：窗口/壁纸/任务栏/图标/按钮全部添加will-change+translateZ(0)',
-            '⚡ 桌面图标点击反馈：scale(0.92) GPU弹性动画，关闭按钮hover scale(1.15)',
-            '⚡ boot动画GPU加速：opacity+transform双属性GPU tween',
-            '📊 neofetch增强：显示真实GPU型号、加速状态、Apple Silicon标识',
-            '📊 System Monitor增强：新增GPU监控面板，显示型号和加速状态进度条',
-        ]},
-        { ver:'v7.8.1.9331', title:'全面bug修复 & 性能优化 & 安全加固', items:[
-            '🔒 修复bcos players命令XSS漏洞：用户输入未转义直接输出到innerHTML',
-            '🔄 修复bcos update竞态条件：caches.keys()和SW.unregister()异步操作未await即reload，改为async/await序列执行',
-            '📝 修复newsState.history无界增长：被动新闻和散播新闻push后未截断，添加50条上限',
-            '🛡️ 修复processLoans空引用：添加p和p.loans的null guard',
-            '🛡️ 修复checkBankruptcy空引用：添加p参数null guard',
-            '🪟 修复bcosOpenCatWindow关闭按钮DOM残留：新增_bcosCloseCatWin函数清理窗口引用',
-            '📱 修复文件管理器双击不适用于移动端：添加touch长按(600ms)打开GitHub功能',
-            '⚡ 优化终端命令历史：主终端100条上限，桌面终端50条上限，防止无界增长',
-            '🔄 bcos update添加try-catch错误处理：失败时仍强制reload并提供错误反馈',
-        ]},
-        { ver:'v7.8.1.9330', title:'bcos命令全覆盖 & settings增强 & bug修复', items:[
-            '📋 settings命令重构：分组显示全部16项参数（外观/布局/行为/游戏/导航），含default view、dice mult、notify、fullscreen等',
-            '🔔 新增notify命令：请求浏览器推送通知权限，支持granted/denied状态检测',
-            '📱 新增install命令：PWA安装引导，自动检测平台并显示对应安装步骤',
-            '🎲 新增dice命令：设置骰子倍数(1x/2x/3x/4x)，含风险提示',
-            '🔧 修复sidebar命令读取错误localStorage键名(sidebarMode→sidebarCollapsed)',
-            '🔧 修复settings命令中sidebar参数读取错误键名',
-            '🔧 修复bcos update保留键名错误(sidebarMode→sidebarCollapsed)，补全12个缺失设置键',
-            '⚡ 新增setting(单数)别名，输入setting或settings均可查看全部参数',
-        ]},
-        { ver:'v7.8.1.9329', title:'bcos系统增强 & 桌面图标修复 & 包管理命令', items:[
-            '🎨 修复亮色主题下桌面图标文字不清晰：添加文字阴影和emoji投影，确保所有主题下可读性',
-            '🖥️ 移除桌面右上角退出按钮，统一使用开始菜单的关机功能退出bcos',
-            '📋 theme命令优化：输入theme直接显示当前激活主题信息，再列出全部主题列表',
-            '📦 新增bcos update命令：刷新浏览器存储（清除缓存/注销SW/清理localStorage保留存档）',
-            '📦 新增bcos upgrade命令：查看所有已安装模块包（12个bcos系统模块）',
-            '📦 新增bcos version命令：显示bcos系统版本、内核、主题引擎等详细信息',
-        ]},
-        { ver:'v7.8.1.9328', title:'Monopoly重构 & 全功能地产交易 & 智能AI & 资产清算救济 & 经典成套机制', items:[
-            '🏠 同区域集套 (Block Monopoly)：集齐区域全套地产基础租金翻倍 (2.0x)，已建房租金提升 1.5x；多处同区地产享 15%/处 叠加租金提升；抵押房产租金清零',
-            '🤝 全功能地产交易系统：支持自由交易/买卖/互换 地产 + 卡牌 + 载具 + 现金，包含智能估值与多轮还价机制',
-            '⚖️ 阶梯式资产清算救济：负资金时按“股票→拆房退款→抵押地产→卖载具→紧急贷款”顺序自动变卖资产抵债，清算后仍负债才宣告破产',
-            '🔒 交互式监狱系统：提供 500💰 保释金出狱、使用出狱卡、掷双数 (Doubles) 免费越狱或放弃回合四种决策',
-            '🧠 智能 AI 引擎升级：AI 增加区域集套与阻断战略估值，拍品/交易价值判断与抢拍上限出价 (高达85%~90%)',
-            '💾 存档完全兼容：validateMono 升级防护，无缝自动补全旧版本 v6 存档的所有缺失字段与结构',
-        ]},
-        { ver:'v7.7.2.9312', title:'AI全自动托管 & 强制移动卡牌 & 混合租金 & 赌场动画 & Bug修复', items:[
-            '🤖 全自动托管系统：一键开启全自动交易·升级·用卡·掷骰，自动止盈卖出(≥20%盈利)、自动买入折扣股(<80%基准价)，自动处理地产购买/升级/事件弹窗',
-            '🧲 4张强制移动卡牌：引力召唤(传送对手到最高级地产收租)、万有引力(全体对手传送收租)、磁场牵引(50%概率牵引附近对手)、税务稽查(征收地产总值10%税)',
-            '💰 混合租金系统：路过对手房产35%概率收取30%过路费+落地全租金+每回合15%被动租金，三重租金机制',
-            '🧠 AI智慧升级：多卡决策树(强制移动→低资金汲取→防御→攻击领头羊→诅咒)、激进AI每回合可用2张卡、人类领先时AI攻击性+20%、智能目标选择(领头羊/人类/最富玩家)',
-            '🎰 赌场过渡动画：老虎机3轴滚动+弹跳揭示、轮盘1.5s旋转+结果弹跳、骰子翻滚+结果动画，全部CSS GPU加速',
-            '⬆️ 升级格修复：handleUpgradeTile始终弹出升级弹窗，显示所有可升级地产列表',
-            '📱 移动端卡牌实时更新：useCardFromInventory/executeCurseFromInventory改用同步渲染替代RAF节流，金钱/卡牌变更即时显示',
-            '🔧 自动托管股票交易修复：添加手续费(0.4%)、滑点(0.3%)、价格冲击、saveMonopoly持久化、renderMonopolyPartial渲染',
-            '🔧 强制移动卡牌防御检查：summon_rent/magnetic_field/tax_audit添加firewallTurns检查，mass_summon/magnetic_field添加mirror检查',
-            '🔧 强制移动卡牌破产检查：所有4张卡添加checkBankruptcy调用，防止对手负资产未处理',
-            '🔧 强制移动卡牌rentLog：mass_summon/magnetic_field添加p.stats.rentLog记录，与summon_rent保持一致',
-            '🔧 continueAiTurn卡牌逻辑同步：交易后AI续行使用与aiTurn相同的完整决策树(多卡/防御/攻击领头羊/骇客卡)',
-            '📱 移动端主题特效系统：12套主题各自独立的玩家圆点呼吸动画，全部GPU加速transform/opacity',
-            '🗺️ 移动端格子主题光效：伪元素径向渐变呼吸光效替代脉冲动画',
-            '🌸 移动端触控Bloom主题化：12套主题各自独特的bloom形状，20%概率释放主题专属emoji粒子',
-            '🔧 avgCost精度修复：Math.round()防止小数累积',
-            '🔧 破产车库清理修复：折价变卖所有车库载具',
-        ]},
-        { ver:'v7.7.2.9310', title:'读档迁移 & 移动端闪烁修复 & 触控Bloom特效 & 设置迁移', items:[
-            '📂 读档兼容修复：存档tile数与当前地图不匹配时自动迁移重建地图，保留玩家数据/地产所有权，不再直接拒绝读取',
-            '✨ 移动端闪烁修复：触摸设备用稳定高亮替代无限脉冲动画——玩家圆点用scale(1.3)+steady glow、格子用固定box-shadow，消除地图闪烁',
-            '🌸 移动端触控Bloom特效：独立于PC光轨系统的轻量CSS-only触摸绽放效果，touchstart时在触点生成径向渐变bloom圆圈，80ms节流，主题色自适应',
-            '🔧 设置迁移系统：新增migrateSettings()函数，支持14组旧key→新key迁移（bunny_tab_bar_hidden→tabBarMode等），normalize旧值（hide→hidden, collapsed→locked-collapsed）',
-            '📱 移动端交互优化：按钮brightness(1.15)+scale反馈、tab项弹性按压(0.88)、卡片/tile轻触缩放(0.97)、trail-canvas透明度降至0.7',
-        ]},
-        { ver:'v7.7.2.9309', title:'12主题独特可爱签名粒子 & 移动端光轨残留修复', items:[
-            '🐾 12主题签名粒子：每套主题新增独一无二可爱特效——兔子脚印(bunny)、像素方块(cyber)、月牙(starlight)、小鱼(ocean)、蝴蝶(rose)、雪花(aurora)、流星(galaxy)、棒棒糖(candy)、橡果(forest)、小太阳(sunset)、薄荷叶(mint)、二进制(matrix)',
-            '🔧 移动端光轨残留修复：添加try-catch防止RAF循环因渲染异常停止、时间感知fade替代固定帧fade(移动端更强0.02/frame)、touchend/pointerup后确保RAF继续渐隐、visibilitychange返回页面时清除残留、2s/3.5s双重failsafe强制清除',
-            '⚡ 性能优化：签名粒子概率仅6-10%，不影响帧率；time-based fade适配可变帧率设备',
-        ]},
-        { ver:'v7.7.2.9308', title:'设置持久化全面修复 & 抽卡动画3D化 & 地图进度条校准 & GPU渲染优化', items:[
-            '💾 设置持久化修复：所有localStorage读写统一使用safeSetItem/safeGetItem包装，防止配额溢出或隐私模式导致设置丢失',
-            '🎨 抽卡动画3D化：添加perspective 800px容器、5阶段rotateY翻转动画、传说卡金色shimmer流光效果+粒子爆裂特效',
-            '🗺️ 地图进度条校准：动态测量实际tile宽度，统一canvas与viewport坐标系，修复虚拟滚动spacer宽度不匹配导致的进度条偏移',
-            '⚡ GPU渲染优化：新增contain布局隔离、content-visibility离屏跳过渲染、按钮ripple点击波纹、tab-item按压弹性动画',
-            '♿ prefers-reduced-motion：尊重系统减少动画偏好，自动禁用动画和过渡',
-            '🔧 transition冲突修复：抽卡动画期间禁用transition避免transform属性竞争',
-        ]},
-        { ver:'v7.7.2.9307', title:'文本选中开关 & 头像特效修复 & 通知按钮状态 & PWA弹窗修复', items:[
-            '📝 文本选中开关：设置面板新增「禁用文本选中」开关，支持动态切换body.no-select CSS类',
-            '✨ 头像特效修复：移除阻塞click事件的pointerdown/mousedown/selectstart/dblclick preventDefault处理器，连点头像华丽特效恢复正常',
-            '🔔 通知按钮状态：回合通知按钮根据权限状态显示「开启/已开启/已屏蔽/不支持」，进入设置页自动刷新',
-            '📲 PWA弹窗修复：installPWA改用showModalContent()统一弹窗，防止弹窗叠加竞态问题',
-            '🔒 防选中保留：仅保留contextmenu防护（移动端长按），CSS user-select:none由body.no-select统一控制',
-        ]},
-        { ver:'v7.7.2.9306', title:'性能优化 & 4新光轨主题 & 骇客防火墙一致性 & 统一文本选中', items:[
-            '⚡ 性能优化：dirty flags条件渲染系统，跳过未变更的子组件；renderMonoMap预构建位置→玩家Map避免O(tiles×players)遍历；trailConfig缓存避免每帧getComputedStyle',
-            '🎨 4新光轨主题：极光绿(aurora)、银河紫(galaxy)、糖果粉(candy)、矩阵绿(matrix)，各有独特粒子效果和绘制风格',
-            '🧱 骇客防火墙一致性：所有16张骇客卡现在统一检查firewallTurns，GPS欺骗firewall检查从施法者修正为目标，蓝龟壳shield检查移至伤害前',
-            '👤 虚拟分身增强：cloneActive现在可吸收监狱格效果和GPS欺骗传送',
-            '🌐 区域封锁执行：lockdownTurns现在在玩家和AI购买地产时强制检查',
-            '📝 统一文本选中：body全局user-select:none，仅.log/.selectable/input/textarea允许选中',
-            '🔄 AI回合部分渲染：AI使用卡牌/掷骰后只渲染变更的子组件，减少不必要DOM操作',
-        ]},
-        { ver:'v7.7.2.9306', title:'卡牌文本修复 & 载具折扣过期 & AI智能炒股 & emoji选中修复', items:[
-            '⚡ 骇客卡牌文本修复：缩短desc文案，ic改为emoji，添加title悬停提示和⚔️标识',
-            '🏎️ 载具展览重构：概率动态变化（25%-55%），折扣可叠加且5回合过期',
-            '🏷️ 折扣过期机制：每回合递减，过期自动清零并提示，商店/buff栏显示剩余回合',
-            '🤖 AI智能炒股：扫描全部股票找最佳买入机会，自动止盈止损卖出',
-            '🐰 emoji选中修复：添加mousedown/dblclick/contextmenu事件阻止，彻底防止选中文本',
-            '📝 更新日志去重：renderChangelog自动过滤重复版本号',
-            '🔧 代码重构：清理上帝模式残留时代按钮，移除canAdvanceEra死代码调用',
-        ]},
-        { ver:'v7.7.2.9304', title:'卡牌叠加 & 骇客系统 & 存档修复 & 连点修复', items:[
-            '🃏 卡牌效果叠加：shield/lucky/mirror/doubleDice改为数值计数，多张使用可叠加层数',
-            '🛡️ AI buff显示：给AI施加卡牌效果时buff栏显示所有活跃效果，不再只显示4种debuff',
-            '🚗 载具加成图标：buff栏显示载具加成（移动+X/租金-X%/免租X%/全能），allInOne类型也显示',
-            '📜 事件记录修复：[object Object]和undefined彻底修复，存档加载时清洗旧数据',
-            '🏎️ 载具展览修复：事件结果始终显示（绿色高亮框），不再无反馈',
-            '💾 自动存档修复：添加beforeunload/pagehide/visibilitychange刷新挂起保存，错误不再静默吞掉',
-            '💾 地图变更保护：地图大小改变时保留玩家数据，不再直接重置游戏',
-            '🃏 抽卡修复：drawWeightedCard添加空池fallback，抽卡失败有错误提示',
-            '🎒 背包满时替换：抽卡10张在背包满时有50%概率随机替换旧卡而非直接丢弃',
-            '🖱️ 双击选中文本修复：.inventory-grid添加user-select:none',
-            '🐰 emoji头像修复：非被动pointerdown+selectstart事件彻底阻止emoji选中',
-            '⚔️ 骇客道具赛系统：新增停电/数据劫持/EMP脉冲/全息伪装等全局技能卡',
-            '🏷️ 载具折扣修复：购买载具时自动抵扣折扣，商店界面显示可用折扣',
-            '📡 AI信号干扰修复：AI玩家受信号干扰时无法交易股票',
-        ]},
-        { ver:'v7.7.2.9303', title:'UI响应优化 & Buff栏 & 机制缺陷修复', items:[
-            '⚡ UI响应延迟优化：平台检测(PC/移动端) + FPS自适应，动态调整modal锁、click guard、动画速度',
-            '⚡ 低性能模式：FPS<30时自动降级（禁用粒子、缩短动画、隐藏装饰背景），FPS>50恢复',
-            '⚔️ ACT风格Buff栏：骰子区域上方显示活跃卡牌效果图标和剩余回合数',
-            '🎨 像素字体修复：CSS选择器从body.font-pixel改为html.font-pixel',
-            '🃏 大富翁背包双击：tab页卡牌背包也支持双击快速移到手牌',
-            '👤 头像名片修复：renderMonopoly后自动清理tooltip，添加全局click监听和8秒安全超时',
-            '🐰 侧边栏头像选项：新增设置切换emoji/兔可可照片',
-            '✨ 白屏持续修复：白屏改为500ms淡入后持续到绘画结束，不再3秒后消失',
-            '⏱️ 倒计时同步：延长绘画时间不再重启白屏动画，白屏与计时器完全同步',
-            '🔘 FAB拖拽修复：mouseup/touchend重置dragStartX/Y，onMove增加eggInkPersistMode守卫',
-            '🪞 镜像反弹修复：所有8张诅咒卡现在正确检查mirror状态并反弹负面效果',
-            '💀 破产状态清除：破产时清除所有状态效果（shield/lucky/speed/mirror/confused等）',
-            '🏠 租金折扣修复：垄断折扣clamp到0.5-1.0范围，防止房产过多导致负租金',
-            '📰 新闻叠加修复：限制最多5条活跃新闻，防止重复散播，防止效果无限叠加',
-            '🛡️ 空指针安全：aiTurn/continueAiTurn/movePlayer/triggerTile添加null检查',
-            '📊 经济参数clamp：通胀/租金/波动率/黑天鹅等参数添加上下限，防止极端值',
-        ]},
-        { ver:'v7.7.2.9299', title:'UI修复 & GPU检测 & 卡牌双击 & 移动端FPS', items:[
-            '🎯 行动按钮布局修复：改用CSS Grid自适应布局，解决高分辨率下按钮错位/拥挤问题',
-            '🃏 卡牌双击快捷移牌：背包卡牌支持双击直接移到手牌，单击仍显示详情',
-            '🃏 手牌渲染修复：carryCard强制同步渲染，修复RAF节流导致手牌不出现的问题',
-            '🖥️ GPU信息面板：关于面板新增GPU厂商、型号、Apple芯片检测、GPU加速状态',
-            '📊 FPS监控修复：改用requestAnimationFrame测量真实帧率',
-        ]},
-        { ver:'v7.7.2.9298', title:'GPU硬件加速 & 虚拟滚动 & 地图修复', items:[
-            '🚀 GPU硬件加速：为Canvas、动画元素、弹窗等添加will-change和translateZ(0)提升至GPU合成层',
-            '⚡ renderMonopoly RAF节流：多次渲染调用合并为单帧，避免同步阻塞',
-            '🗺️ 地图条虚拟滚动：仅渲染可见区域±缓冲区的格子(约20个DOM)，156格从156个DOM节点降至~20个',
-            '🗺️ 地图默认156格：预设改为小型(78)/中型(156)/标准(312)，默认中型',
-            '🏠 房产位置固定：房产按40%比例均匀分布，其他格子类型从11种池中随机刷新',
-        ]},
-        { ver:'v7.7.2.9297', title:'破产修复 & 地图设置 & 被动租金 & 性能优化', items:[
-            '💀 破产逻辑修复：金钱恰好为0且无任何资产时也触发破产，防止卡牌偷取导致不破产',
-            '🗺️ 地图大小设置：新增小型(312)/中型(624)/标准(1248)三档选择',
-            '👥 玩家数量设置：支持随机/4人/6人/8人选择',
-            '🏠 被动租金机制：每个房产每回合8%概率收取NPC被动租金(基础租金×30%)',
-            '⚡ 环形地图渲染优化：DOM元素改为单个Canvas渲染，玩家点保留DOM交互',
-        ]},
-        { ver:'v7.7.2.9296', title:'最终bug修复 & 一致性优化', items:[
-            '🔢 版本号一致性：修复关于面板footer显示旧版本号v9293的问题',
-            '💀 破产载具清理：玩家破产时清空p.vehicles数组，防止残留车库数据',
-            '📊 浮点精度修复：破产清算时股票PnL使用Math.round()，防止无限小数',
-            '🔒 showModal一致性：通用弹窗函数立即设置modal锁，不再仅依赖MutationObserver异步回调',
-        ]},
+        { ver:'v7.8.3.9381', title:'中国大陆极速加载 & PWA全场景优化 & 锁屏UI极智飞跃', items:[
+            '🚀 终结大陆网络无代理白屏：Service Worker 引入 1500ms 快速网络竞速与离线断网自愈机制，即使 GitHub 节点严重丢包也能毫秒级瞬间由本地缓存秒开，消除所有白屏卡死等待',
+            '⚡ 消除 PWA 模式下 Tab 栏强制显示问题：移除了 standalone 模式对移动端 Tab 栏的无脑强制显示，严格遵循用户设置（设置为隐藏时 100% 绝对隐藏），PC 独立窗口下自动锁定侧边栏且永不出现手机底栏',
+            '🛠️ 首选项全量激活：彻底修复了 BCOS 设置中头像风格、像素字体模式、鼠标光效开关点击无反应的问题，界面新增状态实时高亮与开关反馈',
+            '📜 超精简当前更新日志 & OOBE 欢迎导览集成：彻底移除 500 行陈旧历史变更记录，仅保留当前版本核心变更，并在 BCOS 开机引导（OOBE）中首屏优雅展示',
+            '✨ 锁屏 UI 全新奢华质感：采用超跑级纳米微晶发光边框，3 位小数毫秒等宽流光排版，更紧凑的高密度呼吸式仪表布局',
+        ]}
     ];
     function renderChangelog() {
         const el = document.getElementById('changelog-content');

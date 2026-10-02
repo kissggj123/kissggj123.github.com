@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.3.9380 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v7.8.3.9380';
+// Service Worker - Bunny CC v7.8.3.9381 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.3.9381';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -174,21 +174,56 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Navigation requests: network-first with cache fallback
+    // Navigation requests: Fast network-with-timeout (1500ms) with instant cache fallback
+    // In mainland China without proxy, GitHub Pages connections often stall for 15-30s.
+    // By timing out after 1.5s and immediately serving the cached index/car HTML,
+    // we eliminate the white-screen freeze completely while allowing background updates!
     if (req.mode === 'navigate') {
         event.respondWith(
-            fetch(req).then(resp => {
-                const clone = resp.clone();
-                caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                return resp;
-            }).catch(() => {
-                return caches.match(req).then(r => {
-                    if (r) return r;
-                    if (pathname.endsWith('car.html') || pathname.includes('/car')) {
-                        return caches.match(new URL('car.html', SCOPE_BASE).href);
+            new Promise((resolve) => {
+                let resolved = false;
+                const timeoutId = setTimeout(async () => {
+                    if (!resolved) {
+                        resolved = true;
+                        const cached = await caches.match(req);
+                        if (cached) return resolve(cached);
+                        const fallbackUrl = (pathname.endsWith('car.html') || pathname.includes('/car'))
+                            ? new URL('car.html', SCOPE_BASE).href
+                            : new URL('index.html', SCOPE_BASE).href;
+                        const fallback = await caches.match(fallbackUrl);
+                        if (fallback) return resolve(fallback);
+                        const rootFallback = await caches.match(SCOPE_BASE);
+                        if (rootFallback) return resolve(rootFallback);
                     }
-                    return caches.match(new URL('index.html', SCOPE_BASE).href)
-                        .then(fallback => fallback || caches.match(SCOPE_BASE));
+                }, 1500);
+
+                fetch(req).then(resp => {
+                    clearTimeout(timeoutId);
+                    if (!resolved) {
+                        resolved = true;
+                        const clone = resp.clone();
+                        caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+                        resolve(resp);
+                    } else {
+                        // Background update runtime cache
+                        const clone = resp.clone();
+                        caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+                    }
+                }).catch(async (err) => {
+                    clearTimeout(timeoutId);
+                    if (!resolved) {
+                        resolved = true;
+                        const cached = await caches.match(req);
+                        if (cached) return resolve(cached);
+                        const fallbackUrl = (pathname.endsWith('car.html') || pathname.includes('/car'))
+                            ? new URL('car.html', SCOPE_BASE).href
+                            : new URL('index.html', SCOPE_BASE).href;
+                        const fallback = await caches.match(fallbackUrl);
+                        if (fallback) return resolve(fallback);
+                        const rootFallback = await caches.match(SCOPE_BASE);
+                        if (rootFallback) return resolve(rootFallback);
+                        resolve(new Response('Offline - No cache available', { status: 503 }));
+                    }
                 });
             })
         );
