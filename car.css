@@ -2063,3 +2063,273 @@
                 font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
             }
         }
+
+        /* ==========================================================================
+           Smart Cockpit Display Geometry Engine (Curved, Circular, Ultra-Wide & Portrait)
+           ========================================================================== */
+
+        .car-select-sm {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--car-text);
+            border: 1px solid var(--car-border);
+            border-radius: 8px;
+            padding: .35rem .6rem;
+            font-size: .8rem;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .car-select-sm:focus {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-select-sm option {
+            background: #0d1322;
+            color: #fff;
+        }
+
+        /* 1. MINI Cooper Circular OLED Display & 1:1 Square Mode (.screen-circular) */
+        #bcos-car-lockscreen.screen-circular,
+        #car-root.screen-circular {
+            --car-circle-inset: max(2.2rem, 10vmin);
+            padding: max(1.2rem, 8vmin) max(1.6rem, 11vmin) max(1.6rem, 9vmin) !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+        }
+
+        /* Circular top bar: contracts towards center to prevent circular bezel cutoff */
+        .screen-circular .car-top-bar {
+            width: 100% !important;
+            max-width: min(84vmin, 680px) !important;
+            margin: 0 auto !important;
+            justify-content: space-between !important;
+            padding: 0 .4rem .3rem !important;
+            min-height: 36px !important;
+        }
+        .screen-circular .car-gear-badge,
+        .screen-circular #car-wakelock-badge,
+        .screen-circular #car-wp-badge {
+            display: none !important; /* Hide peripheral status badges on round screens */
+        }
+        .screen-circular .car-brand {
+            font-size: .82rem !important;
+        }
+
+        /* Circular Main Grid: Radially centered instrument cluster */
+        .screen-circular .car-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            grid-template-columns: none !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            width: 100% !important;
+            max-width: min(82vmin, 580px) !important;
+            margin: auto !important;
+            padding: 0 !important;
+            gap: .5rem !important;
+            text-align: center !important;
+        }
+        .screen-circular .car-hero-col {
+            width: 100% !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+        .screen-circular .car-clock-box {
+            align-items: center !important;
+            align-self: center !important;
+            text-align: center !important;
+            margin: 0 0 .35rem 0 !important;
+            padding: 0 !important;
+        }
+        .screen-circular .car-digital-clock {
+            font-size: clamp(2.4rem, 9.5vmin, 4.2rem) !important;
+            letter-spacing: 2px !important;
+        }
+        .screen-circular .car-digital-date {
+            justify-content: center !important;
+            font-size: clamp(0.72rem, 2.6vmin, 0.95rem) !important;
+            margin-top: .2rem !important;
+        }
+        .screen-circular .car-hero-card {
+            width: 100% !important;
+            max-width: min(440px, 80vmin) !important;
+            border-radius: 20px !important;
+            padding: .65rem .85rem !important;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.6), 0 0 18px var(--car-glow) !important;
+        }
+        .screen-circular .car-hero-days {
+            font-size: clamp(2.2rem, 9.5vmin, 3.6rem) !important;
+        }
+        .screen-circular .car-side-col {
+            display: none !important; /* Conceal secondary side-cards so circular boundary is never breached */
+        }
+
+        /* Circular Bottom Bar & Slider */
+        .screen-circular .car-bottom-bar {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            padding: 0 0 max(0.5rem, 3.5vmin) 0 !important;
+            flex-shrink: 0 !important;
+        }
+        .screen-circular .car-slider-track {
+            width: min(280px, 64vmin) !important;
+            height: clamp(38px, 6vmin, 46px) !important;
+            border-radius: 24px !important;
+        }
+
+        /* Circular Minimalist Mode (Perfect Round Watch / MINI Central Gauge) */
+        .screen-circular.car-minimalist-mode .car-main-grid {
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+        }
+        .screen-circular.car-minimalist-mode .car-clock-box {
+            align-items: center !important;
+            align-self: center !important;
+            text-align: center !important;
+        }
+        .screen-circular.car-minimalist-mode .car-digital-clock {
+            font-size: clamp(3.0rem, 14vmin, 5.5rem) !important;
+        }
+        .screen-circular.car-minimalist-mode .car-digital-date {
+            justify-content: center !important;
+            font-size: clamp(0.85rem, 3.2vmin, 1.25rem) !important;
+        }
+
+        /* 2. Panoramic Ultra-Wide Displays (.screen-ultrawide - 21:9 ~ 32:9 带状中控屏) */
+        #bcos-car-lockscreen.screen-ultrawide,
+        #car-root.screen-ultrawide {
+            padding: max(0.45rem, env(safe-area-inset-top, 0.45rem)) max(1.8rem, env(safe-area-inset-right, 1.8rem)) max(0.45rem, env(safe-area-inset-bottom, 0.45rem)) max(1.8rem, env(safe-area-inset-left, 1.8rem)) !important;
+        }
+        .screen-ultrawide .car-top-bar {
+            padding-bottom: .25rem !important;
+            min-height: 34px !important;
+        }
+        .screen-ultrawide .car-main-grid {
+            display: grid !important;
+            grid-template-columns: minmax(320px, 1.15fr) minmax(340px, 1.35fr) minmax(280px, 0.95fr) !important;
+            grid-template-rows: 1fr !important;
+            gap: clamp(0.8rem, 1.8vw, 1.8rem) !important;
+            align-items: center !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            padding: .15rem 0 !important;
+        }
+        .screen-ultrawide .car-hero-col {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            height: 100% !important;
+            min-height: 0 !important;
+        }
+        .screen-ultrawide .car-clock-box {
+            margin-bottom: 0 !important;
+            padding: .8rem 1rem !important;
+        }
+        .screen-ultrawide .car-digital-clock {
+            font-size: clamp(2.4rem, 4.5vw, 4.0rem) !important;
+        }
+        .screen-ultrawide .car-hero-card {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: .85rem 1.1rem !important;
+        }
+        .screen-ultrawide .car-side-col {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            min-height: 0 !important;
+            gap: .5rem !important;
+        }
+        .screen-ultrawide .car-milestone-scroller {
+            max-height: clamp(100px, 20vh, 180px) !important;
+        }
+        .screen-ultrawide .car-bottom-bar {
+            padding-top: .2rem !important;
+        }
+        .screen-ultrawide .car-slider-track {
+            height: 40px !important;
+            width: min(380px, 60vw) !important;
+        }
+
+        /* 3. Curved / Waterfall Safe Insets (防曲面屏边缘触控死区与畸变) */
+        #bcos-car-lockscreen,
+        #car-root {
+            --car-curved-padding: clamp(0.75rem, env(safe-area-inset-left, 0.75rem), 2.5rem);
+            padding-left: max(var(--car-curved-padding), env(safe-area-inset-left, 0.75rem));
+            padding-right: max(var(--car-curved-padding), env(safe-area-inset-right, 0.75rem));
+        }
+
+        /* 4. Explicit Portrait Mode (.screen-portrait - 9:16 / Vertical Center Console) */
+        #bcos-car-lockscreen.screen-portrait,
+        #car-root.screen-portrait {
+            padding: max(.55rem, env(safe-area-inset-top, .55rem)) max(.7rem, env(safe-area-inset-right, .7rem)) max(.55rem, env(safe-area-inset-bottom, .55rem)) max(.7rem, env(safe-area-inset-left, .7rem)) !important;
+        }
+        .screen-portrait .car-top-bar { min-height: 34px !important; padding-bottom: .35rem !important; gap: .4rem !important; }
+        .screen-portrait .car-brand { font-size: .78rem !important; gap: .3rem !important; }
+        .screen-portrait .car-gear-badge,
+        .screen-portrait #car-top-battery,
+        .screen-portrait #car-wakelock-badge,
+        .screen-portrait #car-wp-badge { display: none !important; }
+        .screen-portrait .car-mini-trigger { padding: .22rem .45rem !important; font-size: .72rem !important; }
+        .screen-portrait .car-main-grid { grid-template-columns: minmax(0, 1fr) !important; align-items: start !important; gap: .6rem !important; padding: .45rem 0 .6rem !important; }
+        .screen-portrait .car-hero-col { justify-content: flex-start !important; }
+        .screen-portrait .car-clock-box { margin-bottom: .5rem !important; }
+        .screen-portrait .car-digital-clock { font-size: clamp(2.25rem, 10vw, 4.1rem) !important; }
+        .screen-portrait .car-digital-date { font-size: .72rem !important; margin-top: .25rem !important; gap: .35rem !important; }
+        .screen-portrait .car-hero-card { padding: .7rem .8rem !important; border-radius: 15px !important; }
+        .screen-portrait .car-hero-content-split { gap: .6rem !important; }
+        .screen-portrait .car-hero-title { font-size: .76rem !important; flex-wrap: wrap !important; }
+        .screen-portrait .car-hero-days { font-size: clamp(2.35rem, 11vw, 3.7rem) !important; }
+        .screen-portrait .car-hero-unit { font-size: .9rem !important; }
+        .screen-portrait .car-hero-time { font-size: .86rem !important; min-height: 1.25rem !important; line-height: 1.25rem !important; margin-bottom: .45rem !important; }
+        .screen-portrait .car-hero-progress-box { padding: .5rem .6rem !important; }
+        .screen-portrait .car-progress-header { font-size: .68rem !important; }
+        .screen-portrait .car-gauge-ring-wrap { width: 76px !important; height: 76px !important; }
+        .screen-portrait .car-gauge-pct { font-size: 1.05rem !important; }
+        .screen-portrait .car-hero-gauge-col { gap: .35rem !important; padding: .15rem 0 .15rem .5rem !important; }
+        .screen-portrait .car-vital-chip { min-width: 48px !important; padding: 2px 4px !important; }
+        .screen-portrait .car-vital-chip .vital-val { font-size: .59rem !important; }
+        .screen-portrait .car-side-col { height: auto !important; max-height: none !important; gap: .6rem !important; justify-content: flex-start !important; }
+        .screen-portrait .car-widget-card { padding: .65rem .75rem !important; border-radius: 14px !important; }
+        .screen-portrait .car-companion-action-pill, .screen-portrait .car-eq-container { display: none !important; }
+        .screen-portrait .car-diag-grid { gap: .35rem !important; }
+        .screen-portrait .car-diag-item { padding: .35rem .45rem !important; }
+        .screen-portrait .car-milestone-card { flex: none !important; }
+        .screen-portrait .car-milestone-scroller { flex: none !important; min-height: 0 !important; max-height: min(28dvh, 250px) !important; }
+        .screen-portrait .car-bottom-bar { flex-shrink: 0 !important; padding-top: .35rem !important; }
+        .screen-portrait .car-slider-track { height: 42px !important; }
+        .screen-portrait.car-minimalist-mode .car-main-grid {
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            padding: 0 !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-hero-col {
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-clock-box {
+            align-items: center !important;
+            align-self: center !important;
+            text-align: center !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-digital-clock {
+            font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-digital-date {
+            justify-content: center !important;
+            font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+        }
+
