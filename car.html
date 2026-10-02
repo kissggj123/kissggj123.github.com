@@ -397,6 +397,7 @@
         }
         .car-clock-box {
             margin-bottom: clamp(0.4rem, 1.4vh, 1.1rem);
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .car-digital-clock {
             font-size: clamp(2.4rem, 5.5vw, 5.2rem);
@@ -407,6 +408,7 @@
             color: var(--car-accent);
             text-shadow: 0 0 28px var(--car-glow);
             font-variant-numeric: tabular-nums;
+            transition: filter 1.2s ease, opacity 1.2s ease;
         }
         .car-digital-date {
             font-size: clamp(0.85rem, 1.5vw, 1.25rem);
@@ -431,7 +433,14 @@
             box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.12);
             position: relative;
             overflow: hidden;
-            transition: border-color .3s ease, box-shadow .3s ease;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), border-color .3s ease, box-shadow .3s ease;
+        }
+        #bcos-car-lockscreen.car-idle-dimmed .car-digital-clock,
+        #bcos-car-lockscreen.car-idle-dimmed .car-hero-days,
+        #car-root.car-idle-dimmed .car-digital-clock,
+        #car-root.car-idle-dimmed .car-hero-days {
+            filter: brightness(0.92);
+            opacity: 0.92;
         }
         .car-hero-card::before {
             content: '';
@@ -1838,7 +1847,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openWallpaperModal()" title="点击管理壁纸与轮播">
                                 <div class="car-diag-label">WALLPAPER 🖼️</div>
-                                <div class="car-diag-val" id="car-net-status">🌌 星空原野</div>
+                                <div class="car-diag-val" id="car-wp-status">🌌 星空原野</div>
                             </div>
                             <div class="car-diag-item clickable" onclick="quickAdjustCabinTemp()" title="点击调节座舱空调温度">
                                 <div class="car-diag-label">CABIN TEMP ❄️</div>
@@ -1846,7 +1855,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" title="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.3.9389</div>
+                                <div class="car-diag-val">bcos v7.8.3.9390</div>
                             </div>
                         </div>
                     </div>
@@ -2401,8 +2410,6 @@
             if (rangeTypeEl) rangeTypeEl.textContent = `${carBatteryData.standard} 预估续航`;
             if (topBatEl) topBatEl.textContent = `🔋 ${carBatteryData.soc}% · ${carBatteryData.range} km (${carBatteryData.standard})`;
             if (modeEl) modeEl.textContent = carBatteryData.mode;
-            const netEl = document.getElementById('car-net-status');
-            if (netEl) netEl.textContent = navigator.onLine ? '📶 在线就绪' : '📴 离线模式';
             if (tempEl) tempEl.textContent = `🌤️ ${carBatteryData.temp}°C / 舒适`;
 
             if (fillEl) {
@@ -2811,6 +2818,13 @@
             });
         }
 
+        function updateWallpaperBadge(text) {
+            const badge = document.getElementById('car-wp-badge-txt');
+            if (badge) badge.textContent = text;
+            const wpStatus = document.getElementById('car-wp-status');
+            if (wpStatus) wpStatus.textContent = text;
+        }
+
         // 国内网络优化: ①模糊占位先行(无黑屏) ②分片并行下载+实时进度 ③预加载下一张(切换零等待) ④SW 离线缓存
         function applyCurrentWallpaper() {
             const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
@@ -2821,7 +2835,7 @@
             if (mode === 'theme' || allWallpapers.length === 0) {
                 layer.classList.remove('active');
                 layer.classList.remove('wp-loading');
-                if (badge) badge.textContent = '🎨 纯净座舱';
+                updateWallpaperBadge('🎨 纯净座舱');
                 return;
             }
 
@@ -2840,7 +2854,7 @@
                 layer.classList.remove('wp-loading');
                 layer.style.backgroundImage = `url("${wpBlobCache[cur.file]}")`;
                 layer.classList.add('active');
-                if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                updateWallpaperBadge(`🖼️ ${cur.name}`);
                 highlightActiveThumbnail();
                 wpPreloaded.add(cur.file);
                 preloadNextWallpaper();
@@ -2854,14 +2868,15 @@
                 layer.classList.add('active');
             }
             layer.classList.add('wp-loading');
-            if (badge) badge.textContent = `🖼️ ${cur.name} · 0%`;
+            updateWallpaperBadge(`🖼️ ${cur.name} · 0%`);
 
             // ② 下载壁纸数据, 实时显示进度
             loadWallpaperBlob(cur, ctrl.signal, (loaded, total) => {
-                if (token !== wpLoadToken || !badge) return;
-                badge.textContent = total > 0
+                if (token !== wpLoadToken) return;
+                const txt = total > 0
                     ? `🖼️ ${cur.name} · ${Math.min(99, Math.round(loaded / total * 100))}%`
                     : `🖼️ ${cur.name} · ${Math.round(loaded / 1024)}KB`;
+                updateWallpaperBadge(txt);
             }).then(blob => {
                 if (token !== wpLoadToken || ctrl.signal.aborted) return;
                 const objUrl = URL.createObjectURL(blob);
@@ -2877,14 +2892,14 @@
                     layer.style.backgroundImage = `url("${cur.file}")`;
                     layer.classList.remove('wp-loading');
                     layer.classList.add('active');
-                    if (badge) badge.textContent = `🖼️ ${cur.name}`;
+                    updateWallpaperBadge(`🖼️ ${cur.name}`);
                     highlightActiveThumbnail();
                     wpPreloaded.add(cur.file);
                     preloadNextWallpaper();
                 };
                 img.onerror = () => {
                     layer.classList.remove('wp-loading');
-                    if (badge) badge.textContent = `🖼️ ${cur.name} · 加载失败`;
+                    updateWallpaperBadge(`🖼️ ${cur.name} · 加载失败`);
                 };
                 img.src = cur.file;
             });
@@ -2896,7 +2911,7 @@
             layer.style.backgroundImage = `url("${objUrl}")`;
             layer.classList.remove('wp-loading');
             layer.classList.add('active');
-            if (badge) badge.textContent = `🖼️ ${cur.name}`;
+            updateWallpaperBadge(`🖼️ ${cur.name}`);
             highlightActiveThumbnail();
             wpPreloaded.add(cur.file);
             preloadNextWallpaper();
@@ -3322,6 +3337,11 @@
             const clockStr = `${h}:${m}:${s}`;
             if (clockEl && clockEl.textContent !== clockStr) clockEl.textContent = clockStr;
 
+            // OLED Anti-Burn-In: periodic discrete micro-shift (1-2px) at the start of each minute
+            if (s === '00' && now.getMilliseconds() < 60) {
+                applyPixelShift();
+            }
+
             // 2. Solar Date + Weekday + Lunar
             const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
             const yearStr = `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日`;
@@ -3550,9 +3570,42 @@
             window.addEventListener('mouseup', onEnd);
         }
 
-        // --- Auto Hide Inactive Controls ---
+        // --- Auto Hide Inactive Controls & OLED Protection ---
         let hideTimer = null;
+        let lastInteractionTime = Date.now();
+        let pixelShiftIdx = 0;
+        const PIXEL_SHIFT_COORDS = [
+            [0, 0], [1, -1], [-1, 1], [1, 1], [-1, -1], [0, 1], [-1, 0], [1, 0]
+        ];
+
+        function applyPixelShift() {
+            const isInteracting = (Date.now() - lastInteractionTime) < 8000;
+            const anyModalActive = document.querySelector('.car-modal-overlay.active');
+            if (isInteracting || anyModalActive) {
+                resetPixelShift();
+                return;
+            }
+            pixelShiftIdx = (pixelShiftIdx + 1) % PIXEL_SHIFT_COORDS.length;
+            const [dx, dy] = PIXEL_SHIFT_COORDS[pixelShiftIdx];
+            const clockBox = document.querySelector('#bcos-car-lockscreen .car-clock-box, #car-root .car-clock-box');
+            const heroCard = document.querySelector('#bcos-car-lockscreen .car-hero-card, #car-root .car-hero-card');
+            if (clockBox) clockBox.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${dx}px, ${dy}px)`;
+            if (heroCard) heroCard.style.transform = (dx === 0 && dy === 0) ? '' : `translate(${-dx}px, ${-dy}px)`;
+        }
+
+        function resetPixelShift() {
+            const clockBox = document.querySelector('#bcos-car-lockscreen .car-clock-box, #car-root .car-clock-box');
+            const heroCard = document.querySelector('#bcos-car-lockscreen .car-hero-card, #car-root .car-hero-card');
+            if (clockBox && clockBox.style.transform) clockBox.style.transform = '';
+            if (heroCard && heroCard.style.transform) heroCard.style.transform = '';
+        }
+
         function resetAutoFade() {
+            lastInteractionTime = Date.now();
+            resetPixelShift();
+            const root = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+            if (root) root.classList.remove('car-idle-dimmed');
+
             const topBar = document.getElementById('car-top-bar');
             const bottomBar = document.getElementById('car-bottom-bar');
             if (topBar) topBar.style.opacity = '1';
@@ -3564,6 +3617,7 @@
                 if (!anyModalActive) {
                     if (topBar) topBar.style.opacity = '0.35';
                     if (bottomBar) bottomBar.style.opacity = '0.15';
+                    if (root) root.classList.add('car-idle-dimmed');
                 }
             }, 6000);
         }
