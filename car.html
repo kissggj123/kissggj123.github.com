@@ -409,6 +409,26 @@
             opacity: 0.35;
             pointer-events: none;
         }
+        .car-hero-content-split {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+        .car-hero-main-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .car-hero-gauge-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .65rem;
+            flex-shrink: 0;
+            padding: .2rem 0.5rem .2rem .75rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+        }
         .car-hero-title {
             font-size: .92rem;
             font-weight: 700;
@@ -416,6 +436,129 @@
             display: flex;
             align-items: center;
             gap: .4rem;
+        }
+        .car-hero-badge-tag {
+            font-size: .68rem;
+            color: var(--car-accent2);
+            background: rgba(167, 139, 250, 0.12);
+            border: 1px solid rgba(167, 139, 250, 0.28);
+            padding: 2px 7px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* Circular HUD Milestone Gauge Ring */
+        .car-gauge-ring-wrap {
+            position: relative;
+            width: 106px;
+            height: 106px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .car-gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .car-gauge-track {
+            stroke: rgba(255, 255, 255, 0.08);
+        }
+        .car-gauge-bar {
+            stroke: var(--car-accent);
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--car-glow));
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), stroke 0.3s;
+        }
+        .car-gauge-content {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+        }
+        .car-gauge-pct {
+            font-size: 1.45rem;
+            font-weight: 900;
+            line-height: 1;
+            font-family: 'SF Mono', monospace;
+            color: var(--car-accent);
+            text-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-gauge-sub {
+            font-size: 0.58rem;
+            color: var(--car-text-dim);
+            letter-spacing: 1px;
+            margin-top: 3px;
+            font-weight: 700;
+        }
+
+        /* Companion & Anniversary Vitals */
+        .car-hero-vitals {
+            display: flex;
+            gap: .5rem;
+            width: 100%;
+            justify-content: center;
+        }
+        .car-vital-chip {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 3px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+        .car-vital-chip .vital-label {
+            font-size: 0.55rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .car-vital-chip .vital-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: monospace;
+        }
+        .car-heart-pulse {
+            display: inline-block;
+            animation: carHeartBeat 1.8s ease-in-out infinite;
+        }
+        @keyframes carHeartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.22); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        /* Top Bar Enhancements */
+        .car-brand-title {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .car-brand-text {
+            letter-spacing: 1px;
+        }
+        .theme-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            box-shadow: 0 0 6px var(--car-glow);
+            display: inline-block;
+            margin-right: 4px;
+        }
+        .car-gear-badge {
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
         .car-hero-days-wrap {
             display: flex;
@@ -651,9 +794,38 @@
             gap: 1rem;
             cursor: pointer;
         }
+        .car-companion-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .car-companion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: .25rem;
+        }
+        .car-companion-title {
+            font-size: .75rem;
+            color: var(--car-accent);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .car-companion-action-pill {
+            font-size: .62rem;
+            color: var(--car-text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
         .car-rabbit-avatar {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
             display: flex;
@@ -664,6 +836,31 @@
             flex-shrink: 0;
             animation: carRabbitPulse 4s ease-in-out infinite;
             overflow: hidden;
+            transition: all .3s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+        .car-rabbit-avatar.avatar-photo {
+            background: transparent !important;
+            border: 2px solid var(--car-accent) !important;
+            box-shadow: 0 0 20px var(--car-glow) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+        .car-slider-thumb.thumb-photo {
+            background: transparent !important;
+            border: 2px solid var(--car-accent) !important;
+            box-shadow: 0 0 20px var(--car-glow) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+        .car-title-avatar-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            border: 1px solid var(--car-accent);
+            display: inline-block;
+            box-shadow: 0 0 6px var(--car-glow);
         }
         .car-brand-avatar {
             display: inline-flex;
@@ -727,6 +924,18 @@
         }
         .car-diag-item:hover {
             border-color: rgba(255, 255, 255, 0.15);
+        }
+        .car-diag-item.clickable {
+            cursor: pointer;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+        .car-diag-item.clickable:hover {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-diag-item.clickable:active {
+            transform: scale(0.97);
         }
         .car-diag-label {
             font-size: .65rem;
@@ -802,20 +1011,61 @@
             border-radius: 8px;
             border-left: 3px solid transparent;
             transition: background .2s, transform .15s;
+            gap: .5rem;
         }
         .car-ms-row:hover {
             background: rgba(255, 255, 255, 0.06);
             transform: translateX(2px);
         }
+        .ms-row-left {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .ms-row-right {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            flex-shrink: 0;
+        }
+        .ms-date {
+            font-size: .72rem;
+            color: var(--car-text-dim);
+            font-family: monospace;
+        }
+        .ms-pill {
+            font-size: .65rem;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
         .car-ms-row.reached {
             border-left-color: #00ff41;
             color: #d1fae5;
+        }
+        .car-ms-row.reached .ms-pill {
+            background: rgba(0, 255, 65, 0.15);
+            color: #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.3);
         }
         .car-ms-row.next {
             border-left-color: var(--car-accent);
             background: rgba(0, 234, 255, 0.08);
             font-weight: 700;
             box-shadow: 0 0 12px rgba(0, 234, 255, 0.15);
+        }
+        .car-ms-row.next .ms-pill {
+            background: var(--car-glow);
+            color: #fff;
+            border: 1px solid var(--car-accent);
+        }
+        .car-ms-row:not(.reached):not(.next) .ms-pill {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--car-text-dim);
         }
 
         /* Bottom Unlock Slider Track */
@@ -873,6 +1123,22 @@
             gap: .5rem;
             transition: opacity .2s;
         }
+        .slider-arrow {
+            opacity: 0.6;
+            letter-spacing: -1px;
+            animation: sliderArrowMove 1.5s infinite;
+        }
+        .slider-arrow:last-child {
+            animation-delay: 0.75s;
+        }
+        @keyframes sliderArrowMove {
+            0%, 100% { transform: translateX(0); opacity: 0.4; }
+            50% { transform: translateX(4px); opacity: 1; color: var(--car-accent); }
+        }
+        .slider-hint-text {
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
         .car-slider-thumb {
             position: absolute;
             left: 4px;
@@ -894,6 +1160,12 @@
             cursor: grabbing;
             transform: scale(1.08);
             box-shadow: 0 0 24px var(--car-glow);
+        }
+
+        @media (max-width: 640px) {
+            .car-hero-gauge-col {
+                display: none !important;
+            }
         }
 
         /* Modals & Dialogs */
@@ -1220,9 +1492,9 @@
             <!-- Top Status Bar -->
             <header class="car-top-bar" id="car-top-bar">
                 <div class="car-brand">
-                    <span><span id="car-brand-avatar" class="car-brand-avatar">🐰</span> BCOS COCKPIT</span>
-                    <span class="car-badge" id="car-theme-name">小鹏赛博</span>
-                    <span class="car-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
+                    <span class="car-brand-title"><span id="car-brand-avatar" class="car-brand-avatar">🐰</span> <span class="car-brand-text">BCOS COCKPIT</span></span>
+                    <span class="car-badge" id="car-theme-name"><span class="theme-dot"></span>小鹏赛博</span>
+                    <span class="car-badge car-gear-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
                     <span class="car-badge clickable" id="car-top-battery" onclick="openBatteryModal()" title="点击手动修改电量和续航">
                         <span id="car-top-battery-txt">🔋 88% · 535 km</span>
                     </span>
@@ -1275,26 +1547,54 @@
                         </div>
                     </div>
 
-                    <!-- Grand Anniversary Hero Card -->
+                    <!-- Grand Anniversary Hero Card (Split Dual-Zone Layout) -->
                     <div class="car-hero-card">
-                        <div class="car-hero-title">
-                            <span>💕 兔可可相伴虚拟纪元</span>
-                            <span style="font-size:.7rem;opacity:.7;">| START 2024/03/12</span>
-                        </div>
-                        <div class="car-hero-days-wrap">
-                            <span class="car-hero-days" id="car-days">0</span>
-                            <span class="car-hero-unit">DAYS</span>
-                        </div>
-                        <div class="car-hero-time" id="car-time">00时 00分 00秒 .0</div>
+                        <div class="car-hero-content-split">
+                            <div class="car-hero-main-col">
+                                <div class="car-hero-title">
+                                    <span>💕 兔可可相伴虚拟纪元</span>
+                                    <span class="car-hero-badge-tag">SINCE 2024.03.12</span>
+                                </div>
+                                <div class="car-hero-days-wrap">
+                                    <span class="car-hero-days" id="car-days">0</span>
+                                    <span class="car-hero-unit">DAYS</span>
+                                </div>
+                                <div class="car-hero-time" id="car-time">00时 00分 00秒 .0</div>
 
-                        <!-- Milestone Progress Card -->
-                        <div class="car-hero-progress-box">
-                            <div class="car-progress-header">
-                                <span id="car-next-label">🎯 下一个里程碑: 计算中...</span>
-                                <span id="car-next-countdown" style="color:var(--car-accent);font-weight:700;">--</span>
+                                <!-- Milestone Progress Card -->
+                                <div class="car-hero-progress-box">
+                                    <div class="car-progress-header">
+                                        <span id="car-next-label">🎯 下一个里程碑: 计算中...</span>
+                                        <span id="car-next-countdown" style="color:var(--car-accent);font-weight:700;">--</span>
+                                    </div>
+                                    <div class="car-progress-bar-bg">
+                                        <div class="car-progress-bar-fill" id="car-progress-fill" style="width: 0%;"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="car-progress-bar-bg">
-                                <div class="car-progress-bar-fill" id="car-progress-fill" style="width: 0%;"></div>
+
+                            <!-- Right: High-tech HUD Circular Gauge Ring & Companion Vitals -->
+                            <div class="car-hero-gauge-col">
+                                <div class="car-gauge-ring-wrap" title="里程碑阶段达成率">
+                                    <svg class="car-gauge-svg" viewBox="0 0 100 100">
+                                        <circle class="car-gauge-track" cx="50" cy="50" r="40" stroke-width="7" fill="none"></circle>
+                                        <circle class="car-gauge-bar" id="car-gauge-ring" cx="50" cy="50" r="40" stroke-width="7" fill="none" stroke-dasharray="251.33" stroke-dashoffset="251.33"></circle>
+                                    </svg>
+                                    <div class="car-gauge-content">
+                                        <div class="car-gauge-pct" id="car-gauge-pct">0%</div>
+                                        <div class="car-gauge-sub">STAGE HUD</div>
+                                    </div>
+                                </div>
+                                <div class="car-hero-vitals">
+                                    <div class="car-vital-chip">
+                                        <span class="vital-label">START</span>
+                                        <span class="vital-val">2024.03.12</span>
+                                    </div>
+                                    <div class="car-vital-chip">
+                                        <span class="vital-label">STATUS</span>
+                                        <span class="vital-val" style="color:var(--car-accent);"><span class="car-heart-pulse">❤️</span> 伴行中</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1303,10 +1603,13 @@
                 <!-- Right: Cockpit Status & Milestones -->
                 <div class="car-side-col">
                     <!-- Companion Quote Card -->
-                    <div class="car-widget-card car-companion-box" onclick="nextQuote()">
+                    <div class="car-widget-card car-companion-box" onclick="nextQuote()" title="点击切换兔可可寄语">
                         <div class="car-rabbit-avatar" id="car-companion-avatar">🐰</div>
-                        <div>
-                            <div style="font-size:.7rem;color:var(--car-accent);margin-bottom:.2rem;font-weight:700;">🐰 兔可可座舱伴侣 (点击切换寄语)</div>
+                        <div class="car-companion-body">
+                            <div class="car-companion-header">
+                                <span class="car-companion-title"><span id="car-companion-title-icon">🐰</span> 兔可可座舱伴侣</span>
+                                <span class="car-companion-action-pill">点击切换寄语 💬</span>
+                            </div>
                             <div class="car-quote-text" id="car-quote">"道路千万条，安全第一条，兔兔与你一路同行~"</div>
                         </div>
                     </div>
@@ -1326,7 +1629,7 @@
                         </div>
 
                         <!-- Big Battery & Range Display -->
-                        <div class="car-battery-hero">
+                        <div class="car-battery-hero" onclick="openBatteryModal()" title="点击手动修改电量和续航">
                             <div class="car-battery-left">
                                 <div class="car-battery-icon-wrap">
                                     <div class="car-battery-outline">
@@ -1346,21 +1649,21 @@
                         </div>
 
                         <div class="car-diag-grid">
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">DRIVE MODE</div>
+                            <div class="car-diag-item clickable" onclick="quickCycleDriveMode()" title="点击快速切换驾驶模式">
+                                <div class="car-diag-label">DRIVE MODE ⚡</div>
                                 <div class="car-diag-val" id="car-drive-mode">🌱 标准节能</div>
                             </div>
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">NETWORK LINK</div>
-                                <div class="car-diag-val" id="car-net-status">📶 在线就绪</div>
+                            <div class="car-diag-item clickable" onclick="openWallpaperModal()" title="点击管理壁纸与轮播">
+                                <div class="car-diag-label">WALLPAPER 🖼️</div>
+                                <div class="car-diag-val" id="car-net-status">🌌 星空原野</div>
                             </div>
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">CABIN TEMP</div>
+                            <div class="car-diag-item clickable" onclick="quickAdjustCabinTemp()" title="点击调节座舱空调温度">
+                                <div class="car-diag-label">CABIN TEMP ❄️</div>
                                 <div class="car-diag-val" id="car-temp-status">🌤️ 22°C / 舒适</div>
                             </div>
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9382</div>
+                            <div class="car-diag-item clickable" onclick="openMenuModal()" title="打开中控设置导航">
+                                <div class="car-diag-label">CORE SYSTEM 💻</div>
+                                <div class="car-diag-val">bcos v7.8.3.9383</div>
                             </div>
                         </div>
                     </div>
@@ -1382,7 +1685,11 @@
             <footer class="car-bottom-bar" id="car-bottom-bar">
                 <div class="car-slider-track" id="car-track">
                     <div class="car-slider-fill" id="car-slider-fill"></div>
-                    <div class="car-slider-text">👉 滑动滑块解锁退出锁屏</div>
+                    <div class="car-slider-text">
+                        <span class="slider-arrow">›››</span>
+                        <span class="slider-hint-text">滑动滑块解锁退出锁屏</span>
+                        <span class="slider-arrow">›››</span>
+                    </div>
                     <div class="car-slider-thumb" id="car-thumb">🐰</div>
                 </div>
             </footer>
@@ -1783,9 +2090,21 @@
             const compAvatar = document.getElementById('car-companion-avatar');
             if (compAvatar) {
                 if (mode === 'photo') {
-                    compAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-companion-avatar-img" onerror="this.parentElement.textContent=\'🐰\'">';
+                    compAvatar.classList.add('avatar-photo');
+                    compAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-companion-avatar-img" onerror="this.onerror=null;this.parentElement.textContent=\'🐰\';this.parentElement.classList.remove(\'avatar-photo\');">';
                 } else {
+                    compAvatar.classList.remove('avatar-photo');
                     compAvatar.textContent = '🐰';
+                }
+            }
+
+            // 2.1 Companion title icon
+            const compTitleIcon = document.getElementById('car-companion-title-icon');
+            if (compTitleIcon) {
+                if (mode === 'photo') {
+                    compTitleIcon.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-title-avatar-img" onerror="this.onerror=null;this.parentElement.textContent=\'🐰\';">';
+                } else {
+                    compTitleIcon.textContent = '🐰';
                 }
             }
 
@@ -1793,8 +2112,10 @@
             const thumbAvatar = document.getElementById('car-thumb');
             if (thumbAvatar) {
                 if (mode === 'photo') {
-                    thumbAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-thumb-img" draggable="false" onerror="this.parentElement.textContent=\'🐰\'">';
+                    thumbAvatar.classList.add('thumb-photo');
+                    thumbAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-thumb-img" draggable="false" onerror="this.onerror=null;this.parentElement.textContent=\'🐰\';this.parentElement.classList.remove(\'thumb-photo\');">';
                 } else {
+                    thumbAvatar.classList.remove('thumb-photo');
                     thumbAvatar.textContent = '🐰';
                 }
             }
@@ -1803,6 +2124,12 @@
             const avatarToggleBtn = document.getElementById('toggle-avatar-btn');
             if (avatarToggleBtn) {
                 avatarToggleBtn.textContent = mode === 'photo' ? '📷 照片模式' : '🐰 Emoji模式';
+            }
+
+            // 5. Context menu avatar badge
+            const ctxAvatarBadge = document.getElementById('ctx-avatar-badge');
+            if (ctxAvatarBadge) {
+                ctxAvatarBadge.textContent = mode === 'photo' ? '照片' : 'Emoji';
             }
         }
 
@@ -1828,6 +2155,34 @@
             mode: '🌱 标准节能',
             temp: 22
         };
+
+        function saveCarBatteryData() {
+            localStorage.setItem('car_soc', carBatteryData.soc);
+            localStorage.setItem('car_range', carBatteryData.range);
+            localStorage.setItem('car_range_standard', carBatteryData.standard);
+            localStorage.setItem('car_drive_mode', carBatteryData.mode);
+            localStorage.setItem('car_cabin_temp', carBatteryData.temp);
+        }
+
+        function quickCycleDriveMode() {
+            const modes = ['🌱 标准节能', '⚡ 极速运动', '🛋️ 舒适惬意', '🚀 狂暴弹射'];
+            const curIdx = modes.indexOf(carBatteryData.mode);
+            const nextIdx = (curIdx + 1) % modes.length;
+            carBatteryData.mode = modes[nextIdx];
+            saveCarBatteryData();
+            renderBatteryUI();
+            showToast(`🚗 驾驶模式已切换: ${carBatteryData.mode}`);
+        }
+
+        function quickAdjustCabinTemp() {
+            const temps = [22, 20, 24, 21.5];
+            const curIdx = temps.indexOf(carBatteryData.temp);
+            const nextIdx = (curIdx + 1) % temps.length;
+            carBatteryData.temp = temps[nextIdx];
+            saveCarBatteryData();
+            renderBatteryUI();
+            showToast(`❄️ 座舱温度已调节: ${carBatteryData.temp}°C`);
+        }
 
         function loadBatteryData() {
             try {
@@ -2799,19 +3154,37 @@
             const nextLbl = document.getElementById('car-next-label');
             const nextCnt = document.getElementById('car-next-countdown');
             const fill = document.getElementById('car-progress-fill');
+            const gaugeRing = document.getElementById('car-gauge-ring');
+            const gaugePct = document.getElementById('car-gauge-pct');
+            const vitalPulse = document.getElementById('car-vital-pulse');
 
+            let pct = 100;
             if (nextM) {
                 const remainDays = nextM.days - totalDays;
                 if (nextLbl) nextLbl.textContent = `🎯 目标: ${nextM.label}`;
                 if (nextCnt) nextCnt.textContent = `还有 ${remainDays} 天`;
                 const prevM = MILESTONES.slice().reverse().find(item => totalDays >= item.days);
                 const prevDays = prevM ? prevM.days : 0;
-                const pct = Math.min(100, Math.max(0, ((totalDays - prevDays) / (nextM.days - prevDays)) * 100));
+                pct = Math.min(100, Math.max(0, ((totalDays - prevDays) / (nextM.days - prevDays)) * 100));
                 if (fill) fill.style.width = pct.toFixed(1) + '%';
             } else {
                 if (nextLbl) nextLbl.textContent = '🏆 恭喜达成千日万日超级里程碑！';
                 if (nextCnt) nextCnt.textContent = '永远相伴';
                 if (fill) fill.style.width = '100%';
+                pct = 100;
+            }
+
+            // HUD Circular Gauge Ring (Circumference = 2 * PI * 40 ≈ 251.33)
+            if (gaugeRing) {
+                const offset = Math.max(0, Math.min(251.33, 251.33 * (1 - pct / 100)));
+                gaugeRing.style.strokeDashoffset = offset.toFixed(2);
+            }
+            if (gaugePct) {
+                gaugePct.textContent = `${pct.toFixed(0)}%`;
+            }
+            if (vitalPulse) {
+                const pulseBpm = 72 + Math.round(Math.sin(now.getTime() / 1500) * 3);
+                vitalPulse.innerHTML = `${pulseBpm} <small>BPM</small>`;
             }
         }
 
@@ -2844,9 +3217,18 @@
                 const isNext = !reached && (MILESTONES.find(x => days < x.days) === m);
                 const mDate = new Date(start.getTime() + m.days * 86400000);
                 const dateStr = `${mDate.getFullYear()}/${String(mDate.getMonth()+1).padStart(2,'0')}/${String(mDate.getDate()).padStart(2,'0')}`;
+                const statusBadge = reached 
+                    ? '<span class="ms-pill">已达成</span>' 
+                    : `<span class="ms-pill">剩 ${m.days - days} 天</span>`;
                 html += `<div class="car-ms-row ${reached ? 'reached' : (isNext ? 'next' : '')}">
-                    <span>${reached ? '✅' : (isNext ? '🎯' : '⏳')} ${m.label}</span>
-                    <span style="opacity:.8;">${dateStr} (${reached ? '已达成' : `剩${m.days - days}天`})</span>
+                    <div class="ms-row-left">
+                        <span>${reached ? '✅' : (isNext ? '🎯' : '⏳')}</span>
+                        <span>${m.label}</span>
+                    </div>
+                    <div class="ms-row-right">
+                        <span class="ms-date">${dateStr}</span>
+                        ${statusBadge}
+                    </div>
                 </div>`;
             });
 
@@ -2857,9 +3239,15 @@
                     const cDate = new Date(c.date + ' 00:00:00');
                     const diffDays = Math.floor((now - cDate) / 86400000);
                     const isPast = diffDays >= 0;
-                    html += `<div class="car-ms-row" style="border-left-color:var(--car-accent2);">
-                        <span>${c.icon || '💖'} ${c.name}</span>
-                        <span>${c.date} (${isPast ? `已过 ${diffDays} 天` : `剩 ${-diffDays} 天`})</span>
+                    html += `<div class="car-ms-row" style="border-left-color:var(--car-accent2); background:rgba(255,107,181,0.06);">
+                        <div class="ms-row-left">
+                            <span>${c.icon || '💖'}</span>
+                            <span>${c.name}</span>
+                        </div>
+                        <div class="ms-row-right">
+                            <span class="ms-date">${c.date}</span>
+                            <span class="ms-pill" style="background:rgba(255,107,181,0.2); color:var(--car-accent2);">${isPast ? `已过 ${diffDays} 天` : `倒计时 ${-diffDays} 天`}</span>
+                        </div>
                     </div>`;
                 });
             }

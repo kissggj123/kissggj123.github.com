@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.3.9382 -->
+    <!-- VERSION: v7.8.3.9383 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1328,7 +1328,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.3.9382</div>
+                <div class="subtitle">v7.8.3.9383</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1641,7 +1641,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9382</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.3.9383</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1707,7 +1707,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.3.9382',
+        VERSION: 'v7.8.3.9383',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2738,7 +2738,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.3.9382 已启动', 'info');
+        logEvent('兔可可王国 v7.8.3.9383 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9574,7 +9574,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.3.9382 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.3.9383 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9873,9 +9873,110 @@
             .bcos-window { position: absolute; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; box-shadow: 0 8px 32px rgba(0,0,0,.5); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; will-change: transform; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
             .bcos-window.maximized { width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important; transform: none !important; border-radius: 0; border: none; }
 
-            .bcos-context-menu { position: fixed; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.6); padding: 4px 0; z-index: 999999; display: none; min-width: 150px; font-size: 13px; color: #fff; user-select: none; }
-            .bcos-context-menu-item { padding: 8px 16px; cursor: pointer; transition: background .1s; display: flex; align-items: center; gap: 8px; }
-            .bcos-context-menu-item:hover { background: var(--accent); color: #000; }
+            /* ===== Modern BCOS Acrylic Context Menu ===== */
+            .bcos-context-menu {
+                position: fixed;
+                background: rgba(18, 22, 34, 0.94);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.25);
+                border-radius: 12px;
+                padding: 6px;
+                z-index: 999999;
+                display: none;
+                min-width: 230px;
+                max-width: 280px;
+                font-size: 12.5px;
+                color: #e2e8f0;
+                user-select: none;
+                animation: bcosCtxFadeIn .15s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            @keyframes bcosCtxFadeIn {
+                from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+                to { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            .bcos-ctx-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 6px 10px 6px 8px;
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--accent, #ff6b9d);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                margin-bottom: 4px;
+            }
+            .bcos-ctx-ver {
+                font-size: 10px;
+                color: #64748b;
+                font-family: monospace;
+            }
+            .bcos-ctx-group-title {
+                font-size: 10px;
+                font-weight: 700;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 6px 10px 2px 10px;
+            }
+            .bcos-ctx-separator {
+                height: 1px;
+                background: rgba(255, 255, 255, 0.07);
+                margin: 4px 6px;
+            }
+            .bcos-context-menu-item {
+                padding: 6px 10px;
+                cursor: pointer;
+                border-radius: 6px;
+                transition: all .12s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 500;
+            }
+            .bcos-context-menu-item:hover {
+                background: var(--accent, #ff6b9d);
+                color: #000;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            }
+            .bcos-context-menu-item:hover .ctx-shortcut,
+            .bcos-context-menu-item:hover .ctx-badge {
+                color: #000;
+                background: rgba(0, 0, 0, 0.15);
+            }
+            .ctx-icon {
+                font-size: 14px;
+                width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .ctx-text {
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .ctx-shortcut {
+                font-size: 10px;
+                color: #94a3b8;
+                background: rgba(255, 255, 255, 0.08);
+                padding: 1px 5px;
+                border-radius: 4px;
+                font-family: monospace;
+            }
+            .ctx-badge {
+                font-size: 10px;
+                background: rgba(0, 234, 255, 0.2);
+                color: #00eaff;
+                padding: 1px 6px;
+                border-radius: 10px;
+                font-weight: bold;
+            }
+            .bcos-context-menu-item.ctx-danger:hover {
+                background: #ef4444;
+                color: #fff;
+            }
 
             /* ===== BCOS Boot Animation ===== */
             #bcos-boot-screen {
@@ -10406,6 +10507,26 @@
             opacity: 0.35;
             pointer-events: none;
         }
+        .car-hero-content-split {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+        .car-hero-main-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .car-hero-gauge-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .65rem;
+            flex-shrink: 0;
+            padding: .2rem 0.5rem .2rem .75rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+        }
         .car-hero-title {
             font-size: .92rem;
             font-weight: 700;
@@ -10413,6 +10534,129 @@
             display: flex;
             align-items: center;
             gap: .4rem;
+        }
+        .car-hero-badge-tag {
+            font-size: .68rem;
+            color: var(--car-accent2);
+            background: rgba(167, 139, 250, 0.12);
+            border: 1px solid rgba(167, 139, 250, 0.28);
+            padding: 2px 7px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* Circular HUD Milestone Gauge Ring */
+        .car-gauge-ring-wrap {
+            position: relative;
+            width: 106px;
+            height: 106px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .car-gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .car-gauge-track {
+            stroke: rgba(255, 255, 255, 0.08);
+        }
+        .car-gauge-bar {
+            stroke: var(--car-accent);
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--car-glow));
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), stroke 0.3s;
+        }
+        .car-gauge-content {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+        }
+        .car-gauge-pct {
+            font-size: 1.45rem;
+            font-weight: 900;
+            line-height: 1;
+            font-family: 'SF Mono', monospace;
+            color: var(--car-accent);
+            text-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-gauge-sub {
+            font-size: 0.58rem;
+            color: var(--car-text-dim);
+            letter-spacing: 1px;
+            margin-top: 3px;
+            font-weight: 700;
+        }
+
+        /* Companion & Anniversary Vitals */
+        .car-hero-vitals {
+            display: flex;
+            gap: .5rem;
+            width: 100%;
+            justify-content: center;
+        }
+        .car-vital-chip {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 3px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+        .car-vital-chip .vital-label {
+            font-size: 0.55rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .car-vital-chip .vital-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: monospace;
+        }
+        .car-heart-pulse {
+            display: inline-block;
+            animation: carHeartBeat 1.8s ease-in-out infinite;
+        }
+        @keyframes carHeartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.22); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        /* Top Bar Enhancements */
+        .car-brand-title {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .car-brand-text {
+            letter-spacing: 1px;
+        }
+        .theme-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            box-shadow: 0 0 6px var(--car-glow);
+            display: inline-block;
+            margin-right: 4px;
+        }
+        .car-gear-badge {
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
         .car-hero-days-wrap {
             display: flex;
@@ -10648,9 +10892,38 @@
             gap: 1rem;
             cursor: pointer;
         }
+        .car-companion-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .car-companion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: .25rem;
+        }
+        .car-companion-title {
+            font-size: .75rem;
+            color: var(--car-accent);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .car-companion-action-pill {
+            font-size: .62rem;
+            color: var(--car-text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
         .car-rabbit-avatar {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
             display: flex;
@@ -10661,6 +10934,31 @@
             flex-shrink: 0;
             animation: carRabbitPulse 4s ease-in-out infinite;
             overflow: hidden;
+            transition: all .3s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+        .car-rabbit-avatar.avatar-photo {
+            background: transparent !important;
+            border: 2px solid var(--car-accent) !important;
+            box-shadow: 0 0 20px var(--car-glow) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+        .car-slider-thumb.thumb-photo {
+            background: transparent !important;
+            border: 2px solid var(--car-accent) !important;
+            box-shadow: 0 0 20px var(--car-glow) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+        .car-title-avatar-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            border: 1px solid var(--car-accent);
+            display: inline-block;
+            box-shadow: 0 0 6px var(--car-glow);
         }
         .car-brand-avatar {
             display: inline-flex;
@@ -10724,6 +11022,18 @@
         }
         .car-diag-item:hover {
             border-color: rgba(255, 255, 255, 0.15);
+        }
+        .car-diag-item.clickable {
+            cursor: pointer;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+        .car-diag-item.clickable:hover {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-diag-item.clickable:active {
+            transform: scale(0.97);
         }
         .car-diag-label {
             font-size: .65rem;
@@ -10799,20 +11109,61 @@
             border-radius: 8px;
             border-left: 3px solid transparent;
             transition: background .2s, transform .15s;
+            gap: .5rem;
         }
         .car-ms-row:hover {
             background: rgba(255, 255, 255, 0.06);
             transform: translateX(2px);
         }
+        .ms-row-left {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .ms-row-right {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            flex-shrink: 0;
+        }
+        .ms-date {
+            font-size: .72rem;
+            color: var(--car-text-dim);
+            font-family: monospace;
+        }
+        .ms-pill {
+            font-size: .65rem;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
         .car-ms-row.reached {
             border-left-color: #00ff41;
             color: #d1fae5;
+        }
+        .car-ms-row.reached .ms-pill {
+            background: rgba(0, 255, 65, 0.15);
+            color: #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.3);
         }
         .car-ms-row.next {
             border-left-color: var(--car-accent);
             background: rgba(0, 234, 255, 0.08);
             font-weight: 700;
             box-shadow: 0 0 12px rgba(0, 234, 255, 0.15);
+        }
+        .car-ms-row.next .ms-pill {
+            background: var(--car-glow);
+            color: #fff;
+            border: 1px solid var(--car-accent);
+        }
+        .car-ms-row:not(.reached):not(.next) .ms-pill {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--car-text-dim);
         }
 
         /* Bottom Unlock Slider Track */
@@ -10870,6 +11221,22 @@
             gap: .5rem;
             transition: opacity .2s;
         }
+        .slider-arrow {
+            opacity: 0.6;
+            letter-spacing: -1px;
+            animation: sliderArrowMove 1.5s infinite;
+        }
+        .slider-arrow:last-child {
+            animation-delay: 0.75s;
+        }
+        @keyframes sliderArrowMove {
+            0%, 100% { transform: translateX(0); opacity: 0.4; }
+            50% { transform: translateX(4px); opacity: 1; color: var(--car-accent); }
+        }
+        .slider-hint-text {
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
         .car-slider-thumb {
             position: absolute;
             left: 4px;
@@ -10891,6 +11258,12 @@
             cursor: grabbing;
             transform: scale(1.08);
             box-shadow: 0 0 24px var(--car-glow);
+        }
+
+        @media (max-width: 640px) {
+            .car-hero-gauge-col {
+                display: none !important;
+            }
         }
 
         /* Modals & Dialogs */
@@ -12374,34 +12747,207 @@
 
     let _bcosCtxMenu = null;
     let _bcosCtxMenuBound = false;
+    let _bcosTouchTimer = null;
+
+    function _bcosGetContextMenuHTML() {
+        const avatarMode = (typeof safeGetItem === 'function' ? safeGetItem('sidebarAvatar', 'emoji') : localStorage.getItem('sidebarAvatar')) || 'emoji';
+        const isPhoto = avatarMode === 'photo';
+        return `
+            <div class="bcos-ctx-header">
+                <span>🐰 BCOS COCKPIT OS</span>
+                <span class="bcos-ctx-ver">v7.8.3.9383</span>
+            </div>
+            
+            <div class="bcos-ctx-group-title">文件与创作</div>
+            <div class="bcos-context-menu-item" onclick="_bcosNewTextFile();_bcosHideCtxMenu()">
+                <span class="ctx-icon">📄</span>
+                <span class="ctx-text">新建文例文档</span>
+                <span class="ctx-shortcut">New</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('texteditor');_bcosHideCtxMenu()">
+                <span class="ctx-icon">📝</span>
+                <span class="ctx-text">记事本编辑器</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('terminal');_bcosHideCtxMenu()">
+                <span class="ctx-icon">💻</span>
+                <span class="ctx-text">BCOS 终端</span>
+                <span class="ctx-shortcut">~</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="showBcosCarLockscreen();_bcosHideCtxMenu()">
+                <span class="ctx-icon">🚗</span>
+                <span class="ctx-text">进入车机锁屏</span>
+                <span class="ctx-badge">HUD</span>
+            </div>
+
+            <div class="bcos-ctx-separator"></div>
+
+            <div class="bcos-ctx-group-title">个性化与外观</div>
+            <div class="bcos-context-menu-item" onclick="_bcosCycleDesktopWallpaper();_bcosHideCtxMenu()">
+                <span class="ctx-icon">🖼️</span>
+                <span class="ctx-text">轮换下一张壁纸</span>
+                <span class="ctx-shortcut">Wall</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosCycleDesktopTheme();_bcosHideCtxMenu()">
+                <span class="ctx-icon">🎨</span>
+                <span class="ctx-text">切换氛围主题</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosToggleAvatarCtx();_bcosHideCtxMenu()">
+                <span class="ctx-icon">${isPhoto ? '📷' : '🐰'}</span>
+                <span class="ctx-text">伴侣头像风格</span>
+                <span class="ctx-badge" id="ctx-avatar-badge">${isPhoto ? '照片' : 'Emoji'}</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('settings');_bcosHideCtxMenu()">
+                <span class="ctx-icon">⚙️</span>
+                <span class="ctx-text">系统与个性化设置</span>
+            </div>
+
+            <div class="bcos-ctx-separator"></div>
+
+            <div class="bcos-ctx-group-title">桌面与系统</div>
+            <div class="bcos-context-menu-item" onclick="_bcosRefreshDesktop();_bcosHideCtxMenu()">
+                <span class="ctx-icon">🔄</span>
+                <span class="ctx-text">刷新桌面</span>
+                <span class="ctx-shortcut">F5</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosToggleFullscreen();_bcosHideCtxMenu()">
+                <span class="ctx-icon">⛶</span>
+                <span class="ctx-text">全屏模式</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('about');_bcosHideCtxMenu()">
+                <span class="ctx-icon">ℹ️</span>
+                <span class="ctx-text">关于 BCOS</span>
+            </div>
+            <div class="bcos-context-menu-item ctx-danger" onclick="closeBcosOS();_bcosHideCtxMenu()">
+                <span class="ctx-icon">⏻</span>
+                <span class="ctx-text">关机 / 返回主页</span>
+            </div>
+        `;
+    }
+
+    function _bcosShowContextMenuAt(x, y) {
+        if (!_bcosCtxMenu) {
+            _bcosCtxMenu = document.createElement('div');
+            _bcosCtxMenu.className = 'bcos-context-menu';
+            document.body.appendChild(_bcosCtxMenu);
+        }
+        _bcosCtxMenu.innerHTML = _bcosGetContextMenuHTML();
+        _bcosCtxMenu.style.display = 'block';
+        _bcosCtxMenu.style.left = '0px';
+        _bcosCtxMenu.style.top = '0px';
+        const w = _bcosCtxMenu.offsetWidth || 240;
+        const h = _bcosCtxMenu.offsetHeight || 380;
+        if (x + w > window.innerWidth) x = Math.max(10, window.innerWidth - w - 10);
+        if (y + h > window.innerHeight) y = Math.max(10, window.innerHeight - h - 10);
+        _bcosCtxMenu.style.left = x + 'px';
+        _bcosCtxMenu.style.top = y + 'px';
+    }
+
     function _bcosInitContextMenu() {
         if (_bcosCtxMenuBound) return;
         _bcosCtxMenuBound = true;
         document.addEventListener('contextmenu', (e) => {
-            if (!document.getElementById('bcos-overlay')?.classList.contains('bcos-desktop-mode')) return;
+            const ov = document.getElementById('bcos-overlay');
+            if (!ov?.classList.contains('bcos-desktop-mode')) return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             e.preventDefault();
-            if (!_bcosCtxMenu) {
-                _bcosCtxMenu = document.createElement('div');
-                _bcosCtxMenu.className = 'bcos-context-menu';
-                _bcosCtxMenu.innerHTML = `
-                    <div class="bcos-context-menu-item" onclick="_bcosOpenApp('settings');_bcosHideCtxMenu()"><span>🎨</span>更换壁纸</div>
-                    <div class="bcos-context-menu-item" onclick="showBcosCarLockscreen();_bcosHideCtxMenu()"><span>🚗</span>车机锁屏</div>
-                    <div class="bcos-context-menu-item" onclick="_bcosOpenApp('terminal');_bcosHideCtxMenu()"><span>💻</span>终端</div>
-                    <div style="height:1px;background:#444;margin:4px 0;"></div>
-                    <div class="bcos-context-menu-item" onclick="_bcosOpenApp('about');_bcosHideCtxMenu()"><span>ℹ️</span>关于 BCOS</div>
-                `;
-                document.body.appendChild(_bcosCtxMenu);
-            }
-            _bcosCtxMenu.style.display = 'block';
-            let x = e.clientX, y = e.clientY;
-            if (x + _bcosCtxMenu.offsetWidth > window.innerWidth) x = window.innerWidth - _bcosCtxMenu.offsetWidth - 2;
-            if (y + _bcosCtxMenu.offsetHeight > window.innerHeight) y = window.innerHeight - _bcosCtxMenu.offsetHeight - 2;
-            _bcosCtxMenu.style.left = x + 'px';
-            _bcosCtxMenu.style.top = y + 'px';
+            _bcosShowContextMenuAt(e.clientX, e.clientY);
         });
-        document.addEventListener('click', () => { if (_bcosCtxMenu) _bcosCtxMenu.style.display = 'none'; });
+
+        let touchStartPos = null;
+        document.addEventListener('touchstart', (e) => {
+            const ov = document.getElementById('bcos-overlay');
+            if (!ov?.classList.contains('bcos-desktop-mode')) return;
+            if (e.touches.length !== 1) return;
+            const target = e.target;
+            if (target.closest('.bcos-window') || target.closest('.bcos-taskbar') || target.closest('.bcos-context-menu')) return;
+            const touch = e.touches[0];
+            touchStartPos = { x: touch.clientX, y: touch.clientY };
+            clearTimeout(_bcosTouchTimer);
+            _bcosTouchTimer = setTimeout(() => {
+                _bcosShowContextMenuAt(touchStartPos.x, touchStartPos.y);
+            }, 550);
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (_bcosTouchTimer && touchStartPos && e.touches.length === 1) {
+                const dx = Math.abs(e.touches[0].clientX - touchStartPos.x);
+                const dy = Math.abs(e.touches[0].clientY - touchStartPos.y);
+                if (dx > 10 || dy > 10) clearTimeout(_bcosTouchTimer);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => { clearTimeout(_bcosTouchTimer); }, { passive: true });
+        document.addEventListener('touchcancel', () => { clearTimeout(_bcosTouchTimer); }, { passive: true });
+
+        document.addEventListener('click', (e) => {
+            if (_bcosCtxMenu && !_bcosCtxMenu.contains(e.target)) _bcosHideCtxMenu();
+        });
     }
+
     function _bcosHideCtxMenu() { if (_bcosCtxMenu) _bcosCtxMenu.style.display = 'none'; }
+
+    function _bcosNewTextFile() {
+        _bcosOpenApp('texteditor');
+        setTimeout(() => {
+            const newBtn = document.getElementById('bcos-te-new');
+            if (newBtn) newBtn.click();
+            showToast('📄 已新建文本文档并打开记事本');
+        }, 120);
+    }
+
+    function _bcosCycleDesktopWallpaper() {
+        const wps = window.BUILTIN_WALLPAPERS || [];
+        if (!wps.length) return;
+        const curBg = localStorage.getItem('bcosCustomBg');
+        const curIdx = wps.findIndex(w => w.file === curBg);
+        const nextWp = wps[(curIdx + 1) % wps.length];
+        localStorage.setItem('bcosCustomBg', nextWp.file);
+        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        showToast(`🖼️ 桌面壁纸切换为: ${nextWp.name}`);
+    }
+
+    function _bcosCycleDesktopTheme() {
+        const themeList = ['bunny', 'dark', 'light', 'cyber', 'candy', 'matrix'];
+        const cur = document.documentElement.getAttribute('data-theme') || 'bunny';
+        const curIdx = themeList.indexOf(cur);
+        const next = themeList[(curIdx + 1) % themeList.length];
+        if (typeof setTheme === 'function') setTheme(next);
+        else document.documentElement.setAttribute('data-theme', next);
+        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        const dt = _bcosGetDesktopTheme();
+        showToast(`🎨 桌面主题已切换为: ${dt.label || next}`);
+    }
+
+    function _bcosToggleAvatarCtx() {
+        const cur = (typeof safeGetItem === 'function' ? safeGetItem('sidebarAvatar', 'emoji') : localStorage.getItem('sidebarAvatar')) || 'emoji';
+        const next = cur === 'photo' ? 'emoji' : 'photo';
+        if (typeof setSidebarAvatar === 'function') setSidebarAvatar(next);
+        else if (typeof window.setSidebarAvatar === 'function') window.setSidebarAvatar(next);
+        else {
+            localStorage.setItem('sidebarAvatar', next);
+            if (typeof updateLockscreenAvatar === 'function') updateLockscreenAvatar(next);
+        }
+        showToast(next === 'photo' ? '🐰 伴侣头像已切换为写真照片' : '🐰 伴侣头像已切换为 Emoji');
+    }
+
+    function _bcosRefreshDesktop() {
+        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        const icons = document.querySelector('.bcos-desktop-icons');
+        if (icons) {
+            icons.style.animation = 'none';
+            icons.offsetHeight;
+            icons.style.animation = 'bcosCtxFadeIn .2s ease';
+        }
+        showToast('🔄 BCOS 桌面已刷新');
+    }
+
+    function _bcosToggleFullscreen() {
+        if (typeof toggleFullscreen === 'function') toggleFullscreen();
+        else {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+            else document.exitFullscreen().catch(()=>{});
+        }
+    }
     let _bcosEscHandler = null;
     function _bcosBindEsc() {
         if (_bcosEscHandler) return;
@@ -13612,7 +14158,7 @@
             return '<div class="item"><label>设置与偏好项</label><span class="node-val">' + _bcosEscape(p) + '</span></div>';
         }).join('\n        ');
 
-        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9382 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9382 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <title>兔可可王国 🐰 | Bunny CC DevTools Inspector</title>\n  <style>\n    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:0;line-height:1.6;}\n    header{background:linear-gradient(135deg,#FF6B9D 0%,#a78bfa 100%);color:#fff;padding:1.2rem;text-align:center;box-shadow:0 4px 20px rgba(255,107,157,0.3);}\n    h1{margin:0;font-size:1.8rem;font-weight:800;letter-spacing:1px;}\n    .sub{font-size:.85rem;opacity:.95;margin-top:.3rem;}\n    nav{background:#161b22;border-bottom:1px solid #30363d;padding:.6rem;display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;}\n    .container{max-width:680px;margin:1.2rem auto;padding:0 1rem;}\n    .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);}\n    .card-title{color:#FF6B9D;font-size:1.1rem;margin-top:0;margin-bottom:.8rem;border-bottom:1px solid rgba(255,107,157,0.2);padding-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}\n    .badge{background:rgba(0,255,65,0.15);color:#00ff41;font-size:.75rem;padding:.2rem .5rem;border-radius:20px;font-weight:bold;border:1px solid rgba(0,255,65,0.3);}\n    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;}\n    .item{background:rgba(255,255,255,0.03);border:1px solid #30363d;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;}\n    .item label{display:block;color:#8b949e;font-size:.75rem;margin-bottom:.2rem;}\n    .node-val{color:#e6edf3;font-weight:600;}\n    footer{text-align:center;padding:1.5rem;color:#8b949e;font-size:.8rem;border-top:1px solid #30363d;}\n  </style>\n</head>\n<body>\n  <header>\n    <h1>🐰 兔可可王国</h1>\n    <div class="sub">BunnyBot 大富翁 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</div>\n  </header>\n  \n  <main class="container">\n    <section class="card">\n      <h2 class="card-title">🧭 侧边栏与导航菜单节点</h2>\n      <div class="grid">\n        ' + navGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎨 主题选择选项节点</h2>\n      <div class="grid">\n        ' + themeGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">⚙️ 偏好设置选项节点</h2>\n      <div class="grid">\n        ' + prefGridHtml + '\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🐰 棉花糖兔个人资料 <span class="badge">英系双血统安哥拉兔</span></h2>\n      <div class="grid">\n        <div class="item"><label>主要称呼</label><span class="node-val">兔可可 | CoCo | ココ</span></div>\n        <div class="item"><label>居住地点</label><span class="node-val">扎根上海</span></div>\n        <div class="item"><label>守护铲屎官</label><span class="node-val">Caretaker | お世話係です</span></div>\n        <div class="item"><label>起始日期</label><span class="node-val">2024/03/12</span></div>\n      </div>\n      <p style="margin-top:.8rem;font-size:.85rem;color:#8b949e;">每一天都是值得纪念的日子。在虚拟纪元中建造属于你的兔可可王国。</p>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">🎲 大富翁核心玩法与功能节点</h2>\n      <div class="grid">\n        <div class="item"><label>地图模式</label><span class="node-val">环形岛屿 · 6区域1248格超大地图</span></div>\n        <div class="item"><label>地产交易</label><span class="node-val">全功能地产交易系统 (地产+卡牌+载具+现金)</span></div>\n        <div class="item"><label>AI 智能</label><span class="node-val">智能 AI 引擎 (集套打压与抢拍评估)</span></div>\n        <div class="item"><label>清算救济</label><span class="node-val">阶梯式资产清算救济 (股票/拆房/抵押/载具)</span></div>\n        <div class="item"><label>卡牌系统</label><span class="node-val">4张强制移动卡牌 + 预警护盾 + 镜像反射</span></div>\n        <div class="item"><label>特色玩法</label><span class="node-val">赌场老虎机与轮盘 + 股市做多做空</span></div>\n      </div>\n    </section>\n\n    <section class="card">\n      <h2 class="card-title">ℹ️ 关于作者与系统版本节点</h2>\n      <p style="font-size:.85rem;margin:.3rem 0;"><strong>兔可可之城</strong> v7.8.3.9383 | 大富翁王国扩展版</p>\n      <p style="font-size:.8rem;color:#8b949e;margin:0;">作者：CanguroMIO | kissggj123 | Powered by Bunny CC</p>\n    </section>\n  </main>\n\n  <footer>\n    <p>BunnyBot 大富翁 v7.8.3.9383 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济</p>\n    <p>© CanguroMIO | kissggj123 | 兔可可纪念日 2024/03/12</p>\n  </footer>\n</body>\n</html>';
     }
     var _bcosEggReplacements = [];
     function _bcosExtractDiffRules(defaultHtml, currentHtml) {
@@ -14244,9 +14790,21 @@ const START_DATE = '2024/03/12 00:00:00';
             const compAvatar = document.getElementById('car-companion-avatar');
             if (compAvatar) {
                 if (mode === 'photo') {
-                    compAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-companion-avatar-img" onerror="this.parentElement.textContent=\'🐰\'">';
+                    compAvatar.classList.add('avatar-photo');
+                    compAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-companion-avatar-img" onerror="this.onerror=null;this.parentElement.textContent=\'🐰\';this.parentElement.classList.remove(\'avatar-photo\');">';
                 } else {
+                    compAvatar.classList.remove('avatar-photo');
                     compAvatar.textContent = '🐰';
+                }
+            }
+
+            // 2.1 Companion title icon
+            const compTitleIcon = document.getElementById('car-companion-title-icon');
+            if (compTitleIcon) {
+                if (mode === 'photo') {
+                    compTitleIcon.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-title-avatar-img" onerror="this.onerror=null;this.parentElement.textContent=\'🐰\';">';
+                } else {
+                    compTitleIcon.textContent = '🐰';
                 }
             }
 
@@ -14254,8 +14812,10 @@ const START_DATE = '2024/03/12 00:00:00';
             const thumbAvatar = document.getElementById('car-thumb');
             if (thumbAvatar) {
                 if (mode === 'photo') {
-                    thumbAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-thumb-img" draggable="false" onerror="this.parentElement.textContent=\'🐰\'">';
+                    thumbAvatar.classList.add('thumb-photo');
+                    thumbAvatar.innerHTML = '<img src="./dist/Bunny CC_Profile.JPG" alt="兔可可" class="car-thumb-img" draggable="false" onerror="this.onerror=null;this.parentElement.textContent=\'🐰\';this.parentElement.classList.remove(\'thumb-photo\');">';
                 } else {
+                    thumbAvatar.classList.remove('thumb-photo');
                     thumbAvatar.textContent = '🐰';
                 }
             }
@@ -14264,6 +14824,12 @@ const START_DATE = '2024/03/12 00:00:00';
             const avatarToggleBtn = document.getElementById('toggle-avatar-btn');
             if (avatarToggleBtn) {
                 avatarToggleBtn.textContent = mode === 'photo' ? '📷 照片模式' : '🐰 Emoji模式';
+            }
+
+            // 5. Context menu avatar badge
+            const ctxAvatarBadge = document.getElementById('ctx-avatar-badge');
+            if (ctxAvatarBadge) {
+                ctxAvatarBadge.textContent = mode === 'photo' ? '照片' : 'Emoji';
             }
         }
 
@@ -14289,6 +14855,34 @@ const START_DATE = '2024/03/12 00:00:00';
             mode: '🌱 标准节能',
             temp: 22
         };
+
+        function saveCarBatteryData() {
+            localStorage.setItem('car_soc', carBatteryData.soc);
+            localStorage.setItem('car_range', carBatteryData.range);
+            localStorage.setItem('car_range_standard', carBatteryData.standard);
+            localStorage.setItem('car_drive_mode', carBatteryData.mode);
+            localStorage.setItem('car_cabin_temp', carBatteryData.temp);
+        }
+
+        function quickCycleDriveMode() {
+            const modes = ['🌱 标准节能', '⚡ 极速运动', '🛋️ 舒适惬意', '🚀 狂暴弹射'];
+            const curIdx = modes.indexOf(carBatteryData.mode);
+            const nextIdx = (curIdx + 1) % modes.length;
+            carBatteryData.mode = modes[nextIdx];
+            saveCarBatteryData();
+            renderBatteryUI();
+            showToast(`🚗 驾驶模式已切换: ${carBatteryData.mode}`);
+        }
+
+        function quickAdjustCabinTemp() {
+            const temps = [22, 20, 24, 21.5];
+            const curIdx = temps.indexOf(carBatteryData.temp);
+            const nextIdx = (curIdx + 1) % temps.length;
+            carBatteryData.temp = temps[nextIdx];
+            saveCarBatteryData();
+            renderBatteryUI();
+            showToast(`❄️ 座舱温度已调节: ${carBatteryData.temp}°C`);
+        }
 
         function loadBatteryData() {
             try {
@@ -15260,19 +15854,37 @@ const START_DATE = '2024/03/12 00:00:00';
             const nextLbl = document.getElementById('car-next-label');
             const nextCnt = document.getElementById('car-next-countdown');
             const fill = document.getElementById('car-progress-fill');
+            const gaugeRing = document.getElementById('car-gauge-ring');
+            const gaugePct = document.getElementById('car-gauge-pct');
+            const vitalPulse = document.getElementById('car-vital-pulse');
 
+            let pct = 100;
             if (nextM) {
                 const remainDays = nextM.days - totalDays;
                 if (nextLbl) nextLbl.textContent = `🎯 目标: ${nextM.label}`;
                 if (nextCnt) nextCnt.textContent = `还有 ${remainDays} 天`;
                 const prevM = MILESTONES.slice().reverse().find(item => totalDays >= item.days);
                 const prevDays = prevM ? prevM.days : 0;
-                const pct = Math.min(100, Math.max(0, ((totalDays - prevDays) / (nextM.days - prevDays)) * 100));
+                pct = Math.min(100, Math.max(0, ((totalDays - prevDays) / (nextM.days - prevDays)) * 100));
                 if (fill) fill.style.width = pct.toFixed(1) + '%';
             } else {
                 if (nextLbl) nextLbl.textContent = '🏆 恭喜达成千日万日超级里程碑！';
                 if (nextCnt) nextCnt.textContent = '永远相伴';
                 if (fill) fill.style.width = '100%';
+                pct = 100;
+            }
+
+            // HUD Circular Gauge Ring (Circumference = 2 * PI * 40 ≈ 251.33)
+            if (gaugeRing) {
+                const offset = Math.max(0, Math.min(251.33, 251.33 * (1 - pct / 100)));
+                gaugeRing.style.strokeDashoffset = offset.toFixed(2);
+            }
+            if (gaugePct) {
+                gaugePct.textContent = `${pct.toFixed(0)}%`;
+            }
+            if (vitalPulse) {
+                const pulseBpm = 72 + Math.round(Math.sin(now.getTime() / 1500) * 3);
+                vitalPulse.innerHTML = `${pulseBpm} <small>BPM</small>`;
             }
         }
 
@@ -15305,9 +15917,18 @@ const START_DATE = '2024/03/12 00:00:00';
                 const isNext = !reached && (MILESTONES.find(x => days < x.days) === m);
                 const mDate = new Date(start.getTime() + m.days * 86400000);
                 const dateStr = `${mDate.getFullYear()}/${String(mDate.getMonth()+1).padStart(2,'0')}/${String(mDate.getDate()).padStart(2,'0')}`;
+                const statusBadge = reached 
+                    ? '<span class="ms-pill">已达成</span>' 
+                    : `<span class="ms-pill">剩 ${m.days - days} 天</span>`;
                 html += `<div class="car-ms-row ${reached ? 'reached' : (isNext ? 'next' : '')}">
-                    <span>${reached ? '✅' : (isNext ? '🎯' : '⏳')} ${m.label}</span>
-                    <span style="opacity:.8;">${dateStr} (${reached ? '已达成' : `剩${m.days - days}天`})</span>
+                    <div class="ms-row-left">
+                        <span>${reached ? '✅' : (isNext ? '🎯' : '⏳')}</span>
+                        <span>${m.label}</span>
+                    </div>
+                    <div class="ms-row-right">
+                        <span class="ms-date">${dateStr}</span>
+                        ${statusBadge}
+                    </div>
                 </div>`;
             });
 
@@ -15318,9 +15939,15 @@ const START_DATE = '2024/03/12 00:00:00';
                     const cDate = new Date(c.date + ' 00:00:00');
                     const diffDays = Math.floor((now - cDate) / 86400000);
                     const isPast = diffDays >= 0;
-                    html += `<div class="car-ms-row" style="border-left-color:var(--car-accent2);">
-                        <span>${c.icon || '💖'} ${c.name}</span>
-                        <span>${c.date} (${isPast ? `已过 ${diffDays} 天` : `剩 ${-diffDays} 天`})</span>
+                    html += `<div class="car-ms-row" style="border-left-color:var(--car-accent2); background:rgba(255,107,181,0.06);">
+                        <div class="ms-row-left">
+                            <span>${c.icon || '💖'}</span>
+                            <span>${c.name}</span>
+                        </div>
+                        <div class="ms-row-right">
+                            <span class="ms-date">${c.date}</span>
+                            <span class="ms-pill" style="background:rgba(255,107,181,0.2); color:var(--car-accent2);">${isPast ? `已过 ${diffDays} 天` : `倒计时 ${-diffDays} 天`}</span>
+                        </div>
                     </div>`;
                 });
             }
@@ -15524,9 +16151,9 @@ const START_DATE = '2024/03/12 00:00:00';
             <!-- Top Status Bar -->
             <header class="car-top-bar" id="car-top-bar">
                 <div class="car-brand">
-                    <span><span id="car-brand-avatar" class="car-brand-avatar">🐰</span> BCOS COCKPIT</span>
-                    <span class="car-badge" id="car-theme-name">小鹏赛博</span>
-                    <span class="car-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
+                    <span class="car-brand-title"><span id="car-brand-avatar" class="car-brand-avatar">🐰</span> <span class="car-brand-text">BCOS COCKPIT</span></span>
+                    <span class="car-badge" id="car-theme-name"><span class="theme-dot"></span>小鹏赛博</span>
+                    <span class="car-badge car-gear-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
                     <span class="car-badge clickable" id="car-top-battery" onclick="openBatteryModal()" title="点击手动修改电量和续航">
                         <span id="car-top-battery-txt">🔋 88% · 535 km</span>
                     </span>
@@ -15579,26 +16206,54 @@ const START_DATE = '2024/03/12 00:00:00';
                         </div>
                     </div>
 
-                    <!-- Grand Anniversary Hero Card -->
+                    <!-- Grand Anniversary Hero Card (Split Dual-Zone Layout) -->
                     <div class="car-hero-card">
-                        <div class="car-hero-title">
-                            <span>💕 兔可可相伴虚拟纪元</span>
-                            <span style="font-size:.7rem;opacity:.7;">| START 2024/03/12</span>
-                        </div>
-                        <div class="car-hero-days-wrap">
-                            <span class="car-hero-days" id="car-days">0</span>
-                            <span class="car-hero-unit">DAYS</span>
-                        </div>
-                        <div class="car-hero-time" id="car-time">00时 00分 00秒 .0</div>
+                        <div class="car-hero-content-split">
+                            <div class="car-hero-main-col">
+                                <div class="car-hero-title">
+                                    <span>💕 兔可可相伴虚拟纪元</span>
+                                    <span class="car-hero-badge-tag">SINCE 2024.03.12</span>
+                                </div>
+                                <div class="car-hero-days-wrap">
+                                    <span class="car-hero-days" id="car-days">0</span>
+                                    <span class="car-hero-unit">DAYS</span>
+                                </div>
+                                <div class="car-hero-time" id="car-time">00时 00分 00秒 .0</div>
 
-                        <!-- Milestone Progress Card -->
-                        <div class="car-hero-progress-box">
-                            <div class="car-progress-header">
-                                <span id="car-next-label">🎯 下一个里程碑: 计算中...</span>
-                                <span id="car-next-countdown" style="color:var(--car-accent);font-weight:700;">--</span>
+                                <!-- Milestone Progress Card -->
+                                <div class="car-hero-progress-box">
+                                    <div class="car-progress-header">
+                                        <span id="car-next-label">🎯 下一个里程碑: 计算中...</span>
+                                        <span id="car-next-countdown" style="color:var(--car-accent);font-weight:700;">--</span>
+                                    </div>
+                                    <div class="car-progress-bar-bg">
+                                        <div class="car-progress-bar-fill" id="car-progress-fill" style="width: 0%;"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="car-progress-bar-bg">
-                                <div class="car-progress-bar-fill" id="car-progress-fill" style="width: 0%;"></div>
+
+                            <!-- Right: High-tech HUD Circular Gauge Ring & Companion Vitals -->
+                            <div class="car-hero-gauge-col">
+                                <div class="car-gauge-ring-wrap" title="里程碑阶段达成率">
+                                    <svg class="car-gauge-svg" viewBox="0 0 100 100">
+                                        <circle class="car-gauge-track" cx="50" cy="50" r="40" stroke-width="7" fill="none"></circle>
+                                        <circle class="car-gauge-bar" id="car-gauge-ring" cx="50" cy="50" r="40" stroke-width="7" fill="none" stroke-dasharray="251.33" stroke-dashoffset="251.33"></circle>
+                                    </svg>
+                                    <div class="car-gauge-content">
+                                        <div class="car-gauge-pct" id="car-gauge-pct">0%</div>
+                                        <div class="car-gauge-sub">STAGE HUD</div>
+                                    </div>
+                                </div>
+                                <div class="car-hero-vitals">
+                                    <div class="car-vital-chip">
+                                        <span class="vital-label">START</span>
+                                        <span class="vital-val">2024.03.12</span>
+                                    </div>
+                                    <div class="car-vital-chip">
+                                        <span class="vital-label">STATUS</span>
+                                        <span class="vital-val" style="color:var(--car-accent);"><span class="car-heart-pulse">❤️</span> 伴行中</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -15607,10 +16262,13 @@ const START_DATE = '2024/03/12 00:00:00';
                 <!-- Right: Cockpit Status & Milestones -->
                 <div class="car-side-col">
                     <!-- Companion Quote Card -->
-                    <div class="car-widget-card car-companion-box" onclick="nextQuote()">
+                    <div class="car-widget-card car-companion-box" onclick="nextQuote()" title="点击切换兔可可寄语">
                         <div class="car-rabbit-avatar" id="car-companion-avatar">🐰</div>
-                        <div>
-                            <div style="font-size:.7rem;color:var(--car-accent);margin-bottom:.2rem;font-weight:700;">🐰 兔可可座舱伴侣 (点击切换寄语)</div>
+                        <div class="car-companion-body">
+                            <div class="car-companion-header">
+                                <span class="car-companion-title"><span id="car-companion-title-icon">🐰</span> 兔可可座舱伴侣</span>
+                                <span class="car-companion-action-pill">点击切换寄语 💬</span>
+                            </div>
                             <div class="car-quote-text" id="car-quote">"道路千万条，安全第一条，兔兔与你一路同行~"</div>
                         </div>
                     </div>
@@ -15630,7 +16288,7 @@ const START_DATE = '2024/03/12 00:00:00';
                         </div>
 
                         <!-- Big Battery & Range Display -->
-                        <div class="car-battery-hero">
+                        <div class="car-battery-hero" onclick="openBatteryModal()" title="点击手动修改电量和续航">
                             <div class="car-battery-left">
                                 <div class="car-battery-icon-wrap">
                                     <div class="car-battery-outline">
@@ -15650,21 +16308,21 @@ const START_DATE = '2024/03/12 00:00:00';
                         </div>
 
                         <div class="car-diag-grid">
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">DRIVE MODE</div>
+                            <div class="car-diag-item clickable" onclick="quickCycleDriveMode()" title="点击快速切换驾驶模式">
+                                <div class="car-diag-label">DRIVE MODE ⚡</div>
                                 <div class="car-diag-val" id="car-drive-mode">🌱 标准节能</div>
                             </div>
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">NETWORK LINK</div>
-                                <div class="car-diag-val" id="car-net-status">📶 在线就绪</div>
+                            <div class="car-diag-item clickable" onclick="openWallpaperModal()" title="点击管理壁纸与轮播">
+                                <div class="car-diag-label">WALLPAPER 🖼️</div>
+                                <div class="car-diag-val" id="car-net-status">🌌 星空原野</div>
                             </div>
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">CABIN TEMP</div>
+                            <div class="car-diag-item clickable" onclick="quickAdjustCabinTemp()" title="点击调节座舱空调温度">
+                                <div class="car-diag-label">CABIN TEMP ❄️</div>
                                 <div class="car-diag-val" id="car-temp-status">🌤️ 22°C / 舒适</div>
                             </div>
-                            <div class="car-diag-item">
-                                <div class="car-diag-label">CORE SYSTEM</div>
-                                <div class="car-diag-val">💻 bcos v7.8.3.9382</div>
+                            <div class="car-diag-item clickable" onclick="openMenuModal()" title="打开中控设置导航">
+                                <div class="car-diag-label">CORE SYSTEM 💻</div>
+                                <div class="car-diag-val">bcos v7.8.3.9383</div>
                             </div>
                         </div>
                     </div>
@@ -15686,7 +16344,11 @@ const START_DATE = '2024/03/12 00:00:00';
             <footer class="car-bottom-bar" id="car-bottom-bar">
                 <div class="car-slider-track" id="car-track">
                     <div class="car-slider-fill" id="car-slider-fill"></div>
-                    <div class="car-slider-text">👉 滑动滑块解锁退出锁屏</div>
+                    <div class="car-slider-text">
+                        <span class="slider-arrow">›››</span>
+                        <span class="slider-hint-text">滑动滑块解锁退出锁屏</span>
+                        <span class="slider-arrow">›››</span>
+                    </div>
                     <div class="car-slider-thumb" id="car-thumb">🐰</div>
                 </div>
             </footer>
@@ -19948,6 +20610,13 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.3.9383', title:'座舱锁屏全域重构、高阶HUD仪表、伴侣写真无缝融入与BCOS超级右键菜单', items:[
+            '🛸 锁屏UI全域现代重构：重构纪念日双区交互布局，消灭右侧暗区，集成SVG环形HUD里程碑进度仪表盘与心动节律动态监视',
+            '🐰 伴侣写真无缝融入：彻底消除伴侣卡片与标题栏图标的背景色彩溢出，写真模式下呈现纯净通透的赛博霓虹边框与高质感圆弧裁切',
+            '⚡ 智能座舱遥测快控：动力模式与座舱温度支持直觉点按循环切换，电池信息与导航菜单即刻联动呼出',
+            '🖱️ BCOS超级右键菜单：支持文件快编、快捷终端、性能监视、壁纸/主题轮换、头像模式热切，全面支持移动端长按唤出',
+            '💎 里程碑时间线质感升级：双列极简信息流排版，高亮当前冲刺目标，完美兼容自定义纪念日与全机型响应式适配'
+        ]},
         { ver:'v7.8.3.9382', title:'车机锁屏头像风格全域双向联动 & 兔可可写真/Emoji自由切换', items:[
             '🐰 全域头像风格联动：车机顶部品牌栏(🐰 BCOS COCKPIT)、座舱伴侣头像、滑动解锁滑块全面支持通过「🐰 侧边栏头像风格 (Emoji / 照片)」全局动态切换',
             '🎨 奢华写真高保真裁切：照片模式下呈现圆润光晕霓虹边框、精致防抖动裁切与智能回退容错，Emoji 与写真照片随心自由切换',
