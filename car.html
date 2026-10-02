@@ -45,7 +45,7 @@
             overflow: hidden !important;
             background: #000;
             color: #e6f7ff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, "Source Han Sans CN", "Noto Sans SC", sans-serif;
             touch-action: none !important;
             -webkit-overflow-scrolling: auto !important;
         }
@@ -271,31 +271,71 @@
             flex-shrink: 0;
             white-space: nowrap;
         }
-        .car-badge {
-            background: rgba(255, 255, 255, 0.06);
+        .car-badge,
+        .car-mini-trigger,
+        .car-top-btn {
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--car-border);
-            padding: .15rem .55rem;
-            border-radius: 14px;
-            font-size: .75rem;
+            padding: 0 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
             color: var(--car-accent2);
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: .35rem;
-            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            justify-content: center;
+            gap: 0.35rem;
+            height: 28px;
+            min-height: 28px !important;
+            max-height: 28px;
+            line-height: 1;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
             flex-shrink: 0;
             white-space: nowrap;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: default;
         }
-        .car-badge.clickable {
+        .car-badge.clickable,
+        .car-top-btn,
+        .car-mini-trigger {
             cursor: pointer;
         }
-        .car-badge.clickable:hover {
+        .car-badge.clickable:hover,
+        .car-top-btn:hover,
+        .car-mini-trigger:hover {
+            opacity: 1;
             border-color: var(--car-accent);
             color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 12px var(--car-glow);
             transform: translateY(-1px);
+        }
+        .car-badge.clickable:active,
+        .car-top-btn:active,
+        .car-mini-trigger:active {
+            transform: translateY(0) scale(0.97);
+        }
+        .car-badge .badge-icon,
+        .car-mini-trigger .badge-icon,
+        .car-top-btn .badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            line-height: 1;
+        }
+        .car-gear-badge {
+            color: var(--car-accent);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        #car-wakelock-badge {
+            color: #06ffa5;
         }
 
         /* Top actions buttons */
@@ -316,45 +356,25 @@
             flex-shrink: 0;
             white-space: nowrap;
         }
-        .car-mini-trigger {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--car-border);
-            color: var(--car-text-dim);
-            font-size: .9rem;
-            cursor: pointer;
-            padding: .25rem .6rem;
-            border-radius: 10px;
-            opacity: 0.7;
-            transition: all .2s;
-            display: inline-flex;
-            align-items: center;
-            gap: .3rem;
-            backdrop-filter: blur(8px);
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .car-mini-trigger:hover {
-            opacity: 1;
-            border-color: var(--car-accent);
-            color: var(--car-accent);
-            box-shadow: 0 0 10px var(--car-glow);
-            transform: scale(1.05);
-        }
 
         .car-icon-btn {
             background: var(--car-panel);
             border: 1px solid var(--car-border);
             color: var(--car-text);
             padding: .35rem .75rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: .8rem;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: .3rem;
-            transition: all .2s;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
             flex-shrink: 0;
             white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
         }
         .car-icon-btn:hover, .car-icon-btn:active {
             border-color: var(--car-accent);
@@ -528,6 +548,7 @@
         }
         .car-gauge-content {
             position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -539,7 +560,7 @@
             font-size: 1.45rem;
             font-weight: 900;
             line-height: 1;
-            font-family: 'SF Mono', monospace;
+            font-family: 'SF Mono', "SF Pro Display", "DIN Alternate", "Roboto Mono", Consolas, Monaco, monospace;
             color: var(--car-accent);
             text-shadow: 0 0 10px var(--car-glow);
         }
@@ -549,6 +570,45 @@
             letter-spacing: 1px;
             margin-top: 3px;
             font-weight: 700;
+        }
+
+        /* High-Tech Cockpit Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+        [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(10, 20, 35, 0.95);
+            border: 1px solid var(--car-accent);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 10px var(--car-glow);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 99999;
+        }
+        [data-tooltip]:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .car-top-bar [data-tooltip]::before {
+            bottom: auto;
+            top: calc(100% + 8px);
+            transform: translateX(-50%) translateY(-4px);
+        }
+        .car-top-bar [data-tooltip]:hover::before {
+            transform: translateX(-50%) translateY(0);
         }
 
         /* Companion & Anniversary Vitals */
@@ -1337,14 +1397,16 @@
             background: #0b1120;
             border: 1px solid var(--car-border);
             border-radius: 20px;
-            padding: 1.6rem 2rem;
-            max-width: 540px;
-            width: 100%;
+            padding: 1.5rem 1.8rem;
+            max-width: 580px;
+            width: min(580px, calc(100vw - 2rem));
+            box-sizing: border-box;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px var(--car-glow);
             transform: translateY(20px);
             transition: transform .3s ease;
             max-height: 88vh;
             overflow-y: auto;
+            overflow-x: hidden;
             overscroll-behavior: contain !important;
             -webkit-overflow-scrolling: touch !important;
             touch-action: pan-y !important;
@@ -1355,6 +1417,7 @@
                 padding: 1.2rem 1.2rem !important;
                 border-radius: 16px !important;
                 max-height: 90vh !important;
+                width: calc(100vw - 1rem) !important;
             }
             .car-modal-grid {
                 grid-template-columns: 1fr !important;
@@ -1366,13 +1429,40 @@
             transform: translateY(0);
         }
         .car-modal-title {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: var(--car-accent);
             margin-bottom: .8rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .car-modal-close {
+            width: 28px;
+            height: 28px;
+            min-height: 28px !important;
+            max-height: 28px !important;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            padding: 0;
+            line-height: 1;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .car-modal-close:hover {
+            background: rgba(255, 60, 60, 0.15);
+            border-color: rgba(255, 90, 90, 0.6);
+            color: #ff8080;
+            transform: rotate(90deg);
         }
         .car-modal-grid {
             display: grid;
@@ -1485,6 +1575,146 @@
         .car-input-group {
             margin-bottom: .8rem;
         }
+
+        /* Unified Cockpit Option Selector */
+        .car-option-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.55rem;
+            width: 100%;
+            margin-top: 0.35rem;
+            box-sizing: border-box;
+        }
+        .car-option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--car-border);
+            border-radius: 12px;
+            color: var(--car-text-dim);
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+            text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            min-height: 52px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .car-option-btn .opt-icon {
+            font-size: 1.15rem;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+            transition: transform 0.2s ease;
+        }
+        .car-option-btn .opt-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--car-text);
+            line-height: 1.25;
+            white-space: normal;
+            word-break: keep-all;
+        }
+        .car-option-btn .opt-desc {
+            font-size: 0.65rem;
+            color: var(--car-text-dim);
+            margin-top: 0.2rem;
+            line-height: 1.2;
+        }
+        .car-option-btn:hover {
+            border-color: var(--car-accent);
+            color: var(--car-text);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+        .car-option-btn:hover .opt-icon {
+            transform: scale(1.15);
+        }
+        .car-option-btn.active {
+            border-color: var(--car-accent) !important;
+            color: #fff !important;
+            background: rgba(0, 234, 255, 0.12) !important;
+            box-shadow: 0 0 14px var(--car-glow), inset 0 0 8px rgba(0, 234, 255, 0.1) !important;
+        }
+        .car-option-btn.active .opt-title {
+            color: var(--car-accent) !important;
+        }
+        .car-option-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--car-accent);
+        }
+
+        /* Cockpit Quick Selector Tags */
+        .car-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .car-quick-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            user-select: none;
+            -webkit-user-select: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
+            box-sizing: border-box;
+        }
+        .car-quick-tag:hover {
+            background: rgba(0, 234, 255, 0.12);
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-quick-tag:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        /* Cockpit Setting List Rows */
+        .car-setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            gap: 0.8rem;
+            box-sizing: border-box;
+        }
+        .car-setting-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--car-border);
+        }
+        .car-setting-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--car-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
         .car-input-label {
             display: block;
             font-size: .75rem;
@@ -1687,20 +1917,20 @@
                 <div class="car-brand">
                     <span class="car-brand-title"><span id="car-brand-avatar" class="car-brand-avatar">🐰</span> <span class="car-brand-text">BCOS COCKPIT</span></span>
                     <span class="car-badge" id="car-theme-name"><span class="theme-dot"></span>小鹏赛博</span>
-                    <span class="car-badge car-gear-badge" style="color:var(--car-accent);">🅿️ 驻车 P</span>
-                    <span class="car-badge clickable" id="car-top-battery" onclick="openBatteryModal()" title="点击手动修改电量和续航">
-                        <span id="car-top-battery-txt">🔋 88% · 535 km</span>
+                    <span class="car-badge car-gear-badge" id="car-gear-pill"><span class="badge-icon">🅿️</span> 驻车 P</span>
+                    <span class="car-badge clickable" id="car-top-battery" onclick="openBatteryModal()" data-tooltip="点击设定动力与续航">
+                        <span id="car-top-battery-txt"><span class="badge-icon">🔋</span> 88% · 535 km</span>
                     </span>
-                    <span class="car-badge" style="color:#00ff41;" id="car-wakelock-badge">💡 常亮保持: 开启</span>
+                    <span class="car-badge" id="car-wakelock-badge"><span class="badge-icon">💡</span> 常亮保持: 开启</span>
                 </div>
 
                 <!-- Clean Dashboard Right Controls -->
                 <div class="car-top-status-right">
-                    <span class="car-badge clickable" id="car-wp-badge" onclick="openWallpaperModal()" title="点击管理壁纸与轮播">
-                        <span id="car-wp-badge-txt">🖼️ 星空原野</span>
-                    </span>
-                    <button class="car-mini-trigger" onclick="openMenuModal()" title="打开中控设置菜单">
-                        <span>⚙️ 导航设置</span>
+                    <button type="button" class="car-badge clickable car-top-btn" id="car-wp-badge" onclick="openWallpaperModal()" data-tooltip="点击管理壁纸与轮播">
+                        <span id="car-wp-badge-txt"><span class="badge-icon">🖼️</span> 星空原野</span>
+                    </button>
+                    <button type="button" class="car-badge clickable car-top-btn car-mini-trigger" onclick="openMenuModal()" data-tooltip="打开座舱设置导航">
+                        <span class="badge-icon">⚙️</span> <span>导航设置</span>
                     </button>
                 </div>
 
@@ -1768,7 +1998,7 @@
 
                             <!-- Right: High-tech HUD Circular Gauge Ring & Companion Vitals -->
                             <div class="car-hero-gauge-col">
-                                <div class="car-gauge-ring-wrap" title="里程碑阶段达成率">
+                                <div class="car-gauge-ring-wrap" data-tooltip="里程碑阶段达成率">
                                     <svg class="car-gauge-svg" viewBox="0 0 100 100">
                                         <circle class="car-gauge-track" cx="50" cy="50" r="40" stroke-width="7" fill="none"></circle>
                                         <circle class="car-gauge-bar" id="car-gauge-ring" cx="50" cy="50" r="40" stroke-width="7" fill="none" stroke-dasharray="251.33" stroke-dashoffset="251.33"></circle>
@@ -1854,9 +2084,9 @@
                                 <div class="car-diag-label">CABIN TEMP ❄️</div>
                                 <div class="car-diag-val" id="car-temp-status">🌤️ 22°C / 舒适</div>
                             </div>
-                            <div class="car-diag-item clickable" onclick="openMenuModal()" title="打开中控设置导航">
+                            <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.3.9390</div>
+                                <div class="car-diag-val">bcos v7.8.3.9391</div>
                             </div>
                         </div>
                     </div>
@@ -1893,7 +2123,7 @@
         <div class="car-modal">
             <div class="car-modal-title">
                 <span>🚗 车机锁屏导航中心</span>
-                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeMenuModal()">✕</span>
+                <button type="button" class="car-modal-close" onclick="closeMenuModal()" title="关闭窗口" aria-label="关闭窗口">✕</button>
             </div>
             <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">兔可可专属车机锁屏已暂停，请选择下一步操作：</p>
             
@@ -1910,37 +2140,37 @@
                     <span class="icon">🏰</span>
                     <span>兔可可王国主页</span>
                 </a>
-                <button class="car-modal-btn" onclick="openBatteryModal()" style="border-color:var(--car-accent);background:rgba(0,234,255,0.08);">
+                <button type="button" class="car-modal-btn" onclick="openBatteryModal()" style="border-color:var(--car-accent);background:rgba(0,234,255,0.08);">
                     <span class="icon">⚡</span>
                     <span style="color:var(--car-accent);font-weight:700;">修改续航与电量 (WLTP/实估)</span>
                 </button>
-                <button class="car-modal-btn" onclick="openWallpaperModal()">
+                <button type="button" class="car-modal-btn" onclick="openWallpaperModal()">
                     <span class="icon">🖼️</span>
                     <span>座舱壁纸与轮播</span>
                 </button>
-                <button class="car-modal-btn" onclick="openAddAnniversaryModal()">
+                <button type="button" class="car-modal-btn" onclick="openAddAnniversaryModal()">
                     <span class="icon">💖</span>
                     <span>添加自定义纪念日</span>
                 </button>
             </div>
 
             <!-- Toggles & Quick Actions -->
-            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.8rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:.6rem;font-size:.8rem;">
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span>🎨 切换座舱氛围主题</span>
-                    <button class="car-icon-btn" onclick="cycleTheme()">切换主题</button>
+            <div style="margin-bottom:1rem;display:flex;flex-direction:column;gap:.6rem;">
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>🎨</span> 切换座舱氛围主题</span>
+                    <button type="button" class="car-icon-btn" onclick="cycleTheme()">切换主题</button>
                 </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span>🐰 头像风格 (Emoji / 照片)</span>
-                    <button class="car-icon-btn" id="toggle-avatar-btn" onclick="toggleLockscreenAvatar()">🐰 Emoji模式</button>
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>🐰</span> 头像风格 (Emoji / 照片)</span>
+                    <button type="button" class="car-icon-btn" id="toggle-avatar-btn" onclick="toggleLockscreenAvatar()">🐰 Emoji模式</button>
                 </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span>⛶ 切换浏览器全屏</span>
-                    <button class="car-icon-btn" onclick="toggleFullscreen()">切换全屏</button>
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>⛶</span> 切换浏览器全屏</span>
+                    <button type="button" class="car-icon-btn" onclick="toggleFullscreen()">切换全屏</button>
                 </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span>👁️ 顶部操作按钮 (常驻显示)</span>
-                    <button class="car-icon-btn" id="toggle-top-btn" onclick="toggleTopActions()">已隐藏 (点击显示)</button>
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>👁️</span> 顶部操作按钮 (常驻显示)</span>
+                    <button type="button" class="car-icon-btn" id="toggle-top-btn" onclick="toggleTopActions()">已隐藏 (点击显示)</button>
                 </div>
             </div>
 
@@ -1957,7 +2187,7 @@
         <div class="car-modal">
             <div class="car-modal-title">
                 <span>⚡ 车辆动力与能耗设置</span>
-                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeBatteryModal()">✕</span>
+                <button type="button" class="car-modal-close" onclick="closeBatteryModal()" title="关闭窗口" aria-label="关闭窗口">✕</button>
             </div>
             <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">可手动输入你当前车辆的真实电量和剩余里程，支持选择 WLTP 或 实估 标准：</p>
 
@@ -1984,12 +2214,16 @@
                 <!-- Range Standard Selector (Only WLTP and 实估) -->
                 <div class="car-input-group">
                     <label class="car-input-label">续航里程预估标准</label>
-                    <div style="display:flex;gap:.5rem;">
-                        <button type="button" class="car-icon-btn range-type-btn" id="range-type-wltp" onclick="selectRangeStandard('WLTP')" style="flex:1;justify-content:center;padding:.5rem;">
-                            ⚡ WLTP 标准
+                    <div class="car-option-selector" style="grid-template-columns: repeat(2, 1fr);" role="radiogroup">
+                        <button type="button" class="car-option-btn range-type-btn" id="range-type-wltp" onclick="selectRangeStandard('WLTP')">
+                            <span class="opt-icon">⚡</span>
+                            <span class="opt-title">WLTP 标准工况</span>
+                            <span class="opt-desc">国家标准测试工况</span>
                         </button>
-                        <button type="button" class="car-icon-btn range-type-btn" id="range-type-est" onclick="selectRangeStandard('实估')" style="flex:1;justify-content:center;padding:.5rem;">
-                            🎯 动态实估
+                        <button type="button" class="car-option-btn range-type-btn" id="range-type-est" onclick="selectRangeStandard('实估')">
+                            <span class="opt-icon">🎯</span>
+                            <span class="opt-title">动态实估里程</span>
+                            <span class="opt-desc">路况能耗算法预测</span>
                         </button>
                     </div>
                 </div>
@@ -2042,7 +2276,7 @@
         <div class="car-modal" style="max-width:620px;">
             <div class="car-modal-title">
                 <span>🖼️ 座舱壁纸与轮播设定</span>
-                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeWallpaperModal()">✕</span>
+                <button type="button" class="car-modal-close" onclick="closeWallpaperModal()" title="关闭窗口" aria-label="关闭窗口">✕</button>
             </div>
             <p style="font-size:.8rem;color:#94a3b8;line-height:1.5;">支持加载文件夹里的所有壁纸（包含后续上传新增的图片），自由选择轮播或固定展示：</p>
 
@@ -2050,15 +2284,21 @@
                 <!-- Wallpaper Mode -->
                 <div class="car-input-group">
                     <label class="car-input-label">壁纸工作模式</label>
-                    <div style="display:flex;gap:.5rem;">
-                        <button class="car-icon-btn wp-mode-btn" id="wp-mode-slideshow" onclick="setWallpaperMode('slideshow')" style="flex:1;justify-content:center;">
-                            📁 自动轮播 (文件夹壁纸)
+                    <div class="car-option-selector" role="radiogroup">
+                        <button type="button" class="car-option-btn wp-mode-btn" id="wp-mode-slideshow" onclick="setWallpaperMode('slideshow')">
+                            <span class="opt-icon">📁</span>
+                            <span class="opt-title">自动轮播</span>
+                            <span class="opt-desc">壁纸库循环切换</span>
                         </button>
-                        <button class="car-icon-btn wp-mode-btn" id="wp-mode-single" onclick="setWallpaperMode('single')" style="flex:1;justify-content:center;">
-                            🖼️ 固定单张壁纸
+                        <button type="button" class="car-option-btn wp-mode-btn" id="wp-mode-single" onclick="setWallpaperMode('single')">
+                            <span class="opt-icon">🖼️</span>
+                            <span class="opt-title">固定壁纸</span>
+                            <span class="opt-desc">精选单张展示</span>
                         </button>
-                        <button class="car-icon-btn wp-mode-btn" id="wp-mode-theme" onclick="setWallpaperMode('theme')" style="flex:1;justify-content:center;">
-                            🎨 纯净座舱色彩 (无壁纸)
+                        <button type="button" class="car-option-btn wp-mode-btn" id="wp-mode-theme" onclick="setWallpaperMode('theme')">
+                            <span class="opt-icon">🎨</span>
+                            <span class="opt-title">纯净色彩</span>
+                            <span class="opt-desc">极简座舱氛围底色</span>
                         </button>
                     </div>
                 </div>
@@ -2132,7 +2372,7 @@
         <div class="car-modal">
             <div class="car-modal-title">
                 <span>💖 添加新纪念日</span>
-                <span style="font-size:.8rem;color:var(--car-text-dim);cursor:pointer;" onclick="closeAddAnniversaryModal()">✕</span>
+                <button type="button" class="car-modal-close" onclick="closeAddAnniversaryModal()" title="关闭窗口" aria-label="关闭窗口">✕</button>
             </div>
             <div style="margin:1rem 0;display:flex;flex-direction:column;gap:.8rem;">
                 <div class="car-input-group">
@@ -2449,14 +2689,14 @@
 
         function updateRangeStandardButtons(std) {
             document.querySelectorAll('.range-type-btn').forEach(btn => {
-                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                btn.style.color = 'var(--car-text)';
+                btn.classList.remove('active');
+                btn.style.borderColor = '';
+                btn.style.color = '';
             });
             const activeId = (std === '实估') ? 'range-type-est' : 'range-type-wltp';
             const active = document.getElementById(activeId);
             if (active) {
-                active.style.borderColor = 'var(--car-accent)';
-                active.style.color = 'var(--car-accent)';
+                active.classList.add('active');
             }
         }
 
@@ -2971,13 +3211,13 @@
 
         function updateWallpaperModeButtons(mode) {
             document.querySelectorAll('.wp-mode-btn').forEach(btn => {
-                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                btn.style.color = 'var(--car-text)';
+                btn.classList.remove('active');
+                btn.style.borderColor = '';
+                btn.style.color = '';
             });
             const activeBtn = document.getElementById('wp-mode-' + mode);
             if (activeBtn) {
-                activeBtn.style.borderColor = 'var(--car-accent)';
-                activeBtn.style.color = 'var(--car-accent)';
+                activeBtn.classList.add('active');
             }
         }
 

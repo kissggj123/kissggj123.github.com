@@ -16,13 +16,18 @@
             overflow: hidden !important;
             background: #000;
             color: #e6f7ff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, "Source Han Sans CN", "Noto Sans SC", sans-serif;
             touch-action: none !important;
             -webkit-overflow-scrolling: auto !important;
         }
 
+        html.bcos-carlock-active {
+            font-size: 16px !important;
+        }
+
         html.bcos-carlock-active,
         body.bcos-carlock-active {
+            font-size: 16px !important;
             overflow: hidden !important;
             width: 100% !important;
             height: 100% !important;
@@ -256,31 +261,71 @@
             flex-shrink: 0;
             white-space: nowrap;
         }
-        .car-badge {
-            background: rgba(255, 255, 255, 0.06);
+        .car-badge,
+        .car-mini-trigger,
+        .car-top-btn {
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--car-border);
-            padding: .15rem .55rem;
-            border-radius: 14px;
-            font-size: .75rem;
+            padding: 0 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
             color: var(--car-accent2);
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: .35rem;
-            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            justify-content: center;
+            gap: 0.35rem;
+            height: 28px;
+            min-height: 28px !important;
+            max-height: 28px;
+            line-height: 1;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
             flex-shrink: 0;
             white-space: nowrap;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: default;
         }
-        .car-badge.clickable {
+        .car-badge.clickable,
+        .car-top-btn,
+        .car-mini-trigger {
             cursor: pointer;
         }
-        .car-badge.clickable:hover {
+        .car-badge.clickable:hover,
+        .car-top-btn:hover,
+        .car-mini-trigger:hover {
+            opacity: 1;
             border-color: var(--car-accent);
             color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 12px var(--car-glow);
             transform: translateY(-1px);
+        }
+        .car-badge.clickable:active,
+        .car-top-btn:active,
+        .car-mini-trigger:active {
+            transform: translateY(0) scale(0.97);
+        }
+        .car-badge .badge-icon,
+        .car-mini-trigger .badge-icon,
+        .car-top-btn .badge-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            line-height: 1;
+        }
+        .car-gear-badge {
+            color: var(--car-accent);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        #car-wakelock-badge {
+            color: #06ffa5;
         }
 
         /* Top actions buttons */
@@ -301,45 +346,25 @@
             flex-shrink: 0;
             white-space: nowrap;
         }
-        .car-mini-trigger {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--car-border);
-            color: var(--car-text-dim);
-            font-size: .9rem;
-            cursor: pointer;
-            padding: .25rem .6rem;
-            border-radius: 10px;
-            opacity: 0.7;
-            transition: all .2s;
-            display: inline-flex;
-            align-items: center;
-            gap: .3rem;
-            backdrop-filter: blur(8px);
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .car-mini-trigger:hover {
-            opacity: 1;
-            border-color: var(--car-accent);
-            color: var(--car-accent);
-            box-shadow: 0 0 10px var(--car-glow);
-            transform: scale(1.05);
-        }
 
         .car-icon-btn {
             background: var(--car-panel);
             border: 1px solid var(--car-border);
             color: var(--car-text);
             padding: .35rem .75rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: .8rem;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: .3rem;
-            transition: all .2s;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
             flex-shrink: 0;
             white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
         }
         .car-icon-btn:hover, .car-icon-btn:active {
             border-color: var(--car-accent);
@@ -513,6 +538,7 @@
         }
         .car-gauge-content {
             position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -524,7 +550,7 @@
             font-size: 1.45rem;
             font-weight: 900;
             line-height: 1;
-            font-family: 'SF Mono', monospace;
+            font-family: 'SF Mono', "SF Pro Display", "DIN Alternate", "Roboto Mono", Consolas, Monaco, monospace;
             color: var(--car-accent);
             text-shadow: 0 0 10px var(--car-glow);
         }
@@ -534,6 +560,45 @@
             letter-spacing: 1px;
             margin-top: 3px;
             font-weight: 700;
+        }
+
+        /* High-Tech Cockpit Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+        [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(10, 20, 35, 0.95);
+            border: 1px solid var(--car-accent);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 10px var(--car-glow);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 99999;
+        }
+        [data-tooltip]:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .car-top-bar [data-tooltip]::before {
+            bottom: auto;
+            top: calc(100% + 8px);
+            transform: translateX(-50%) translateY(-4px);
+        }
+        .car-top-bar [data-tooltip]:hover::before {
+            transform: translateX(-50%) translateY(0);
         }
 
         /* Companion & Anniversary Vitals */
@@ -1322,14 +1387,16 @@
             background: #0b1120;
             border: 1px solid var(--car-border);
             border-radius: 20px;
-            padding: 1.6rem 2rem;
-            max-width: 540px;
-            width: 100%;
+            padding: 1.5rem 1.8rem;
+            max-width: 580px;
+            width: min(580px, calc(100vw - 2rem));
+            box-sizing: border-box;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px var(--car-glow);
             transform: translateY(20px);
             transition: transform .3s ease;
             max-height: 88vh;
             overflow-y: auto;
+            overflow-x: hidden;
             overscroll-behavior: contain !important;
             -webkit-overflow-scrolling: touch !important;
             touch-action: pan-y !important;
@@ -1340,6 +1407,7 @@
                 padding: 1.2rem 1.2rem !important;
                 border-radius: 16px !important;
                 max-height: 90vh !important;
+                width: calc(100vw - 1rem) !important;
             }
             .car-modal-grid {
                 grid-template-columns: 1fr !important;
@@ -1351,13 +1419,40 @@
             transform: translateY(0);
         }
         .car-modal-title {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: var(--car-accent);
             margin-bottom: .8rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .car-modal-close {
+            width: 28px;
+            height: 28px;
+            min-height: 28px !important;
+            max-height: 28px !important;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            padding: 0;
+            line-height: 1;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .car-modal-close:hover {
+            background: rgba(255, 60, 60, 0.15);
+            border-color: rgba(255, 90, 90, 0.6);
+            color: #ff8080;
+            transform: rotate(90deg);
         }
         .car-modal-grid {
             display: grid;
@@ -1470,6 +1565,146 @@
         .car-input-group {
             margin-bottom: .8rem;
         }
+
+        /* Unified Cockpit Option Selector */
+        .car-option-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.55rem;
+            width: 100%;
+            margin-top: 0.35rem;
+            box-sizing: border-box;
+        }
+        .car-option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--car-border);
+            border-radius: 12px;
+            color: var(--car-text-dim);
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+            text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            min-height: 52px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .car-option-btn .opt-icon {
+            font-size: 1.15rem;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+            transition: transform 0.2s ease;
+        }
+        .car-option-btn .opt-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--car-text);
+            line-height: 1.25;
+            white-space: normal;
+            word-break: keep-all;
+        }
+        .car-option-btn .opt-desc {
+            font-size: 0.65rem;
+            color: var(--car-text-dim);
+            margin-top: 0.2rem;
+            line-height: 1.2;
+        }
+        .car-option-btn:hover {
+            border-color: var(--car-accent);
+            color: var(--car-text);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+        .car-option-btn:hover .opt-icon {
+            transform: scale(1.15);
+        }
+        .car-option-btn.active {
+            border-color: var(--car-accent) !important;
+            color: #fff !important;
+            background: rgba(0, 234, 255, 0.12) !important;
+            box-shadow: 0 0 14px var(--car-glow), inset 0 0 8px rgba(0, 234, 255, 0.1) !important;
+        }
+        .car-option-btn.active .opt-title {
+            color: var(--car-accent) !important;
+        }
+        .car-option-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--car-accent);
+        }
+
+        /* Cockpit Quick Selector Tags */
+        .car-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .car-quick-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            user-select: none;
+            -webkit-user-select: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
+            box-sizing: border-box;
+        }
+        .car-quick-tag:hover {
+            background: rgba(0, 234, 255, 0.12);
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-quick-tag:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        /* Cockpit Setting List Rows */
+        .car-setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            gap: 0.8rem;
+            box-sizing: border-box;
+        }
+        .car-setting-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--car-border);
+        }
+        .car-setting-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--car-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
         .car-input-label {
             display: block;
             font-size: .75rem;
