@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🎨 Sand Studio Pro (Thrianta V40) - 艺术沙画工作台</title>
+    <title>🎨 Sand Studio Pro (Thrianta V41) - 真实物理落沙艺术工作台</title>
     
     <!-- 核心库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
@@ -19,7 +19,7 @@
         :root {
             /* 苏利安特兔橙红主题 + 现代深色磨砂玻璃 */
             --bg: #0d0e12;
-            --panel: rgba(22, 24, 30, 0.92);
+            --panel: rgba(22, 24, 30, 0.94);
             --panel-card: rgba(255, 255, 255, 0.04);
             --panel-hover: rgba(255, 255, 255, 0.08);
             --accent: #ff6b35;
@@ -122,7 +122,7 @@
         }
 
         /* 右侧综合设置面板 */
-        #settings { top: 70px; right: 16px; width: 330px; }
+        #settings { top: 70px; right: 16px; width: 340px; }
         
         /* 标签页导航 */
         .nav-tabs {
@@ -284,10 +284,11 @@
         <button class="topbar-btn" id="tb-undo" title="撤销 (Ctrl+Z)"><i class="fas fa-undo"></i></button>
         <button class="topbar-btn" id="tb-redo" title="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
         <div class="topbar-divider"></div>
+        <button class="topbar-btn" id="tb-fill-sand" title="满盘铺金沙 (沙画经典打底)"><i class="fas fa-fill-drip"></i> 满盘铺沙</button>
         <button class="topbar-btn" id="tb-audio" title="沙画拟真 ASMR 音效"><i class="fas fa-volume-up"></i> 音效</button>
         <button class="topbar-btn" id="tb-sym" title="万花筒曼陀罗对称"><i class="fas fa-snowflake"></i> 对称: <span id="sym-status">关</span></button>
         <button class="topbar-btn" id="tb-light" title="沙画台背光切换"><i class="fas fa-lightbulb"></i> 背光</button>
-        <button class="topbar-divider"></div>
+        <div class="topbar-divider"></div>
         <button class="topbar-btn" id="tb-zoom-reset" title="复位视图"><i class="fas fa-expand"></i> <span class="topbar-badge" id="zoom-val">100%</span></button>
         <button class="topbar-btn" id="tb-fullscreen" title="全屏沉浸创作 (F11)"><i class="fas fa-expand-arrows-alt"></i></button>
         <button class="topbar-btn" id="tb-help" title="快捷键与帮助 (?)"><i class="fas fa-question-circle"></i></button>
@@ -296,12 +297,12 @@
     <!-- 左侧主工具栏 -->
     <div class="panel" id="tools">
         <div class="tool-btn" id="btn-collapse" data-tip="折叠/展开工具栏"><i class="fas fa-chevron-left"></i></div>
-        <button class="tool-btn active" data-tool="brush" data-tip="细沙画笔 (B)"><i class="fas fa-paint-brush"></i></button>
-        <button class="tool-btn" data-tool="eraser" data-tip="沙画橡皮 (E)"><i class="fas fa-eraser"></i></button>
-        <button class="tool-btn" data-tool="scraper" data-tip="刻刀细画 (S)"><i class="fas fa-pen-nib"></i></button>
-        <button class="tool-btn" data-tool="rake" data-tip="枯山水五齿沙耙 (R)"><i class="fas fa-bars"></i></button>
-        <button class="tool-btn" data-tool="smudge" data-tip="指尖推沙塑形 (F)"><i class="fas fa-hand-pointer"></i></button>
-        <button class="tool-btn" data-tool="wind" data-tip="吹沙风枪工具 (W)"><i class="fas fa-wind"></i></button>
+        <button class="tool-btn active" data-tool="brush" data-tip="指缝流沙/漏沙 (B按住倾泻)"><i class="fas fa-hourglass-half"></i></button>
+        <button class="tool-btn" data-tool="eraser" data-tip="沙画橡皮刮除 (E透光)"><i class="fas fa-eraser"></i></button>
+        <button class="tool-btn" data-tool="scraper" data-tip="刻刀细画雕刻 (S发丝刀)"><i class="fas fa-pen-nib"></i></button>
+        <button class="tool-btn" data-tool="rake" data-tip="枯山水五齿沙耙 (R平行波纹)"><i class="fas fa-bars"></i></button>
+        <button class="tool-btn" data-tool="smudge" data-tip="指尖推沙塑形 (F推移沙丘)"><i class="fas fa-hand-pointer"></i></button>
+        <button class="tool-btn" data-tool="wind" data-tip="吹沙风枪工具 (W吹拂沙尘)"><i class="fas fa-wind"></i></button>
         <button class="tool-btn" data-tool="stencil" data-tip="沙画模具与镂空 (M)"><i class="fas fa-shapes"></i></button>
         <button class="tool-btn" data-tool="line" data-tip="沙流直线 (L)"><i class="fas fa-slash"></i></button>
         <button class="tool-btn" data-tool="text" data-tip="金沙文字 (T)"><i class="fas fa-font"></i></button>
@@ -324,7 +325,7 @@
 
         <!-- 标签页导航栏 -->
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="tab-brush"><i class="fas fa-magic"></i> 笔刷物理</button>
+            <button class="nav-tab active" data-tab="tab-brush"><i class="fas fa-magic"></i> 物理倾沙</button>
             <button class="nav-tab" data-tab="tab-color"><i class="fas fa-palette"></i> 灯箱色彩</button>
             <button class="nav-tab" data-tab="tab-stencil"><i class="fas fa-shapes"></i> 模具对称</button>
             <button class="nav-tab" data-tab="tab-layers"><i class="fas fa-layer-group"></i> 图层工程</button>
@@ -335,7 +336,7 @@
             <!-- 标签页 1: 笔刷与落沙物理 -->
             <div class="tab-panel active" id="tab-brush">
                 <div class="section">
-                    <div class="sec-title">沙画笔类型</div>
+                    <div class="sec-title">指缝流沙类型</div>
                     <div class="row">
                         <label>类型</label>
                         <select id="brush-type">
@@ -351,25 +352,18 @@
                             <option value="charcoal">✏️ 水墨焦炭 (Charcoal Wash)</option>
                         </select>
                     </div>
-                    <div class="row"><label>尺寸</label><input type="range" id="p-size" min="2" max="200" value="24"><span class="val" id="v-size">24</span></div>
-                    <div class="row"><label>流量</label><input type="range" id="p-flow" min="1" max="60" value="12"><span class="val" id="v-flow">12</span></div>
-                    <div class="row"><label>落沙高度</label><input type="range" id="p-height" min="0" max="180" value="45"><span class="val" id="v-height">45</span></div>
+                    <div class="row"><label>落沙范围</label><input type="range" id="p-size" min="4" max="200" value="28"><span class="val" id="v-size">28</span></div>
+                    <div class="row"><label>倾泻流量</label><input type="range" id="p-flow" min="1" max="60" value="16"><span class="val" id="v-flow">16</span></div>
+                    <div class="row"><label>落沙高度</label><input type="range" id="p-height" min="20" max="220" value="90"><span class="val" id="v-height">90</span></div>
                 </div>
 
                 <div class="section">
-                    <div class="sec-title">真实落沙物理</div>
+                    <div class="sec-title">3D 透视重力与滑沙</div>
                     <div class="row"><label>轨迹平滑</label><input type="range" id="p-stab" min="1" max="25" value="6"><span class="val" id="v-stab">6</span></div>
-                    <div class="row"><label>沙粒散布</label><input type="range" id="p-scatter" min="0" max="60" value="4"><span class="val" id="v-scatter">4</span></div>
-                    <div class="row"><label>重力加速度</label><input type="range" id="p-gravity" min="1" max="25" value="9"><span class="val" id="v-gravity">0.9</span></div>
-                    <div class="row"><label>重力角度</label><input type="range" id="p-grav-angle" min="-90" max="90" value="0"><span class="val" id="v-grav-angle">0°</span></div>
-                    <div class="row"><label>杂色扰动</label><input type="range" id="p-jitter" min="0" max="100" value="15"><span class="val" id="v-jitter">15</span></div>
-                    <div class="row">
-                        <label>渲染模式</label>
-                        <select id="p-mode">
-                            <option value="physics">⏳ 真实粒子物理落沙 (Dynamic)</option>
-                            <option value="instant">⚡ 高速极速速绘 (Instant Smooth)</option>
-                        </select>
-                    </div>
+                    <div class="row"><label>溅射散布</label><input type="range" id="p-scatter" min="0" max="60" value="6"><span class="val" id="v-scatter">6</span></div>
+                    <div class="row"><label>重力下落速度</label><input type="range" id="p-gravity" min="2" max="30" value="10"><span class="val" id="v-gravity">1.0</span></div>
+                    <div class="row"><label>沙盘倾斜角度</label><input type="range" id="p-grav-angle" min="-90" max="90" value="0"><span class="val" id="v-grav-angle">0°</span></div>
+                    <div class="row"><label>颗粒色差杂色</label><input type="range" id="p-jitter" min="0" max="100" value="16"><span class="val" id="v-jitter">16</span></div>
                 </div>
 
                 <div class="section">
@@ -579,13 +573,19 @@
             <i class="fas fa-times modal-close" onclick="document.getElementById('help-modal').style.display='none'"></i>
             <h3 class="modal-title">🐰 Sand Studio Pro 指南</h3>
             <div style="font-size:12px; color:var(--text-dim); line-height:1.7; max-height:340px; overflow-y:auto;">
-                <p><strong>🎯 快捷键清单：</strong></p>
+                <p><strong>🎯 真实落沙物理特色：</strong></p>
+                <ul style="padding-left:18px;">
+                    <li><strong>指缝持续漏沙</strong>：按住鼠标或触控笔（哪怕不移动光标），沙粒就会源源不断地从上方倾泻而下，并在盘面上形成自然的沙丘堆积与滑坡！</li>
+                    <li><strong>3D 悬空落沙与投影</strong>：沙子从空中下落时带有真实垂直重力与地面投影，落地伴有微弱溅射弹跳！</li>
+                    <li><strong>满盘铺金沙</strong>：点击顶部“满盘铺沙”，全盘即刻铺满金沙底，随后使用橡皮(E)、刻刀(S)、沙耙(R)或指尖抹沙(F)刮擦雕刻光影！</li>
+                </ul>
+                <p style="margin-top:10px;"><strong>⌨️ 快捷键清单：</strong></p>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-family:'JetBrains Mono',monospace; background:rgba(0,0,0,0.3); padding:10px; border-radius:6px;">
-                    <div><code>B</code> : 细沙画笔</div>
-                    <div><code>E</code> : 橡皮刮除</div>
-                    <div><code>S</code> : 细刻刀</div>
-                    <div><code>R</code> : 枯山水沙耙</div>
-                    <div><code>F</code> : 指尖推沙</div>
+                    <div><code>B</code> : 指缝倾泻落沙</div>
+                    <div><code>E</code> : 橡皮刮除透光</div>
+                    <div><code>S</code> : 细刻刀雕花</div>
+                    <div><code>R</code> : 枯山水五齿沙耙</div>
+                    <div><code>F</code> : 指尖推沙抹沙</div>
                     <div><code>W</code> : 吹沙风管</div>
                     <div><code>M</code> : 模具系统</div>
                     <div><code>L</code> : 直线工具</div>
@@ -596,12 +596,6 @@
                     <div><code>[ / ]</code>: 缩放笔刷尺寸</div>
                     <div><code>Tab</code> : 隐藏/显示界面</div>
                 </div>
-                <p style="margin-top:10px;"><strong>💡 艺术技巧：</strong></p>
-                <ul style="padding-left:18px;">
-                    <li><strong>灯箱效果</strong>：开启“经典暖金”背光，薄沙透光如琥珀金霞，厚沙积聚为剪影，橡皮擦除露出耀眼纯白透光！</li>
-                    <li><strong>枯山水与禅宗</strong>：使用沙耙（R）按住拖拽，瞬间划出日式庭园与沙漠水波纹理。</li>
-                    <li><strong>神圣曼陀罗</strong>：在顶部开启对称模式，随便落下一把沙子就是惊艳的宇宙雪花！</li>
-                </ul>
             </div>
             <button class="btn" style="margin-top:14px" onclick="document.getElementById('help-modal').style.display='none'">尽情创作</button>
         </div>
@@ -614,9 +608,9 @@
         const Config = {
             width: 3200,
             height: 2200,
-            maxParticles: 45000,
+            maxParticles: 50000,
             maxHistorySteps: 25,
-            version: 'V40.0 Pro'
+            version: 'V41.0 Physical'
         };
 
         const Themes = {
@@ -626,18 +620,17 @@
 
         const State = {
             tool: 'brush',
-            color: '#ff6b35',
-            colorInt: 0xff6b35,
+            color: '#f4a261', // 经典暖金沙
+            colorInt: 0xf4a261,
             brush: {
-                size: 24,
-                flow: 12,
-                height: 45,
+                size: 28,
+                flow: 16,
+                height: 90,
                 stab: 6,
-                scatter: 4,
-                gravity: 9,
+                scatter: 6,
+                gravity: 10,
                 gravAngle: 0,
-                jitter: 15,
-                mode: 'physics', // 'physics' | 'instant'
+                jitter: 16,
                 rakeProngs: 5,
                 rakeSpacing: 16
             },
@@ -665,6 +658,7 @@
             layers: [],
             activeLayer: null,
             isDrawing: false,
+            pointerPos: { x: Config.width / 2, y: Config.height / 2 },
             audioEnabled: true,
             isRecording: false,
             recordedActions: [],
@@ -722,7 +716,7 @@
                     this.noiseSrc.buffer = noiseBuffer;
                     this.noiseSrc.loop = true;
 
-                    // 1. 流沙带通滤波器 (沙沙呢喃声)
+                    // 1. 流沙带通滤波器 (沙沙倾泻声)
                     this.pourFilter = this.ctx.createBiquadFilter();
                     this.pourFilter.type = 'bandpass';
                     this.pourFilter.frequency.setValueAtTime(1200, this.ctx.currentTime);
@@ -769,6 +763,7 @@
                 if (this.ctx.state === 'suspended') this.ctx.resume();
                 const now = this.ctx.currentTime;
                 if (active) {
+                    this.scrapeFilter.frequency.setTargetAtTime(2800, now, 0.02);
                     this.scrapeGain.gain.setTargetAtTime(Math.min(0.6, intensity * 0.4 * this.scrapeRatio), now, 0.02);
                 } else {
                     this.scrapeGain.gain.setTargetAtTime(0, now, 0.04);
@@ -828,12 +823,22 @@
         tracingSprite.alpha = 0;
         bgContainer.addChild(tracingSprite);
 
-        // 沙画图层主容器
+        // 沙画图层主容器 (承载落定沉积的沙画)
         const layerContainer = new PIXI.Container();
         layerContainer.position.set(-Config.width / 2, -Config.height / 2);
         viewport.addChild(layerContainer);
 
-        // 动态落沙粒子容器 (ParticleContainer 硬件加速)
+        // 地面投影容器 (空中落沙在沙盘上方的实时投影)
+        const shadowContainer = new PIXI.ParticleContainer(Config.maxParticles, {
+            position: true,
+            scale: true,
+            alpha: true,
+            tint: true
+        });
+        shadowContainer.position.set(-Config.width / 2, -Config.height / 2);
+        viewport.addChild(shadowContainer);
+
+        // 动态落沙粒子容器 (空中倾泻中的沙粒，带有 3D 悬空感)
         const particleContainer = new PIXI.ParticleContainer(Config.maxParticles, {
             position: true,
             scale: true,
@@ -861,24 +866,23 @@
         const Lightbox = {
             apply() {
                 const mode = State.lightbox.mode;
-                const bright = State.lightbox.brightness;
                 
                 if (mode === 'amber') {
                     // 经典温暖琥珀金光
-                    bgSprite.tint = 0x1a120b;
+                    bgSprite.tint = 0x24180c;
                     document.documentElement.style.setProperty('--accent', '#ff6b35');
                     document.documentElement.style.setProperty('--accent-gold', '#ffbe3b');
                 } else if (mode === 'white') {
                     // 皓月白透光
-                    bgSprite.tint = 0x222630;
+                    bgSprite.tint = 0x2b303c;
                     document.documentElement.style.setProperty('--accent', '#ff9f43');
                 } else if (mode === 'sunset') {
                     // 丹霞暮色
-                    bgSprite.tint = 0x24111f;
+                    bgSprite.tint = 0x2a1324;
                     document.documentElement.style.setProperty('--accent', '#ff477e');
                 } else if (mode === 'aurora') {
                     // 极地幽蓝
-                    bgSprite.tint = 0x091c28;
+                    bgSprite.tint = 0x0a202d;
                     document.documentElement.style.setProperty('--accent', '#00f2fe');
                 } else if (mode === 'dark') {
                     bgSprite.tint = 0x07080a;
@@ -899,7 +903,6 @@
         const Baker = {
             q: [],
             eq: [],
-            smudgeQ: [],
             scratchG: new PIXI.Graphics(),
             batchContainer: new PIXI.Container(),
 
@@ -923,7 +926,7 @@
                     this.scratchG.clear();
                     this.scratchG.blendMode = PIXI.BLEND_MODES.ERASE;
                     
-                    const eraseLim = Math.min(this.eq.length, 1200);
+                    const eraseLim = Math.min(this.eq.length, 1500);
                     for (let i = 0; i < eraseLim; i++) {
                         const p = this.eq[i];
                         const rad = p.tool === 'scraper' ? State.brush.size * 0.18 : State.brush.size * 0.55;
@@ -935,10 +938,10 @@
                     app.renderer.render(this.scratchG, { renderTexture: l.tex, clear: false });
                 }
 
-                // 2. 批量渲染落沙沉积
+                // 2. 批量渲染落沙沉积 (落盘固化)
                 if (this.q.length) {
                     this.batchContainer.removeChildren();
-                    const lim = Math.min(this.q.length, 2500);
+                    const lim = Math.min(this.q.length, 3000);
                     
                     for (let i = 0; i < lim; i++) {
                         const d = this.q[i];
@@ -958,52 +961,83 @@
         };
 
         // =========================================================================
-        // 6. 真实物理与重力落沙模拟引擎 (Physics Simulation Engine)
+        // 6. 真实 3D 透视重力落沙与沙堆自然滑坡模拟引擎 (3D Falling Sand & Avalanche)
         // =========================================================================
         const Physics = {
             active: [],
             pool: [],
+            shadowPool: [],
+            // 局部高度网格 (模拟沙堆隆起与自然安息角坍塌滑落)
+            heightGrid: new Map(),
 
-            spawn(x, y, customTint = null) {
+            getKey(x, y) {
+                const gx = Math.floor(x / 14);
+                const gy = Math.floor(y / 14);
+                return (gx << 16) ^ (gy & 0xffff);
+            },
+
+            getHeight(x, y) {
+                return this.heightGrid.get(this.getKey(x, y)) || 0;
+            },
+
+            addHeight(x, y) {
+                const k = this.getKey(x, y);
+                const h = (this.heightGrid.get(k) || 0) + 1;
+                this.heightGrid.set(k, h);
+                return h;
+            },
+
+            clearHeight() {
+                this.heightGrid.clear();
+            },
+
+            spawn(targetX, targetY, customTint = null) {
                 if (this.active.length >= Config.maxParticles) return;
 
                 const p = this.pool.pop() || new PIXI.Sprite(pixelTex);
+                const s = this.shadowPool.pop() || new PIXI.Sprite(pixelTex);
                 p.anchor.set(0.5);
+                s.anchor.set(0.5);
 
-                const h = State.brush.height;
+                // 真实高度：沙子从沙盘上方 40 ~ 180px 处倾泻而下
+                const h = State.brush.height + 40;
+                const scatter = State.brush.scatter * 2.6;
+                const spread = Math.random() * (State.brush.size * 0.45);
+                const angle = Math.random() * Math.PI * 2;
+
+                // 目标地面落点 (Ground Target)
+                p.gx = targetX + Math.cos(angle) * spread + (Math.random() - 0.5) * scatter;
+                p.gy = targetY + Math.sin(angle) * spread + (Math.random() - 0.5) * scatter;
+
+                // 初始悬空高度 (3D 高度 Z)
+                p.z = h + Math.random() * 35;
+                p.maxZ = p.z;
+                p.vz = -(0.5 + Math.random() * 1.5); // 初始下落初速度
+
+                // 屏幕投影位置：高处沙子向上偏移以体现 3D 透视落差
+                p.x = p.gx + (Math.random() - 0.5) * 6;
+                p.y = p.gy - p.z * 0.7;
+
+                // 颜色与微颗粒色彩
                 const type = State.brushType;
-                const scatter = State.brush.scatter * 2.2;
-                const spread = h * (type === 'ice' ? 0.35 : 0.22);
-
-                p.tx = x + (Math.random() - 0.5) * scatter;
-                p.ty = y + (Math.random() - 0.5) * scatter;
-                p.x = p.tx + (Math.random() - 0.5) * spread;
-                p.y = p.ty + (Math.random() - 0.5) * spread;
-                p.z = h + Math.random() * 25;
-                p.vz = 0;
-
-                // 颜色与微颗粒色彩渐变
                 if (customTint !== null) {
                     p.tint = customTint;
                 } else if (type === 'rainbow') {
                     p.tint = hslToHex((Date.now() % 3000) / 3000, 1, 0.55);
                 } else if (type === 'glitter') {
-                    // 闪光金沙：90% 金沙，10% 耀眼高光
-                    if (Math.random() < 0.12) {
+                    if (Math.random() < 0.15) {
                         p.tint = 0xffffff;
-                        audio.playGlint(1200 + Math.random() * 400);
+                        audio.playGlint(1300 + Math.random() * 400);
                     } else {
                         const hsl = hexToHsl(State.colorInt);
-                        hsl.l = Math.min(1, hsl.l + (Math.random() - 0.3) * 0.3);
+                        hsl.l = Math.min(1, hsl.l + (Math.random() - 0.25) * 0.35);
                         p.tint = hslToHex(hsl.h, hsl.s, hsl.l);
                     }
                 } else if (type === 'fire') {
-                    const hsl = { h: 0.04 + (Math.random() - 0.5) * 0.08, s: 1, l: 0.45 + Math.random() * 0.45 };
-                    p.tint = hslToHex(hsl.h, hsl.s, hsl.l);
+                    p.tint = hslToHex(0.04 + (Math.random() - 0.5) * 0.08, 1, 0.5 + Math.random() * 0.4);
                 } else if (State.brush.jitter > 0) {
                     const hsl = hexToHsl(State.colorInt);
-                    const jit = State.brush.jitter / 200;
-                    hsl.l = Math.max(0, Math.min(1, hsl.l + (Math.random() - 0.5) * jit));
+                    hsl.l = Math.max(0, Math.min(1, hsl.l + (Math.random() - 0.5) * (State.brush.jitter / 150)));
                     p.tint = hslToHex(hsl.h, hsl.s, hsl.l);
                 } else {
                     p.tint = State.colorInt;
@@ -1018,29 +1052,23 @@
                     p.blendMode = PIXI.BLEND_MODES.NORMAL;
                 }
 
-                // 重力与角度计算
-                let g = State.brush.gravity * 0.1;
-                if (type === 'fire') g *= 0.25;
-                if (type === 'mist') g *= 0.4;
-                if (type === 'gravel') g *= 1.6;
+                // 地面投影 (Shadow)：在沙盘玻璃表面上的暗影，随高度下降由浅入深与沙子汇聚
+                s.tint = 0x030406;
+                s.alpha = 0.25;
+                s.position.set(p.gx, p.gy);
+                s.scale.set(0.6);
 
-                const rad = State.brush.gravAngle * Math.PI / 180;
-                p.gravX = Math.sin(rad) * g * 0.6;
-                p.gravY = Math.cos(rad) * g;
+                // 重力计算
+                let g = State.brush.gravity * 0.11;
+                if (type === 'fire') g *= 0.3;
+                if (type === 'mist') g *= 0.45;
+                if (type === 'gravel') g *= 1.7;
 
-                const t = Math.max(1, Math.sqrt(2 * p.z / Math.max(0.1, g)));
-                p.vx = (p.tx - p.x) / t;
-                p.vy = (p.ty - p.y) / t;
                 p.grav = g;
-                p.alpha = 0.85;
+                p.bounces = 0;
+                p.shadow = s;
 
-                // 星宿引力旋涡特殊初速度
-                if (type === 'stardust') {
-                    const angle = Math.random() * Math.PI * 2;
-                    p.vx += Math.cos(angle) * 1.5;
-                    p.vy += Math.sin(angle) * 1.5;
-                }
-
+                shadowContainer.addChild(s);
                 particleContainer.addChild(p);
                 this.active.push(p);
             },
@@ -1048,14 +1076,54 @@
             update() {
                 for (let i = this.active.length - 1; i >= 0; i--) {
                     const p = this.active[i];
+                    const s = p.shadow;
+
+                    // 竖直下落物理计算
                     p.vz += p.grav;
                     p.z -= p.vz;
-                    p.x += p.vx + (p.gravX || 0);
-                    p.y += p.vy + (p.gravY || 0);
-                    p.scale.set(Math.max(0.4, 0.8 + p.z * 0.012));
 
+                    // 倾斜沙盘横向重力滑移
+                    const rad = State.brush.gravAngle * Math.PI / 180;
+                    p.gx += Math.sin(rad) * p.grav * 0.8;
+
+                    // 实时更新空中沙粒屏幕坐标 (沙粒从空中垂直向落点奔赴)
+                    p.x += (p.gx - p.x) * 0.16;
+                    p.y = p.gy - Math.max(0, p.z) * 0.7;
+                    p.scale.set(Math.max(0.4, 0.75 + p.z * 0.008));
+
+                    // 实时更新地面投影：高度越低，投影越暗、越紧凑
+                    if (s) {
+                        const zRatio = Math.max(0, Math.min(1, p.z / p.maxZ));
+                        s.position.set(p.gx, p.gy);
+                        s.scale.set(0.5 + (1 - zRatio) * 0.35);
+                        s.alpha = (1 - zRatio) * 0.4;
+                    }
+
+                    // 落地瞬间 (Impact / 触及盘面)
                     if (p.z <= 0) {
-                        Baker.add(p.tx, p.ty, p.tint, p.scale.x, p.blendMode);
+                        // 细沙与粗砾的微弱弹性弹跳 (Micro-Bounce)
+                        if (p.bounces === 0 && Math.abs(p.vz) > 3.2) {
+                            p.bounces++;
+                            p.vz = -p.vz * 0.22;
+                            p.z = 2.5;
+                            p.gx += (Math.random() - 0.5) * 6;
+                            p.gy += (Math.random() - 0.5) * 6;
+                            continue;
+                        }
+
+                        // 沙堆自然滑坡检查 (Angle of Repose / 沙堆坍塌滑散)
+                        const curH = this.getHeight(p.gx, p.gy);
+                        if (curH > 6) {
+                            // 当某点沙粒堆积过高，超出安息角，沙粒向四周自然滚落成缓坡
+                            const slideAngle = Math.random() * Math.PI * 2;
+                            const slideDist = Math.min(28, curH * 2.0);
+                            p.gx += Math.cos(slideAngle) * slideDist;
+                            p.gy += Math.sin(slideAngle) * slideDist;
+                        }
+                        this.addHeight(p.gx, p.gy);
+
+                        // 沉降固化入沙画图层纹理
+                        Baker.add(p.gx, p.gy, p.tint, p.scale.x, p.blendMode);
                         this.kill(i);
                     }
                 }
@@ -1071,10 +1139,9 @@
                     const d2 = dx * dx + dy * dy;
                     if (d2 < r2) {
                         const falloff = 1 - Math.sqrt(d2) / radius;
-                        p.vx += dirX * strength * falloff;
-                        p.vy += dirY * strength * falloff;
-                        p.tx += dirX * strength * falloff * 4;
-                        p.ty += dirY * strength * falloff * 4;
+                        p.gx += dirX * strength * falloff * 5;
+                        p.gy += dirY * strength * falloff * 5;
+                        p.x += dirX * strength * falloff * 5;
                     }
                 }
             },
@@ -1088,8 +1155,8 @@
                 const l = State.activeLayer;
                 if (!l) return;
                 History.saveState();
+                this.clearHeight();
 
-                // 稍微轻微模糊沉积
                 const blurFilter = new PIXI.filters.BlurFilter(1.2);
                 l.spr.filters = [blurFilter];
                 setTimeout(() => {
@@ -1098,10 +1165,48 @@
                 }, 100);
             },
 
+            fillSandBase() {
+                // 经典沙画开场：满盘铺满一层均匀细腻的金沙底
+                const l = State.activeLayer;
+                if (!l) return;
+                History.saveState();
+                this.clearHeight();
+
+                const g = new PIXI.Graphics();
+                g.beginFill(State.colorInt, 0.94);
+                g.drawRect(0, 0, Config.width, Config.height);
+                g.endFill();
+
+                const batch = new PIXI.Container();
+                batch.addChild(g);
+
+                // 撒入数千颗微颗粒增强沙感纹理
+                const count = 4000;
+                for (let i = 0; i < count; i++) {
+                    const s = new PIXI.Sprite(pixelTex);
+                    s.position.set(Math.random() * Config.width, Math.random() * Config.height);
+                    const hsl = hexToHsl(State.colorInt);
+                    hsl.l = Math.max(0, Math.min(1, hsl.l + (Math.random() - 0.5) * 0.16));
+                    s.tint = hslToHex(hsl.h, hsl.s, hsl.l);
+                    s.scale.set(0.6 + Math.random() * 0.8);
+                    s.alpha = 0.5 + Math.random() * 0.5;
+                    batch.addChild(s);
+                }
+
+                app.renderer.render(batch, { renderTexture: l.tex, clear: true });
+                batch.destroy({ children: true });
+                UI.toast("✨ 沙盘已铺满金沙！请使用橡皮(E)、刻刀(S)或沙耙(R)雕琢光影！");
+            },
+
             kill(i) {
                 const p = this.active[i];
-                this.active.splice(i, 1);
+                if (p.shadow) {
+                    shadowContainer.removeChild(p.shadow);
+                    this.shadowPool.push(p.shadow);
+                    p.shadow = null;
+                }
                 particleContainer.removeChild(p);
+                this.active.splice(i, 1);
                 this.pool.push(p);
             }
         };
@@ -1157,7 +1262,6 @@
                 const cy = State.symmetry.cy;
                 g.lineStyle(1.5, 0xff6b35, 0.4);
 
-                // 绘制对称十字与辐射线
                 if (State.symmetry.mode === '2h' || State.symmetry.mode === '4') {
                     g.moveTo(cx, 0).lineTo(cx, Config.height);
                 }
@@ -1172,7 +1276,6 @@
                     }
                 }
 
-                // 中心十字靶心
                 g.lineStyle(2, 0xffbe3b, 0.8);
                 g.drawCircle(cx, cy, 14);
                 g.drawCircle(cx, cy, 3);
@@ -1184,8 +1287,6 @@
         // =========================================================================
         const Stencil = {
             guideG: new PIXI.Graphics(),
-            isDragging: false,
-            dragOffset: { x: 0, y: 0 },
 
             init() {
                 previewLayer.addChild(this.guideG);
@@ -1249,13 +1350,11 @@
                         ly >= Math.abs(lx - baseR * 0.6) * 1.3 - baseR * 0.1
                     );
                 } else if (s.type === 'bunny') {
-                    // 苏利安特兔头部剪影复合计算
                     const head = Math.hypot(lx, ly + 20) <= 65;
                     const earL = Math.hypot(lx + 28, ly + 110) <= 32;
                     const earR = Math.hypot(lx - 28, ly + 110) <= 32;
                     inside = head || earL || earR;
                 } else if (s.type === 'bird') {
-                    // 飞鸟剪影
                     const r = Math.hypot(lx, ly);
                     const wingL = (lx < 0 && ly < 0 && ly >= -Math.sin(-lx * 0.03) * 60 - 20);
                     const wingR = (lx > 0 && ly < 0 && ly >= -Math.sin(lx * 0.03) * 60 - 20);
@@ -1276,31 +1375,21 @@
                 g.rotation = s.rot * Math.PI / 180;
                 g.scale.set(s.scale);
 
-                // 虚线辉光模具边缘
                 g.lineStyle(2.5, 0xffbe3b, 0.85);
                 g.beginFill(0xff6b35, 0.08);
 
                 const baseR = 140;
-                if (s.type === 'circle') {
-                    g.drawCircle(0, 0, baseR);
-                } else if (s.type === 'square') {
-                    g.drawRoundedRect(-baseR, -baseR, baseR * 2, baseR * 2, 12);
-                } else if (s.type === 'heart') {
-                    this.drawHeart(g, 0, 0, baseR);
-                } else if (s.type === 'moon') {
-                    this.drawMoon(g, 0, 0, baseR);
-                } else if (s.type === 'star') {
-                    this.drawStar(g, 0, 0, 5, baseR, baseR * 0.5);
-                } else if (s.type === 'mountain') {
-                    this.drawMountain(g, baseR);
-                } else if (s.type === 'bunny') {
-                    this.drawBunny(g);
-                } else if (s.type === 'bird') {
-                    this.drawBird(g, baseR);
-                }
+                if (s.type === 'circle') g.drawCircle(0, 0, baseR);
+                else if (s.type === 'square') g.drawRoundedRect(-baseR, -baseR, baseR * 2, baseR * 2, 12);
+                else if (s.type === 'heart') this.drawHeart(g, 0, 0, baseR);
+                else if (s.type === 'moon') this.drawMoon(g, 0, 0, baseR);
+                else if (s.type === 'star') this.drawStar(g, 0, 0, 5, baseR, baseR * 0.5);
+                else if (s.type === 'mountain') this.drawMountain(g, baseR);
+                else if (s.type === 'bunny') this.drawBunny(g);
+                else if (s.type === 'bird') this.drawBird(g, baseR);
                 g.endFill();
 
-                // 模具拖拽靶心控制把手
+                // 模具拖拽靶心把手
                 g.lineStyle(2, 0xffffff, 0.9);
                 g.beginFill(0xff6b35, 0.9);
                 g.drawCircle(0, 0, 10);
@@ -1506,6 +1595,7 @@
                     if (pushHistory) History.saveState();
                     const clearG = new PIXI.Graphics().beginFill(0, 0).drawRect(0, 0, Config.width, Config.height);
                     app.renderer.render(clearG, { renderTexture: State.activeLayer.tex, clear: true });
+                    Physics.clearHeight();
                     UI.toast("已清空当前画层");
                 }
             },
@@ -1631,7 +1721,12 @@
                     while (idx < actions.length && actions[idx].t <= elapsed) {
                         const a = actions[idx];
                         if (a.type === 'stroke') {
-                            processStroke(a.x, a.y, a.start, false);
+                            processNonBrushTools(a.x, a.y, a.start, false);
+                        } else if (a.type === 'pour') {
+                            const symPts = Symmetry.getPoints(a.x, a.y);
+                            for (const pt of symPts) {
+                                for (let k = 0; k < a.count; k++) Physics.spawn(pt.x, pt.y);
+                            }
                         }
                         idx++;
                     }
@@ -1683,7 +1778,7 @@
             db: null,
             init() {
                 return new Promise(resolve => {
-                    const req = indexedDB.open('SandStudioProV40', 1);
+                    const req = indexedDB.open('SandStudioProV41', 1);
                     req.onupgradeneeded = e => {
                         const db = e.target.result;
                         if (!db.objectStoreNames.contains('slots')) {
@@ -1716,7 +1811,7 @@
         };
 
         // =========================================================================
-        // 14. 核心笔刷绘制管道 (Brush Stroke Pipeline)
+        // 14. 刻刀、沙耙、推沙等雕刻管道 (Non-Brush Stroke Pipeline)
         // =========================================================================
         let strokePts = [];
         let lastStrokePos = null;
@@ -1725,7 +1820,7 @@
             return layerContainer.toLocal({ x: e.clientX, y: e.clientY });
         }
 
-        function processStroke(x, y, isStart, record = true) {
+        function processNonBrushTools(x, y, isStart, record = true) {
             if (record) {
                 TimeLapse.logAction({ type: 'stroke', x, y, start: isStart });
             }
@@ -1736,7 +1831,6 @@
                 History.saveState();
             }
 
-            // 笔画平滑与滤波
             strokePts.push({ x, y });
             if (strokePts.length > State.brush.stab) strokePts.shift();
 
@@ -1750,7 +1844,6 @@
                 return;
             }
 
-            // 万花筒与对称辐射点计算
             const symCenters = Symmetry.getPoints(ax, ay);
             const lastSymCenters = Symmetry.getPoints(lastStrokePos.x, lastStrokePos.y);
 
@@ -1785,8 +1878,8 @@
                             const offset = (pIdx - (prongs - 1) / 2) * spacing;
                             const rx = ix + nx * offset;
                             const ry = iy + ny * offset;
-                            // 沟槽擦除 + 两侧微隆堆沙
-                            Baker.add(rx, ry, 0, 0.8);
+                            // 沟槽透光擦除 + 两侧微隆推沙
+                            Baker.add(rx, ry, 0, 0.85);
                             Baker.add(rx + nx * 3, ry + ny * 3, State.colorInt, 0.7);
                         }
                         continue;
@@ -1794,40 +1887,12 @@
 
                     // 3. 指尖推沙塑形 (Finger Smudge)
                     if (State.tool === 'smudge') {
-                        audio.setScraping(true, 0.5);
-                        const radius = State.brush.size * 0.8;
+                        audio.setScraping(true, 0.55);
                         const nx = (curP.x - prevP.x);
                         const ny = (curP.y - prevP.y);
-                        // 推沙位移冲积
                         Baker.add(ix, iy, 0, 0.6);
                         Baker.add(ix + nx * 0.8, iy + ny * 0.8, State.colorInt, 1.0);
                         continue;
-                    }
-
-                    // 4. 常规沙粒喷洒 (细沙、粗砾、鎏金、霓虹、烈焰等)
-                    const count = State.brush.flow;
-                    const r = State.brush.size / 2;
-                    audio.setPouring(true, Math.min(1, count / 15), 1100 + State.brush.size * 5);
-
-                    for (let j = 0; j < count; j++) {
-                        const ang = Math.random() * Math.PI * 2;
-                        const rad = Math.sqrt(Math.random()) * r;
-                        const px = ix + Math.cos(ang) * rad;
-                        const py = iy + Math.sin(ang) * rad;
-
-                        if (State.brush.mode === 'physics') {
-                            Physics.spawn(px, py);
-                        } else {
-                            let tint = State.colorInt;
-                            let blend = PIXI.BLEND_MODES.NORMAL;
-                            if (State.brushType === 'fire' || State.brushType === 'neon' || State.brushType === 'glitter') {
-                                blend = PIXI.BLEND_MODES.ADD;
-                            }
-                            if (State.brushType === 'charcoal') {
-                                blend = PIXI.BLEND_MODES.MULTIPLY;
-                            }
-                            Baker.add(px, py, tint, 1, blend);
-                        }
                     }
                 }
             }
@@ -1839,7 +1904,6 @@
         // =========================================================================
         let isPan = false;
         let panStart = { x: 0, y: 0 };
-        let touchDistStart = 0;
         let lineStartPos = null;
         const linePreviewG = new PIXI.Graphics();
         previewLayer.addChild(linePreviewG);
@@ -1888,15 +1952,15 @@
                 return;
             }
 
-            // 吹沙风管
-            if (State.tool === 'wind') {
-                State.isDrawing = true;
-                return;
-            }
-
-            // 开始常规沙画笔画
+            // 开启绘制动作
             State.isDrawing = true;
-            processStroke(getLocalPos(e).x, getLocalPos(e).y, true);
+            State.pointerPos = getLocalPos(e);
+
+            if (State.tool === 'brush') {
+                History.saveState();
+            } else {
+                processNonBrushTools(State.pointerPos.x, State.pointerPos.y, true);
+            }
         });
 
         window.addEventListener('pointermove', e => {
@@ -1911,24 +1975,25 @@
                 updateLoupePreview(e.clientX, e.clientY);
             }
 
+            const curPos = getLocalPos(e);
+            State.pointerPos = curPos;
+
             // 吹沙风管
             if (State.isDrawing && State.tool === 'wind') {
-                const pos = getLocalPos(e);
-                Physics.applyWind(pos.x, pos.y, 0, -1, 200, 2.5);
+                Physics.applyWind(curPos.x, curPos.y, 0, -1, 200, 2.5);
                 return;
             }
 
             // 直线预览
             if (State.tool === 'line' && lineStartPos) {
-                const cur = getLocalPos(e);
                 linePreviewG.clear();
                 linePreviewG.lineStyle(State.brush.size, State.colorInt, 0.7);
-                linePreviewG.moveTo(lineStartPos.x, lineStartPos.y).lineTo(cur.x, cur.y);
+                linePreviewG.moveTo(lineStartPos.x, lineStartPos.y).lineTo(curPos.x, curPos.y);
                 return;
             }
 
-            if (State.isDrawing) {
-                processStroke(getLocalPos(e).x, getLocalPos(e).y, false);
+            if (State.isDrawing && State.tool !== 'brush') {
+                processNonBrushTools(curPos.x, curPos.y, false);
             }
         });
 
@@ -1943,10 +2008,14 @@
                 const cur = getLocalPos(e);
                 const d = Math.hypot(cur.x - lineStartPos.x, cur.y - lineStartPos.y);
                 const s = Math.max(2, Math.ceil(d / 4));
-                processStroke(lineStartPos.x, lineStartPos.y, true);
-                for (let i = 1; i <= s; i++) {
+                for (let i = 0; i <= s; i++) {
                     const t = i / s;
-                    processStroke(lineStartPos.x + (cur.x - lineStartPos.x) * t, lineStartPos.y + (cur.y - lineStartPos.y) * t, false);
+                    const px = lineStartPos.x + (cur.x - lineStartPos.x) * t;
+                    const py = lineStartPos.y + (cur.y - lineStartPos.y) * t;
+                    const symPts = Symmetry.getPoints(px, py);
+                    for (const pt of symPts) {
+                        for (let k = 0; k < 6; k++) Physics.spawn(pt.x, pt.y);
+                    }
                 }
                 lineStartPos = null;
             }
@@ -2128,7 +2197,6 @@
 
         // 下拉选择绑定
         document.getElementById('brush-type').onchange = e => State.brushType = e.target.value;
-        document.getElementById('p-mode').onchange = e => State.brush.mode = e.target.value;
         document.getElementById('s-mask-mode').onchange = e => { State.stencil.maskMode = e.target.value; Stencil.render(); };
         document.getElementById('lightbox-mode').onchange = e => { State.lightbox.mode = e.target.value; Lightbox.apply(); };
         document.getElementById('sym-mode').onchange = e => { 
@@ -2141,6 +2209,7 @@
         // 顶部操作快捷按钮
         document.getElementById('tb-undo').onclick = () => History.undo();
         document.getElementById('tb-redo').onclick = () => History.redo();
+        document.getElementById('tb-fill-sand').onclick = () => Physics.fillSandBase();
         document.getElementById('tb-audio').onclick = () => {
             audio.init();
             audio.enabled = !audio.enabled;
@@ -2314,7 +2383,7 @@
             else if (k === 'l') { State.tool = 'line'; UI.updateTools(); }
             else if (k === 't') { document.getElementById('text-modal').style.display = 'flex'; }
             else if (k === '[') { 
-                State.brush.size = Math.max(2, State.brush.size - 4);
+                State.brush.size = Math.max(4, State.brush.size - 4);
                 document.getElementById('p-size').value = State.brush.size;
                 document.getElementById('v-size').innerText = State.brush.size;
             } else if (k === ']') { 
@@ -2393,7 +2462,7 @@
         }
 
         // =========================================================================
-        // 17. 启动与主循环 (Boot & Main Loop)
+        // 17. 启动与持续落沙物理主循环 (Boot & Continuous Ticker Loop)
         // =========================================================================
         Stencil.init();
         Symmetry.init();
@@ -2402,14 +2471,33 @@
         DB.init();
 
         app.ticker.add(() => {
+            // 核心物理创新：按住时源源不断倾泻落沙 (Continuous Sand Pouring from Above)
+            if (State.isDrawing && State.tool === 'brush') {
+                const symPts = Symmetry.getPoints(State.pointerPos.x, State.pointerPos.y);
+                const count = Math.max(1, Math.round(State.brush.flow * 0.55));
+                
+                audio.setPouring(true, Math.min(1, count / 10), 1050 + State.brush.size * 5);
+                TimeLapse.logAction({ type: 'pour', x: State.pointerPos.x, y: State.pointerPos.y, count });
+
+                for (let i = 0; i < symPts.length; i++) {
+                    const pt = symPts[i];
+                    for (let k = 0; k < count; k++) {
+                        Physics.spawn(pt.x, pt.y);
+                    }
+                }
+            }
+
+            // 更新 3D 落沙动力学与地面投影
             Physics.update();
+            // 沉积烘焙
             Baker.flush();
+            // 环境光律动
             Lightbox.tick();
         });
 
         // 初始欢迎与引导
         setTimeout(() => {
-            UI.toast("✨ Sand Studio Pro 已就绪，欢迎创作！");
+            UI.toast("✨ Sand Studio Pro 已就绪，按住鼠标即可看金沙从指间倾泻落盘！");
         }, 500);
 
     </script>
