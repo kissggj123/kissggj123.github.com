@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.4.9408-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.4.9409-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -68,7 +68,16 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.4.9408** *(当前版本)*
+### **v7.8.4.9409** *(当前版本)*
+
+#### 【UI 重构与体验优化】
+1. **消除非全屏状态下「累计航程」与时间的不对齐缺陷** `[适用于 index.html / car.html / car.css]`：
+   - **根除残留下边距偏移污染**：精准定位并修复在窗口非全屏（如笔记本浏览器窗口、带系统地址栏/标签页状态，视口高度触发 `@media (max-height: 760px)` 或紧凑横屏 `<= 520px`）时，历史遗留的 `.car-hero-time { margin-bottom: .5rem; }` 破坏 Flex 容器中心对齐的深层缺陷。将外边距正确归宿至父级行容器 `.car-hero-time-row`，彻底清空 `.car-hero-time` 自身的下外边距。
+   - **高精度独立居中微胶囊架构**：重构 `.car-hero-time-tag` 为标准独立高度微胶囊（`height: 20px; line-height: 20px; display: inline-flex; align-items: center; justify-content: center;`），同时将 `.car-hero-time` 设置为 `display: inline-flex; align-items: baseline;`。毫秒小数 `.car-ms-frac` 完美嵌合基线，使「累计航程」胶囊与伴行流转时间在全屏、非全屏、任意视口高度下始终保持毫米级水平与垂直对齐。
+
+---
+
+### **v7.8.4.9408**
 
 #### 【UI 重构与体验优化】
 1. **已达成历程折叠栏微交互重构** `[适用于 index.html / car.html / car.css]`：
