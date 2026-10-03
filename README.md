@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.4.9407-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.4.9408-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -68,7 +68,20 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.4.9407** *(当前版本)*
+### **v7.8.4.9408** *(当前版本)*
+
+#### 【UI 重构与体验优化】
+1. **已达成历程折叠栏微交互重构** `[适用于 index.html / car.html / car.css]`：
+   - 彻底告别生硬突兀的文本「`📜 已达成里程碑 (6项已折叠) ▾ 展开查看`」，重构为精致科技座舱胶囊栏。
+   - 采用成就金杯 🏆 徽标与「已达成历程」专属计数角标，右侧配备优雅的「`展开回顾 ▾ / 收起 ▴`」微交互动效。
+   - 补齐 `car.css` 与 `car.html` 全端统一的毛玻璃胶囊容器样式（半透明底色、柔和描边与悬浮光晕），彻底消除未样式化裸露文本缺陷。
+2. **根除左侧弧形括号噪点与图标冗余** `[适用于 index.html / car.html / car.css]`：
+   - 根除当前进行中目标里程碑左边缘因圆角描边渲染异常产生的弧形括号「`(`」视觉噪点：采用 GPU 独立定位的纯平垂直发光指示条（`::before`）与 `1px` 全维全息边框，呈现利落平直的高端座舱质感。
+   - 去除状态徽章内部与左侧图标重复的 🎯 冗余（由 `🎯 进行中 · 剩 65 天` 精简为 `进行中 · 剩 65 天`），大幅提升排版清爽度。
+
+---
+
+### **v7.8.4.9407**
 
 #### 【UI 重构与体验优化】
 1. **纪念日主卡轻量通透雾面毛玻璃重构** `[适用于 index.html / car.html / car.css]`：

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.4.9407 -->
+    <!-- VERSION: v7.8.4.9408 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1310,7 +1310,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.4.9407</div>
+                <div class="subtitle">v7.8.4.9408</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1623,7 +1623,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9407</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9408</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1668,7 +1668,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.4.9407',
+        VERSION: 'v7.8.4.9408',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2700,7 +2700,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.4.9407 已启动', 'info');
+        logEvent('兔可可王国 v7.8.4.9408 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9537,7 +9537,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.4.9407 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.4.9408 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -11348,49 +11348,87 @@
             background: var(--car-border);
             border-radius: 2px;
         }
+        /* Milestone Fold Toggle Bar */
         .car-ms-fold-toggle {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: .73rem;
-            padding: .35rem .6rem;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px dashed rgba(255, 255, 255, 0.16);
-            border-radius: 8px;
+            font-size: .75rem;
+            padding: .38rem .65rem;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9px;
             color: var(--car-text-dim);
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
             touch-action: pan-y;
-            transition: all .2s ease;
+            transition: background .2s ease, border-color .2s ease, color .2s ease;
+            margin-bottom: .35rem;
         }
         .car-ms-fold-toggle:hover, .car-ms-fold-toggle:active {
             background: rgba(0, 234, 255, 0.08);
-            border-color: var(--car-accent);
+            border-color: rgba(0, 234, 255, 0.35);
+            color: #fff;
+        }
+        .car-ms-fold-toggle .fold-left {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+        }
+        .car-ms-fold-toggle .fold-icon {
+            font-size: .82rem;
+            line-height: 1;
+        }
+        .car-ms-fold-toggle .fold-title {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--car-text);
+        }
+        .car-ms-fold-toggle .fold-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: rgba(0, 234, 255, 0.12);
             color: var(--car-accent);
+            border: 1px solid rgba(0, 234, 255, 0.25);
+            line-height: 1.2;
         }
         .car-ms-fold-toggle .fold-arrow {
             font-size: .68rem;
-            color: var(--car-accent2);
+            color: var(--car-accent);
             font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .car-ms-fold-toggle:hover .fold-arrow {
+            color: #fff;
+            text-shadow: 0 0 6px var(--car-glow);
         }
         .car-ms-completed-group {
             display: flex;
             flex-direction: column;
             gap: .35rem;
+            margin-bottom: .35rem;
+            padding-left: .25rem;
+            border-left: 2px solid rgba(0, 255, 65, 0.25);
         }
         .car-ms-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: .78rem;
-            padding: .4rem .6rem;
+            padding: .42rem .65rem;
             background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            border-left: 3px solid transparent;
-            transition: background .2s, transform .15s;
+            transition: background .2s, transform .15s, border-color .2s;
             gap: .5rem;
             touch-action: pan-y;
+            position: relative;
         }
         .car-ms-row:hover {
             background: rgba(255, 255, 255, 0.06);
@@ -11423,7 +11461,7 @@
             font-weight: 600;
         }
         .car-ms-row.reached {
-            border-left-color: #00ff41;
+            border-color: rgba(0, 255, 65, 0.2);
             color: #d1fae5;
             opacity: 0.88;
         }
@@ -11433,10 +11471,22 @@
             border: 1px solid rgba(0, 255, 65, 0.3);
         }
         .car-ms-row.next, .car-ms-row.in-progress {
-            border-left: 3.5px solid var(--car-accent) !important;
+            border: 1px solid rgba(0, 234, 255, 0.35) !important;
             background: linear-gradient(90deg, rgba(0, 234, 255, 0.14) 0%, rgba(167, 139, 250, 0.08) 100%) !important;
             font-weight: 700;
             box-shadow: 0 0 16px rgba(0, 234, 255, 0.22), inset 0 0 8px rgba(0, 234, 255, 0.05);
+            position: relative;
+        }
+        .car-ms-row.next::before, .car-ms-row.in-progress::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3.5px;
+            background: var(--car-accent);
+            border-radius: 8px 0 0 8px;
+            box-shadow: 0 0 8px var(--car-accent);
         }
         .car-ms-row.in-progress .in-progress-title {
             color: #fff;
@@ -13858,7 +13908,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.4.9407</span>
+                <span class="bcos-ctx-ver">v7.8.4.9408</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -17248,7 +17298,7 @@ const START_DATE = '2024/03/12 00:00:00';
                     </div>`;
                 } else {
                     const statusBadge = isNext 
-                        ? `<span class="ms-pill in-progress-pill">🎯 进行中 · 剩 ${m.days - days} 天</span>` 
+                        ? `<span class="ms-pill in-progress-pill">进行中 · 剩 ${m.days - days} 天</span>` 
                         : `<span class="ms-pill">剩 ${m.days - days} 天</span>`;
                     unreachedHtml += `<div class="car-ms-row ${isNext ? 'next in-progress' : ''}">
                         <div class="ms-row-left">
@@ -17286,9 +17336,13 @@ const START_DATE = '2024/03/12 00:00:00';
 
             let fullHtml = '';
             if (reachedCount > 0) {
-                fullHtml += `<div class="car-ms-fold-toggle" onclick="toggleCompletedMilestones()" title="点击${showCompletedMilestones ? '收起' : '展开查看'}已达成里程碑">
-                    <span class="fold-txt">📜 已达成里程碑 (${reachedCount}项${showCompletedMilestones ? '已展开' : '已折叠'})</span>
-                    <span class="fold-arrow">${showCompletedMilestones ? '▴ 收起' : '▾ 展开查看'}</span>
+                fullHtml += `<div class="car-ms-fold-toggle" onclick="toggleCompletedMilestones()" title="点击${showCompletedMilestones ? '收起' : '展开查看'}已达成历程">
+                    <div class="fold-left">
+                        <span class="fold-icon">🏆</span>
+                        <span class="fold-title">已达成历程</span>
+                        <span class="fold-badge">${reachedCount} 项</span>
+                    </div>
+                    <span class="fold-arrow">${showCompletedMilestones ? '收起 ▴' : '展开回顾 ▾'}</span>
                 </div>`;
                 if (showCompletedMilestones) {
                     fullHtml += `<div class="car-ms-completed-group">${reachedHtml}</div>`;
@@ -17929,7 +17983,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9407</div>
+                                <div class="car-diag-val">bcos v7.8.4.9408</div>
                             </div>
                         </div>
                     </div>
@@ -22328,6 +22382,10 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.4.9408', title:'历程里程碑折叠栏微交互重构、消除文本生硬与左侧弧形括号噪点', items:[
+            '【此改动适用于 index.html / car.html / car.css】[已达成历程折叠栏重构] 彻底告别生硬突兀的文本「📜 已达成里程碑 (6项已折叠) ▾ 展开查看」，重构为精致科技座舱胶囊栏：采用成就金杯 🏆 徽标与「已达成历程」专属计数角标，右侧配备优雅的「展开回顾 ▾ / 收起 ▴」微交互动效；补齐全端 CSS 统一毛玻璃胶囊容器样式，消除未样式化裸露文本缺陷',
+            '【此改动适用于 index.html / car.html / car.css】[消除左侧弧形括号与图标冗余] 根除当前进行中目标里程碑左边缘因圆角描边渲染异常产生的弧形括号「(」视觉噪点，采用 GPU 独立定位的纯平垂直发光指示条与 1px 全维全息边框；去除进行中徽章内部与左侧图标重复的 🎯 冗余，呈现极致清爽的座舱视觉体验'
+        ]},
         { ver:'v7.8.4.9407', title:'纪念日主卡片 UI 重构美化、消除视觉冗余、航空级通透雾面毛玻璃质感升级', items:[
             '【此改动适用于 index.html / car.html / car.css】[纪念日主卡轻量通透雾面重构] 彻底告别原先厚重沉闷的高对比度纯黑底框与粗糙荧光外边框，全面采用 backdrop-filter: blur(28px) saturate(190%) 航空级超清透雾面毛玻璃材质，配合 inset 0 1px 0 顶部镜面高光棱线与柔和立体外阴影，组件完全融于车机动态壁纸，消除突兀感与块面割裂',
             '【此改动适用于 index.html / car.html / car.css】[消除信息冗余与多层嵌套黑框] 移除时钟下重复的时间感官堆叠，为毫秒计数新增精致胶囊角标「累计航程」；消除起始日期的双重标注，右侧仪表信息升级为伴舱心动节律监控 PULSE 与伴行状态；去除了卡片内里程碑容器与药丸徽章嵌套的多层厚黑底框，全维呈现现代轻盈科技质感',

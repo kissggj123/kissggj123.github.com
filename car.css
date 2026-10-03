@@ -1219,17 +1219,87 @@
             background: var(--car-border);
             border-radius: 2px;
         }
+        /* Milestone Fold Toggle Bar */
+        .car-ms-fold-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .75rem;
+            padding: .38rem .65rem;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9px;
+            color: var(--car-text-dim);
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+            transition: background .2s ease, border-color .2s ease, color .2s ease;
+            margin-bottom: .35rem;
+        }
+        .car-ms-fold-toggle:hover, .car-ms-fold-toggle:active {
+            background: rgba(0, 234, 255, 0.08);
+            border-color: rgba(0, 234, 255, 0.35);
+            color: #fff;
+        }
+        .car-ms-fold-toggle .fold-left {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+        }
+        .car-ms-fold-toggle .fold-icon {
+            font-size: .82rem;
+            line-height: 1;
+        }
+        .car-ms-fold-toggle .fold-title {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--car-text);
+        }
+        .car-ms-fold-toggle .fold-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: rgba(0, 234, 255, 0.12);
+            color: var(--car-accent);
+            border: 1px solid rgba(0, 234, 255, 0.25);
+            line-height: 1.2;
+        }
+        .car-ms-fold-toggle .fold-arrow {
+            font-size: .68rem;
+            color: var(--car-accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .car-ms-fold-toggle:hover .fold-arrow {
+            color: #fff;
+            text-shadow: 0 0 6px var(--car-glow);
+        }
+        .car-ms-completed-group {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+            margin-bottom: .35rem;
+            padding-left: .25rem;
+            border-left: 2px solid rgba(0, 255, 65, 0.25);
+        }
         .car-ms-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: .78rem;
-            padding: .4rem .6rem;
+            padding: .42rem .65rem;
             background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            border-left: 3px solid transparent;
-            transition: background .2s, transform .15s;
+            transition: background .2s, transform .15s, border-color .2s;
             gap: .5rem;
+            touch-action: pan-y;
+            position: relative;
         }
         .car-ms-row:hover {
             background: rgba(255, 255, 255, 0.06);
@@ -1262,26 +1332,45 @@
             font-weight: 600;
         }
         .car-ms-row.reached {
-            border-left-color: #00ff41;
+            border-color: rgba(0, 255, 65, 0.2);
             color: #d1fae5;
+            opacity: 0.88;
         }
         .car-ms-row.reached .ms-pill {
             background: rgba(0, 255, 65, 0.15);
             color: #00ff41;
             border: 1px solid rgba(0, 255, 65, 0.3);
         }
-        .car-ms-row.next {
-            border-left-color: var(--car-accent);
-            background: rgba(0, 234, 255, 0.08);
+        .car-ms-row.next, .car-ms-row.in-progress {
+            border: 1px solid rgba(0, 234, 255, 0.35) !important;
+            background: linear-gradient(90deg, rgba(0, 234, 255, 0.14) 0%, rgba(167, 139, 250, 0.08) 100%) !important;
             font-weight: 700;
-            box-shadow: 0 0 12px rgba(0, 234, 255, 0.15);
+            box-shadow: 0 0 16px rgba(0, 234, 255, 0.22), inset 0 0 8px rgba(0, 234, 255, 0.05);
+            position: relative;
         }
-        .car-ms-row.next .ms-pill {
-            background: var(--car-glow);
+        .car-ms-row.next::before, .car-ms-row.in-progress::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3.5px;
+            background: var(--car-accent);
+            border-radius: 8px 0 0 8px;
+            box-shadow: 0 0 8px var(--car-accent);
+        }
+        .car-ms-row.in-progress .in-progress-title {
             color: #fff;
-            border: 1px solid var(--car-accent);
+            text-shadow: 0 0 10px var(--car-glow);
         }
-        .car-ms-row:not(.reached):not(.next) .ms-pill {
+        .in-progress-pill {
+            background: linear-gradient(135deg, rgba(0, 234, 255, 0.4), rgba(167, 139, 250, 0.35)) !important;
+            color: #fff !important;
+            border: 1px solid var(--car-accent) !important;
+            box-shadow: 0 0 10px var(--car-glow) !important;
+            font-weight: 700;
+        }
+        .car-ms-row:not(.reached):not(.next):not(.in-progress) .ms-pill {
             background: rgba(255, 255, 255, 0.05);
             color: var(--car-text-dim);
         }
