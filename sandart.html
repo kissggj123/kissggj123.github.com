@@ -55,23 +55,41 @@
             z-index: 0; cursor: crosshair; touch-action: none; 
         }
 
-        /* 顶部导航与快捷栏 */
+        /* 顶部导航与快捷栏胶囊 */
         #topbar {
-            position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-            height: 44px; background: var(--panel); border: 1px solid var(--border);
-            border-radius: 22px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            z-index: 120; display: flex; align-items: center; padding: 0 12px; gap: 8px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+            height: 46px; background: rgba(20, 22, 28, 0.94); border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 23px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 120; display: inline-flex; align-items: center; padding: 0 10px; gap: 6px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06);
+            white-space: nowrap; user-select: none; max-width: calc(100vw - 24px); overflow-x: auto;
+            scrollbar-width: none;
         }
+        #topbar::-webkit-scrollbar { display: none; }
+
         .topbar-btn {
             height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid transparent;
-            background: transparent; color: var(--text-dim); font-size: 13px; font-weight: 500;
-            display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s;
+            background: rgba(255,255,255,0.06); color: var(--text); font-size: 12px; font-weight: 500;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            white-space: nowrap !important; flex-shrink: 0 !important; line-height: 1;
         }
-        .topbar-btn:hover { color: #fff; background: var(--panel-hover); }
-        .topbar-btn.active { color: #fff; background: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
-        .topbar-divider { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
-        .topbar-badge { font-size: 11px; padding: 2px 6px; border-radius: 10px; background: rgba(255,255,255,0.1); font-family: 'JetBrains Mono', monospace; }
+        .topbar-btn:hover { color: #fff; background: rgba(255,255,255,0.14); transform: translateY(-1px); border-color: rgba(255,255,255,0.15); }
+        .topbar-btn:active { transform: translateY(0); }
+        .topbar-btn.active { color: #fff; background: var(--accent); box-shadow: 0 0 14px var(--accent-glow); border-color: rgba(255,255,255,0.25); }
+        
+        .topbar-btn.icon-btn { width: 32px; height: 32px; padding: 0; border-radius: 50%; font-size: 13px; }
+        .topbar-btn.highlight {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.25) 0%, rgba(255, 190, 59, 0.25) 100%);
+            border-color: rgba(255, 190, 59, 0.4); color: #ffd166; font-weight: 600;
+        }
+        .topbar-btn.highlight:hover {
+            background: linear-gradient(135deg, #ff6b35 0%, #ffbe3b 100%);
+            color: #1a0a00; border-color: transparent; box-shadow: 0 0 16px var(--accent-glow);
+        }
+
+        .topbar-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.15); margin: 0 3px; flex-shrink: 0; }
+        .topbar-badge { font-size: 10px; padding: 2px 6px; border-radius: 8px; background: rgba(255,255,255,0.12); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
         /* 面板通用 */
         .panel {
@@ -279,19 +297,19 @@
         <div id="eyedropper-preview"></div>
     </div>
 
-    <!-- 顶部导航快捷栏 -->
+    <!-- 顶部导航快捷栏胶囊 -->
     <div id="topbar">
-        <button class="topbar-btn" id="tb-undo" title="撤销 (Ctrl+Z)"><i class="fas fa-undo"></i></button>
-        <button class="topbar-btn" id="tb-redo" title="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+        <button class="topbar-btn icon-btn" id="tb-undo" title="撤销 (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+        <button class="topbar-btn icon-btn" id="tb-redo" title="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
         <div class="topbar-divider"></div>
-        <button class="topbar-btn" id="tb-fill-sand" title="满盘铺金沙 (沙画经典打底)"><i class="fas fa-fill-drip"></i> 满盘铺沙</button>
-        <button class="topbar-btn" id="tb-audio" title="沙画拟真 ASMR 音效"><i class="fas fa-volume-up"></i> 音效</button>
-        <button class="topbar-btn" id="tb-sym" title="万花筒曼陀罗对称"><i class="fas fa-snowflake"></i> 对称: <span id="sym-status">关</span></button>
-        <button class="topbar-btn" id="tb-light" title="沙画台背光切换"><i class="fas fa-lightbulb"></i> 背光</button>
+        <button class="topbar-btn highlight" id="tb-fill-sand" title="满盘铺金沙 (沙画经典打底)"><i class="fas fa-fill-drip"></i> <span>铺金沙</span></button>
+        <button class="topbar-btn" id="tb-audio" title="沙画拟真 ASMR 音效"><i class="fas fa-volume-up"></i> <span>音效</span></button>
+        <button class="topbar-btn" id="tb-sym" title="万花筒曼陀罗对称"><i class="fas fa-snowflake"></i> <span>对称</span> <span class="topbar-badge" id="sym-status">关</span></button>
+        <button class="topbar-btn" id="tb-light" title="沙画台背光切换"><i class="fas fa-lightbulb"></i> <span>背光</span></button>
         <div class="topbar-divider"></div>
-        <button class="topbar-btn" id="tb-zoom-reset" title="复位视图"><i class="fas fa-expand"></i> <span class="topbar-badge" id="zoom-val">100%</span></button>
-        <button class="topbar-btn" id="tb-fullscreen" title="全屏沉浸创作 (F11)"><i class="fas fa-expand-arrows-alt"></i></button>
-        <button class="topbar-btn" id="tb-help" title="快捷键与帮助 (?)"><i class="fas fa-question-circle"></i></button>
+        <button class="topbar-btn" id="tb-zoom-reset" title="复位视图"><i class="fas fa-search-plus"></i> <span class="topbar-badge" id="zoom-val">100%</span></button>
+        <button class="topbar-btn icon-btn" id="tb-fullscreen" title="全屏沉浸创作 (F11)"><i class="fas fa-expand-arrows-alt"></i></button>
+        <button class="topbar-btn icon-btn" id="tb-help" title="快捷键与帮助 (?)"><i class="fas fa-question-circle"></i></button>
     </div>
 
     <!-- 左侧主工具栏 -->
