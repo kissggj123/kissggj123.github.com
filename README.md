@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.4.9405-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.4.9406-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -68,7 +68,20 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.4.9405** *(当前版本)*
+### **v7.8.4.9406** *(当前版本)*
+
+#### 【核心修复与体验优化】
+1. **数字时钟字符间距与冒号留白优化** `[适用于 index.html / car.html / car.css]`：
+   - 彻底消除数字时钟中冒号两侧过宽的空隙与字符间距过大的问题：将时钟文本字符串从带空格的 `${h} : ${m} : ${s}` 升级为标准自然的 `${h}:${m}:${s}`。
+   - 在等宽字体（SF Mono / 等宽备选库）下，冒号 `:` 自身即处于 1ch 宽度的光学正中位置，彻底解决此前带空格时单侧产生整整 1ch 巨大留白的视觉撕裂感。
+   - 全面收敛 CSS `letter-spacing` 字符间距：极简模式由 `3px` 精细优化至 `1.5px`，标准模式与圆形屏由 `2px` 优化至 `1px`，呈现紧凑凝练且极富科技工业感的数字仪表字形。
+
+2. **极简锁屏微距排版精致化** `[适用于 index.html / car.html / car.css]`：
+   - 优化极简锁屏下时间与下方公历/农历日期的垂直边距（`margin-top: clamp(0.4rem, 1.2vh, 0.85rem)`），使时间与日期呈现浑然一体的高级感。
+
+---
+
+### **v7.8.4.9405**
 
 #### 【核心修复与体验优化】
 1. **移动端无法下滑浏览里程碑彻底修复** `[适用于 index.html / car.html / car.css]`：
