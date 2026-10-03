@@ -139,8 +139,78 @@
             z-index: 250; box-shadow: 0 6px 20px rgba(0,0,0,0.6);
         }
 
-        /* 右侧综合设置面板 */
-        #settings { top: 70px; right: 16px; width: 340px; }
+        /* 右侧综合设置面板 (支持折叠与贴边收起) */
+        #settings { 
+            top: 70px; right: 16px; width: 340px; 
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1), height 0.25s ease, opacity 0.25s ease;
+        }
+        #settings.collapsed {
+            height: 48px !important;
+            overflow: hidden !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #settings.collapsed .nav-tabs,
+        #settings.collapsed .content {
+            display: none !important;
+        }
+        #settings.docked {
+            transform: translateX(calc(100% + 24px)) !important;
+            pointer-events: none;
+        }
+
+        /* 侧边收起时右侧贴边浮标 */
+        #docked-settings-pill {
+            position: fixed; top: 76px; right: 0; height: 38px;
+            padding: 0 14px 0 12px; background: rgba(22, 24, 30, 0.92);
+            border: 1px solid var(--border); border-right: none;
+            border-radius: 19px 0 0 19px; backdrop-filter: blur(16px);
+            color: var(--accent); font-size: 13px; font-weight: 600;
+            display: none; align-items: center; gap: 8px; cursor: pointer;
+            z-index: 110; box-shadow: -4px 8px 24px rgba(0,0,0,0.6);
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        #docked-settings-pill:hover {
+            background: var(--accent); color: #fff;
+            padding-right: 18px; box-shadow: -4px 8px 28px var(--accent-glow);
+        }
+
+        .header-btn {
+            cursor: pointer; opacity: 0.75; transition: 0.15s; font-size: 13px;
+        }
+        .header-btn:hover { opacity: 1; color: var(--accent); transform: scale(1.15); }
+
+        .version-tag {
+            font-size: 10px; background: rgba(255, 107, 53, 0.2); color: var(--accent);
+            padding: 2px 7px; border-radius: 8px; border: 1px solid rgba(255, 107, 53, 0.4);
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; cursor: pointer;
+            transition: 0.15s;
+        }
+        .version-tag:hover { background: var(--accent); color: #fff; box-shadow: 0 0 10px var(--accent-glow); }
+
+        /* 无限画布底部状态 HUD */
+        #infinite-hud {
+            position: fixed; bottom: 16px; right: 16px;
+            background: rgba(20, 22, 28, 0.9); border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px; backdrop-filter: blur(16px); padding: 6px 14px;
+            display: none; align-items: center; gap: 10px; font-size: 11px;
+            color: var(--text-dim); font-family: 'JetBrains Mono', monospace;
+            z-index: 90; box-shadow: 0 8px 24px rgba(0,0,0,0.5); user-select: none;
+        }
+        #infinite-hud .hud-sep { color: var(--border); }
+        #btn-hud-reset {
+            background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+            color: var(--text); padding: 2px 8px; border-radius: 10px; cursor: pointer;
+            font-size: 10px; transition: 0.15s;
+        }
+        #btn-hud-reset:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* 更新日志列表样式 */
+        .changelog-item { margin-bottom: 14px; }
+        .cl-ver { font-size: 13px; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .cl-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+        .cl-badge.cl-new { background: var(--accent); color: #fff; }
+        .cl-list { padding-left: 18px; margin: 0; color: var(--text-dim); }
+        .cl-list li { margin-bottom: 4px; }
         
         /* 标签页导航 */
         .nav-tabs {
@@ -303,14 +373,27 @@
         <button class="topbar-btn icon-btn" id="tb-redo" title="重做 (Ctrl+Y)"><i class="fas fa-redo"></i></button>
         <div class="topbar-divider"></div>
         <button class="topbar-btn highlight" id="tb-fill-sand" title="满盘铺金沙 (沙画经典打底)"><i class="fas fa-fill-drip"></i> <span>铺金沙</span></button>
+        <button class="topbar-btn" id="tb-infinite" title="开启/关闭无限画布模式"><i class="fas fa-infinity"></i> <span>无限画布</span></button>
         <button class="topbar-btn" id="tb-audio" title="沙画拟真 ASMR 音效"><i class="fas fa-volume-up"></i> <span>音效</span></button>
         <button class="topbar-btn" id="tb-sym" title="万花筒曼陀罗对称"><i class="fas fa-snowflake"></i> <span>对称</span> <span class="topbar-badge" id="sym-status">关</span></button>
         <button class="topbar-btn" id="tb-light" title="沙画台背光切换"><i class="fas fa-lightbulb"></i> <span>背光</span></button>
         <div class="topbar-divider"></div>
         <button class="topbar-btn" id="tb-zoom-reset" title="复位视图"><i class="fas fa-search-plus"></i> <span class="topbar-badge" id="zoom-val">100%</span></button>
         <button class="topbar-btn icon-btn" id="tb-fullscreen" title="全屏沉浸创作 (F11)"><i class="fas fa-expand-arrows-alt"></i></button>
-        <button class="topbar-btn icon-btn" id="tb-help" title="快捷键与帮助 (?)"><i class="fas fa-question-circle"></i></button>
+        <button class="topbar-btn icon-btn" id="tb-about-top" title="版本号、更新日志与关于 (?)"><i class="fas fa-info-circle"></i></button>
     </div>
+
+    <!-- 无限画布漫游 HUD -->
+    <div id="infinite-hud">
+        <i class="fas fa-compass" style="color:var(--accent)"></i>
+        <span id="hud-coords">X: 0, Y: 0</span>
+        <span class="hud-sep">|</span>
+        <span id="hud-zoom">100%</span>
+        <button id="btn-hud-reset" title="复位至原点"><i class="fas fa-crosshairs"></i> 原点</button>
+    </div>
+
+    <!-- 侧边收起时右侧贴边浮标 -->
+    <div id="docked-settings-pill" title="展开设置面板"><i class="fas fa-sliders-h"></i> <span>设置面板</span></div>
 
     <!-- 左侧主工具栏 -->
     <div class="panel" id="tools">
@@ -331,13 +414,18 @@
         <button class="tool-btn" id="act-clear" data-tip="清空当前图层" style="color:var(--danger)"><i class="fas fa-trash"></i></button>
     </div>
 
-    <!-- 右侧综合设置面板 -->
+    <!-- 右侧综合设置面板 (支持折叠与贴边收起) -->
     <div class="panel" id="settings">
         <div class="header" id="drag-h">
-            <span>🎨 SAND STUDIO <span style="opacity:0.6; font-size:11px">THRIANTA PRO</span></span>
-            <div style="display:flex; gap:12px; align-items:center">
-                <i class="fas fa-history" id="btn-replay-quick" style="cursor:pointer; opacity:0.8" title="一键延时回放"></i>
-                <i class="fas fa-sliders-h" style="opacity:0.5"></i>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span>🎨 SAND STUDIO</span>
+                <span class="version-tag" id="header-version-badge" title="点击查看更新日志与关于">V42.0</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center">
+                <i class="fas fa-info-circle header-btn" id="btn-about" title="关于与更新日志"></i>
+                <i class="fas fa-history header-btn" id="btn-replay-quick" title="一键延时回放"></i>
+                <i class="fas fa-chevron-up header-btn" id="btn-settings-collapse" title="折叠/展开内容"></i>
+                <i class="fas fa-chevron-right header-btn" id="btn-settings-dock" title="收起至右侧边缘"></i>
             </div>
         </div>
 
@@ -619,6 +707,107 @@
         </div>
     </div>
 
+    <!-- 弹窗：关于与更新日志 -->
+    <div id="about-modal" class="modal">
+        <div class="modal-box" style="width:520px; max-width:92vw; max-height:85vh; display:flex; flex-direction:column; padding:22px;">
+            <i class="fas fa-times modal-close" onclick="document.getElementById('about-modal').style.display='none'"></i>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                <div style="width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, #ff6b35, #ffbe3b); display:flex; align-items:center; justify-content:center; color:#1a0800; font-size:20px; box-shadow:0 0 16px rgba(255,107,53,0.5); flex-shrink:0;">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:18px; color:var(--text); display:flex; align-items:center; gap:8px;">
+                        Sand Studio Pro <span class="topbar-badge" style="background:var(--accent); color:#fff; font-size:11px;">v42.0</span>
+                    </h3>
+                    <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">Thrianta Architecture · 真实物理沙画艺术工作台</div>
+                </div>
+            </div>
+
+            <!-- 模态内部 Tab 切换 -->
+            <div class="nav-tabs" style="margin-bottom:14px; border-radius:8px;">
+                <button class="nav-tab active" data-atab="atab-changelog"><i class="fas fa-history"></i> 更新日志</button>
+                <button class="nav-tab" data-atab="atab-about"><i class="fas fa-paw"></i> 设计理念</button>
+                <button class="nav-tab" data-atab="atab-shortcuts"><i class="fas fa-keyboard"></i> 快捷键</button>
+            </div>
+
+            <!-- Tab 1: 更新日志 -->
+            <div class="atab-content active" id="atab-changelog" style="flex:1; overflow-y:auto; padding-right:6px; font-size:12px; line-height:1.7;">
+                <div class="changelog-item">
+                    <div class="cl-ver"><span class="cl-badge cl-new">NEW</span> <strong>V42.0</strong> · 无限画布与面板折叠 (当前版本)</div>
+                    <ul class="cl-list">
+                        <li><strong>♾️ 无限画布模式</strong>：打破 3200×2200 传统沙盘边界，实现全向无界平移漫游、5%~1000% 极速缩放与视口实时坐标 HUD。</li>
+                        <li><strong>📐 右侧选项卡智能折叠</strong>：支持一键垂直折叠收纳（仅保留顶部控制条）或完全滑动至屏幕边缘收起为微型悬浮抽屉。</li>
+                        <li><strong>📜 关于与版本历史中心</strong>：正式引入系统版本号规范，提供全面的历史更新日志与理念说明。</li>
+                        <li><strong>🎨 UI 布局深度精修</strong>：彻底修复移动端及狭窄窗口顶部胶囊栏文字竖向折行挤压的 Bug。</li>
+                    </ul>
+                </div>
+                <div class="changelog-item" style="margin-top:12px; border-top:1px dashed var(--border); padding-top:10px;">
+                    <div class="cl-ver"><strong>V41.1</strong> · 顶部胶囊栏排版重构</div>
+                    <ul class="cl-list">
+                        <li>按钮强制锁定 <code>white-space: nowrap</code> 与 <code>flex-shrink: 0</code>，解决中文字符垂直换行问题。</li>
+                        <li>升级撤销/重做圆形微按钮与“铺金沙”高光渐变胶囊。</li>
+                    </ul>
+                </div>
+                <div class="changelog-item" style="margin-top:12px; border-top:1px dashed var(--border); padding-top:10px;">
+                    <div class="cl-ver"><strong>V41.0</strong> · 真实 3D 悬空落沙与地面投影</div>
+                    <ul class="cl-list">
+                        <li><strong>3D 悬空下落</strong>：沙粒从半空中指缝/漏斗倾泻而下，带有真实的垂直重力下落与透视高差。</li>
+                        <li><strong>地面实时投影联动</strong>：灯箱表面伴随落沙产生暗影，高度越低投影越聚，呈现极强空间立体感。</li>
+                        <li><strong>按住鼠标持续流沙</strong>：原地长按即可源源不断产生沙流，无需反复晃动鼠标。</li>
+                        <li><strong>沙堆自然坍塌滑坡</strong>：沙粒堆积超出安息角时自动向四周自然滚落形成真实沙丘。</li>
+                        <li><strong>满盘铺沙打底</strong>：一键均匀铺满金沙，随后使用刻刀或橡皮刮出光影。</li>
+                    </ul>
+                </div>
+                <div class="changelog-item" style="margin-top:12px; border-top:1px dashed var(--border); padding-top:10px;">
+                    <div class="cl-ver"><strong>V40.0</strong> · 核心架构与艺术工具大重构</div>
+                    <ul class="cl-list">
+                        <li>修复历史记录撤销重做超过 15 步指针错位与首步清空 Bug。</li>
+                        <li>修复 Retina 高分屏吸管取色偏黑偏移 Bug，新增放大镜 HUD。</li>
+                        <li>重构交互式模具系统，支持自由拖动定位、旋转与内外反选。</li>
+                        <li>纯代码 Web Audio ASMR 沙声原声合成。</li>
+                        <li>万花筒 2/4/6/8/12 重曼陀罗几何对称与六大沙画灯箱背光。</li>
+                    </ul>
+                </div>
+                <div class="changelog-item" style="margin-top:12px; border-top:1px dashed var(--border); padding-top:10px;">
+                    <div class="cl-ver"><strong>V39.0 ~ V38.0</strong> · 早期原型阶段</div>
+                    <ul class="cl-list">
+                        <li>确立苏利安特兔（Thrianta）火橙色主题与基础沙画画板原型。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab 2: 设计理念 -->
+            <div class="atab-content" id="atab-about" style="display:none; flex:1; overflow-y:auto; font-size:12px; line-height:1.8; color:var(--text-dim);">
+                <p><strong style="color:var(--accent-gold);">🐰 苏利安特兔 (Thrianta Rabbit)</strong>：源自荷兰的火橙色兔种，毛色如赤金暖阳。本应用以此为视觉灵魂，调和深邃暗夜与流光金沙。</p>
+                <p><strong style="color:var(--accent-gold);">🏜️ 动态沙画艺术 (Dynamic Sand Art)</strong>：沙画是一门融“瞬间”与“永恒”于一体的光影即兴艺术。艺术家通过指尖漏沙、手掌抹沙、指甲刮削，在透光箱上创造瞬息万变的情感世界。</p>
+                <p><strong style="color:var(--accent-gold);">🎧 听觉的触感 (Haptic Acoustics)</strong>：无物理阻尼的屏幕常让数码绘画缺乏真实触感。我们通过原生合成的 ASMR 拟声音频，重构了沙粒流淌与摩擦的真实反馈。</p>
+            </div>
+
+            <!-- Tab 3: 快捷键 -->
+            <div class="atab-content" id="atab-shortcuts" style="display:none; flex:1; overflow-y:auto; font-size:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-family:'JetBrains Mono',monospace;">
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>B</code> : 持续流沙</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>E</code> : 橡皮刮除透光</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>S</code> : 细刻刀发丝雕刻</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>R</code> : 枯山水五齿沙耙</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>F</code> : 指尖推沙抹沙</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>W</code> : 吹沙风管</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>M</code> : 镂空模具系统</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>L</code> : 直线沙流</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>Space+拖拽</code>: 漫游画布</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>Ctrl+Z / Y</code>: 撤销 / 重做</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>[ / ]</code>: 增减笔刷尺寸</div>
+                    <div style="background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px;"><code>Tab</code> : 隐藏/显示界面</div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
+                <span style="font-size:11px; color:var(--text-muted);">Crafted with ♥ by kissggj123</span>
+                <button class="btn btn-gold" style="width:90px; padding:6px 12px; margin:0;" onclick="document.getElementById('about-modal').style.display='none'">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // =========================================================================
         // 1. 核心常量、状态与配置 (Config & State)
@@ -628,7 +817,7 @@
             height: 2200,
             maxParticles: 50000,
             maxHistorySteps: 25,
-            version: 'V41.0 Physical'
+            version: 'V42.0 Thrianta Pro'
         };
 
         const Themes = {
@@ -673,6 +862,7 @@
                 brightness: 1.0,
                 diffusion: 0.5
             },
+            infiniteCanvas: false,
             layers: [],
             activeLayer: null,
             isDrawing: false,
@@ -1921,6 +2111,7 @@
         // 15. 输入事件分发与视口手势 (Pointer, Touch Pinch, Shortcuts)
         // =========================================================================
         let isPan = false;
+        let isSpaceDown = false;
         let panStart = { x: 0, y: 0 };
         let lineStartPos = null;
         const linePreviewG = new PIXI.Graphics();
@@ -1937,7 +2128,7 @@
             }
 
             // 平移画布 (中键 / Space+拖拽 / Move工具)
-            if (e.button === 1 || State.tool === 'move' || e.spaceKey) {
+            if (e.button === 1 || State.tool === 'move' || isSpaceDown) {
                 isPan = true;
                 panStart = { x: e.clientX - viewport.x, y: e.clientY - viewport.y };
                 document.body.style.cursor = 'grabbing';
@@ -2017,7 +2208,7 @@
 
         window.addEventListener('pointerup', e => {
             isPan = false;
-            document.body.style.cursor = 'default';
+            document.body.style.cursor = isSpaceDown ? 'grab' : 'default';
             audio.setPouring(false);
             audio.setScraping(false);
 
@@ -2046,9 +2237,15 @@
             if (e.target === app.view) {
                 e.preventDefault();
                 const factor = e.deltaY > 0 ? 0.92 : 1.08;
-                const newScale = Math.max(0.15, Math.min(4.5, viewport.scale.x * factor));
+                const minScale = State.infiniteCanvas ? 0.03 : 0.15;
+                const maxScale = State.infiniteCanvas ? 10.0 : 4.5;
+                const newScale = Math.max(minScale, Math.min(maxScale, viewport.scale.x * factor));
                 viewport.scale.set(newScale);
                 document.getElementById('zoom-val').innerText = `${Math.round(newScale * 100)}%`;
+                if (State.infiniteCanvas) {
+                    const zoomEl = document.getElementById('hud-zoom');
+                    if (zoomEl) zoomEl.innerText = `${Math.round(newScale * 100)}%`;
+                }
             }
         }, { passive: false });
 
@@ -2234,6 +2431,20 @@
             document.getElementById('tb-audio').classList.toggle('active', audio.enabled);
             UI.toast(audio.enabled ? "🔊 已开启 ASMR 拟真音效" : "🔇 已静音");
         };
+        const tbSym = document.getElementById('tb-sym');
+        if (tbSym) {
+            tbSym.onclick = () => {
+                const modes = ['0', '2h', '2v', '4', '6', '8', '12'];
+                const nextIdx = (modes.indexOf(State.symmetry.mode) + 1) % modes.length;
+                State.symmetry.mode = modes[nextIdx];
+                const sel = document.getElementById('sym-mode');
+                if (sel) sel.value = State.symmetry.mode;
+                const statusEl = document.getElementById('sym-status');
+                if (statusEl) statusEl.innerText = State.symmetry.mode === '0' ? '关' : State.symmetry.mode;
+                Symmetry.renderGuide();
+                UI.toast(`万花筒对称: ${State.symmetry.mode === '0' ? '已关闭' : State.symmetry.mode + ' 重对称'}`);
+            };
+        }
         document.getElementById('tb-light').onclick = () => {
             const modes = ['amber', 'white', 'sunset', 'aurora', 'dark', 'rgb'];
             const nextIdx = (modes.indexOf(State.lightbox.mode) + 1) % modes.length;
@@ -2252,7 +2463,105 @@
             if (!document.fullscreenElement) document.documentElement.requestFullscreen();
             else document.exitFullscreen();
         };
-        document.getElementById('tb-help').onclick = () => document.getElementById('help-modal').style.display = 'flex';
+        const tbHelp = document.getElementById('tb-help');
+        if (tbHelp) tbHelp.onclick = () => document.getElementById('help-modal').style.display = 'flex';
+
+        // 无限画布模式切换
+        const tbInfinite = document.getElementById('tb-infinite');
+        const infiniteHud = document.getElementById('infinite-hud');
+        if (tbInfinite) {
+            tbInfinite.onclick = () => {
+                State.infiniteCanvas = !State.infiniteCanvas;
+                tbInfinite.classList.toggle('active', State.infiniteCanvas);
+                if (infiniteHud) infiniteHud.style.display = State.infiniteCanvas ? 'flex' : 'none';
+                if (State.infiniteCanvas) {
+                    bgSprite.width = 16000;
+                    bgSprite.height = 12000;
+                    bgSprite.position.set(-6400, -4900);
+                    UI.toast("♾️ 已开启无限画布模式：视口边界已解除，支持大范围漫游与缩放");
+                } else {
+                    bgSprite.width = Config.width;
+                    bgSprite.height = Config.height;
+                    bgSprite.position.set(0, 0);
+                    UI.toast("已切回标准沙盘模式 (3200×2200)");
+                }
+            };
+        }
+
+        const btnHudReset = document.getElementById('btn-hud-reset');
+        if (btnHudReset) {
+            btnHudReset.onclick = () => {
+                viewport.scale.set(1);
+                viewport.position.set(window.innerWidth / 2, window.innerHeight / 2);
+                document.getElementById('zoom-val').innerText = '100%';
+                UI.toast("视口已复位居中原点");
+            };
+        }
+
+        // 右侧面板智能折叠与贴边收起
+        const settingsPanel = document.getElementById('settings');
+        const btnSettingsCollapse = document.getElementById('btn-settings-collapse');
+        const btnSettingsDock = document.getElementById('btn-settings-dock');
+        const dockedPill = document.getElementById('docked-settings-pill');
+
+        if (btnSettingsCollapse && settingsPanel) {
+            btnSettingsCollapse.onclick = (e) => {
+                e.stopPropagation();
+                const isCollapsed = settingsPanel.classList.toggle('collapsed');
+                btnSettingsCollapse.className = isCollapsed ? 'fas fa-chevron-down header-btn' : 'fas fa-chevron-up header-btn';
+                btnSettingsCollapse.title = isCollapsed ? '展开面板' : '折叠面板';
+                UI.toast(isCollapsed ? "📐 设置面板已折叠收纳" : "📐 设置面板已展开");
+            };
+        }
+
+        if (btnSettingsDock && dockedPill && settingsPanel) {
+            btnSettingsDock.onclick = (e) => {
+                e.stopPropagation();
+                settingsPanel.classList.add('docked');
+                dockedPill.style.display = 'flex';
+                UI.toast("👉 面板已收起至右侧边缘，点击悬浮标签随时唤出");
+            };
+            dockedPill.onclick = () => {
+                settingsPanel.classList.remove('docked');
+                dockedPill.style.display = 'none';
+                UI.toast("👈 设置面板已展开");
+            };
+        }
+
+        // 关于与更新日志弹窗
+        const openAboutModal = () => {
+            document.getElementById('about-modal').style.display = 'flex';
+        };
+        const btnAbout = document.getElementById('btn-about');
+        const headerVersionBadge = document.getElementById('header-version-badge');
+        const tbAboutTop = document.getElementById('tb-about-top');
+        const aboutModal = document.getElementById('about-modal');
+
+        if (btnAbout) btnAbout.onclick = openAboutModal;
+        if (headerVersionBadge) headerVersionBadge.onclick = openAboutModal;
+        if (tbAboutTop) tbAboutTop.onclick = openAboutModal;
+        if (aboutModal) {
+            aboutModal.onclick = (e) => {
+                if (e.target === aboutModal) aboutModal.style.display = 'none';
+            };
+        }
+
+        // 弹窗内部选项卡切换 (更新日志 / 设计理念 / 快捷键)
+        document.querySelectorAll('#about-modal .nav-tab[data-atab]').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('#about-modal .nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('#about-modal .atab-content').forEach(c => {
+                    c.classList.remove('active');
+                    c.style.display = 'none';
+                });
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.atab);
+                if (target) {
+                    target.classList.add('active');
+                    target.style.display = 'block';
+                }
+            };
+        });
 
         // 工具栏折叠与特殊操作
         document.getElementById('btn-collapse').onclick = () => document.getElementById('tools').classList.toggle('collapsed');
@@ -2408,6 +2717,14 @@
                 State.brush.size = Math.min(200, State.brush.size + 4);
                 document.getElementById('p-size').value = State.brush.size;
                 document.getElementById('v-size').innerText = State.brush.size;
+            } else if (k === 'escape') {
+                document.getElementById('about-modal').style.display = 'none';
+                document.getElementById('text-modal').style.display = 'none';
+                document.getElementById('slots-modal').style.display = 'none';
+                document.getElementById('help-modal').style.display = 'none';
+            } else if (e.code === 'Space') {
+                isSpaceDown = true;
+                if (!isPan) document.body.style.cursor = 'grab';
             } else if (k === 'tab') {
                 e.preventDefault();
                 const s = document.getElementById('settings').style;
@@ -2418,6 +2735,13 @@
                 t.display = hide ? 'none' : 'flex';
                 bar.display = hide ? 'none' : 'flex';
                 UI.toast(hide ? "沉浸全屏创作模式 (按Tab恢复)" : "已还原面板");
+            }
+        });
+
+        window.addEventListener('keyup', e => {
+            if (e.code === 'Space') {
+                isSpaceDown = false;
+                if (!isPan) document.body.style.cursor = 'default';
             }
         });
 
@@ -2511,6 +2835,20 @@
             Baker.flush();
             // 环境光律动
             Lightbox.tick();
+
+            // 无限画布实时坐标与缩放 HUD 更新
+            if (State.infiniteCanvas) {
+                const coordsEl = document.getElementById('hud-coords');
+                const zoomEl = document.getElementById('hud-zoom');
+                if (coordsEl) {
+                    const curX = Math.round((window.innerWidth / 2 - viewport.x) / viewport.scale.x);
+                    const curY = Math.round((window.innerHeight / 2 - viewport.y) / viewport.scale.y);
+                    coordsEl.innerText = `X: ${curX}, Y: ${curY}`;
+                }
+                if (zoomEl) {
+                    zoomEl.innerText = `${Math.round(viewport.scale.x * 100)}%`;
+                }
+            }
         });
 
         // 初始欢迎与引导
