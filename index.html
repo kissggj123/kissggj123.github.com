@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.4.9400 -->
+    <!-- VERSION: v7.8.4.9405 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1310,7 +1310,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.4.9400</div>
+                <div class="subtitle">v7.8.4.9405</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1623,7 +1623,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9400</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9405</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1668,7 +1668,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.4.9400',
+        VERSION: 'v7.8.4.9405',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2700,7 +2700,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.4.9400 已启动', 'info');
+        logEvent('兔可可王国 v7.8.4.9405 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9537,7 +9537,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.4.9400 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.4.9405 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9965,14 +9965,25 @@
                 height: 90px;
                 border-radius: 50%;
                 object-fit: cover;
-                border: 2px solid rgba(255,255,255,0.15);
-                box-shadow: 0 0 40px rgba(167,139,250,0.3);
+                border: 2px solid rgba(255,255,255,0.2);
+                box-shadow: 0 0 36px rgba(167,139,250,0.5);
                 margin-bottom: 1.5rem;
-                animation: bcos-boot-pulse 2s ease-in-out infinite;
+                animation: bcos-boot-pulse 2.5s ease-in-out infinite;
+                transform: translate3d(0, 0, 0);
+                -webkit-transform: translate3d(0, 0, 0);
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                will-change: opacity, filter;
             }
             @keyframes bcos-boot-pulse {
-                0%, 100% { box-shadow: 0 0 30px rgba(167,139,250,0.2); }
-                50%       { box-shadow: 0 0 60px rgba(167,139,250,0.5); }
+                0%, 100% {
+                    opacity: 0.88;
+                    filter: drop-shadow(0 0 8px rgba(167,139,250,0.3));
+                }
+                50% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 22px rgba(167,139,250,0.85));
+                }
             }
             .bcos-boot-title {
                 font-size: 1.4rem;
@@ -10162,7 +10173,7 @@
             background: #000;
             color: #e6f7ff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            touch-action: none !important;
+            touch-action: pan-y;
             -webkit-overflow-scrolling: auto !important;
         }
 
@@ -10180,7 +10191,7 @@
             inset: 0 !important;
             overscroll-behavior: none !important;
             -webkit-overflow-scrolling: auto !important;
-            touch-action: none !important;
+            touch-action: pan-y;
         }
 
         /* Vehicle Touchscreen Specific Optimizations */
@@ -10188,7 +10199,7 @@
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
-            touch-action: none !important;
+            touch-action: pan-y;
         }
         #bcos-car-lockscreen button, #car-root button,
         #bcos-car-lockscreen .clickable, #car-root .clickable {
@@ -10283,7 +10294,7 @@
             padding: max(0.75rem, env(safe-area-inset-top, 0.75rem)) max(1.2rem, env(safe-area-inset-right, 1.2rem)) max(0.75rem, env(safe-area-inset-bottom, 0.75rem)) max(1.2rem, env(safe-area-inset-left, 1.2rem));
             overflow: hidden;
             box-sizing: border-box;
-            touch-action: none !important;
+            touch-action: pan-y;
             overscroll-behavior: none !important;
             background: var(--car-bg);
             /* GPU-composite to its own layer — prevents iOS repaint jitter */
@@ -11084,26 +11095,25 @@
             backface-visibility: hidden;
             -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
-            animation: carRabbitPulse 4s ease-in-out infinite;
-            will-change: transform;
+            animation: carRabbitPulse 3.5s ease-in-out infinite;
+            will-change: filter, opacity;
+            isolation: isolate;
         }
         .car-rabbit-avatar.avatar-photo {
             background: transparent !important;
             border: 2px solid var(--car-accent) !important;
-            box-shadow: 0 0 20px var(--car-glow) !important;
+            box-shadow: 0 0 18px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
-            -webkit-mask-image: -webkit-radial-gradient(white, black);
-            mask-image: radial-gradient(white, black);
+            isolation: isolate;
         }
         .car-slider-thumb.thumb-photo {
             background: transparent !important;
             border: 2px solid var(--car-accent) !important;
-            box-shadow: 0 0 20px var(--car-glow) !important;
+            box-shadow: 0 0 18px var(--car-glow) !important;
             padding: 0 !important;
             overflow: hidden !important;
-            -webkit-mask-image: -webkit-radial-gradient(white, black);
-            mask-image: radial-gradient(white, black);
+            isolation: isolate;
         }
         .car-title-avatar-img {
             width: 16px;
@@ -11164,10 +11174,12 @@
         }
         @keyframes carRabbitPulse {
             0%, 100% {
-                transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+                transform: translate3d(0, 0, 0);
+                filter: brightness(1) drop-shadow(0 0 3px var(--car-glow));
             }
             50% {
-                transform: translate3d(0, 0, 0) scale3d(1.05, 1.05, 1);
+                transform: translate3d(0, 0, 0);
+                filter: brightness(1.08) drop-shadow(0 0 10px var(--car-glow));
             }
         }
         .car-quote-text {
@@ -11259,6 +11271,7 @@
             min-height: 0;
             display: flex;
             flex-direction: column;
+            touch-action: pan-y !important;
         }
         .car-milestone-scroller {
             flex: 1;
@@ -11268,7 +11281,7 @@
             overflow-y: auto;
             overscroll-behavior: contain !important;
             overscroll-behavior-y: contain !important;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch !important;
             touch-action: pan-y !important;
             display: flex;
             flex-direction: column;
@@ -11282,6 +11295,37 @@
             background: var(--car-border);
             border-radius: 2px;
         }
+        .car-ms-fold-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .73rem;
+            padding: .35rem .6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px dashed rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            color: var(--car-text-dim);
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+            transition: all .2s ease;
+        }
+        .car-ms-fold-toggle:hover, .car-ms-fold-toggle:active {
+            background: rgba(0, 234, 255, 0.08);
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+        }
+        .car-ms-fold-toggle .fold-arrow {
+            font-size: .68rem;
+            color: var(--car-accent2);
+            font-weight: 600;
+        }
+        .car-ms-completed-group {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+        }
         .car-ms-row {
             display: flex;
             align-items: center;
@@ -11293,6 +11337,7 @@
             border-left: 3px solid transparent;
             transition: background .2s, transform .15s;
             gap: .5rem;
+            touch-action: pan-y;
         }
         .car-ms-row:hover {
             background: rgba(255, 255, 255, 0.06);
@@ -11327,24 +11372,31 @@
         .car-ms-row.reached {
             border-left-color: #00ff41;
             color: #d1fae5;
+            opacity: 0.88;
         }
         .car-ms-row.reached .ms-pill {
             background: rgba(0, 255, 65, 0.15);
             color: #00ff41;
             border: 1px solid rgba(0, 255, 65, 0.3);
         }
-        .car-ms-row.next {
-            border-left-color: var(--car-accent);
-            background: rgba(0, 234, 255, 0.08);
+        .car-ms-row.next, .car-ms-row.in-progress {
+            border-left: 3.5px solid var(--car-accent) !important;
+            background: linear-gradient(90deg, rgba(0, 234, 255, 0.14) 0%, rgba(167, 139, 250, 0.08) 100%) !important;
             font-weight: 700;
-            box-shadow: 0 0 12px rgba(0, 234, 255, 0.15);
+            box-shadow: 0 0 16px rgba(0, 234, 255, 0.22), inset 0 0 8px rgba(0, 234, 255, 0.05);
         }
-        .car-ms-row.next .ms-pill {
-            background: var(--car-glow);
+        .car-ms-row.in-progress .in-progress-title {
             color: #fff;
-            border: 1px solid var(--car-accent);
+            text-shadow: 0 0 10px var(--car-glow);
         }
-        .car-ms-row:not(.reached):not(.next) .ms-pill {
+        .in-progress-pill {
+            background: linear-gradient(135deg, rgba(0, 234, 255, 0.4), rgba(167, 139, 250, 0.35)) !important;
+            color: #fff !important;
+            border: 1px solid var(--car-accent) !important;
+            box-shadow: 0 0 10px var(--car-glow) !important;
+            font-weight: 700;
+        }
+        .car-ms-row:not(.reached):not(.next):not(.in-progress) .ms-pill {
             background: rgba(255, 255, 255, 0.05);
             color: var(--car-text-dim);
         }
@@ -11362,7 +11414,7 @@
             margin-top: auto;
         }
         .car-slider-track {
-            contain: paint;
+            contain: layout style;
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
             position: relative;
@@ -11556,7 +11608,7 @@
             pointer-events: none;
             transition: opacity .25s ease, visibility .25s ease;
             padding: 1.5rem;
-            touch-action: none !important;
+            touch-action: pan-y;
             overscroll-behavior: none !important;
         }
         .car-modal-overlay.active {
@@ -11981,7 +12033,7 @@
 
         /* Portrait cockpit screens: keep the dashboard readable in a vertical
            flow while the center area, rather than the whole page, scrolls. */
-        @media (max-width: 900px), (max-aspect-ratio: 6 / 5) {
+        @media (orientation: portrait), (max-aspect-ratio: 1 / 1) {
             #bcos-car-lockscreen, #car-root {
                 padding: max(.55rem, env(safe-area-inset-top, .55rem)) max(.7rem, env(safe-area-inset-right, .7rem)) max(.55rem, env(safe-area-inset-bottom, .55rem)) max(.7rem, env(safe-area-inset-left, .7rem));
             }
@@ -12168,7 +12220,7 @@
             justify-content: flex-start !important;
         }
         /* Mobile Portrait adaptive layout for minimalist mode */
-        @media (max-width: 900px), (max-aspect-ratio: 6 / 5) {
+        @media (orientation: portrait), (max-aspect-ratio: 1 / 1) {
             .car-minimalist-mode .car-main-grid {
                 align-items: center !important;
                 justify-content: center !important;
@@ -12434,7 +12486,7 @@
         .screen-portrait .car-diag-grid { gap: .35rem !important; }
         .screen-portrait .car-diag-item { padding: .35rem .45rem !important; }
         .screen-portrait .car-milestone-card { flex: none !important; }
-        .screen-portrait .car-milestone-scroller { flex: none !important; min-height: 0 !important; max-height: min(28dvh, 250px) !important; }
+        .screen-portrait .car-milestone-scroller { flex: none !important; min-height: 0 !important; max-height: min(34dvh, 280px) !important; touch-action: pan-y !important; }
         .screen-portrait .car-bottom-bar { flex-shrink: 0 !important; padding-top: .35rem !important; }
         .screen-portrait .car-slider-track { height: 42px !important; }
         .screen-portrait.car-minimalist-mode .car-main-grid {
@@ -12458,6 +12510,109 @@
         .screen-portrait.car-minimalist-mode .car-digital-date {
             justify-content: center !important;
             font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+        }
+
+        /* Mobile Landscape Responsive Optimization (Phones in Landscape: height <= 520px) */
+        @media (orientation: landscape) and (max-height: 520px) {
+            #bcos-car-lockscreen,
+            #car-root {
+                padding: max(0.35rem, env(safe-area-inset-top, 0.35rem)) max(1rem, env(safe-area-inset-right, 1rem)) max(0.35rem, env(safe-area-inset-bottom, 0.35rem)) max(1rem, env(safe-area-inset-left, 1rem)) !important;
+            }
+            .car-top-bar {
+                min-height: 30px !important;
+                padding-bottom: 0.2rem !important;
+                gap: 0.4rem !important;
+            }
+            .car-brand {
+                font-size: 0.8rem !important;
+            }
+            .car-main-grid {
+                grid-template-columns: 1.15fr 0.85fr !important;
+                gap: 0.75rem !important;
+                padding: 0.2rem 0 !important;
+                align-items: center !important;
+                flex: 1 !important;
+                min-height: 0 !important;
+            }
+            .car-hero-card {
+                padding: 0.6rem 0.8rem !important;
+                border-radius: 13px !important;
+            }
+            .car-hero-days {
+                font-size: clamp(2rem, 5.5vw, 3.2rem) !important;
+            }
+            .car-hero-time {
+                font-size: 0.82rem !important;
+                margin-bottom: 0.3rem !important;
+            }
+            .car-clock-box {
+                margin-bottom: 0.3rem !important;
+                padding: 0.4rem 0.6rem !important;
+            }
+            .car-digital-clock {
+                font-size: clamp(1.8rem, 4.5vw, 2.6rem) !important;
+            }
+            .car-digital-date {
+                font-size: 0.72rem !important;
+                margin-top: 0.15rem !important;
+            }
+            .car-gauge-ring-wrap {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .car-gauge-pct {
+                font-size: 0.95rem !important;
+            }
+            .car-side-col {
+                gap: 0.45rem !important;
+                justify-content: space-between !important;
+                min-height: 0 !important;
+            }
+            .car-widget-card {
+                padding: 0.5rem 0.7rem !important;
+                border-radius: 12px !important;
+            }
+            .car-companion-box {
+                padding: 0.4rem 0.6rem !important;
+            }
+            .car-rabbit-avatar {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 1.2rem !important;
+            }
+            .car-battery-hero {
+                padding: 0.2rem 0 !important;
+                margin-bottom: 0.25rem !important;
+            }
+            .car-battery-soc-val {
+                font-size: 1.35rem !important;
+            }
+            .car-battery-range-val {
+                font-size: 0.95rem !important;
+            }
+            .car-diag-grid {
+                gap: 0.25rem !important;
+            }
+            .car-diag-item {
+                padding: 0.25rem 0.4rem !important;
+                font-size: 0.68rem !important;
+            }
+            .car-milestone-scroller {
+                max-height: clamp(80px, 22vh, 130px) !important;
+                gap: 0.25rem !important;
+            }
+            .car-bottom-bar {
+                padding-top: 0.2rem !important;
+            }
+            .car-slider-track {
+                height: 38px !important;
+                width: min(340px, 52vw) !important;
+            }
+            .car-slider-thumb {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 1.1rem !important;
+            }
         }
 
 `;
@@ -13648,7 +13803,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.4.9400</span>
+                <span class="bcos-ctx-ver">v7.8.4.9405</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -16991,6 +17146,18 @@ const START_DATE = '2024/03/12 00:00:00';
             }
         }
 
+        let showCompletedMilestones = (function() {
+            try { return localStorage.getItem('car_show_completed_milestones') === 'true'; } catch(e) { return false; }
+        })();
+
+        function toggleCompletedMilestones() {
+            showCompletedMilestones = !showCompletedMilestones;
+            try {
+                localStorage.setItem('car_show_completed_milestones', showCompletedMilestones ? 'true' : 'false');
+            } catch(e) {}
+            renderMilestones();
+        }
+
         function renderMilestones() {
             const start = new Date(START_DATE);
             const now = new Date();
@@ -16998,36 +17165,58 @@ const START_DATE = '2024/03/12 00:00:00';
             const listEl = document.getElementById('car-ms-list');
             if (!listEl) return;
 
-            let html = '';
+            let reachedHtml = '';
+            let unreachedHtml = '';
+            let reachedCount = 0;
+            let currentGoal = null;
+
             // Built-in milestones
             MILESTONES.forEach(m => {
                 const reached = days >= m.days;
-                const isNext = !reached && (MILESTONES.find(x => days < x.days) === m);
+                const isNext = !reached && !currentGoal;
+                if (isNext) currentGoal = m;
+
                 const mDate = new Date(start.getTime() + m.days * 86400000);
                 const dateStr = `${mDate.getFullYear()}/${String(mDate.getMonth()+1).padStart(2,'0')}/${String(mDate.getDate()).padStart(2,'0')}`;
-                const statusBadge = reached 
-                    ? '<span class="ms-pill">已达成</span>' 
-                    : `<span class="ms-pill">剩 ${m.days - days} 天</span>`;
-                html += `<div class="car-ms-row ${reached ? 'reached' : (isNext ? 'next' : '')}">
-                    <div class="ms-row-left">
-                        <span>${reached ? '✅' : (isNext ? '🎯' : '⏳')}</span>
-                        <span>${m.label}</span>
-                    </div>
-                    <div class="ms-row-right">
-                        <span class="ms-date">${dateStr}</span>
-                        ${statusBadge}
-                    </div>
-                </div>`;
+
+                if (reached) {
+                    reachedCount++;
+                    reachedHtml += `<div class="car-ms-row reached">
+                        <div class="ms-row-left">
+                            <span>✅</span>
+                            <span>${m.label}</span>
+                        </div>
+                        <div class="ms-row-right">
+                            <span class="ms-date">${dateStr}</span>
+                            <span class="ms-pill">已达成</span>
+                        </div>
+                    </div>`;
+                } else {
+                    const statusBadge = isNext 
+                        ? `<span class="ms-pill in-progress-pill">🎯 进行中 · 剩 ${m.days - days} 天</span>` 
+                        : `<span class="ms-pill">剩 ${m.days - days} 天</span>`;
+                    unreachedHtml += `<div class="car-ms-row ${isNext ? 'next in-progress' : ''}">
+                        <div class="ms-row-left">
+                            <span>${isNext ? '🎯' : '⏳'}</span>
+                            <span class="${isNext ? 'in-progress-title' : ''}">${m.label}</span>
+                        </div>
+                        <div class="ms-row-right">
+                            <span class="ms-date">${dateStr}</span>
+                            ${statusBadge}
+                        </div>
+                    </div>`;
+                }
             });
 
             // Custom anniversaries
+            let customHtml = '';
             const custom = getCustomAnniversaries();
             if (custom.length > 0) {
                 custom.forEach((c) => {
                     const cDate = new Date(c.date + ' 00:00:00');
                     const diffDays = Math.floor((now - cDate) / 86400000);
                     const isPast = diffDays >= 0;
-                    html += `<div class="car-ms-row" style="border-left-color:var(--car-accent2); background:rgba(255,107,181,0.06);">
+                    customHtml += `<div class="car-ms-row" style="border-left-color:var(--car-accent2); background:rgba(255,107,181,0.06);">
                         <div class="ms-row-left">
                             <span>${c.icon || '💖'}</span>
                             <span>${c.name}</span>
@@ -17040,7 +17229,18 @@ const START_DATE = '2024/03/12 00:00:00';
                 });
             }
 
-            listEl.innerHTML = html;
+            let fullHtml = '';
+            if (reachedCount > 0) {
+                fullHtml += `<div class="car-ms-fold-toggle" onclick="toggleCompletedMilestones()" title="点击${showCompletedMilestones ? '收起' : '展开查看'}已达成里程碑">
+                    <span class="fold-txt">📜 已达成里程碑 (${reachedCount}项${showCompletedMilestones ? '已展开' : '已折叠'})</span>
+                    <span class="fold-arrow">${showCompletedMilestones ? '▴ 收起' : '▾ 展开查看'}</span>
+                </div>`;
+                if (showCompletedMilestones) {
+                    fullHtml += `<div class="car-ms-completed-group">${reachedHtml}</div>`;
+                }
+            }
+            fullHtml += unreachedHtml + customHtml;
+            listEl.innerHTML = fullHtml;
         }
 
         // --- Slide to Unlock Gesture ---
@@ -17122,22 +17322,8 @@ const START_DATE = '2024/03/12 00:00:00';
                     onMove(e.touches[0].clientX);
                     return;
                 }
-                const scroller = e.target.closest('.car-milestone-scroller, .car-modal, .car-wp-grid');
-                if (scroller && e.touches && e.touches[0]) {
-                    const currentY = e.touches[0].clientY;
-                    const deltaY = currentY - touchStartY;
-                    const isAtTop = scroller.scrollTop <= 0;
-                    const isAtBottom = (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1);
-                    // Prevent pulling DOWN when already at top (stops iOS Chrome from exiting fullscreen / triggering refresh)
-                    if (deltaY > 0 && isAtTop) {
-                        if (e.cancelable) e.preventDefault();
-                        return;
-                    }
-                    // Prevent pulling UP when already at bottom
-                    if (deltaY < 0 && isAtBottom) {
-                        if (e.cancelable) e.preventDefault();
-                        return;
-                    }
+                // Allow unhindered native touch scrolling in any scrollable card, modal, or list
+                if (e.target.closest('.car-milestone-scroller, .car-milestone-card, .car-modal, .car-wp-grid, input, textarea, select')) {
                     return;
                 }
                 if (document.getElementById('bcos-car-lockscreen')) {
@@ -17349,15 +17535,15 @@ const START_DATE = '2024/03/12 00:00:00';
             if (ratio >= 0.82 && ratio <= 1.18) {
                 return 'circular';
             }
-            // Ultra-Wide Panoramic (21:9 is 2.33, 32:9 is 3.55)
-            if (ratio >= 2.05) {
+            // Ultra-Wide Panoramic (21:9 is 2.33, 32:9 is 3.55) - only for actual ultra-wide consoles
+            if (ratio >= 2.15 && w >= 1100) {
                 return 'ultrawide';
             }
             // Portrait Vertical (9:16 is 0.56, phone or Tesla vertical center console)
-            if (ratio < 0.82) {
+            if (ratio < 0.95 || h > w) {
                 return 'portrait';
             }
-            // Standard Dashboard (16:9 is 1.77, 16:10 is 1.6, 4:3 is 1.33)
+            // Standard Dashboard (16:9 is 1.77, 16:10 is 1.6, 4:3 is 1.33, or mobile landscape)
             return 'standard';
         }
 
@@ -17417,7 +17603,8 @@ const START_DATE = '2024/03/12 00:00:00';
 
         function initGeometryObserver() {
             applyScreenGeometry();
-            const onResize = () => {
+            
+            const handleGeometryUpdate = () => {
                 if (_geometryRaf) cancelAnimationFrame(_geometryRaf);
                 _geometryRaf = requestAnimationFrame(() => {
                     const saved = (function() {
@@ -17429,17 +17616,37 @@ const START_DATE = '2024/03/12 00:00:00';
                 });
             };
 
+            // Responsive updates on orientation change with immediate + multi-step settle checks
+            const onOrientationOrResize = () => {
+                handleGeometryUpdate();
+                setTimeout(handleGeometryUpdate, 60);
+                setTimeout(handleGeometryUpdate, 180);
+                setTimeout(handleGeometryUpdate, 360);
+            };
+
+            // Always listen to window resize and orientation events
+            window.addEventListener('resize', onOrientationOrResize, { passive: true });
+            window.addEventListener('orientationchange', onOrientationOrResize, { passive: true });
+            if (window.screen && window.screen.orientation) {
+                try {
+                    window.screen.orientation.addEventListener('change', onOrientationOrResize);
+                } catch(e) {}
+            }
+            if (window.visualViewport) {
+                try {
+                    window.visualViewport.addEventListener('resize', onOrientationOrResize);
+                } catch(e) {}
+            }
+
             if (window.ResizeObserver) {
                 try {
                     if (!_geometryObserver) {
-                        _geometryObserver = new ResizeObserver(onResize);
+                        _geometryObserver = new ResizeObserver(onOrientationOrResize);
                         _geometryObserver.observe(document.documentElement);
+                        const rootEl = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
+                        if (rootEl) _geometryObserver.observe(rootEl);
                     }
-                } catch (e) {
-                    window.addEventListener('resize', onResize, { passive: true });
-                }
-            } else {
-                window.addEventListener('resize', onResize, { passive: true });
+                } catch (e) {}
             }
         }
 
@@ -17661,7 +17868,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9400</div>
+                                <div class="car-diag-val">bcos v7.8.4.9405</div>
                             </div>
                         </div>
                     </div>
@@ -18136,6 +18343,7 @@ const START_DATE = '2024/03/12 00:00:00';
     window.detectScreenGeometry = detectScreenGeometry;
     window.setScreenGeometry = setScreenGeometry;
     window.applyScreenGeometry = applyScreenGeometry;
+    window.toggleCompletedMilestones = toggleCompletedMilestones;
 
 })();
 
@@ -22059,7 +22267,13 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
-        { ver:'v7.8.4.9400', title:'座舱几何自适应引擎（MINI圆形OLED/贯穿超宽屏/曲面瀑布屏）、消除头像抽搐与重构智能布局算法', items:[
+        { ver:'v7.8.4.9405', title:'移动端下滑浏览修复、横竖屏瞬时响应式自适应、消除PWA头像与开机光晕抽搐、里程碑折叠与高亮', items:[
+            '【此改动适用于 index.html / car.html / car.css】[移动端下滑看里程碑修复] 解除祖先节点 touch-action: none 导致的浏览手势抑制，全面重构手势拦截机制；移除了过度侵入性的 touchmove preventDefault，配合 overscroll-behavior: contain 原生动量平滑滚动，确保移动端上下滑动浏览里程碑流畅丝滑',
+            '【此改动适用于 index.html / car.html / car.css】[横竖屏瞬时响应式自适应] 重构屏幕形态探测算法与响应式监听体系：修正手机横屏时误判超宽带状中控的问题，增加 orientationchange / screen.orientation / visualViewport 与多帧防抖校准机制；修复 max-width: 900px 媒体查询误伤横屏模式的缺陷，新增 @media (orientation: landscape) and (max-height: 520px) 紧凑横屏专属流式适配，横竖屏秒切布局瞬时无缝重绘',
+            '【此改动适用于 index.html / car.html / car.css】[移动端PWA头像光晕防抽搐] 彻底根除 iOS/Android PWA 模式下伴舱头像光圈、开机动画 Logo 及滑块头像周围光晕发抖抖动抽搐现象：废除 mask-image 与 border-radius subpixel 亚像素计算冲突，开机光晕由耗性能的动态 box-shadow 改为 120fps GPU 硬件合成的 opacity/drop-shadow 呼吸动画，滑块轨道移除了强行 contain: paint 导致的阴影重绘剪裁，光晕如丝般静止纯净',
+            '【此改动适用于 index.html / car.html】[历程里程碑折叠与当前进行中高亮] 里程碑组件全面升级美化与轻量化：默认自动智能高亮当前正在进行中的目标里程碑（青紫霓虹全息发光边框 + 🎯 进行中标线），已达成的历史里程碑默认智能折叠收起，仅占用极少屏幕高度；支持一键展开查看历史成就，大幅优化竖屏视觉占比与精致科技感'
+        ]},
+        { ver:'v7.8.4.9405', title:'座舱几何自适应引擎（MINI圆形OLED/贯穿超宽屏/曲面瀑布屏）、消除头像抽搐与重构智能布局算法', items:[
             '【此改动适用于 index.html / car.html / car.css】[智能座舱几何引擎] 全新重构 Smart Cockpit Display Geometry Engine，基于 ResizeObserver 与 RAF 智能纵横比感知，支持智能自动识别或手动中控选择（MINI 圆形 OLED 1:1、贯穿带状超宽屏 21:9+、标准横屏 16:9、垂直中控竖屏 9:16）',
             '【此改动适用于 index.html / car.html / car.css】[MINI Cooper 圆形 OLED 专属适配] 针对 MINI Cooper 240mm 圆形 OLED 屏幕及 1:1 异形屏打造内切安全圆（Inscribed Circle Safe Area），顶部胶囊栏向心内缩防物理圆框切断、仪表与时钟径向居中垂直对齐、智能隐去四角边缘次要徽章、底部滑块缩窄至 280px / 64vmin 规避圆弧底缘碰触，带来沉浸式中控圆盘视效',
             '【此改动适用于 index.html / car.html / car.css】[贯穿带状超宽屏三列全景] 针对 21:9~32:9 超长带状中控屏自动启用 3 列网格全景展开（左侧时钟与诊断、中间纪念日主卡与达成率环表、右侧伴行卡与里程碑时间轴），纵向高度紧凑，横向信息分布开阔均衡',

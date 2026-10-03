@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.4.9400-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.4.9405-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -68,7 +68,31 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.4.9400** *(当前版本)*
+### **v7.8.4.9405** *(当前版本)*
+
+#### 【核心修复与体验优化】
+1. **移动端无法下滑浏览里程碑彻底修复** `[适用于 index.html / car.html / car.css]`：
+   - 彻底解除根节点与容器元素误设 `touch-action: none !important` 对浏览器触控滚动链的全局拦截，严格遵循 W3C 规范将其放宽为 `touch-action: pan-y`。
+   - 重构手势拦截策略：完全移除在滚动容器上对 `touchmove` 的强行 `preventDefault` 调用，依托原生 `overscroll-behavior: contain` 阻断全局下拉刷新橡皮筋，保留 `-webkit-overflow-scrolling: touch` 硬件级流体动量惯性滚动，移动端单指上下滑动无阻畅行。
+
+2. **横竖屏瞬时自适应与响应式流式布局重构** `[适用于 index.html / car.html / car.css]`：
+   - 重构屏幕几何探测引擎 `detectScreenGeometry()`：修正手机横屏时（如 iPhone 14 Pro 852×393）因长宽比过大而误判为 3 列带状超宽中控屏的缺陷，将其智能判定为双列标准横屏。
+   - 修复 CSS 媒体查询中 `max-width: 900px` 误将手机横屏劫持为单列竖屏的致命缺陷，严格限定为竖屏方向生效。
+   - 新增 `@media (orientation: landscape) and (max-height: 520px)` 移动端紧凑横屏专属样式规则，时钟、伴舱卡片、仪表盘与滑块在狭小横屏空间内全息自适应排布，永不溢出。
+   - 扩展事件监听链路：由单纯依赖 ResizeObserver 扩充为对 `orientationchange`、`screen.orientation.change`、`visualViewport.resize` 的全维度监听，并加入 60ms/180ms/360ms 多帧渐进校准，无论手动翻转手机还是瞬时横竖屏切换，界面均实现 0 延迟秒级响应。
+
+3. **移动端竖屏 PWA 头像光晕及开机动画光晕抽搐根除** `[适用于 index.html / car.html / car.css]`：
+   - 根除伴舱头像与底部滑块头像周围光圈抖动：移除 `-webkit-mask-image: -webkit-radial-gradient` 在 Retina 屏幕下反复与 `box-shadow` 产生亚像素舍入冲突的缺陷，改由 `overflow: hidden` + `isolation: isolate` 进行图层隔离。
+   - 移除滑轨容器 `.car-slider-track` 的 `contain: paint`，避免内部箭头动画触发整轨阴影强制剪裁重绘。
+   - 开机动画 Logo 彻底告别动态 `box-shadow` 算力重绘，改用 120fps GPU 硬件合成的 `opacity` 与 `filter: drop-shadow` 呼吸律动，光晕平滑细腻，纯净无颤。
+
+4. **历程里程碑折叠收纳与当前进行中目标自动高亮** `[适用于 index.html / car.html]`：
+   - 里程碑面板引入全新智能收缩引擎：默认自动智能高亮当前正在攻坚的进行中里程碑（青紫霓虹全息发光边框 + 🎯 进行中标线），后续待解锁里程碑按序排列。
+   - 已完成的全部历史里程碑默认智能折叠收纳，仅以精致细窄的「📜 已达成里程碑 (X项已折叠) ▾ 展开查看」状态条展示，大幅缩减竖屏组件占用面积，提升整体视觉通透感与现代美感，同时支持一键展开回顾往期成就。
+
+---
+
+### **v7.8.4.9400**
 
 #### 【核心重构与新增】
 1. **智能座舱屏幕形态自适应引擎 (Smart Cockpit Display Geometry Engine)** `[适用于 index.html / car.html / car.css]`：

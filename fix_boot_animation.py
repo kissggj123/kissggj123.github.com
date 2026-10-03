@@ -28,14 +28,25 @@ boot_css = """
                 height: 90px;
                 border-radius: 50%;
                 object-fit: cover;
-                border: 2px solid rgba(255,255,255,0.15);
-                box-shadow: 0 0 40px rgba(167,139,250,0.3);
+                border: 2px solid rgba(255,255,255,0.2);
+                box-shadow: 0 0 36px rgba(167,139,250,0.5);
                 margin-bottom: 1.5rem;
-                animation: bcos-boot-pulse 2s ease-in-out infinite;
+                animation: bcos-boot-pulse 2.5s ease-in-out infinite;
+                transform: translate3d(0, 0, 0);
+                -webkit-transform: translate3d(0, 0, 0);
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                will-change: opacity, filter;
             }
             @keyframes bcos-boot-pulse {
-                0%, 100% { box-shadow: 0 0 30px rgba(167,139,250,0.2); }
-                50%       { box-shadow: 0 0 60px rgba(167,139,250,0.5); }
+                0%, 100% {
+                    opacity: 0.88;
+                    filter: drop-shadow(0 0 8px rgba(167,139,250,0.3));
+                }
+                50% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 22px rgba(167,139,250,0.85));
+                }
             }
             .bcos-boot-title {
                 font-size: 1.4rem;
