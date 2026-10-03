@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.4.9406-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.4.9407-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -68,7 +68,23 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.4.9406** *(当前版本)*
+### **v7.8.4.9407** *(当前版本)*
+
+#### 【UI 重构与体验优化】
+1. **纪念日主卡轻量通透雾面毛玻璃重构** `[适用于 index.html / car.html / car.css]`：
+   - 彻底告别原先厚重沉闷的高对比度纯黑底框与粗糙荧光外边框，全面采用 `backdrop-filter: blur(28px) saturate(190%)` 航空级超清透雾面毛玻璃材质。
+   - 引入 `inset 0 1px 0 rgba(255, 255, 255, 0.15)` 极细顶部镜面高光棱线与柔和立体外阴影，组件完全融于车机动态壁纸，消除突兀感与块面割裂。
+2. **根除视觉层级重复与冗余堆叠** `[适用于 index.html / car.html / car.css]`：
+   - 移除时钟下重复的时间感官堆叠：为毫秒计时行新增精致胶囊角标「累计航程」，字体层次分明，逻辑更清晰。
+   - 消除起始日期的双重标注（此前在卡片标题与右侧同时出现 `SINCE 2024.03.12` 和 `START 2024.03.12`）：右侧仪表芯片升级为与车机心跳同步的实时心率节律监控 `PULSE (72 BPM)` 与 `STATUS (❤️ 伴行中)`，真正赋予动态生命力。
+   - 消除水平进度条与环形仪表的双重视觉冗余感：去除了卡片内里程碑容器与药丸徽章嵌套的多层厚黑底框，全维呈现现代轻盈科技质感。
+3. **HUD 达成率环表与呼吸脉冲信标精细化** `[适用于 index.html / car.html / car.css]`：
+   - 标题前缀加入航空级青蓝脉冲信标指示灯（`.car-hero-beacon`），平稳呼吸闪烁，强化座舱 HUD 科技意象。
+   - 右侧环形仪表描边粗细由 `7px` 细化为 `5.5px` 优雅刻度环，居中标识升级为凝练的「达成率」，横竖屏全场景无缝自适应。
+
+---
+
+### **v7.8.4.9406**
 
 #### 【核心修复与体验优化】
 1. **数字时钟字符间距与冒号留白优化** `[适用于 index.html / car.html / car.css]`：

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.4.9406 -->
+    <!-- VERSION: v7.8.4.9407 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1310,7 +1310,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.4.9406</div>
+                <div class="subtitle">v7.8.4.9407</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1623,7 +1623,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9406</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9407</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1668,7 +1668,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.4.9406',
+        VERSION: 'v7.8.4.9407',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2700,7 +2700,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.4.9406 已启动', 'info');
+        logEvent('兔可可王国 v7.8.4.9407 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9537,7 +9537,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.4.9406 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.4.9407 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -10577,18 +10577,22 @@
             flex-wrap: wrap;
         }
 
-        /* Anniversary Hero Card */
+        /* Anniversary Hero Card - Cyber Cockpit Horizon Glass */
         .car-hero-card {
-            background: var(--car-panel);
-            border: 1px solid var(--car-border);
-            border-radius: 20px;
-            padding: clamp(0.75rem, 1.6vh, 1.25rem) clamp(0.9rem, 1.8vw, 1.5rem);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(10, 18, 30, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+            padding: clamp(0.85rem, 1.8vh, 1.35rem) clamp(1rem, 2vw, 1.6rem);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            box-shadow: 0 16px 42px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 24px rgba(0, 229, 255, 0.04);
             position: relative;
             overflow: hidden;
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), border-color .3s ease, box-shadow .3s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .car-hero-card:hover {
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 32px var(--car-glow);
         }
         #bcos-car-lockscreen.car-idle-dimmed .car-digital-clock,
         #bcos-car-lockscreen.car-idle-dimmed .car-hero-days,
@@ -10600,22 +10604,19 @@
         .car-hero-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--car-accent), var(--car-accent2), transparent);
-            opacity: 0.8;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 5%, rgba(255, 255, 255, 0.45) 30%, var(--car-accent) 50%, rgba(255, 255, 255, 0.45) 70%, transparent 95%);
+            opacity: 0.7;
+            pointer-events: none;
         }
         .car-hero-card::after {
             content: '';
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 140px;
-            height: 140px;
+            top: -40px; right: -40px;
+            width: 180px; height: 180px;
             background: radial-gradient(circle, var(--car-glow) 0%, transparent 70%);
-            opacity: 0.35;
+            opacity: 0.18;
             pointer-events: none;
         }
         .car-hero-content-split {
@@ -10635,34 +10636,55 @@
             justify-content: center;
             gap: .65rem;
             flex-shrink: 0;
-            padding: .2rem 0.5rem .2rem .75rem;
+            padding: .2rem 0.2rem .2rem 1.2rem;
             border-left: 1px solid rgba(255, 255, 255, 0.08);
         }
         .car-hero-title {
-            font-size: .92rem;
+            font-size: .88rem;
             font-weight: 700;
-            color: var(--car-accent);
+            color: var(--car-text);
             display: flex;
             align-items: center;
-            gap: .4rem;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: .25rem;
+        }
+        .car-hero-title-main {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+        .car-hero-beacon {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            box-shadow: 0 0 8px var(--car-accent);
+            animation: carBeaconPulse 2s ease-in-out infinite;
+        }
+        @keyframes carBeaconPulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.25); box-shadow: 0 0 12px var(--car-accent); }
         }
         .car-hero-badge-tag {
-            font-size: .68rem;
-            color: var(--car-accent2);
-            background: rgba(167, 139, 250, 0.12);
-            border: 1px solid rgba(167, 139, 250, 0.28);
-            padding: 2px 7px;
-            border-radius: 10px;
-            letter-spacing: 0.5px;
-            font-family: monospace;
+            font-size: .65rem;
+            color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            letter-spacing: 0.6px;
+            font-family: 'SF Mono', Consolas, monospace;
             font-weight: 600;
         }
 
         /* Circular HUD Milestone Gauge Ring */
         .car-gauge-ring-wrap {
             position: relative;
-            width: 106px;
-            height: 106px;
+            width: 94px;
+            height: 94px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -10673,7 +10695,7 @@
             transform: rotate(-90deg);
         }
         .car-gauge-track {
-            stroke: rgba(255, 255, 255, 0.08);
+            stroke: rgba(255, 255, 255, 0.07);
         }
         .car-gauge-bar {
             stroke: var(--car-accent);
@@ -10692,19 +10714,19 @@
             pointer-events: none;
         }
         .car-gauge-pct {
-            font-size: 1.45rem;
+            font-size: 1.38rem;
             font-weight: 900;
             line-height: 1;
-            font-family: 'SF Mono', "SF Pro Display", "DIN Alternate", "Roboto Mono", Consolas, Monaco, monospace;
+            font-family: 'SF Mono', "SF Pro Display", -apple-system, BlinkMacSystemFont, monospace;
             color: var(--car-accent);
-            text-shadow: 0 0 10px var(--car-glow);
+            text-shadow: 0 0 12px var(--car-glow);
         }
         .car-gauge-sub {
-            font-size: 0.58rem;
+            font-size: 0.62rem;
             color: var(--car-text-dim);
-            letter-spacing: 1px;
-            margin-top: 3px;
-            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin-top: 4px;
+            font-weight: 600;
         }
 
         /* High-Tech Cockpit Tooltip */
@@ -10749,31 +10771,44 @@
         /* Companion & Anniversary Vitals */
         .car-hero-vitals {
             display: flex;
-            gap: .5rem;
+            gap: .45rem;
             width: 100%;
             justify-content: center;
         }
         .car-vital-chip {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9px;
             padding: 3px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 60px;
+            min-width: 58px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .car-vital-chip:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            background: rgba(255, 255, 255, 0.07);
         }
         .car-vital-chip .vital-label {
-            font-size: 0.55rem;
+            font-size: 0.54rem;
             color: var(--car-text-dim);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             font-weight: 600;
         }
         .car-vital-chip .vital-val {
             font-size: 0.72rem;
             font-weight: 700;
             color: #fff;
-            font-family: monospace;
+            font-family: 'SF Mono', Consolas, monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .car-vital-chip .vital-val small {
+            font-size: 0.54rem;
+            opacity: 0.65;
+            font-weight: 500;
         }
         .car-heart-pulse {
             display: inline-block;
@@ -10812,40 +10847,56 @@
         .car-hero-days-wrap {
             display: flex;
             align-items: baseline;
-            gap: .6rem;
-            margin: .35rem 0 .15rem 0;
+            gap: .55rem;
+            margin: .25rem 0 .2rem 0;
         }
         .car-hero-days {
             font-size: clamp(2.8rem, 5.2vw, 4.4rem);
             font-weight: 900;
             line-height: 1;
             font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-            background: linear-gradient(135deg, var(--car-accent) 10%, #ffffff 50%, var(--car-accent2) 90%);
+            background: linear-gradient(135deg, #ffffff 40%, var(--car-accent) 95%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px var(--car-glow));
-            letter-spacing: -2px;
+            filter: drop-shadow(0 0 16px var(--car-glow));
+            letter-spacing: -1.5px;
             font-variant-numeric: tabular-nums;
             transition: filter 1.2s ease, opacity 1.2s ease;
         }
         .car-hero-unit {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             font-weight: 800;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 1.5px;
+        }
+        .car-hero-time-row {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .65rem;
+        }
+        .car-hero-time-tag {
+            font-size: .66rem;
+            font-weight: 600;
             color: var(--car-text-dim);
-            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1px 6px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
         }
         .car-hero-time {
-            font-size: 1.12rem;
+            font-size: 0.98rem;
             font-weight: 700;
-            color: var(--car-accent2);
+            color: var(--car-accent);
             font-family: 'SF Mono', Consolas, Monaco, monospace;
-            margin-bottom: .75rem;
             font-variant-numeric: tabular-nums;
             letter-spacing: 0.5px;
             display: inline-block;
-            min-height: 1.5rem;
-            line-height: 1.5rem;
+            min-height: 1.35rem;
+            line-height: 1.35rem;
         }
         .car-ms-frac {
             font-size: 0.72em;
@@ -10858,19 +10909,21 @@
             font-variant-numeric: tabular-nums;
         }
         .car-hero-progress-box {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.035);
             border-radius: 12px;
-            padding: .7rem .95rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+            padding: .55rem .8rem;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
         }
         .car-progress-header {
             display: flex;
             justify-content: space-between;
-            font-size: .8rem;
-            color: var(--car-text-dim);
-            margin-bottom: .4rem;
+            align-items: center;
+            font-size: .78rem;
+            color: var(--car-text);
+            margin-bottom: .45rem;
             font-weight: 600;
+            gap: .5rem;
         }
         .car-progress-bar-bg {
             height: 8px;
@@ -12046,19 +12099,20 @@
             .car-clock-box { margin-bottom: .5rem; }
             .car-digital-clock { font-size: clamp(2.25rem, 10vw, 4.1rem); }
             .car-digital-date { font-size: .72rem; margin-top: .25rem; gap: .35rem; }
-            .car-hero-card { padding: .7rem .8rem; border-radius: 15px; }
+            .car-hero-card { padding: .75rem .85rem; border-radius: 18px; }
             .car-hero-content-split { gap: .6rem; }
-            .car-hero-title { font-size: .76rem; flex-wrap: wrap; }
+            .car-hero-title { font-size: .8rem; }
             .car-hero-days { font-size: clamp(2.35rem, 11vw, 3.7rem); }
             .car-hero-unit { font-size: .9rem; }
-            .car-hero-time { font-size: .86rem; min-height: 1.25rem; line-height: 1.25rem; margin-bottom: .45rem; }
-            .car-hero-progress-box { padding: .5rem .6rem; }
-            .car-progress-header { font-size: .68rem; }
-            .car-gauge-ring-wrap { width: 76px; height: 76px; }
-            .car-gauge-pct { font-size: 1.05rem; }
-            .car-hero-gauge-col { gap: .35rem; padding: .15rem 0 .15rem .5rem; }
+            .car-hero-time-row { margin-bottom: .5rem; }
+            .car-hero-time { font-size: .88rem; min-height: 1.25rem; line-height: 1.25rem; }
+            .car-hero-progress-box { padding: .5rem .65rem; }
+            .car-progress-header { font-size: .72rem; }
+            .car-gauge-ring-wrap { width: 78px; height: 78px; }
+            .car-gauge-pct { font-size: 1.15rem; }
+            .car-hero-gauge-col { gap: .35rem; padding: .15rem 0 .15rem .65rem; }
             .car-vital-chip { min-width: 48px; padding: 2px 4px; }
-            .car-vital-chip .vital-val { font-size: .59rem; }
+            .car-vital-chip .vital-val { font-size: .64rem; }
             .car-side-col { height: auto; max-height: none; gap: .6rem; justify-content: flex-start; }
             .car-widget-card { padding: .65rem .75rem; border-radius: 14px; }
             .car-companion-action-pill, .car-eq-container { display: none; }
@@ -12467,19 +12521,20 @@
         .screen-portrait .car-clock-box { margin-bottom: .5rem !important; }
         .screen-portrait .car-digital-clock { font-size: clamp(2.25rem, 10vw, 4.1rem) !important; }
         .screen-portrait .car-digital-date { font-size: .72rem !important; margin-top: .25rem !important; gap: .35rem !important; }
-        .screen-portrait .car-hero-card { padding: .7rem .8rem !important; border-radius: 15px !important; }
+        .screen-portrait .car-hero-card { padding: .75rem .85rem !important; border-radius: 18px !important; }
         .screen-portrait .car-hero-content-split { gap: .6rem !important; }
-        .screen-portrait .car-hero-title { font-size: .76rem !important; flex-wrap: wrap !important; }
+        .screen-portrait .car-hero-title { font-size: .8rem !important; }
         .screen-portrait .car-hero-days { font-size: clamp(2.35rem, 11vw, 3.7rem) !important; }
         .screen-portrait .car-hero-unit { font-size: .9rem !important; }
-        .screen-portrait .car-hero-time { font-size: .86rem !important; min-height: 1.25rem !important; line-height: 1.25rem !important; margin-bottom: .45rem !important; }
-        .screen-portrait .car-hero-progress-box { padding: .5rem .6rem !important; }
-        .screen-portrait .car-progress-header { font-size: .68rem !important; }
-        .screen-portrait .car-gauge-ring-wrap { width: 76px !important; height: 76px !important; }
-        .screen-portrait .car-gauge-pct { font-size: 1.05rem !important; }
-        .screen-portrait .car-hero-gauge-col { gap: .35rem !important; padding: .15rem 0 .15rem .5rem !important; }
+        .screen-portrait .car-hero-time-row { margin-bottom: .5rem !important; }
+        .screen-portrait .car-hero-time { font-size: .88rem !important; min-height: 1.25rem !important; line-height: 1.25rem !important; }
+        .screen-portrait .car-hero-progress-box { padding: .5rem .65rem !important; }
+        .screen-portrait .car-progress-header { font-size: .72rem !important; }
+        .screen-portrait .car-gauge-ring-wrap { width: 78px !important; height: 78px !important; }
+        .screen-portrait .car-gauge-pct { font-size: 1.15rem !important; }
+        .screen-portrait .car-hero-gauge-col { gap: .35rem !important; padding: .15rem 0 .15rem .65rem !important; }
         .screen-portrait .car-vital-chip { min-width: 48px !important; padding: 2px 4px !important; }
-        .screen-portrait .car-vital-chip .vital-val { font-size: .59rem !important; }
+        .screen-portrait .car-vital-chip .vital-val { font-size: .64rem !important; }
         .screen-portrait .car-side-col { height: auto !important; max-height: none !important; gap: .6rem !important; justify-content: flex-start !important; }
         .screen-portrait .car-widget-card { padding: .65rem .75rem !important; border-radius: 14px !important; }
         .screen-portrait .car-companion-action-pill, .screen-portrait .car-eq-container { display: none !important; }
@@ -13803,7 +13858,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.4.9406</span>
+                <span class="bcos-ctx-ver">v7.8.4.9407</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -17757,20 +17812,26 @@ const START_DATE = '2024/03/12 00:00:00';
                         <div class="car-hero-content-split">
                             <div class="car-hero-main-col">
                                 <div class="car-hero-title">
-                                    <span>💕 兔可可相伴虚拟纪元</span>
+                                    <div class="car-hero-title-main">
+                                        <span class="car-hero-beacon"></span>
+                                        <span>兔可可相伴虚拟纪元</span>
+                                    </div>
                                     <span class="car-hero-badge-tag">SINCE 2024.03.12</span>
                                 </div>
                                 <div class="car-hero-days-wrap">
                                     <span class="car-hero-days" id="car-days">0</span>
                                     <span class="car-hero-unit">DAYS</span>
                                 </div>
-                                <div class="car-hero-time" id="car-time">00时 00分 00秒 .0</div>
+                                <div class="car-hero-time-row">
+                                    <span class="car-hero-time-tag">累计航程</span>
+                                    <div class="car-hero-time" id="car-time">00时 00分 00秒 <span class="car-ms-frac">.0</span></div>
+                                </div>
 
                                 <!-- Milestone Progress Card -->
                                 <div class="car-hero-progress-box">
                                     <div class="car-progress-header">
-                                        <span id="car-next-label">🎯 下一个里程碑: 计算中...</span>
-                                        <span id="car-next-countdown" style="color:var(--car-accent);font-weight:700;">--</span>
+                                        <span class="car-progress-label" id="car-next-label">🎯 下一个里程碑: 计算中...</span>
+                                        <span class="car-progress-countdown" id="car-next-countdown">--</span>
                                     </div>
                                     <div class="car-progress-bar-bg">
                                         <div class="car-progress-bar-fill" id="car-progress-fill" style="width: 0%;"></div>
@@ -17782,20 +17843,20 @@ const START_DATE = '2024/03/12 00:00:00';
                             <div class="car-hero-gauge-col">
                                 <div class="car-gauge-ring-wrap" data-tooltip="里程碑阶段达成率">
                                     <svg class="car-gauge-svg" viewBox="0 0 100 100">
-                                        <circle class="car-gauge-track" cx="50" cy="50" r="40" stroke-width="7" fill="none"></circle>
-                                        <circle class="car-gauge-bar" id="car-gauge-ring" cx="50" cy="50" r="40" stroke-width="7" fill="none" stroke-dasharray="251.33" stroke-dashoffset="251.33"></circle>
+                                        <circle class="car-gauge-track" cx="50" cy="50" r="40" stroke-width="5.5" fill="none"></circle>
+                                        <circle class="car-gauge-bar" id="car-gauge-ring" cx="50" cy="50" r="40" stroke-width="5.5" fill="none" stroke-dasharray="251.33" stroke-dashoffset="251.33"></circle>
                                     </svg>
                                     <div class="car-gauge-content">
                                         <div class="car-gauge-pct" id="car-gauge-pct">0%</div>
-                                        <div class="car-gauge-sub">STAGE HUD</div>
+                                        <div class="car-gauge-sub">达成率</div>
                                     </div>
                                 </div>
                                 <div class="car-hero-vitals">
-                                    <div class="car-vital-chip">
-                                        <span class="vital-label">START</span>
-                                        <span class="vital-val">2024.03.12</span>
+                                    <div class="car-vital-chip" title="伴舱心动节律">
+                                        <span class="vital-label">PULSE</span>
+                                        <span class="vital-val" id="car-vital-pulse">72 <small>BPM</small></span>
                                     </div>
-                                    <div class="car-vital-chip">
+                                    <div class="car-vital-chip" title="实时伴行状态">
                                         <span class="vital-label">STATUS</span>
                                         <span class="vital-val" style="color:var(--car-accent);"><span class="car-heart-pulse">❤️</span> 伴行中</span>
                                     </div>
@@ -17868,7 +17929,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9406</div>
+                                <div class="car-diag-val">bcos v7.8.4.9407</div>
                             </div>
                         </div>
                     </div>
@@ -22267,6 +22328,11 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.4.9407', title:'纪念日主卡片 UI 重构美化、消除视觉冗余、航空级通透雾面毛玻璃质感升级', items:[
+            '【此改动适用于 index.html / car.html / car.css】[纪念日主卡轻量通透雾面重构] 彻底告别原先厚重沉闷的高对比度纯黑底框与粗糙荧光外边框，全面采用 backdrop-filter: blur(28px) saturate(190%) 航空级超清透雾面毛玻璃材质，配合 inset 0 1px 0 顶部镜面高光棱线与柔和立体外阴影，组件完全融于车机动态壁纸，消除突兀感与块面割裂',
+            '【此改动适用于 index.html / car.html / car.css】[消除信息冗余与多层嵌套黑框] 移除时钟下重复的时间感官堆叠，为毫秒计数新增精致胶囊角标「累计航程」；消除起始日期的双重标注，右侧仪表信息升级为伴舱心动节律监控 PULSE 与伴行状态；去除了卡片内里程碑容器与药丸徽章嵌套的多层厚黑底框，全维呈现现代轻盈科技质感',
+            '【此改动适用于 index.html / car.html / car.css】[HUD达成率环表与脉冲信标精细化] 标题新增呼吸脉冲指示信标（.car-hero-beacon）；右侧环形仪表描边粗细由 7px 细化为 5.5px 优雅刻度环，居中标识升级为凝练的「达成率」，横竖屏全场景无缝自适应'
+        ]},
         { ver:'v7.8.4.9406', title:'数字时钟字符间距与冒号留白优化、极简模式排版紧凑化美学升级', items:[
             '【此改动适用于 index.html / car.html / car.css】[数字时钟字符间距与冒号留白优化] 彻底消除数字时钟中冒号两侧过宽的空隙与字符间距过大的问题：将时钟文本字符串从带空格的 `${h} : ${m} : ${s}` 升级为标准且自然的 `${h}:${m}:${s}`，结合等宽字体的天然中置留白，消除等宽空格造成的单侧 1ch 巨大留白空白；同步收敛 CSS letter-spacing（极简模式由 3px 优化至 1.5px，标准模式由 2px 优化至 1px），视觉呈现紧凑凝练且极富科技工业感',
             '【此改动适用于 index.html / car.html / car.css】[极简锁屏微距排版精致化] 优化极简锁屏下时间与下方公历/农历日期的垂直边距（margin-top: clamp(0.4rem, 1.2vh, 0.85rem)），改善异形屏与圆形 OLED 下的字符排版，使锁屏时间与日期呈现浑然一体的现代仪表质感'
