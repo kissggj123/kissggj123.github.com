@@ -169,21 +169,32 @@
         /* Wallpaper Engine Layers */
         .car-wallpaper-ambient {
             position: absolute;
-            inset: -40px;
+            inset: -45px;
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            filter: blur(48px) saturate(160%) brightness(0.65);
-            -webkit-filter: blur(48px) saturate(160%) brightness(0.65);
-            transform: scale(1.12) translateZ(0);
-            -webkit-transform: scale(1.12) translateZ(0);
+            background-color: var(--wp-edge-dominant, #101422);
+            filter: blur(52px) saturate(180%) brightness(0.7);
+            -webkit-filter: blur(52px) saturate(180%) brightness(0.7);
+            transform: scale(1.15) translateZ(0);
+            -webkit-transform: scale(1.15) translateZ(0);
             opacity: 0;
-            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease;
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease, background-color 0.4s ease;
             z-index: 0;
             pointer-events: none;
-            will-change: opacity, transform;
+            will-change: opacity, transform, background-color;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-ambient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, var(--wp-edge-dominant, rgba(16,20,34,0.8)) 100%),
+                        linear-gradient(to bottom, var(--wp-edge-top, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-bottom, transparent) 100%),
+                        linear-gradient(to right, var(--wp-edge-left, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-right, transparent) 100%);
+            opacity: 0.88;
+            pointer-events: none;
         }
         .car-wallpaper-ambient.active {
             opacity: 1;
@@ -3005,7 +3016,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9420</div>
+                                <div class="car-diag-val">bcos v7.8.4.9430</div>
                             </div>
                         </div>
                     </div>
@@ -3765,7 +3776,14 @@
                 "file": "wallpaper/Starlight210128.min.b64",
                 "b64": true,
                 "parts": 3,
-                "size": 296020
+                "size": 296020,
+                "edgeColors": {
+                        "dominant": "rgb(121,136,144)",
+                        "top": "rgb(151,176,207)",
+                        "bottom": "rgb(113,121,113)",
+                        "left": "rgb(107,116,107)",
+                        "right": "rgb(114,133,151)"
+                }
         },
         {
                 "id": "illustration",
@@ -3773,7 +3791,14 @@
                 "file": "wallpaper/1126942.min.b64",
                 "b64": true,
                 "parts": 1,
-                "size": 111336
+                "size": 111336,
+                "edgeColors": {
+                        "dominant": "rgb(102,114,133)",
+                        "top": "rgb(98,116,138)",
+                        "bottom": "rgb(143,155,168)",
+                        "left": "rgb(82,95,113)",
+                        "right": "rgb(85,92,113)"
+                }
         },
         {
                 "id": "bunny_snow",
@@ -3781,84 +3806,168 @@
                 "file": "wallpaper/IMG_2833.min.b64",
                 "b64": true,
                 "parts": 3,
-                "size": 334780
+                "size": 334780,
+                "edgeColors": {
+                        "dominant": "rgb(98,94,84)",
+                        "top": "rgb(106,103,85)",
+                        "bottom": "rgb(102,99,93)",
+                        "left": "rgb(73,71,64)",
+                        "right": "rgb(111,103,94)"
+                }
         },
         {
                 "id": "wp_1204143",
                 "name": "原野星辉 · 宁静之夜",
                 "file": "wallpaper/1204143.opt.jpg",
                 "b64": false,
-                "size": 117458
+                "size": 117458,
+                "edgeColors": {
+                        "dominant": "rgb(1,1,2)",
+                        "top": "rgb(2,2,3)",
+                        "bottom": "rgb(3,2,3)",
+                        "left": "rgb(1,1,2)",
+                        "right": "rgb(1,1,1)"
+                }
         },
         {
                 "id": "wp_1770022526",
                 "name": "相伴日常 · 甜蜜时光",
                 "file": "wallpaper/177002252600796.opt.jpg",
                 "b64": false,
-                "size": 556279
+                "size": 556279,
+                "edgeColors": {
+                        "dominant": "rgb(133,123,131)",
+                        "top": "rgb(105,88,91)",
+                        "bottom": "rgb(167,162,177)",
+                        "left": "rgb(144,134,148)",
+                        "right": "rgb(118,108,110)"
+                }
         },
         {
                 "id": "wp_1770022545",
                 "name": "温暖守候 · 兔兔温情",
                 "file": "wallpaper/177002254500-200.opt.jpg",
                 "b64": false,
-                "size": 448212
+                "size": 448212,
+                "edgeColors": {
+                        "dominant": "rgb(128,118,124)",
+                        "top": "rgb(95,79,80)",
+                        "bottom": "rgb(166,161,176)",
+                        "left": "rgb(134,121,129)",
+                        "right": "rgb(119,111,113)"
+                }
         },
         {
                 "id": "it_takes_two_1",
                 "name": "双人成行 · 奇幻冒险",
                 "file": "wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg",
                 "b64": false,
-                "size": 195249
+                "size": 195249,
+                "edgeColors": {
+                        "dominant": "rgb(105,66,40)",
+                        "top": "rgb(76,41,17)",
+                        "bottom": "rgb(123,80,48)",
+                        "left": "rgb(88,46,27)",
+                        "right": "rgb(136,98,69)"
+                }
         },
         {
                 "id": "it_takes_two_2",
                 "name": "双人成行 · 携手同行",
                 "file": "wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg",
                 "b64": false,
-                "size": 308397
+                "size": 308397,
+                "edgeColors": {
+                        "dominant": "rgb(116,100,65)",
+                        "top": "rgb(128,107,78)",
+                        "bottom": "rgb(130,112,64)",
+                        "left": "rgb(100,88,59)",
+                        "right": "rgb(109,95,59)"
+                }
         },
         {
                 "id": "wp_61b5bd7f",
                 "name": "唯美意境 · 梦幻霞光",
                 "file": "wallpaper/61b5bd7f37541.opt.jpg",
                 "b64": false,
-                "size": 322570
+                "size": 322570,
+                "edgeColors": {
+                        "dominant": "rgb(116,99,65)",
+                        "top": "rgb(130,110,80)",
+                        "bottom": "rgb(129,110,65)",
+                        "left": "rgb(100,87,60)",
+                        "right": "rgb(106,92,58)"
+                }
         },
         {
                 "id": "wp_61b5bd7f2",
                 "name": "绚丽晨曦 · 光影随行",
                 "file": "wallpaper/61b5bd7f375412.opt.jpg",
                 "b64": false,
-                "size": 183401
+                "size": 183401,
+                "edgeColors": {
+                        "dominant": "rgb(119,104,73)",
+                        "top": "rgb(134,117,93)",
+                        "bottom": "rgb(124,106,62)",
+                        "left": "rgb(106,94,70)",
+                        "right": "rgb(112,100,70)"
+                }
         },
         {
                 "id": "wp_8736",
                 "name": "旅途风景 · 旷野纪行",
                 "file": "wallpaper/8736.opt.jpg",
                 "b64": false,
-                "size": 538256
+                "size": 538256,
+                "edgeColors": {
+                        "dominant": "rgb(173,162,169)",
+                        "top": "rgb(182,180,195)",
+                        "bottom": "rgb(158,145,151)",
+                        "left": "rgb(147,140,149)",
+                        "right": "rgb(205,183,182)"
+                }
         },
         {
                 "id": "wp_9f794a",
                 "name": "深邃星云 · 苍穹之境",
                 "file": "wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg",
                 "b64": false,
-                "size": 162765
+                "size": 162765,
+                "edgeColors": {
+                        "dominant": "rgb(40,28,25)",
+                        "top": "rgb(28,25,28)",
+                        "bottom": "rgb(48,35,34)",
+                        "left": "rgb(18,17,18)",
+                        "right": "rgb(66,36,23)"
+                }
         },
         {
                 "id": "hollow_knight_1",
                 "name": "空洞骑士 · 圣巢幽光",
                 "file": "wallpaper/hollow_knight.opt.jpg",
                 "b64": false,
-                "size": 711444
+                "size": 711444,
+                "edgeColors": {
+                        "dominant": "rgb(106,106,108)",
+                        "top": "rgb(124,125,128)",
+                        "bottom": "rgb(106,102,102)",
+                        "left": "rgb(101,103,111)",
+                        "right": "rgb(96,97,93)"
+                }
         },
         {
                 "id": "hollow_knight_2",
                 "name": "空洞骑士 · 泪水之城",
                 "file": "wallpaper/hollow_knight_2.opt.jpg",
                 "b64": false,
-                "size": 237050
+                "size": 237050,
+                "edgeColors": {
+                        "dominant": "rgb(88,43,27)",
+                        "top": "rgb(38,17,14)",
+                        "bottom": "rgb(149,83,47)",
+                        "left": "rgb(56,23,15)",
+                        "right": "rgb(112,52,32)"
+                }
         }
 ];
 
@@ -4064,11 +4173,25 @@
             if (wpStatus) wpStatus.textContent = text;
         }
 
-        function syncAmbientWallpaper(bgUrl) {
+        function syncAmbientWallpaper(bgUrl, wpObj) {
             const amb = document.getElementById('car-wallpaper-ambient');
             if (!amb) return;
             if (bgUrl) amb.style.backgroundImage = bgUrl;
-            const fit = getWallpaperFit();
+            const cur = wpObj || (typeof allWallpapers !== 'undefined' && allWallpapers[currentWallpaperIdx]);
+            if (cur && cur.edgeColors) {
+                amb.style.setProperty('--wp-edge-dominant', cur.edgeColors.dominant || '#101422');
+                amb.style.setProperty('--wp-edge-top', cur.edgeColors.top || 'transparent');
+                amb.style.setProperty('--wp-edge-bottom', cur.edgeColors.bottom || 'transparent');
+                amb.style.setProperty('--wp-edge-left', cur.edgeColors.left || 'transparent');
+                amb.style.setProperty('--wp-edge-right', cur.edgeColors.right || 'transparent');
+            } else {
+                amb.style.removeProperty('--wp-edge-dominant');
+                amb.style.removeProperty('--wp-edge-top');
+                amb.style.removeProperty('--wp-edge-bottom');
+                amb.style.removeProperty('--wp-edge-left');
+                amb.style.removeProperty('--wp-edge-right');
+            }
+            const fit = typeof getWallpaperFit === 'function' ? getWallpaperFit() : 'cover';
             if (fit === 'fit' || fit === 'center') {
                 amb.classList.add('active');
             } else {
@@ -4585,11 +4708,46 @@
                         ctx.drawImage(img, 0, 0, w, h);
                         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
 
+                        // Extract 8% edge border RGB colors for seamless ambient frosted glass
+                        function extractCanvasEdgeColors(cvs) {
+                            try {
+                                const cw = cvs.width, ch = cvs.height;
+                                const cctx = cvs.getContext('2d');
+                                const imgData = cctx.getImageData(0, 0, cw, ch);
+                                const d = imgData.data;
+                                function getAvg(x0, y0, x1, y1) {
+                                    let r = 0, g = 0, b = 0, count = 0;
+                                    const step = Math.max(1, Math.floor(Math.sqrt((x1 - x0) * (y1 - y0) / 100)));
+                                    for (let y = y0; y < y1; y += step) {
+                                        for (let x = x0; x < x1; x += step) {
+                                            const idx = (y * cw + x) * 4;
+                                            r += d[idx]; g += d[idx + 1]; b += d[idx + 2];
+                                            count++;
+                                        }
+                                    }
+                                    if (!count) return 'rgb(16,20,34)';
+                                    return `rgb(${Math.round(r/count)},${Math.round(g/count)},${Math.round(b/count)})`;
+                                }
+                                const bx = Math.max(2, Math.floor(cw * 0.08));
+                                const by = Math.max(2, Math.floor(ch * 0.08));
+                                const top = getAvg(0, 0, cw, by);
+                                const bottom = getAvg(0, ch - by, cw, ch);
+                                const left = getAvg(0, 0, bx, ch);
+                                const right = getAvg(cw - bx, 0, cw, ch);
+                                const dominant = getAvg(0, 0, cw, ch);
+                                return { dominant, top, bottom, left, right };
+                            } catch (e) {
+                                return null;
+                            }
+                        }
+                        const edgeColors = extractCanvasEdgeColors(canvas);
+
                         const newId = 'custom_' + Date.now();
                         const newWp = {
                             id: newId,
                             name: (file.name || '自定义壁纸').replace(/\.[^/.]+$/, ""),
-                            file: compressedDataUrl
+                            file: compressedDataUrl,
+                            edgeColors: edgeColors
                         };
                         const custom = getCustomWallpapers();
                         custom.push(newWp);
@@ -4602,7 +4760,7 @@
 
                         selectWallpaperByIdx(allWallpapers.length - 1);
                         renderWallpaperUI();
-                        showToast('✓ 自定义壁纸优化添加成功！');
+                        showToast('✓ 自定义壁纸优化并提取边缘色彩成功！');
                     } catch(err) {
                         const newWp = {
                             id: 'custom_' + Date.now(),
@@ -4630,13 +4788,46 @@
         }
 
         function promptAddWallpaperUrl() {
-            const url = prompt('请输入壁纸图片的完整 URL 地址 (https://...):');
-            if (!url || !url.trim()) return;
-            const name = prompt('为这张壁纸起个名字:', '网络精选壁纸') || '网络壁纸';
+            let overlay = document.getElementById('car-wp-url-modal');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'car-wp-url-modal';
+                overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+                overlay.innerHTML = `
+                    <div style="background:#1a2030;border:1px solid rgba(255,255,255,0.15);box-shadow:0 16px 40px rgba(0,0,0,0.6);border-radius:14px;padding:1.4rem;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px;color:#fff;">
+                        <h3 style="margin:0;font-size:15px;color:var(--car-accent,#00eaff);display:flex;align-items:center;gap:6px;">🔗 添加在线网络壁纸</h3>
+                        <div>
+                            <label style="font-size:12px;color:#cbd5e1;margin-bottom:4px;display:block;">图片完整 URL 地址 (HTTPS)</label>
+                            <input type="text" id="car-wp-url-input" placeholder="https://example.com/wallpaper.jpg" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;" />
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#cbd5e1;margin-bottom:4px;display:block;">壁纸名称</label>
+                            <input type="text" id="car-wp-name-input" placeholder="网络精选壁纸" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;" />
+                        </div>
+                        <div style="display:flex;gap:10px;margin-top:6px;">
+                            <button onclick="_carSubmitWpUrl()" style="flex:1;background:var(--car-accent,#00eaff);color:#000;border:none;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">✓ 确认添加</button>
+                            <button onclick="document.getElementById('car-wp-url-modal').style.display='none'" style="background:rgba(255,255,255,0.1);color:#eee;border:none;padding:8px 14px;border-radius:6px;font-size:13px;cursor:pointer;">取消</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+            }
+            overlay.style.display = 'flex';
+            const urlInp = document.getElementById('car-wp-url-input');
+            if (urlInp) { urlInp.value = ''; urlInp.focus(); }
+        }
+
+        function _carSubmitWpUrl() {
+            const url = (document.getElementById('car-wp-url-input')?.value || '').trim();
+            const name = (document.getElementById('car-wp-name-input')?.value || '').trim() || '网络精选壁纸';
+            if (!url) {
+                showToast('⚠️ 请输入有效的图片 URL');
+                return;
+            }
             const newWp = {
                 id: 'custom_' + Date.now(),
-                name: name.trim(),
-                file: url.trim()
+                name: name,
+                file: url
             };
             const custom = getCustomWallpapers();
             custom.push(newWp);
@@ -4644,6 +4835,8 @@
             allWallpapers.push(newWp);
             selectWallpaperByIdx(allWallpapers.length - 1);
             renderWallpaperUI();
+            const m = document.getElementById('car-wp-url-modal');
+            if (m) m.style.display = 'none';
             showToast('✓ 网络壁纸添加成功！');
         }
 

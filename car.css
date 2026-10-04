@@ -159,21 +159,32 @@
         /* Wallpaper Engine Layers */
         .car-wallpaper-ambient {
             position: absolute;
-            inset: -40px;
+            inset: -45px;
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            filter: blur(48px) saturate(160%) brightness(0.65);
-            -webkit-filter: blur(48px) saturate(160%) brightness(0.65);
-            transform: scale(1.12) translateZ(0);
-            -webkit-transform: scale(1.12) translateZ(0);
+            background-color: var(--wp-edge-dominant, #101422);
+            filter: blur(52px) saturate(180%) brightness(0.7);
+            -webkit-filter: blur(52px) saturate(180%) brightness(0.7);
+            transform: scale(1.15) translateZ(0);
+            -webkit-transform: scale(1.15) translateZ(0);
             opacity: 0;
-            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease;
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease, background-color 0.4s ease;
             z-index: 0;
             pointer-events: none;
-            will-change: opacity, transform;
+            will-change: opacity, transform, background-color;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-ambient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, var(--wp-edge-dominant, rgba(16,20,34,0.8)) 100%),
+                        linear-gradient(to bottom, var(--wp-edge-top, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-bottom, transparent) 100%),
+                        linear-gradient(to right, var(--wp-edge-left, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-right, transparent) 100%);
+            opacity: 0.88;
+            pointer-events: none;
         }
         .car-wallpaper-ambient.active {
             opacity: 1;

@@ -78,7 +78,29 @@ for raw_name, meta in METADATA.items():
         img_resized.save(opt_path, 'JPEG', quality=82, progressive=True, optimize=True)
         opt_size = os.path.getsize(opt_path)
 
-        # 2. Generate 32x20 tiny thumbnail for blur-up placeholder
+        # 2. Extract edge colors for frosted glass ambient filling
+        top_h = max(1, int(h * 0.08))
+        bot_y = max(0, h - top_h)
+        left_w = max(1, int(w * 0.08))
+        right_x = max(0, w - left_w)
+        top_col = img.crop((0, 0, w, top_h)).resize((1, 1), Image.Resampling.BOX).getpixel((0,0))
+        bottom_col = img.crop((0, bot_y, w, h)).resize((1, 1), Image.Resampling.BOX).getpixel((0,0))
+        left_col = img.crop((0, 0, left_w, h)).resize((1, 1), Image.Resampling.BOX).getpixel((0,0))
+        right_col = img.crop((right_x, 0, w, h)).resize((1, 1), Image.Resampling.BOX).getpixel((0,0))
+        dom_col = (
+            int((top_col[0] + bottom_col[0] + left_col[0] + right_col[0]) / 4),
+            int((top_col[1] + bottom_col[1] + left_col[1] + right_col[1]) / 4),
+            int((top_col[2] + bottom_col[2] + left_col[2] + right_col[2]) / 4)
+        )
+        edge_colors = {
+            'dominant': f'rgb({dom_col[0]},{dom_col[1]},{dom_col[2]})',
+            'top': f'rgb({top_col[0]},{top_col[1]},{top_col[2]})',
+            'bottom': f'rgb({bottom_col[0]},{bottom_col[1]},{bottom_col[2]})',
+            'left': f'rgb({left_col[0]},{left_col[1]},{left_col[2]})',
+            'right': f'rgb({right_col[0]},{right_col[1]},{right_col[2]})'
+        }
+
+        # 3. Generate 32x20 tiny thumbnail for blur-up placeholder
         thumb = img.resize((32, 20), Image.Resampling.BOX)
         buf = BytesIO()
         thumb.save(buf, format='JPEG', quality=60)
@@ -94,11 +116,12 @@ for raw_name, meta in METADATA.items():
             "name": meta['name'],
             "file": file_key,
             "b64": False,
-            "size": opt_size
+            "size": opt_size,
+            "edgeColors": edge_colors
         }
         new_wallpapers.append(new_entry)
         raw_size = os.path.getsize(raw_path)
-        print(f"Optimized {raw_name}: {raw_size/1024:.1f} KB -> {opt_size/1024:.1f} KB (-{(1 - opt_size/raw_size)*100:.1f}%)")
+        print(f"Optimized {raw_name}: {raw_size/1024:.1f} KB -> {opt_size/1024:.1f} KB (-{(1 - opt_size/raw_size)*100:.1f}%) | Edge: {edge_colors['dominant']}")
 
 # Combine all wallpapers
 all_wallpapers = base_wallpapers + new_wallpapers

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.4.9420 -->
+    <!-- VERSION: v7.8.4.9430 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1310,7 +1310,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.4.9420</div>
+                <div class="subtitle">v7.8.4.9430</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1623,7 +1623,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9420</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9430</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1668,7 +1668,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.4.9420',
+        VERSION: 'v7.8.4.9430',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2700,7 +2700,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.4.9420 已启动', 'info');
+        logEvent('兔可可王国 v7.8.4.9430 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9537,7 +9537,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.4.9420 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.4.9430 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -10072,15 +10072,33 @@
                 gap: 12px;
             }
             .bcos-menubar-apple {
-                font-size: 16px;
                 cursor: pointer;
-                padding: 2px 6px;
-                border-radius: 4px;
-                transition: background .15s;
+                padding: 2px 4px;
+                border-radius: 6px;
+                transition: background .15s, transform .15s;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 line-height: 1;
             }
             .bcos-menubar-apple:hover, .bcos-menubar-apple.active {
-                background: rgba(255, 255, 255, 0.15);
+                background: rgba(255, 255, 255, 0.18);
+                transform: scale(1.08);
+            }
+            .bcos-menubar-avatar-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+            }
+            .bcos-menubar-avatar-img {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1.5px solid var(--accent, #ff6b9d);
+                box-shadow: 0 0 6px rgba(255, 107, 157, 0.4);
+                display: block;
             }
             .bcos-menubar-appname {
                 font-weight: 700;
@@ -10498,6 +10516,386 @@
                     overscroll-behavior-y: contain !important;
                 }
             }
+
+            /* ===== macOS BCOS Anniversary App ===== */
+            .bcos-anni-container {
+                padding: 1.2rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1.2rem;
+                max-width: 760px;
+                margin: 0 auto;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-anni-hero {
+                position: relative;
+                border-radius: 16px;
+                padding: 1.5rem 1.2rem;
+                background: linear-gradient(135deg, rgba(255, 107, 157, 0.22) 0%, rgba(167, 139, 250, 0.18) 50%, rgba(30, 41, 59, 0.5) 100%);
+                border: 1px solid rgba(255, 107, 157, 0.35);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                text-align: center;
+                overflow: hidden;
+            }
+            .bcos-anni-big-days {
+                font-size: clamp(2.8rem, 6vw, 4.2rem);
+                font-weight: 900;
+                line-height: 1;
+                background: linear-gradient(135deg, #ffffff 30%, #ff8db3 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                letter-spacing: 1px;
+                font-variant-numeric: tabular-nums;
+            }
+            .bcos-anni-unit {
+                font-size: 0.85rem;
+                font-weight: 800;
+                letter-spacing: 4px;
+                color: var(--accent, #ff6b9d);
+                margin: 0.3rem 0;
+                text-transform: uppercase;
+            }
+            .bcos-anni-subtime {
+                font-size: 0.95rem;
+                color: rgba(255, 255, 255, 0.9);
+                font-variant-numeric: tabular-nums;
+                margin-top: 0.2rem;
+            }
+            .bcos-anni-since {
+                font-size: 0.75rem;
+                color: rgba(255, 255, 255, 0.6);
+                margin-top: 0.5rem;
+            }
+            .bcos-anni-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+            .bcos-anni-btn {
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                color: #ffffff;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all .15s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .bcos-anni-btn:hover {
+                background: rgba(255, 255, 255, 0.18);
+                transform: translateY(-1px);
+            }
+            .bcos-anni-btn.primary {
+                background: var(--accent, #ff6b9d);
+                color: #000;
+                border-color: transparent;
+                font-weight: 700;
+            }
+            .bcos-anni-btn.primary:hover {
+                background: #ff85ae;
+                box-shadow: 0 4px 16px rgba(255, 107, 157, 0.4);
+            }
+            .bcos-anni-section-title {
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.85);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding-bottom: 6px;
+            }
+            .bcos-anni-ms-item {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 8px 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 12px;
+                margin-bottom: 6px;
+                transition: background .15s;
+            }
+            .bcos-anni-ms-item.reached {
+                border-left: 3px solid #00ff41;
+                background: rgba(0, 255, 65, 0.05);
+            }
+            .bcos-anni-ms-item.next {
+                border-left: 3px solid var(--accent, #ff6b9d);
+                background: rgba(255, 107, 157, 0.08);
+                box-shadow: 0 0 12px rgba(255, 107, 157, 0.2);
+            }
+
+            /* ===== macOS BCOS App Store ===== */
+            .bcos-store-wrap {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: #111420;
+                color: #e2e8f0;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-store-nav {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 12px;
+                background: rgba(255, 255, 255, 0.03);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                overflow-x: auto;
+                flex-shrink: 0;
+            }
+            .bcos-store-tab {
+                padding: 5px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.7);
+                transition: all .15s ease;
+                white-space: nowrap;
+            }
+            .bcos-store-tab:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #ffffff;
+            }
+            .bcos-store-tab.active {
+                background: var(--accent, #ff6b9d);
+                color: #000000;
+            }
+            .bcos-store-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 1rem;
+                -webkit-overflow-scrolling: touch;
+            }
+            .bcos-store-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 12px;
+            }
+            .bcos-store-card {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+            }
+            .bcos-store-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(255, 255, 255, 0.22);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            }
+            .bcos-store-card-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .bcos-store-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                flex-shrink: 0;
+            }
+            .bcos-store-btn {
+                background: #007aff;
+                color: #ffffff;
+                border: none;
+                padding: 5px 14px;
+                border-radius: 14px;
+                font-size: 11.5px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all .15s ease;
+            }
+            .bcos-store-btn:hover {
+                background: #0066d6;
+            }
+            .bcos-store-btn.installed {
+                background: rgba(255, 255, 255, 0.12);
+                color: #ffffff;
+            }
+            .bcos-store-btn.danger {
+                background: rgba(239, 68, 68, 0.15);
+                color: #ef4444;
+                border: 1px solid rgba(239, 68, 68, 0.3);
+            }
+
+            /* ===== macOS BCOS Code Studio Pro ===== */
+            .bcos-te-wrap {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: #141724;
+                color: #d4d4d4;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-te-tabs {
+                display: flex;
+                align-items: center;
+                background: #0d0f17;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                overflow-x: auto;
+                height: 34px;
+                flex-shrink: 0;
+            }
+            .bcos-te-tab {
+                padding: 0 12px;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.6);
+                cursor: pointer;
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+                background: transparent;
+                transition: background .12s;
+                white-space: nowrap;
+            }
+            .bcos-te-tab:hover {
+                background: rgba(255, 255, 255, 0.04);
+                color: #ffffff;
+            }
+            .bcos-te-tab.active {
+                background: #141724;
+                color: #ffffff;
+                border-top: 2px solid var(--accent, #ff6b9d);
+            }
+            .bcos-te-tab-close {
+                border-radius: 50%;
+                width: 14px;
+                height: 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                color: #888;
+            }
+            .bcos-te-tab-close:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
+            }
+            .bcos-te-bar {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 4px 8px;
+                background: rgba(255, 255, 255, 0.03);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                flex-wrap: wrap;
+                flex-shrink: 0;
+            }
+            .bcos-te-btn {
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                color: #ffffff;
+                padding: 3px 8px;
+                border-radius: 5px;
+                font-size: 11px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                transition: background .15s;
+            }
+            .bcos-te-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .bcos-te-btn.active {
+                background: var(--accent, #ff6b9d);
+                color: #000;
+                border-color: transparent;
+                font-weight: bold;
+            }
+            .bcos-te-editor-container {
+                flex: 1;
+                display: flex;
+                position: relative;
+                overflow: hidden;
+            }
+            .bcos-te-gutter {
+                width: 44px;
+                background: #0d0f17;
+                border-right: 1px solid rgba(255, 255, 255, 0.08);
+                color: #555c6d;
+                font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.55;
+                padding: 8px 6px 8px 0;
+                text-align: right;
+                user-select: none;
+                overflow: hidden;
+                box-sizing: border-box;
+                white-space: pre;
+            }
+            .bcos-te-textarea-box {
+                flex: 1;
+                position: relative;
+                overflow: hidden;
+            }
+            .bcos-te-textarea {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                background: #141724;
+                color: #e2e8f0;
+                font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.55;
+                padding: 8px 10px;
+                border: none;
+                outline: none;
+                resize: none;
+                box-sizing: border-box;
+                white-space: pre;
+                overflow: auto;
+                tab-size: 4;
+            }
+            .bcos-te-preview-pane {
+                flex: 1;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                background: #10131d;
+                padding: 12px 16px;
+                overflow-y: auto;
+                font-size: 13px;
+                line-height: 1.6;
+                color: #e2e8f0;
+                display: none;
+            }
+            .bcos-te-preview-pane.active {
+                display: block;
+            }
+            .bcos-te-statusbar {
+                height: 22px;
+                background: #0b0d14;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 10px;
+                font-size: 10.5px;
+                color: #8b949e;
+                flex-shrink: 0;
+                user-select: none;
+            }
             /* Carrot cursor for bcos desktop mode — force override all third-party cursors */
             #bcos-overlay.bcos-desktop-mode,
             #bcos-overlay.bcos-desktop-mode *,
@@ -10701,21 +11099,32 @@
         /* Wallpaper Engine Layers */
         .car-wallpaper-ambient {
             position: absolute;
-            inset: -40px;
+            inset: -45px;
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            filter: blur(48px) saturate(160%) brightness(0.65);
-            -webkit-filter: blur(48px) saturate(160%) brightness(0.65);
-            transform: scale(1.12) translateZ(0);
-            -webkit-transform: scale(1.12) translateZ(0);
+            background-color: var(--wp-edge-dominant, #101422);
+            filter: blur(52px) saturate(180%) brightness(0.7);
+            -webkit-filter: blur(52px) saturate(180%) brightness(0.7);
+            transform: scale(1.15) translateZ(0);
+            -webkit-transform: scale(1.15) translateZ(0);
             opacity: 0;
-            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease;
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease, background-color 0.4s ease;
             z-index: 0;
             pointer-events: none;
-            will-change: opacity, transform;
+            will-change: opacity, transform, background-color;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-ambient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, var(--wp-edge-dominant, rgba(16,20,34,0.8)) 100%),
+                        linear-gradient(to bottom, var(--wp-edge-top, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-bottom, transparent) 100%),
+                        linear-gradient(to right, var(--wp-edge-left, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-right, transparent) 100%);
+            opacity: 0.88;
+            pointer-events: none;
         }
         .car-wallpaper-ambient.active {
             opacity: 1;
@@ -14490,31 +14899,66 @@
     let _bcosCtxMenuBound = false;
     let _bcosTouchTimer = null;
 
+    function _bcosGetMenubarAvatarHTML() {
+        try {
+            const type = localStorage.getItem('bcos_menubar_avatar_type') || 'photo';
+            if (type === 'emoji') {
+                const em = localStorage.getItem('bcos_menubar_avatar_emoji') || '🐰';
+                return `<span style="font-size:16px;line-height:1;display:inline-block;">${em}</span>`;
+            } else if (type === 'apple') {
+                return `<span style="font-size:16px;line-height:1;display:inline-block;"></span>`;
+            } else {
+                return `<img class="bcos-menubar-avatar-img" src="./dist/Bunny CC_Profile.JPG" alt="兔可可" onerror="this.onerror=null;this.parentElement.innerHTML='🐰';" />`;
+            }
+        } catch(e) {
+            return '🐰';
+        }
+    }
+
+    function _bcosCycleMenubarAvatar(e) {
+        if (e) { e.stopPropagation(); if (e.preventDefault) e.preventDefault(); }
+        const current = localStorage.getItem('bcos_menubar_avatar_type') || 'photo';
+        const next = current === 'photo' ? 'emoji' : (current === 'emoji' ? 'apple' : 'photo');
+        localStorage.setItem('bcos_menubar_avatar_type', next);
+        const btn = document.getElementById('bcos-apple-btn');
+        if (btn) btn.innerHTML = _bcosGetMenubarAvatarHTML();
+        const names = { photo: '🐰 兔可可写真照片', emoji: '✨ 萌兔专属Emoji', apple: ' 经典Apple标志' };
+        showToast(`顶栏图标已切换为: ${names[next] || next}`);
+    }
+
     function _bcosGetContextMenuHTML() {
         const avatarMode = (typeof safeGetItem === 'function' ? safeGetItem('sidebarAvatar', 'emoji') : localStorage.getItem('sidebarAvatar')) || 'emoji';
         const isPhoto = avatarMode === 'photo';
+        const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        const menubarType = localStorage.getItem('bcos_menubar_avatar_type') || 'photo';
+        const menubarBadge = menubarType === 'apple' ? '' : (menubarType === 'emoji' ? 'Emoji' : '照片');
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.4.9420</span>
+                <span class="bcos-ctx-ver">v7.8.4.9430</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
-            <div class="bcos-context-menu-item" onclick="_bcosNewTextFile();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosNewTextFile();_bcosHideCtxMenu()">
                 <span class="ctx-icon">📄</span>
                 <span class="ctx-text">新建文例文档</span>
                 <span class="ctx-shortcut">New</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('texteditor');_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosOpenApp('texteditor');_bcosHideCtxMenu()">
                 <span class="ctx-icon">📝</span>
-                <span class="ctx-text">记事本编辑器</span>
+                <span class="ctx-text">Code Studio 代码编辑</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('terminal');_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosOpenApp('appstore');_bcosHideCtxMenu()">
+                <span class="ctx-icon">🛍️</span>
+                <span class="ctx-text">BCOS 应用商店</span>
+                <span class="ctx-badge">Store</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosOpenApp('terminal');_bcosHideCtxMenu()">
                 <span class="ctx-icon">💻</span>
-                <span class="ctx-text">BCOS 终端</span>
+                <span class="ctx-text">BCOS 终端控制台</span>
                 <span class="ctx-shortcut">~</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="showBcosCarLockscreen();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();showBcosCarLockscreen();_bcosHideCtxMenu()">
                 <span class="ctx-icon">🚗</span>
                 <span class="ctx-text">进入车机锁屏</span>
                 <span class="ctx-badge">HUD</span>
@@ -14523,42 +14967,48 @@
             <div class="bcos-ctx-separator"></div>
 
             <div class="bcos-ctx-group-title">个性化与外观</div>
-            <div class="bcos-context-menu-item" onclick="_bcosCycleDesktopWallpaper();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosCycleDesktopWallpaper();_bcosHideCtxMenu()">
                 <span class="ctx-icon">🖼️</span>
                 <span class="ctx-text">轮换下一张壁纸</span>
                 <span class="ctx-shortcut">Wall</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosCycleDesktopTheme();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosCycleDesktopTheme();_bcosHideCtxMenu()">
                 <span class="ctx-icon">🎨</span>
                 <span class="ctx-text">切换氛围主题</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosToggleAvatarCtx();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosCycleMenubarAvatar(event);_bcosHideCtxMenu()">
+                <span class="ctx-icon">🐰</span>
+                <span class="ctx-text">顶栏图标风格</span>
+                <span class="ctx-badge">${menubarBadge}</span>
+            </div>
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosToggleAvatarCtx();_bcosHideCtxMenu()">
                 <span class="ctx-icon">${isPhoto ? '📷' : '🐰'}</span>
-                <span class="ctx-text">伴侣头像风格</span>
+                <span class="ctx-text">伴侣头像模式</span>
                 <span class="ctx-badge" id="ctx-avatar-badge">${isPhoto ? '照片' : 'Emoji'}</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('settings');_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosOpenApp('settings');_bcosHideCtxMenu()">
                 <span class="ctx-icon">⚙️</span>
-                <span class="ctx-text">系统与个性化设置</span>
+                <span class="ctx-text">系统偏好设置</span>
             </div>
 
             <div class="bcos-ctx-separator"></div>
 
             <div class="bcos-ctx-group-title">桌面与系统</div>
-            <div class="bcos-context-menu-item" onclick="_bcosRefreshDesktop();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosRefreshDesktop();_bcosHideCtxMenu()">
                 <span class="ctx-icon">🔄</span>
                 <span class="ctx-text">刷新桌面</span>
                 <span class="ctx-shortcut">F5</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosToggleFullscreen();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosToggleFullscreen();_bcosHideCtxMenu()">
                 <span class="ctx-icon">⛶</span>
-                <span class="ctx-text">全屏模式</span>
+                <span class="ctx-text">${isFull ? '退出全屏模式' : '进入全屏模式'}</span>
+                <span class="ctx-badge" style="color:${isFull ? '#00ff41' : '#aaa'};">${isFull ? '全屏开启' : '窗口模式'}</span>
             </div>
-            <div class="bcos-context-menu-item" onclick="_bcosOpenApp('about');_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item" onclick="event.stopPropagation();event.preventDefault();_bcosOpenApp('about');_bcosHideCtxMenu()">
                 <span class="ctx-icon">ℹ️</span>
                 <span class="ctx-text">关于 BCOS</span>
             </div>
-            <div class="bcos-context-menu-item ctx-danger" onclick="closeBcosOS();_bcosHideCtxMenu()">
+            <div class="bcos-context-menu-item ctx-danger" onclick="event.stopPropagation();event.preventDefault();closeBcosOS();_bcosHideCtxMenu()">
                 <span class="ctx-icon">⏻</span>
                 <span class="ctx-text">关机 / 返回主页</span>
             </div>
@@ -14566,10 +15016,12 @@
     }
 
     function _bcosShowContextMenuAt(x, y) {
-        if (!_bcosCtxMenu) {
+        let host = document.getElementById('bcos-desktop') || document.getElementById('bcos-overlay') || document.body;
+        if (!_bcosCtxMenu || _bcosCtxMenu.parentNode !== host) {
+            if (_bcosCtxMenu && _bcosCtxMenu.parentNode) _bcosCtxMenu.remove();
             _bcosCtxMenu = document.createElement('div');
             _bcosCtxMenu.className = 'bcos-context-menu';
-            document.body.appendChild(_bcosCtxMenu);
+            host.appendChild(_bcosCtxMenu);
         }
         _bcosCtxMenu.innerHTML = _bcosGetContextMenuHTML();
         _bcosCtxMenu.style.display = 'block';
@@ -14624,7 +15076,6 @@
             if (_bcosCtxMenu && !_bcosCtxMenu.contains(e.target)) _bcosHideCtxMenu();
         });
     }
-
     function _bcosHideCtxMenu() { if (_bcosCtxMenu) _bcosCtxMenu.style.display = 'none'; }
 
     function _bcosNewTextFile() {
@@ -14684,10 +15135,19 @@
     }
 
     function _bcosToggleFullscreen() {
-        if (typeof toggleFullscreen === 'function') toggleFullscreen();
-        else {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-            else document.exitFullscreen().catch(()=>{});
+        try {
+            const doc = document;
+            const docEl = document.documentElement;
+            const isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+            if (!isFull) {
+                const rfs = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+                if (rfs) rfs.call(docEl).catch(err => console.warn('Request fullscreen prevented:', err));
+            } else {
+                const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+                if (efs) efs.call(doc).catch(err => console.warn('Exit fullscreen prevented:', err));
+            }
+        } catch(e) {
+            console.warn('Fullscreen error:', e);
         }
     }
     let _bcosEscHandler = null;
@@ -14695,8 +15155,20 @@
         if (_bcosEscHandler) return;
         _bcosEscHandler = (e) => {
             if (e.key === 'Escape') {
-                const ov = document.getElementById('bcos-overlay');
-                if (ov && ov.classList.contains('active') && _bcos.mode !== 'boot') closeBcosOS();
+                if (_bcosCtxMenu && _bcosCtxMenu.style.display !== 'none') {
+                    _bcosHideCtxMenu();
+                    return;
+                }
+                const anniModal = document.getElementById('bcos-anni-modal');
+                if (anniModal && anniModal.style.display !== 'none') {
+                    anniModal.style.display = 'none';
+                    return;
+                }
+                const appleMenu = document.getElementById('bcos-apple-menu');
+                if (appleMenu && appleMenu.classList.contains('show')) {
+                    _bcosCloseAppleMenu();
+                    return;
+                }
             }
         };
         document.addEventListener('keydown', _bcosEscHandler);
@@ -14721,11 +15193,13 @@
         });
     }
 
-    function closeBcosOS() {
-        const doc = window.document;
-        const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
-        if (efs && doc.fullscreenElement) {
-            efs.call(doc).catch(()=>{});
+    function closeBcosOS(forceExitFullscreen) {
+        if (forceExitFullscreen === true) {
+            const doc = window.document;
+            const efs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+            if (efs && doc.fullscreenElement) {
+                efs.call(doc).catch(()=>{});
+            }
         }
         
         const ov = document.getElementById('bcos-overlay');
@@ -14735,21 +15209,16 @@
                 <div style="position:absolute;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;z-index:999999;">
                     <img src="./dist/Bunny CC_Profile.JPG" style="width:120px;height:120px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(255,255,255,0.2);margin-bottom:2rem;border:3px solid #333;" onerror="this.src=''" alt="avatar"/>
                     <h2 style="margin:0 0 2rem;font-weight:400;color:#aaa;">System Halted.</h2>
-                    <button onclick="tryAutoFullscreen();showBcosOS();" style="padding:10px 24px;background:transparent;color:#fff;border:1px solid #555;border-radius:4px;font-size:16px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">
-                        ⏻ Reboot (重新开机)
-                    </button>
-                </div>
-            `;
-            ov.classList.add('active'); // Keep overlay active to cover the hidden .app
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+                        <button onclick="tryAutoFullscreen();showBcosOS();" style="padding:10px 24px;background:transparent;color:#fff;border:1px solid #555;border-radius:6px;font-size:15px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">
+                            ⏻ Reboot (重新开机)
+                        </button>
+                        <button onclick="navigateTo('home');" style="padding:10px 24px;background:rgba(255,107,157,0.2);color:#ff6b9d;border:1px solid rgba(255,107,157,0.4);border-radius:6px;font-size:15px;cursor:pointer;">
+                            🏠 返回经典视图
+                        </button>
+                    </div>
+                </div>`;
         }
-        if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
-        if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
-        if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; }
-        if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; }
-        _bcosBooting = false; // Allow re-boot after close
-        _bcosActiveOutput = null;
-        _bcosCwd = '~'; // Reset working directory on exit
-        _bcos.wins = {}; _bcos.activeWin = null; _bcos.mode = 'closed';
         _bcosUnbindEsc();
     }
 
@@ -14921,15 +15390,16 @@
     }
 
     const BCOS_DOCK_ITEMS = [
-        { id: 'files', name: '访达 (Finder)', icon: '📁' },
+        { id: 'appstore', name: 'App Store (应用商店)', icon: '🛍️' },
         { id: 'terminal', name: '终端 (Terminal)', icon: '💻' },
+        { id: 'files', name: '访达 (Finder)', icon: '📁' },
         { id: 'browser', name: 'Safari 浏览器', icon: '🌐' },
         { id: 'settings', name: '系统偏好设置', icon: '⚙️' },
         { id: 'carlock', name: '座舱锁屏 (Car Lock)', icon: '🚗' },
         { id: 'anniversary', name: '兔可可纪念日', icon: '💕' },
         { id: 'monopoly', name: '大富翁模拟经营', icon: '🎲' },
         { id: 'monitor', name: '活动监视器', icon: '📊' },
-        { id: 'texteditor', name: '文本编辑 (TextEdit)', icon: '📝' },
+        { id: 'texteditor', name: 'Code Studio 代码编辑', icon: '📝' },
         { id: 'logs', name: '控制台运行日志', icon: '📜' },
         { id: 'about', name: '关于这台 BCOS', icon: 'ℹ️' }
     ];
@@ -14938,7 +15408,30 @@
         const dock = document.getElementById('bcos-dock');
         if (!dock) return;
         const dt = _bcosGetDesktopTheme();
-        dock.innerHTML = BCOS_DOCK_ITEMS.map(item => {
+        const installed = typeof _bcosGetInstalledAppIds === 'function' ? _bcosGetInstalledAppIds() : [];
+        const customs = typeof _bcosGetCustomApps === 'function' ? _bcosGetCustomApps() : [];
+
+        let items = [...BCOS_DOCK_ITEMS];
+        const extraDefs = [
+            { id: 'calculator', name: '科学计算器', icon: '🧮' },
+            { id: 'weather', name: '座舱天气看板', icon: '🌤️' },
+            { id: 'notes', name: '桌面便签', icon: '📌' },
+            { id: 'radio', name: '兔兔电台', icon: '📻' },
+            { id: 'snake', name: '复古贪吃蛇', icon: '🐍' },
+            { id: 'paint', name: '像素画板', icon: '🎨' }
+        ];
+        extraDefs.forEach(app => {
+            if (installed.includes(app.id) && !items.some(i => i.id === app.id)) {
+                items.push(app);
+            }
+        });
+        customs.forEach(c => {
+            if (installed.includes(c.id) && !items.some(i => i.id === c.id)) {
+                items.push({ id: c.id, name: c.name, icon: c.icon || '📦' });
+            }
+        });
+
+        dock.innerHTML = items.map(item => {
             const icon = (dt && dt.icons && dt.icons[item.id]) ? dt.icons[item.id] : item.icon;
             const isOpen = !!_bcos.wins[item.id];
             const isActive = _bcos.activeWin === item.id;
@@ -14954,19 +15447,22 @@
     function _bcosUpdateDock() {
         const dock = document.getElementById('bcos-dock');
         if (!dock) return;
-        BCOS_DOCK_ITEMS.forEach(item => {
-            const el = document.getElementById('bcos-dock-' + item.id);
-            if (!el) return;
-            const isOpen = !!_bcos.wins[item.id];
-            const isActive = _bcos.activeWin === item.id;
+        const allDockItems = dock.querySelectorAll('.bcos-dock-item');
+        allDockItems.forEach(el => {
+            const id = el.id.replace('bcos-dock-', '');
+            const isOpen = !!_bcos.wins[id];
+            const isActive = _bcos.activeWin === id;
             el.classList.toggle('open', isOpen);
             el.classList.toggle('active', isActive);
         });
+
         const appTitleEl = document.getElementById('bcos-menubar-appname');
         if (appTitleEl) {
             const titleMap = {
+                appstore: 'App Store', calculator: 'Calculator', weather: 'Weather HUD', notes: 'Notes',
+                radio: 'Lo-Fi Radio', snake: 'Snake', paint: 'Pixel Paint',
                 terminal: 'Terminal', files: 'Finder', monitor: 'Activity Monitor', about: 'About BCOS',
-                browser: 'Safari', me: 'Finder', texteditor: 'TextEdit', anniversary: 'Anniversary',
+                browser: 'Safari', me: 'Finder', texteditor: 'Code Studio Pro', anniversary: 'Anniversary',
                 monopoly: 'Monopoly', settings: 'System Settings', logs: 'Console'
             };
             appTitleEl.textContent = _bcos.activeWin ? (titleMap[_bcos.activeWin] || _bcos.activeWin) : 'Bunny Cockpit OS';
@@ -14992,7 +15488,6 @@
         }
         _bcosOpenApp(app);
     }
-
     function _bcosToggleAppleMenu(e) {
         if (e) e.stopPropagation();
         const menu = document.getElementById('bcos-apple-menu');
@@ -15022,21 +15517,28 @@
             <!-- macOS Top Menu Bar -->
             <div class="bcos-menubar" id="bcos-menubar">
                 <div class="bcos-menubar-left">
-                    <div class="bcos-menubar-apple" id="bcos-apple-btn" onclick="_bcosToggleAppleMenu(event)" title="Apple Menu"></div>
+                    <div class="bcos-menubar-apple bcos-menubar-avatar-btn" id="bcos-apple-btn" onclick="_bcosToggleAppleMenu(event)" oncontextmenu="_bcosCycleMenubarAvatar(event);return false;" title="兔可可系统菜单 (右键快速切换图标样式)">${_bcosGetMenubarAvatarHTML()}</div>
                     <div class="bcos-menubar-appname" id="bcos-menubar-appname">Bunny Cockpit OS</div>
                     <div class="bcos-menubar-item hide-on-mobile" onclick="_bcosOpenApp('about')">关于</div>
+                    <div class="bcos-menubar-item hide-on-mobile" onclick="_bcosOpenApp('appstore')">应用商店</div>
                     <div class="bcos-menubar-item hide-on-mobile" onclick="_bcosOpenApp('settings')">设置</div>
                     <div class="bcos-menubar-item hide-on-mobile" onclick="showBcosCarLockscreen()">车机</div>
                 </div>
                 <div class="bcos-menubar-right">
                     <div class="bcos-menubar-status-item" id="bcos-menubar-battery" onclick="_bcosOpenApp('settings')" title="车辆与电池状态">⚡ 88%</div>
-                    <div class="bcos-menubar-status-item" onclick="toggleFullscreen()" title="切换全屏">⛶</div>
+                    <div class="bcos-menubar-status-item" onclick="_bcosToggleFullscreen()" title="切换全屏">⛶</div>
                     <div class="bcos-menubar-clock" id="bcos-clock">--:--</div>
                 </div>
             </div>
 
             <!-- macOS Apple Menu Dropdown -->
             <div class="bcos-apple-menu" id="bcos-apple-menu">
+                <div class="bcos-apple-menu-item" onclick="_bcosCycleMenubarAvatar(event); _bcosCloseAppleMenu();">
+                    <span>🐰</span><span>切换顶栏图标样式 (照片/Emoji/经典)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('appstore'); _bcosCloseAppleMenu();">
+                    <span>🛍️</span><span>应用商店 (App Store)</span>
+                </div>
                 <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('about'); _bcosCloseAppleMenu();">
                     <span>ℹ️</span><span>关于这台 BCOS (About)</span>
                 </div>
@@ -15066,13 +15568,13 @@
                     <span>🎲</span><span>大富翁模拟经营 (Monopoly)</span>
                 </div>
                 <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('texteditor'); _bcosCloseAppleMenu();">
-                    <span>📝</span><span>文本编辑器 (Text Editor)</span>
+                    <span>📝</span><span>Code Studio 代码编辑器</span>
                 </div>
                 <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('logs'); _bcosCloseAppleMenu();">
                     <span>📜</span><span>控制台运行日志 (Console Logs)</span>
                 </div>
                 <div class="bcos-apple-menu-sep"></div>
-                <div class="bcos-apple-menu-item" onclick="toggleFullscreen(); _bcosCloseAppleMenu();">
+                <div class="bcos-apple-menu-item" onclick="_bcosToggleFullscreen(); _bcosCloseAppleMenu();">
                     <span>⛶</span><span>切换全屏模式 (Fullscreen)</span>
                 </div>
                 <div class="bcos-apple-menu-item" onclick="_bcosBackToTerminal(); _bcosCloseAppleMenu();">
@@ -15086,6 +15588,7 @@
             <!-- Wallpaper and Icons -->
             <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('appstore')"><div class="bcos-desktop-icon-emoji">🛍️</div><div class="bcos-desktop-icon-label">App Store</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('files')"><div class="bcos-desktop-icon-emoji">${dt.icons.files}</div><div class="bcos-desktop-icon-label">Files</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('monitor')"><div class="bcos-desktop-icon-emoji">${dt.icons.monitor}</div><div class="bcos-desktop-icon-label">Monitor</div></div>
@@ -15095,7 +15598,7 @@
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('settings')"><div class="bcos-desktop-icon-emoji">⚙️</div><div class="bcos-desktop-icon-label">系统设置</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('logs')"><div class="bcos-desktop-icon-emoji">📜</div><div class="bcos-desktop-icon-label">运行日志</div></div>
                     <div class="bcos-desktop-icon" onclick="showBcosCarLockscreen()"><div class="bcos-desktop-icon-emoji">${dt.icons.car||'🚗'}</div><div class="bcos-desktop-icon-label">车机锁屏</div></div>
-                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('texteditor')"><div class="bcos-desktop-icon-emoji">${dt.icons.editor||'📝'}</div><div class="bcos-desktop-icon-label">Text Editor</div></div>
+                    <div class="bcos-desktop-icon" onclick="_bcosOpenApp('texteditor')"><div class="bcos-desktop-icon-emoji">${dt.icons.editor||'📝'}</div><div class="bcos-desktop-icon-label">Code Studio</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">${dt.icons.about}</div><div class="bcos-desktop-icon-label">About</div></div>
                 </div>
                 <div class="bcos-desktop-icon" style="position:absolute;right:${meX}px;top:${meY + 32}px;" onclick="_bcosOpenApp('me')"><div class="bcos-desktop-icon-emoji">${dt.icons.me}</div><div class="bcos-desktop-icon-label">me</div></div>
@@ -15109,6 +15612,7 @@
         </div>`;
         _bcosRenderDock();
         _bcosUpdateDock();
+        if (typeof _bcosSyncDesktopAppIcons === 'function') _bcosSyncDesktopAppIcons();
         _bcosUpdateClock();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
         const bg = document.getElementById('bcos-desktop-bg');
@@ -15131,7 +15635,6 @@
         _bcosShowOOBE(ov);
         if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
     }
-
     function _bcosUpdateClock() {
         const c = document.getElementById('bcos-clock');
         if (c) {
@@ -15190,19 +15693,35 @@
         }
         if (_bcos.wins[app]) { _bcosFocusWin(app); return; }
         const apps = {
+            appstore: { t: '🛍️ BCOS App Store — 兔可可应用商店', w: 820, h: 560 },
+            calculator: { t: '🧮 科学计算器 — Calculator', w: 340, h: 480 },
+            weather: { t: '🌤️ 座舱天气看板 — Weather HUD', w: 480, h: 440 },
+            notes: { t: '📌 桌面便利贴 — Sticky Notes', w: 400, h: 420 },
+            radio: { t: '📻 兔兔电台 Lo-Fi — Radio Station', w: 440, h: 380 },
+            snake: { t: '🐍 复古像素贪吃蛇 — Snake Adventure', w: 440, h: 500 },
+            paint: { t: '🎨 像素画板 Studio — Pixel Paint', w: 540, h: 480 },
             terminal: { t: 'Terminal — bcos@bunny', w: 520, h: 360 },
             files: { t: 'File Manager — bcos', w: 520, h: 400 },
             monitor: { t: 'System Monitor — bcos', w: 460, h: 360 },
             about: { t: 'About bcos', w: 420, h: 360 },
             browser: { t: 'Browser — bcos', w: 560, h: 420 },
             me: { t: 'me — File Explorer', w: 400, h: 320 },
-            texteditor: { t: 'Text Editor — bcos', w: 560, h: 420 },
-            anniversary: { t: '💕 兔可可纪念日 — Anniversary', w: 580, h: 480 },
+            texteditor: { t: '📝 Code Studio Pro — 文本代码编辑', w: 720, h: 500 },
+            anniversary: { t: '💕 兔可可纪念日 — Anniversary', w: 640, h: 520 },
             monopoly: { t: '🎲 大富翁模拟经营 — Monopoly Kingdom', w: 880, h: 580 },
             settings: { t: '⚙️ 系统设置 — System Settings', w: 720, h: 520 },
             logs: { t: '📜 系统运行日志 — System Logs', w: 680, h: 480 }
         };
-        const cfg = apps[app]; if (!cfg) return;
+        let cfg = apps[app];
+        if (!cfg && app.startsWith('custom_app_')) {
+            const customs = typeof _bcosGetCustomApps === 'function' ? _bcosGetCustomApps() : [];
+            const found = customs.find(c => c.id === app);
+            if (found) {
+                cfg = { t: `${found.icon || '📦'} ${found.name} — Custom App`, w: 680, h: 500 };
+            }
+        }
+        if (!cfg) return;
+
         const winId = 'bcos-win-' + app;
         const container = document.getElementById('bcos-windows');
         if (!container) return;
@@ -15239,6 +15758,14 @@
             else if (app === 'monopoly') _bcosRenderMonopolyApp(content);
             else if (app === 'settings') _bcosRenderSettingsApp(content);
             else if (app === 'logs') _bcosRenderLogsApp(content);
+            else if (app === 'appstore') _bcosRenderAppStore(content);
+            else if (app === 'calculator') _bcosRenderCalculator(content);
+            else if (app === 'weather') _bcosRenderWeather(content);
+            else if (app === 'notes') _bcosRenderNotes(content);
+            else if (app === 'radio') _bcosRenderRadio(content);
+            else if (app === 'snake') _bcosRenderSnake(content);
+            else if (app === 'paint') _bcosRenderPaint(content);
+            else if (app.startsWith('custom_app_')) _bcosRenderCustomApp(content, app);
         } catch(err) {
             if (content) content.innerHTML = '<div style="color:#f44;padding:.5rem;font-size:12px;">Error loading app: ' + _bcosEscape(err.message) + '</div>';
             console.error('bcos app render error:', err);
@@ -15284,6 +15811,8 @@
         if (app === 'anniversary' && typeof _bcosAnniAppTimer !== 'undefined' && _bcosAnniAppTimer) { clearInterval(_bcosAnniAppTimer); _bcosAnniAppTimer = null; }
         if (app === 'browser') { var ab = document.getElementById('bcos-egg-applybar'); if (ab) ab.remove(); if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; } }
         if (app === 'texteditor') { if (_bcosTeHlTimer) { clearTimeout(_bcosTeHlTimer); _bcosTeHlTimer = null; } }
+        if (app === 'radio') { if (window._bcosRadioStop) window._bcosRadioStop(); }
+        if (app === 'snake') { if (window._bcosSnakeStop) window._bcosSnakeStop(); }
         if (app === 'monopoly') {
             const el = document.getElementById('view-monopoly');
             if (el && el._origParent) {
@@ -15315,6 +15844,20 @@
             }
         }
         _bcosUpdateTaskbar();
+    }
+    function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
+    function _bcosUpdateTaskbar() {
+        _bcosUpdateDock();
+        const b = document.getElementById('bcos-taskbar-items');
+        if (!b) return;
+        const labels = {
+            appstore: 'App Store', calculator: '计算器', weather: '天气', notes: '便签',
+            radio: '电台', snake: '贪吃蛇', paint: '画板',
+            terminal: 'Terminal', files: 'Files', monitor: 'Monitor', about: 'About',
+            browser: 'Browser', me: 'me', texteditor: 'Code Studio', anniversary: '纪念日',
+            monopoly: '大富翁', settings: '设置', logs: '日志'
+        };
+        b.innerHTML = Object.keys(_bcos.wins).map(a => `<div class="bcos-taskbar-item${_bcos.activeWin===a?' active':''}" onclick="_bcosClickTaskbarItem('${a}')">${labels[a]||a}</div>`).join('');
     }
     function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
     function _bcosUpdateTaskbar() {
@@ -16524,113 +17067,1050 @@
         return lines.join('\n');
     }
 
-    function _bcosRenderAnniversaryApp(content) {
-        content.style.padding = '0';
-        content.innerHTML = `<div class="bcos-anni-container" id="bcos-anni-app-root">
-            <div class="bcos-anni-banner">
+
+// ============================================================================
+// BCOS Modern Anniversary App & Store Suite
+// ============================================================================
+
+// --- App Store & Custom App Persistence Helpers ---
+function _bcosGetInstalledAppIds() {
+    try {
+        const stored = localStorage.getItem('bcos_installed_apps');
+        if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return ['calculator', 'weather', 'notes', 'radio'];
+}
+
+function _bcosSetInstalledAppIds(ids) {
+    try {
+        localStorage.setItem('bcos_installed_apps', JSON.stringify(ids));
+    } catch(e) {}
+    if (typeof _bcosRenderDock === 'function') _bcosRenderDock();
+    if (typeof _bcosUpdateDock === 'function') _bcosUpdateDock();
+    _bcosSyncDesktopAppIcons();
+}
+
+function _bcosGetCustomApps() {
+    try {
+        const stored = localStorage.getItem('bcos_custom_apps');
+        if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return [];
+}
+
+function _bcosSaveCustomApps(apps) {
+    try {
+        localStorage.setItem('bcos_custom_apps', JSON.stringify(apps));
+    } catch(e) {}
+}
+
+function _bcosSyncDesktopAppIcons() {
+    const desktopIcons = document.querySelector('.bcos-desktop-icons');
+    if (!desktopIcons) return;
+    const installed = _bcosGetInstalledAppIds();
+    const customs = _bcosGetCustomApps();
+    
+    // Check extra apps to inject
+    const extraAppDefs = [
+        { id: 'calculator', name: '计算器', icon: '🧮' },
+        { id: 'weather', name: '天气看板', icon: '🌤️' },
+        { id: 'notes', name: '便签', icon: '📌' },
+        { id: 'radio', name: '兔兔电台', icon: '📻' },
+        { id: 'snake', name: '贪吃蛇', icon: '🐍' },
+        { id: 'paint', name: '像素画板', icon: '🎨' }
+    ];
+
+    extraAppDefs.forEach(app => {
+        let el = document.getElementById('bcos-desk-icon-' + app.id);
+        if (installed.includes(app.id)) {
+            if (!el) {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bcos-desktop-icon';
+                iconDiv.id = 'bcos-desk-icon-' + app.id;
+                iconDiv.onclick = () => _bcosOpenApp(app.id);
+                iconDiv.innerHTML = `<div class="bcos-desktop-icon-emoji">${app.icon}</div><div class="bcos-desktop-icon-label">${app.name}</div>`;
+                desktopIcons.appendChild(iconDiv);
+            }
+        } else {
+            if (el) el.remove();
+        }
+    });
+
+    customs.forEach(c => {
+        let el = document.getElementById('bcos-desk-icon-' + c.id);
+        if (installed.includes(c.id)) {
+            if (!el) {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bcos-desktop-icon';
+                iconDiv.id = 'bcos-desk-icon-' + c.id;
+                iconDiv.onclick = () => _bcosOpenApp(c.id);
+                iconDiv.innerHTML = `<div class="bcos-desktop-icon-emoji">${c.icon || '📦'}</div><div class="bcos-desktop-icon-label">${c.name}</div>`;
+                desktopIcons.appendChild(iconDiv);
+            }
+        } else {
+            if (el) el.remove();
+        }
+    });
+}
+
+// --- macOS BCOS Anniversary App ---
+_bcosAnniAppTimer = null;
+
+function _bcosRenderAnniversaryApp(content) {
+    content.style.padding = '0';
+    content.style.overflow = 'hidden';
+    content.style.height = '100%';
+    content.innerHTML = `
+        <div class="bcos-anni-container" id="bcos-anni-app-root">
+            <div class="bcos-anni-hero">
+                <div style="font-size:12px;font-weight:700;color:var(--accent,#ff6b9d);letter-spacing:2px;margin-bottom:4px;">🐰 BUNNY COCKPIT ANNIVERSARY</div>
                 <div class="bcos-anni-big-days" id="bcos-anni-days-val">--</div>
-                <div class="bcos-anni-unit">DAYS</div>
-                <div class="bcos-anni-subtime" id="bcos-anni-time-val">--时 --分 --秒</div>
+                <div class="bcos-anni-unit">DAYS IN HARMONY · 累计相伴</div>
+                <div class="bcos-anni-subtime" id="bcos-anni-time-val">-- 时 -- 分 -- 秒 .---</div>
                 <div class="bcos-anni-since">兔可可相伴始于 2024/03/12 · 虚拟纪元</div>
             </div>
+
             <div class="bcos-anni-actions">
                 <button class="bcos-anni-btn primary" onclick="showBcosCarLockscreen()">🚗 开启车机全屏锁屏</button>
                 <button class="bcos-anni-btn" onclick="copyCarScreenUrl()">📋 复制车机专属链接</button>
-                <button class="bcos-anni-btn" onclick="_bcosPromptAddAnniversary()">➕ 添加自定义纪念日</button>
+                <button class="bcos-anni-btn" onclick="_bcosOpenAddAnniversaryModal()">➕ 添加自定义纪念日</button>
             </div>
-            <div id="bcos-anni-next-box" style="margin-bottom:.8rem;"></div>
-            <div class="bcos-anni-section-title">🎯 历程里程碑成就树</div>
-            <div class="bcos-anni-ms-list" id="bcos-anni-ms-container"></div>
-            <div class="bcos-anni-section-title">💖 自定义纪念日</div>
-            <div class="bcos-anni-ms-list" id="bcos-anni-custom-container"></div>
-        </div>`;
 
-        _bcosUpdateAnniversaryApp();
-        if (_bcosAnniAppTimer) clearInterval(_bcosAnniAppTimer);
-        _bcosAnniAppTimer = setInterval(_bcosUpdateAnniversaryApp, 500);
+            <div id="bcos-anni-next-box"></div>
+
+            <div>
+                <div class="bcos-anni-section-title">🎯 历程里程碑成就树</div>
+                <div class="bcos-anni-ms-list" id="bcos-anni-ms-container"></div>
+            </div>
+
+            <div>
+                <div class="bcos-anni-section-title">💖 自定义纪念日与特别约定</div>
+                <div class="bcos-anni-ms-list" id="bcos-anni-custom-container"></div>
+            </div>
+
+            <!-- In-Window Add Anniversary Modal (Never calls prompt, preserves Fullscreen) -->
+            <div id="bcos-anni-modal" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:999;align-items:center;justify-content:center;padding:1rem;">
+                <div style="background:#1e2433;border:1px solid rgba(255,107,157,0.4);box-shadow:0 16px 40px rgba(0,0,0,0.6);border-radius:14px;padding:1.4rem;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px;color:#fff;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <h3 style="margin:0;font-size:16px;color:#ff6b9d;display:flex;align-items:center;gap:6px;">💖 添加自定义纪念日</h3>
+                        <button onclick="_bcosCloseAddAnniversaryModal()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:18px;line-height:1;">✕</button>
+                    </div>
+                    <div>
+                        <label style="font-size:12px;color:#cbd5e1;margin-bottom:4px;display:block;">纪念日名称</label>
+                        <input type="text" id="bcos-anni-input-name" placeholder="例如: 恋爱纪念日、提车日、生日" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;" />
+                    </div>
+                    <div>
+                        <label style="font-size:12px;color:#cbd5e1;margin-bottom:4px;display:block;">纪念日日期</label>
+                        <input type="date" id="bcos-anni-input-date" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;" />
+                    </div>
+                    <div>
+                        <label style="font-size:12px;color:#cbd5e1;margin-bottom:4px;display:block;">图标选择 (Emoji)</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;" id="bcos-anni-emoji-picker">
+                            <span class="bcos-anni-emoji-opt active" onclick="_bcosSelectAnniEmoji('💖')">💖</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('🚗')">🚗</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('🎂')">🎂</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('💍')">💍</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('🌸')">🌸</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('✈️')">✈️</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('🐾')">🐾</span>
+                            <span class="bcos-anni-emoji-opt" onclick="_bcosSelectAnniEmoji('🌟')">🌟</span>
+                        </div>
+                        <input type="hidden" id="bcos-anni-selected-emoji" value="💖" />
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:6px;">
+                        <button onclick="_bcosSubmitAddAnniversary()" style="flex:1;background:var(--accent,#ff6b9d);color:#fff;border:none;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">✓ 确认保存</button>
+                        <button onclick="_bcosCloseAddAnniversaryModal()" style="background:rgba(255,255,255,0.1);color:#eee;border:none;padding:8px 14px;border-radius:6px;font-size:13px;cursor:pointer;">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    _bcosUpdateAnniversaryApp();
+    if (_bcosAnniAppTimer) clearInterval(_bcosAnniAppTimer);
+    _bcosAnniAppTimer = setInterval(_bcosUpdateAnniversaryApp, 100);
+}
+
+function _bcosOpenAddAnniversaryModal() {
+    const modal = document.getElementById('bcos-anni-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const dateInp = document.getElementById('bcos-anni-input-date');
+        if (dateInp && !dateInp.value) {
+            const now = new Date();
+            dateInp.value = now.toISOString().split('T')[0];
+        }
+        const nameInp = document.getElementById('bcos-anni-input-name');
+        if (nameInp) nameInp.focus();
+    }
+}
+
+function _bcosCloseAddAnniversaryModal() {
+    const modal = document.getElementById('bcos-anni-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function _bcosSelectAnniEmoji(emoji) {
+    const inp = document.getElementById('bcos-anni-selected-emoji');
+    if (inp) inp.value = emoji;
+    document.querySelectorAll('#bcos-anni-emoji-picker .bcos-anni-emoji-opt').forEach(el => {
+        el.classList.toggle('active', el.textContent.trim() === emoji);
+    });
+}
+
+function _bcosSubmitAddAnniversary() {
+    const name = (document.getElementById('bcos-anni-input-name')?.value || '').trim();
+    const date = (document.getElementById('bcos-anni-input-date')?.value || '').trim();
+    const icon = document.getElementById('bcos-anni-selected-emoji')?.value || '💖';
+    if (!name) {
+        showToast('⚠️ 请输入纪念日名称');
+        return;
+    }
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        showToast('⚠️ 请选择有效日期');
+        return;
+    }
+    _bcosAddCustomAnniversary(name, date, icon);
+    _bcosCloseAddAnniversaryModal();
+    _bcosUpdateAnniversaryApp();
+    showToast(`✓ 已添加纪念日: ${icon} ${name}`);
+}
+
+function _bcosUpdateAnniversaryApp() {
+    const root = document.getElementById('bcos-anni-app-root');
+    if (!root) {
+        if (_bcosAnniAppTimer) { clearInterval(_bcosAnniAppTimer); _bcosAnniAppTimer = null; }
+        return;
+    }
+    const data = _bcosGetAnniversaryData();
+    const daysEl = document.getElementById('bcos-anni-days-val');
+    const timeEl = document.getElementById('bcos-anni-time-val');
+    if (daysEl) daysEl.textContent = data.days;
+    if (timeEl) timeEl.textContent = `${data.hours} 时 ${data.mins} 分 ${data.secs} 秒 .${data.ms}`;
+
+    const nextBox = document.getElementById('bcos-anni-next-box');
+    if (nextBox) {
+        if (data.nextMilestone) {
+            nextBox.innerHTML = `
+                <div style="background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.3);border-radius:12px;padding:.8rem 1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem;">
+                        <span style="color:#ff6b9d;font-weight:700;">🎯 下一个里程碑: ${data.nextMilestone.label}</span>
+                        <span style="color:#00ff41;font-weight:700;">还剩 ${data.nextMilestone.remainDays} 天 (${data.nextPercent}%)</span>
+                    </div>
+                    <div style="height:7px;background:rgba(255,255,255,0.12);border-radius:4px;overflow:hidden;margin-top:.5rem;">
+                        <div style="height:100%;width:${data.nextPercent}%;background:linear-gradient(90deg,#a78bfa,#ff6b9d);border-radius:4px;transition:width 0.4s ease;"></div>
+                    </div>
+                </div>`;
+        } else {
+            nextBox.innerHTML = `
+                <div style="background:rgba(0,255,65,0.1);border:1px solid rgba(0,255,65,0.3);border-radius:12px;padding:.8rem 1rem;text-align:center;color:#00ff41;font-weight:700;font-size:.85rem;">
+                    🏆 兔可可所有既定里程碑全满贯达成！
+                </div>`;
+        }
     }
 
-    function _bcosUpdateAnniversaryApp() {
-        const root = document.getElementById('bcos-anni-app-root');
-        if (!root) {
-            if (_bcosAnniAppTimer) { clearInterval(_bcosAnniAppTimer); _bcosAnniAppTimer = null; }
-            return;
-        }
-        const data = _bcosGetAnniversaryData();
-        const daysEl = document.getElementById('bcos-anni-days-val');
-        const timeEl = document.getElementById('bcos-anni-time-val');
-        if (daysEl) daysEl.textContent = data.days;
-        if (timeEl) timeEl.textContent = `${data.hours} 时 ${data.mins} 分 ${data.secs} 秒 .${data.ms}`;
+    const msContainer = document.getElementById('bcos-anni-ms-container');
+    if (msContainer && !msContainer._rendered) {
+        msContainer.innerHTML = data.milestones.map(m => {
+            const tag = m.reached ? '✅' : (data.nextMilestone === m ? '🎯' : '⏳');
+            const stat = m.reached ? '<span style="color:#00ff41;font-weight:600;">已达成</span>' : `剩 ${m.remainDays} 天`;
+            return `<div class="bcos-anni-ms-item ${m.reached ? 'reached' : (data.nextMilestone === m ? 'next' : '')}">
+                <span>${tag} ${m.label}</span>
+                <span style="opacity:.85;font-variant-numeric:tabular-nums;">${m.dateStr} (${stat})</span>
+            </div>`;
+        }).join('');
+        msContainer._rendered = true;
+    }
 
-        const nextBox = document.getElementById('bcos-anni-next-box');
-        if (nextBox) {
-            if (data.nextMilestone) {
-                nextBox.innerHTML = `<div style="background:rgba(255,107,157,.1);border:1px solid rgba(255,107,157,.3);border-radius:8px;padding:.6rem .8rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:.75rem;">
-                        <span style="color:#ff6b9d;font-weight:700;">🎯 下一个里程碑: ${data.nextMilestone.label}</span>
-                        <span style="color:#00ff41;font-weight:700;">还有 ${data.nextMilestone.remainDays} 天 (${data.nextPercent}%)</span>
+    const customContainer = document.getElementById('bcos-anni-custom-container');
+    if (customContainer) {
+        if (data.custom.length === 0) {
+            customContainer.innerHTML = '<div style="color:#888;font-size:.8rem;padding:.8rem;text-align:center;background:rgba(255,255,255,0.03);border-radius:8px;">暂无自定义纪念日，点击上方【➕ 添加自定义纪念日】创建</div>';
+        } else {
+            customContainer.innerHTML = data.custom.map(c => {
+                const statusStr = c.isPast ? `已相伴 ${c.daysDiff} 天` : `倒计时还有 ${c.daysDiff} 天`;
+                return `<div class="bcos-anni-ms-item" style="border-left:3px solid var(--accent,#ff6b9d);">
+                    <span style="font-weight:600;">${c.icon || '💖'} ${c.name}</span>
+                    <div style="display:flex;align-items:center;gap:.6rem;">
+                        <span style="opacity:.85;font-variant-numeric:tabular-nums;">${c.date} (${statusStr})</span>
+                        <button onclick="_bcosDeleteCustomAnniversary('${c.id}')" title="删除纪念日" style="background:rgba(255,107,107,0.15);border:none;color:#ff6b6b;cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;">✕</button>
                     </div>
-                    <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-top:.4rem;">
-                        <div style="height:100%;width:${data.nextPercent}%;background:linear-gradient(90deg,#a78bfa,#ff6b9d);border-radius:3px;"></div>
-                    </div>
-                </div>`;
-            } else {
-                nextBox.innerHTML = `<div style="background:rgba(0,255,65,.1);border:1px solid rgba(0,255,65,.3);border-radius:8px;padding:.6rem .8rem;text-align:center;color:#00ff41;font-weight:700;font-size:.8rem;">
-                    🏆 兔可可所有里程碑全达成！
-                </div>`;
-            }
-        }
-
-        const msContainer = document.getElementById('bcos-anni-ms-container');
-        if (msContainer) {
-            msContainer.innerHTML = data.milestones.map(m => {
-                const tag = m.reached ? '✅' : (data.nextMilestone === m ? '🎯' : '⏳');
-                const stat = m.reached ? '<span style="color:#00ff41;">已达成</span>' : `剩 ${m.remainDays} 天`;
-                return `<div class="bcos-anni-ms-item ${m.reached ? 'reached' : (data.nextMilestone === m ? 'next' : '')}">
-                    <span>${tag} ${m.label}</span>
-                    <span style="opacity:.8;">${m.dateStr} (${stat})</span>
                 </div>`;
             }).join('');
         }
+    }
+}
 
-        const customContainer = document.getElementById('bcos-anni-custom-container');
-        if (customContainer) {
-            if (data.custom.length === 0) {
-                customContainer.innerHTML = '<div style="color:#666;font-size:.75rem;padding:.4rem;text-align:center;">暂无自定义纪念日，点击上方【➕ 添加自定义纪念日】创建</div>';
-            } else {
-                customContainer.innerHTML = data.custom.map(c => {
-                    const statusStr = c.isPast ? `已相伴 ${c.daysDiff} 天` : `倒计时还有 ${c.daysDiff} 天`;
-                    return `<div class="bcos-anni-ms-item" style="border-left:3px solid #a78bfa;">
-                        <span>${c.icon || '💖'} ${c.name}</span>
-                        <div style="display:flex;align-items:center;gap:.5rem;">
-                            <span style="opacity:.8;">${c.date} (${statusStr})</span>
-                            <button onclick="_bcosDeleteCustomAnniversary('${c.id}')" style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:.8rem;">✕</button>
+function _bcosDeleteCustomAnniversary(id) {
+    _bcosRemoveCustomAnniversary(id);
+    _bcosUpdateAnniversaryApp();
+    showToast('已删除纪念日');
+}
+
+// --- macOS BCOS App Store ---
+const BCOS_CATALOG = [
+    { id: 'calculator', name: '科学计算器', icon: '🧮', cat: 'tools', desc: '标准算术、三角函数、平方根与记忆运算', size: '24 KB', featured: true },
+    { id: 'weather', name: '座舱天气看板', icon: '🌤️', cat: 'tools', desc: '实时舱外气象、温度、湿度、风力与24小时走势模拟', size: '36 KB', featured: true },
+    { id: 'notes', name: '桌面便利贴', icon: '📌', cat: 'tools', desc: '多彩随手记便签，自动本地持久化同步与即时编辑', size: '18 KB', featured: true },
+    { id: 'radio', name: '兔兔电台 Lo-Fi', icon: '📻', cat: 'games', desc: 'Web Audio 治愈系合成音效（雨声、篝火、咖啡厅）与白噪音', size: '42 KB', featured: true },
+    { id: 'snake', name: '复古像素贪吃蛇', icon: '🐍', cat: 'games', desc: '怀旧60FPS像素掌机贪吃蛇，支持键盘方向键与触控摇杆', size: '32 KB', featured: false },
+    { id: 'paint', name: '像素画板 Studio', icon: '🎨', cat: 'games', desc: '16x16 / 24x24 创意像素涂鸦画板，调色盘与 PNG 导出', size: '28 KB', featured: false }
+];
+
+function _bcosRenderAppStore(content) {
+    content.style.padding = '0';
+    content.style.overflow = 'hidden';
+    content.style.height = '100%';
+    content.innerHTML = `
+        <div class="bcos-store-wrap">
+            <div class="bcos-store-nav">
+                <div class="bcos-store-tab active" onclick="_bcosSwitchStoreTab('featured', this)">🌟 精选推荐</div>
+                <div class="bcos-store-tab" onclick="_bcosSwitchStoreTab('tools', this)">🚀 工具与效率</div>
+                <div class="bcos-store-tab" onclick="_bcosSwitchStoreTab('games', this)">🎮 娱乐与游戏</div>
+                <div class="bcos-store-tab" onclick="_bcosSwitchStoreTab('studio', this)">📤 应用工坊 (上传)</div>
+                <div class="bcos-store-tab" onclick="_bcosSwitchStoreTab('installed', this)">📦 已安装管理</div>
+            </div>
+            <div class="bcos-store-content" id="bcos-store-body"></div>
+        </div>
+    `;
+    _bcosShowStoreTab('featured');
+}
+
+function _bcosSwitchStoreTab(tabKey, tabEl) {
+    document.querySelectorAll('.bcos-store-tab').forEach(t => t.classList.remove('active'));
+    if (tabEl) tabEl.classList.add('active');
+    _bcosShowStoreTab(tabKey);
+}
+
+function _bcosShowStoreTab(tabKey) {
+    const body = document.getElementById('bcos-store-body');
+    if (!body) return;
+    const installed = _bcosGetInstalledAppIds();
+    const customs = _bcosGetCustomApps();
+
+    if (tabKey === 'studio') {
+        body.innerHTML = `
+            <div style="max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.2rem;">
+                    <h3 style="margin:0 0 .5rem;color:var(--accent,#ff6b9d);font-size:16px;">📤 自定义应用工坊 (本地预处理)</h3>
+                    <p style="margin:0 0 1rem;font-size:12px;color:#94a3b8;line-height:1.5;">支持上传本地单文件 HTML/JS 网页应用。与壁纸上传相同，应用将在浏览器本地直接解析、沙盒化预处理并保存于系统 IndexedDB/本地存储，安全且离线秒开。</p>
+                    
+                    <div style="display:flex;gap:10px;margin-bottom:12px;">
+                        <input type="file" id="bcos-custom-app-file" accept=".html,.htm,.txt,.json,.js" style="display:none;" onchange="_bcosHandleCustomAppUpload(event)">
+                        <button onclick="document.getElementById('bcos-custom-app-file').click()" class="bcos-store-btn" style="background:var(--accent,#ff6b9d);padding:8px 16px;font-size:13px;">📁 选择应用文件 (.html/.js)</button>
+                        <button onclick="_bcosLoadAppSample()" class="bcos-store-btn" style="background:rgba(255,255,255,0.1);padding:8px 14px;font-size:12px;">💡 载入时钟示例代码</button>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" id="bcos-custom-app-name" placeholder="应用名称 (如: 霓虹数字时钟)" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;outline:none;" />
+                            <input type="text" id="bcos-custom-app-icon" placeholder="图标Emoji (如: ⏱️)" style="width:120px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#fff;font-size:13px;outline:none;" />
                         </div>
-                    </div>`;
-                }).join('');
+                        <textarea id="bcos-custom-app-code" placeholder="在此直接粘贴 HTML/CSS/JS 代码..." style="width:100%;height:140px;background:#0d1117;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 10px;color:#a5d6ff;font-family:monospace;font-size:12px;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <button onclick="_bcosTestRunCustomApp()" class="bcos-store-btn" style="background:rgba(255,255,255,0.12);">👁️ 本地测试运行</button>
+                            <button onclick="_bcosInstallCustomApp()" class="bcos-store-btn" style="background:#007aff;">✓ 预处理并安装到桌面与Dock</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    let appList = [];
+    if (tabKey === 'featured') {
+        appList = BCOS_CATALOG.filter(a => a.featured);
+    } else if (tabKey === 'tools') {
+        appList = BCOS_CATALOG.filter(a => a.cat === 'tools');
+    } else if (tabKey === 'games') {
+        appList = BCOS_CATALOG.filter(a => a.cat === 'games');
+    } else if (tabKey === 'installed') {
+        appList = BCOS_CATALOG.filter(a => installed.includes(a.id));
+        customs.forEach(c => {
+            if (installed.includes(c.id)) {
+                appList.push({ id: c.id, name: c.name, icon: c.icon || '📦', desc: '用户本地工坊创建的自定义应用', size: c.size || '32 KB', isCustom: true });
             }
+        });
+    }
+
+    if (appList.length === 0) {
+        body.innerHTML = '<div style="text-align:center;color:#64748b;padding:3rem;font-size:13px;">暂无该分类应用</div>';
+        return;
+    }
+
+    body.innerHTML = `
+        <div class="bcos-store-grid">
+            ${appList.map(app => {
+                const isInst = installed.includes(app.id);
+                return `
+                    <div class="bcos-store-card" id="store-card-${app.id}">
+                        <div class="bcos-store-card-header">
+                            <div class="bcos-store-icon">${app.icon}</div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:700;font-size:14px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${app.name}</div>
+                                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${app.size || '20 KB'} · ${app.cat === 'games' ? '娱乐游戏' : '实用工具'}</div>
+                            </div>
+                            <button class="bcos-store-btn ${isInst ? 'installed' : ''}" id="store-btn-${app.id}" onclick="_bcosStoreAction('${app.id}', this)">
+                                ${isInst ? '打开' : '获取'}
+                            </button>
+                        </div>
+                        <div style="font-size:12px;color:#cbd5e1;line-height:1.4;margin-top:4px;">
+                            ${app.desc}
+                        </div>
+                        ${isInst ? `
+                            <div style="display:flex;justify-content:flex-end;margin-top:2px;">
+                                <span onclick="_bcosUninstallApp('${app.id}')" style="font-size:11px;color:#ef4444;cursor:pointer;opacity:0.8;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">卸载应用</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+function _bcosStoreAction(appId, btn) {
+    const installed = _bcosGetInstalledAppIds();
+    if (installed.includes(appId)) {
+        _bcosOpenApp(appId);
+        return;
+    }
+
+    // Simulate download & local installation progress
+    btn.disabled = true;
+    btn.style.width = '64px';
+    let progress = 0;
+    const timer = setInterval(() => {
+        progress += 25;
+        if (progress <= 90) {
+            btn.textContent = progress + '%';
+        } else {
+            clearInterval(timer);
+            btn.textContent = '打开';
+            btn.disabled = false;
+            btn.classList.add('installed');
+            installed.push(appId);
+            _bcosSetInstalledAppIds(installed);
+            showToast(`✓ 应用安装成功！已添加至桌面与快捷Dock`);
+            _bcosShowStoreTab(document.querySelector('.bcos-store-tab.active')?.textContent.includes('已安装') ? 'installed' : 'featured');
         }
+    }, 180);
+}
+
+function _bcosUninstallApp(appId) {
+    let installed = _bcosGetInstalledAppIds();
+    installed = installed.filter(id => id !== appId);
+    _bcosSetInstalledAppIds(installed);
+    showToast('已卸载应用并移出桌面');
+    _bcosShowStoreTab('installed');
+}
+
+function _bcosHandleCustomAppUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        const text = evt.target.result;
+        const nameInp = document.getElementById('bcos-custom-app-name');
+        const iconInp = document.getElementById('bcos-custom-app-icon');
+        const codeInp = document.getElementById('bcos-custom-app-code');
+        if (codeInp) codeInp.value = text;
+        if (nameInp && !nameInp.value) {
+            const titleMatch = text.match(/<title>(.*?)<\/title>/i);
+            const baseName = titleMatch ? titleMatch[1] : file.name.replace(/\.[^/.]+$/, "");
+            nameInp.value = baseName;
+        }
+        if (iconInp && !iconInp.value) {
+            iconInp.value = '⚡';
+        }
+        showToast('✓ 代码文件已读取，正在进行本地预处理');
+    };
+    reader.readAsText(file);
+}
+
+function _bcosLoadAppSample() {
+    const nameInp = document.getElementById('bcos-custom-app-name');
+    const iconInp = document.getElementById('bcos-custom-app-icon');
+    const codeInp = document.getElementById('bcos-custom-app-code');
+    if (nameInp) nameInp.value = '霓虹极简时钟';
+    if (iconInp) iconInp.value = '⏱️';
+    if (codeInp) {
+        codeInp.value = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { margin: 0; background: #050811; color: #ff6b9d; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: monospace; }
+#time { font-size: 3.5rem; font-weight: bold; text-shadow: 0 0 20px #ff6b9d; }
+#date { font-size: 1.2rem; color: #a78bfa; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div id="time">--:--:--</div>
+<div id="date">--</div>
+<script>
+function update() {
+    const d = new Date();
+    document.getElementById('time').textContent = d.toTimeString().split(' ')[0];
+    document.getElementById('date').textContent = d.toLocaleDateString();
+}
+setInterval(update, 1000); update();
+<\/script>
+</body>
+</html>`;
+    }
+}
+
+function _bcosTestRunCustomApp() {
+    const code = document.getElementById('bcos-custom-app-code')?.value || '';
+    if (!code.trim()) { showToast('⚠️ 代码内容不能为空'); return; }
+    const win = window.open('', '_blank');
+    if (win) { win.document.write(code); win.document.close(); }
+}
+
+function _bcosInstallCustomApp() {
+    const name = (document.getElementById('bcos-custom-app-name')?.value || '').trim() || '未命名应用';
+    const icon = (document.getElementById('bcos-custom-app-icon')?.value || '').trim() || '📦';
+    const code = document.getElementById('bcos-custom-app-code')?.value || '';
+    if (!code.trim()) { showToast('⚠️ 请输入或上传应用代码'); return; }
+
+    const appId = 'custom_app_' + Date.now();
+    const newApp = {
+        id: appId,
+        name: name,
+        icon: icon,
+        code: code,
+        size: Math.round(code.length / 1024) + ' KB',
+        date: new Date().toLocaleDateString()
+    };
+
+    const customs = _bcosGetCustomApps();
+    customs.push(newApp);
+    _bcosSaveCustomApps(customs);
+
+    const installed = _bcosGetInstalledAppIds();
+    installed.push(appId);
+    _bcosSetInstalledAppIds(installed);
+
+    showToast(`✓ 自定义应用【${name}】已成功安装至 BCOS！`);
+    _bcosOpenApp(appId);
+}
+
+function _bcosRenderCustomApp(content, appId) {
+    const customs = _bcosGetCustomApps();
+    const app = customs.find(a => a.id === appId);
+    if (!app) {
+        content.innerHTML = '<div style="color:#ef4444;padding:1rem;">应用未找到或已被移除</div>';
+        return;
+    }
+    content.style.padding = '0';
+    content.style.overflow = 'hidden';
+    content.style.height = '100%';
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.sandbox = 'allow-scripts allow-forms allow-same-origin';
+    iframe.srcdoc = app.code;
+    content.appendChild(iframe);
+}
+
+// ============================================================================
+// BCOS Native Companion Apps
+// ============================================================================
+
+// 1. Calculator
+function _bcosRenderCalculator(content) {
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = '#181b28';
+    content.innerHTML = `
+        <div style="flex:1;display:flex;flex-direction:column;padding:12px;box-sizing:border-box;">
+            <div id="bcos-calc-display" style="background:#0e111a;border-radius:10px;padding:14px 16px;text-align:right;border:1px solid rgba(255,255,255,0.08);margin-bottom:12px;">
+                <div id="bcos-calc-expr" style="font-size:12px;color:#94a3b8;min-height:16px;"></div>
+                <div id="bcos-calc-val" style="font-size:28px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;">0</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1;">
+                <button class="bcos-store-btn" style="background:#334155;" onclick="_bcosCalcOp('C')">C</button>
+                <button class="bcos-store-btn" style="background:#334155;" onclick="_bcosCalcOp('±')">±</button>
+                <button class="bcos-store-btn" style="background:#334155;" onclick="_bcosCalcOp('%')">%</button>
+                <button class="bcos-store-btn" style="background:#f59e0b;" onclick="_bcosCalcOp('/')">÷</button>
+
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('7')">7</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('8')">8</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('9')">9</button>
+                <button class="bcos-store-btn" style="background:#f59e0b;" onclick="_bcosCalcOp('*')">×</button>
+
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('4')">4</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('5')">5</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('6')">6</button>
+                <button class="bcos-store-btn" style="background:#f59e0b;" onclick="_bcosCalcOp('-')">-</button>
+
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('1')">1</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('2')">2</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('3')">3</button>
+                <button class="bcos-store-btn" style="background:#f59e0b;" onclick="_bcosCalcOp('+')">+</button>
+
+                <button class="bcos-store-btn" style="background:#1e293b;grid-column:span 2;" onclick="_bcosCalcNum('0')">0</button>
+                <button class="bcos-store-btn" style="background:#1e293b;" onclick="_bcosCalcNum('.')">.</button>
+                <button class="bcos-store-btn" style="background:#007aff;" onclick="_bcosCalcOp('=')">=</button>
+            </div>
+        </div>
+    `;
+    window._bcosCalcState = { cur: '0', prev: null, op: null, reset: false };
+}
+
+function _bcosCalcNum(digit) {
+    const s = window._bcosCalcState || { cur: '0', reset: false };
+    const valEl = document.getElementById('bcos-calc-val');
+    if (s.reset || s.cur === '0') {
+        s.cur = digit === '.' ? '0.' : digit;
+        s.reset = false;
+    } else {
+        if (digit === '.' && s.cur.includes('.')) return;
+        s.cur += digit;
+    }
+    if (valEl) valEl.textContent = s.cur;
+}
+
+function _bcosCalcOp(op) {
+    const s = window._bcosCalcState || { cur: '0' };
+    const valEl = document.getElementById('bcos-calc-val');
+    const exprEl = document.getElementById('bcos-calc-expr');
+    if (op === 'C') {
+        s.cur = '0'; s.prev = null; s.op = null; s.reset = false;
+        if (valEl) valEl.textContent = '0';
+        if (exprEl) exprEl.textContent = '';
+        return;
+    }
+    if (op === '±') {
+        s.cur = String(-parseFloat(s.cur) || 0);
+        if (valEl) valEl.textContent = s.cur;
+        return;
+    }
+    if (op === '%') {
+        s.cur = String(parseFloat(s.cur) / 100);
+        if (valEl) valEl.textContent = s.cur;
+        return;
+    }
+    if (op === '=') {
+        if (s.op && s.prev !== null) {
+            const a = parseFloat(s.prev), b = parseFloat(s.cur);
+            let res = 0;
+            if (s.op === '+') res = a + b;
+            else if (s.op === '-') res = a - b;
+            else if (s.op === '*') res = a * b;
+            else if (s.op === '/') res = b !== 0 ? a / b : 'Error';
+            if (exprEl) exprEl.textContent = `${a} ${s.op} ${b} =`;
+            s.cur = String(res);
+            s.prev = null;
+            s.op = null;
+            s.reset = true;
+            if (valEl) valEl.textContent = s.cur;
+        }
+        return;
+    }
+    s.prev = s.cur;
+    s.op = op;
+    s.reset = true;
+    if (exprEl) exprEl.textContent = `${s.cur} ${op}`;
+}
+
+// 2. Weather
+function _bcosRenderWeather(content) {
+    const temp = localStorage.getItem('car_cabin_temp') || '22';
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.background = 'linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%)';
+    content.style.color = '#fff';
+    content.style.overflowY = 'auto';
+    content.innerHTML = `
+        <div style="padding:1.4rem;display:flex;flex-direction:column;gap:1rem;">
+            <div style="text-align:center;">
+                <div style="font-size:14px;color:#93c5fd;font-weight:600;">上海 · 嘉定创新港 (虚拟座舱环境)</div>
+                <div style="font-size:3.5rem;font-weight:900;margin:6px 0;line-height:1;font-variant-numeric:tabular-nums;">${temp}°C</div>
+                <div style="font-size:14px;color:#cbd5e1;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <span>🌤️ 晴转多云</span>
+                    <span>·</span>
+                    <span>空气优 AQI 22</span>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+                <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;">湿度</div>
+                    <div style="font-size:15px;font-weight:700;margin-top:2px;">58%</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;">风速</div>
+                    <div style="font-size:15px;font-weight:700;margin-top:2px;">3.4 m/s</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;">气压</div>
+                    <div style="font-size:15px;font-weight:700;margin-top:2px;">1014 hPa</div>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px;">
+                <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">24小时逐时气温走势预测</div>
+                <div style="display:flex;justify-content:space-between;text-align:center;font-size:11px;">
+                    <div><div>现在</div><div style="margin:4px 0;">🌤️</div><div style="font-weight:700;">${temp}°</div></div>
+                    <div><div>14:00</div><div style="margin:4px 0;">☀️</div><div style="font-weight:700;">24°</div></div>
+                    <div><div>16:00</div><div style="margin:4px 0;">🌤️</div><div style="font-weight:700;">23°</div></div>
+                    <div><div>18:00</div><div style="margin:4px 0;">⛅</div><div style="font-weight:700;">21°</div></div>
+                    <div><div>20:00</div><div style="margin:4px 0;">🌙</div><div style="font-weight:700;">19°</div></div>
+                    <div><div>22:00</div><div style="margin:4px 0;">✨</div><div style="font-weight:700;">18°</div></div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 3. Notes
+function _bcosRenderNotes(content) {
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = '#141824';
+    content.style.color = '#fff';
+
+    function getNotes() {
+        try {
+            return JSON.parse(localStorage.getItem('bcos_notes') || '[]');
+        } catch(e) { return []; }
+    }
+    function saveNotes(notes) {
+        localStorage.setItem('bcos_notes', JSON.stringify(notes));
     }
 
-    function _bcosDeleteCustomAnniversary(id) {
-        _bcosRemoveCustomAnniversary(id);
-        _bcosUpdateAnniversaryApp();
-        showToast('已删除纪念日');
+    const notes = getNotes();
+    if (notes.length === 0) {
+        notes.push({ id: 1, title: '兔可可座舱便签', text: '欢迎使用 BCOS 便签！随时在此记录座舱灵感、纪念日备忘与备忘清单。', color: '#fef08a' });
+        saveNotes(notes);
     }
 
-    function _bcosPromptAddAnniversary() {
-        const name = prompt('请输入纪念日名称 (例如: 提车纪念日、恋爱日):');
-        if (!name) return;
-        const date = prompt('请输入纪念日日期 (格式 YYYY-MM-DD):', '2024-11-05');
-        if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            alert('日期格式不正确，请使用 YYYY-MM-DD 格式，例如 2024-11-05');
+    content.innerHTML = `
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:#94a3b8;font-weight:600;">📌 便签清单 (${notes.length})</span>
+            <button onclick="_bcosAddNewNote()" class="bcos-store-btn" style="padding:4px 10px;font-size:11px;">+ 新建便签</button>
+        </div>
+        <div id="bcos-notes-container" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
+    `;
+
+    function renderNoteItems() {
+        const wrap = document.getElementById('bcos-notes-container');
+        if (!wrap) return;
+        const curNotes = getNotes();
+        wrap.innerHTML = curNotes.map(n => `
+            <div style="background:${n.color || '#fef08a'};color:#1e293b;border-radius:10px;padding:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);position:relative;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <input type="text" value="${n.title}" onchange="_bcosUpdateNote(${n.id}, 'title', this.value)" style="background:none;border:none;font-weight:700;font-size:13px;color:#0f172a;outline:none;width:80%;" />
+                    <button onclick="_bcosDeleteNote(${n.id})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:12px;font-weight:bold;">✕</button>
+                </div>
+                <textarea onchange="_bcosUpdateNote(${n.id}, 'text', this.value)" style="width:100%;height:60px;background:none;border:none;font-family:inherit;font-size:12px;color:#334155;outline:none;resize:none;box-sizing:border-box;">${n.text}</textarea>
+            </div>
+        `).join('');
+    }
+
+    window._bcosAddNewNote = () => {
+        const nList = getNotes();
+        const colors = ['#fef08a', '#fbcfe8', '#bae6fd', '#bbf7d0'];
+        nList.unshift({ id: Date.now(), title: '新便签', text: '', color: colors[nList.length % colors.length] });
+        saveNotes(nList);
+        renderNoteItems();
+    };
+
+    window._bcosUpdateNote = (id, key, val) => {
+        const nList = getNotes();
+        const item = nList.find(n => n.id === id);
+        if (item) { item[key] = val; saveNotes(nList); }
+    };
+
+    window._bcosDeleteNote = (id) => {
+        let nList = getNotes();
+        nList = nList.filter(n => n.id !== id);
+        saveNotes(nList);
+        renderNoteItems();
+    };
+
+    renderNoteItems();
+}
+
+// 4. Radio (Web Audio synthesizer)
+let _bcosAudioCtx = null;
+let _bcosRadioPlaying = false;
+let _bcosRadioOsc = null;
+
+function _bcosRenderRadio(content) {
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = '#090b14';
+    content.style.color = '#fff';
+    content.innerHTML = `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.4rem;text-align:center;">
+            <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#ff6b9d,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 24px rgba(255,107,157,0.4);margin-bottom:1rem;" id="bcos-radio-avatar">
+                📻
+            </div>
+            <div style="font-weight:700;font-size:16px;color:#fff;">兔兔治愈 Lo-Fi 电台</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:4px;" id="bcos-radio-status">伴听环境白噪音 · 舒缓静心</div>
+
+            <div style="display:flex;align-items:center;gap:12px;margin-top:1.5rem;">
+                <button id="bcos-radio-play-btn" onclick="_bcosToggleRadio()" class="bcos-store-btn" style="padding:10px 24px;font-size:14px;background:var(--accent,#ff6b9d);">
+                    ▶ 播放静心白噪音
+                </button>
+            </div>
+            
+            <div style="display:flex;gap:12px;margin-top:1.2rem;font-size:11px;color:#64748b;">
+                <span>🌧️ 柔和细雨</span>
+                <span>·</span>
+                <span>🔥 温暖壁炉</span>
+                <span>·</span>
+                <span>☕ 晚间咖啡</span>
+            </div>
+        </div>
+    `;
+}
+
+function _bcosToggleRadio() {
+    const btn = document.getElementById('bcos-radio-play-btn');
+    const status = document.getElementById('bcos-radio-status');
+    const avatar = document.getElementById('bcos-radio-avatar');
+
+    if (!_bcosRadioPlaying) {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            _bcosAudioCtx = new AudioCtx();
+            
+            // Generate gentle warm white/pink noise buffer
+            const bufferSize = _bcosAudioCtx.sampleRate * 2;
+            const buffer = _bcosAudioCtx.createBuffer(1, bufferSize, _bcosAudioCtx.sampleRate);
+            const output = buffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                output[i] = (b0 + b1 + b2 + white * 0.1) * 0.04;
+            }
+            const whiteNoise = _bcosAudioCtx.createBufferSource();
+            whiteNoise.buffer = buffer;
+            whiteNoise.loop = true;
+
+            const filter = _bcosAudioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(600, _bcosAudioCtx.currentTime);
+
+            whiteNoise.connect(filter);
+            filter.connect(_bcosAudioCtx.destination);
+            whiteNoise.start(0);
+            _bcosRadioOsc = whiteNoise;
+            _bcosRadioPlaying = true;
+
+            if (btn) btn.textContent = '⏸ 暂停播放';
+            if (status) status.textContent = '🎶 正在播放 · 细雨与壁炉白噪音';
+            if (avatar) avatar.style.animation = 'bcosPulse 2s infinite ease-in-out';
+            showToast('📻 兔兔电台已启动伴听');
+        } catch(e) {
+            showToast('⚠️ 音频引擎初始化受限');
+        }
+    } else {
+        if (_bcosRadioOsc) {
+            try { _bcosRadioOsc.stop(); } catch(e) {}
+            _bcosRadioOsc = null;
+        }
+        if (_bcosAudioCtx) {
+            try { _bcosAudioCtx.close(); } catch(e) {}
+            _bcosAudioCtx = null;
+        }
+        _bcosRadioPlaying = false;
+        if (btn) btn.textContent = '▶ 播放静心白噪音';
+        if (status) status.textContent = '伴听环境白噪音 · 舒缓静心';
+        if (avatar) avatar.style.animation = 'none';
+        showToast('电台已暂停');
+    }
+}
+
+window._bcosRadioStop = () => {
+    if (_bcosRadioPlaying) _bcosToggleRadio();
+};
+
+// 5. Retro Snake Game
+let _bcosSnakeTimer = null;
+function _bcosRenderSnake(content) {
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.alignItems = 'center';
+    content.style.justifyContent = 'center';
+    content.style.background = '#0a0d14';
+    content.innerHTML = `
+        <div style="display:flex;justify-content:space-between;width:280px;color:#fff;font-size:12px;margin-bottom:6px;font-weight:700;">
+            <span>得分: <span id="snake-score" style="color:#00ff41;">0</span></span>
+            <span>最高分: <span id="snake-high" style="color:#f59e0b;">0</span></span>
+        </div>
+        <canvas id="bcos-snake-cvs" width="280" height="280" style="background:#111827;border:2px solid #374151;border-radius:8px;"></canvas>
+        <div style="display:grid;grid-template-columns:repeat(3,44px);gap:6px;margin-top:10px;">
+            <div></div>
+            <button class="bcos-store-btn" onclick="_bcosSnakeMove(0,-1)">▲</button>
+            <div></div>
+            <button class="bcos-store-btn" onclick="_bcosSnakeMove(-1,0)">◀</button>
+            <button class="bcos-store-btn" onclick="_bcosSnakeMove(0,1)">▼</button>
+            <button class="bcos-store-btn" onclick="_bcosSnakeMove(1,0)">▶</button>
+        </div>
+    `;
+
+    const cvs = document.getElementById('bcos-snake-cvs');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d');
+    const grid = 14;
+    let snake = [{x: 5, y: 5}, {x: 4, y: 5}, {x: 3, y: 5}];
+    let dir = {x: 1, y: 0};
+    let food = {x: 12, y: 12};
+    let score = 0;
+    let high = parseInt(localStorage.getItem('bcos_snake_high') || '0', 10);
+    document.getElementById('snake-high').textContent = high;
+
+    function resetFood() {
+        food.x = Math.floor(Math.random() * (cvs.width / grid));
+        food.y = Math.floor(Math.random() * (cvs.height / grid));
+    }
+
+    function step() {
+        const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+        if (head.x < 0 || head.x >= cvs.width / grid || head.y < 0 || head.y >= cvs.height / grid || snake.some(s => s.x === head.x && s.y === head.y)) {
+            // Game Over
+            if (score > high) {
+                high = score;
+                localStorage.setItem('bcos_snake_high', high);
+                document.getElementById('snake-high').textContent = high;
+            }
+            snake = [{x: 5, y: 5}, {x: 4, y: 5}, {x: 3, y: 5}];
+            dir = {x: 1, y: 0};
+            score = 0;
+            document.getElementById('snake-score').textContent = score;
+            resetFood();
             return;
         }
-        const icon = prompt('请输入展示图标 Emoji (默认 🚗):', '🚗') || '🚗';
-        _bcosAddCustomAnniversary(name, date, icon);
-        _bcosUpdateAnniversaryApp();
-        showToast('✓ 纪念日添加成功');
+
+        snake.unshift(head);
+        if (head.x === food.x && head.y === food.y) {
+            score += 10;
+            document.getElementById('snake-score').textContent = score;
+            resetFood();
+        } else {
+            snake.pop();
+        }
+
+        ctx.fillStyle = '#111827';
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+        // Draw food
+        ctx.fillStyle = '#ff6b9d';
+        ctx.beginPath();
+        ctx.arc(food.x * grid + grid/2, food.y * grid + grid/2, grid/2.2, 0, Math.PI*2);
+        ctx.fill();
+
+        // Draw snake
+        ctx.fillStyle = '#00ff41';
+        snake.forEach((s, idx) => {
+            if (idx === 0) ctx.fillStyle = '#06FFA5';
+            else ctx.fillStyle = '#00ff41';
+            ctx.fillRect(s.x * grid + 1, s.y * grid + 1, grid - 2, grid - 2);
+        });
     }
+
+    if (_bcosSnakeTimer) clearInterval(_bcosSnakeTimer);
+    _bcosSnakeTimer = setInterval(step, 110);
+
+    window._bcosSnakeMove = (dx, dy) => {
+        if (dir.x !== -dx || dir.y !== -dy) {
+            dir = {x: dx, y: dy};
+        }
+    };
+
+    window._bcosSnakeKey = (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'w') _bcosSnakeMove(0, -1);
+        else if (e.key === 'ArrowDown' || e.key === 's') _bcosSnakeMove(0, 1);
+        else if (e.key === 'ArrowLeft' || e.key === 'a') _bcosSnakeMove(-1, 0);
+        else if (e.key === 'ArrowRight' || e.key === 'd') _bcosSnakeMove(1, 0);
+    };
+    document.addEventListener('keydown', window._bcosSnakeKey);
+}
+
+window._bcosSnakeStop = () => {
+    if (_bcosSnakeTimer) { clearInterval(_bcosSnakeTimer); _bcosSnakeTimer = null; }
+    if (window._bcosSnakeKey) document.removeEventListener('keydown', window._bcosSnakeKey);
+};
+
+// 6. Pixel Paint Studio
+function _bcosRenderPaint(content) {
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = '#131722';
+    content.innerHTML = `
+        <div style="padding:6px 10px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <input type="color" id="paint-color" value="#ff6b9d" style="width:28px;height:28px;border:none;border-radius:4px;cursor:pointer;background:none;" />
+            <button class="bcos-store-btn" onclick="_bcosPaintClear()">清空画布</button>
+            <button class="bcos-store-btn" onclick="_bcosPaintExport()">导出图片 (PNG)</button>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px;">
+            <canvas id="bcos-paint-cvs" width="288" height="288" style="background:#ffffff;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,0.5);cursor:crosshair;"></canvas>
+        </div>
+    `;
+
+    const cvs = document.getElementById('bcos-paint-cvs');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d');
+    const gridSize = 16;
+    const cellSize = cvs.width / gridSize;
+    let isDrawing = false;
+
+    function draw(e) {
+        if (!isDrawing) return;
+        const rect = cvs.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const x = Math.floor((clientX - rect.left) / cellSize);
+        const y = Math.floor((clientY - rect.top) / cellSize);
+        if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+            const color = document.getElementById('paint-color')?.value || '#ff6b9d';
+            ctx.fillStyle = color;
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+    }
+
+    cvs.onmousedown = (e) => { isDrawing = true; draw(e); };
+    cvs.onmousemove = draw;
+    window.onmouseup = () => { isDrawing = false; };
+
+    cvs.ontouchstart = (e) => { isDrawing = true; draw(e); e.preventDefault(); };
+    cvs.ontouchmove = (e) => { draw(e); e.preventDefault(); };
+    cvs.ontouchend = () => { isDrawing = false; };
+
+    window._bcosPaintClear = () => {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
+    };
+
+    window._bcosPaintExport = () => {
+        const link = document.createElement('a');
+        link.download = 'pixel_art_' + Date.now() + '.png';
+        link.href = cvs.toDataURL('image/png');
+        link.click();
+        showToast('✓ 像素画已导出下载！');
+    };
+}
+
 
     function copyCarScreenUrl() {
         const basePath = window.location.pathname.replace(/index\.html$/, '').replace(/\/+$/, '') + '/';
@@ -17025,7 +18505,14 @@ const START_DATE = '2024/03/12 00:00:00';
                 "file": "wallpaper/Starlight210128.min.b64",
                 "b64": true,
                 "parts": 3,
-                "size": 296020
+                "size": 296020,
+                "edgeColors": {
+                        "dominant": "rgb(121,136,144)",
+                        "top": "rgb(151,176,207)",
+                        "bottom": "rgb(113,121,113)",
+                        "left": "rgb(107,116,107)",
+                        "right": "rgb(114,133,151)"
+                }
         },
         {
                 "id": "illustration",
@@ -17033,7 +18520,14 @@ const START_DATE = '2024/03/12 00:00:00';
                 "file": "wallpaper/1126942.min.b64",
                 "b64": true,
                 "parts": 1,
-                "size": 111336
+                "size": 111336,
+                "edgeColors": {
+                        "dominant": "rgb(102,114,133)",
+                        "top": "rgb(98,116,138)",
+                        "bottom": "rgb(143,155,168)",
+                        "left": "rgb(82,95,113)",
+                        "right": "rgb(85,92,113)"
+                }
         },
         {
                 "id": "bunny_snow",
@@ -17041,84 +18535,168 @@ const START_DATE = '2024/03/12 00:00:00';
                 "file": "wallpaper/IMG_2833.min.b64",
                 "b64": true,
                 "parts": 3,
-                "size": 334780
+                "size": 334780,
+                "edgeColors": {
+                        "dominant": "rgb(98,94,84)",
+                        "top": "rgb(106,103,85)",
+                        "bottom": "rgb(102,99,93)",
+                        "left": "rgb(73,71,64)",
+                        "right": "rgb(111,103,94)"
+                }
         },
         {
                 "id": "wp_1204143",
                 "name": "原野星辉 · 宁静之夜",
                 "file": "wallpaper/1204143.opt.jpg",
                 "b64": false,
-                "size": 117458
+                "size": 117458,
+                "edgeColors": {
+                        "dominant": "rgb(1,1,2)",
+                        "top": "rgb(2,2,3)",
+                        "bottom": "rgb(3,2,3)",
+                        "left": "rgb(1,1,2)",
+                        "right": "rgb(1,1,1)"
+                }
         },
         {
                 "id": "wp_1770022526",
                 "name": "相伴日常 · 甜蜜时光",
                 "file": "wallpaper/177002252600796.opt.jpg",
                 "b64": false,
-                "size": 556279
+                "size": 556279,
+                "edgeColors": {
+                        "dominant": "rgb(133,123,131)",
+                        "top": "rgb(105,88,91)",
+                        "bottom": "rgb(167,162,177)",
+                        "left": "rgb(144,134,148)",
+                        "right": "rgb(118,108,110)"
+                }
         },
         {
                 "id": "wp_1770022545",
                 "name": "温暖守候 · 兔兔温情",
                 "file": "wallpaper/177002254500-200.opt.jpg",
                 "b64": false,
-                "size": 448212
+                "size": 448212,
+                "edgeColors": {
+                        "dominant": "rgb(128,118,124)",
+                        "top": "rgb(95,79,80)",
+                        "bottom": "rgb(166,161,176)",
+                        "left": "rgb(134,121,129)",
+                        "right": "rgb(119,111,113)"
+                }
         },
         {
                 "id": "it_takes_two_1",
                 "name": "双人成行 · 奇幻冒险",
                 "file": "wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg",
                 "b64": false,
-                "size": 195249
+                "size": 195249,
+                "edgeColors": {
+                        "dominant": "rgb(105,66,40)",
+                        "top": "rgb(76,41,17)",
+                        "bottom": "rgb(123,80,48)",
+                        "left": "rgb(88,46,27)",
+                        "right": "rgb(136,98,69)"
+                }
         },
         {
                 "id": "it_takes_two_2",
                 "name": "双人成行 · 携手同行",
                 "file": "wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg",
                 "b64": false,
-                "size": 308397
+                "size": 308397,
+                "edgeColors": {
+                        "dominant": "rgb(116,100,65)",
+                        "top": "rgb(128,107,78)",
+                        "bottom": "rgb(130,112,64)",
+                        "left": "rgb(100,88,59)",
+                        "right": "rgb(109,95,59)"
+                }
         },
         {
                 "id": "wp_61b5bd7f",
                 "name": "唯美意境 · 梦幻霞光",
                 "file": "wallpaper/61b5bd7f37541.opt.jpg",
                 "b64": false,
-                "size": 322570
+                "size": 322570,
+                "edgeColors": {
+                        "dominant": "rgb(116,99,65)",
+                        "top": "rgb(130,110,80)",
+                        "bottom": "rgb(129,110,65)",
+                        "left": "rgb(100,87,60)",
+                        "right": "rgb(106,92,58)"
+                }
         },
         {
                 "id": "wp_61b5bd7f2",
                 "name": "绚丽晨曦 · 光影随行",
                 "file": "wallpaper/61b5bd7f375412.opt.jpg",
                 "b64": false,
-                "size": 183401
+                "size": 183401,
+                "edgeColors": {
+                        "dominant": "rgb(119,104,73)",
+                        "top": "rgb(134,117,93)",
+                        "bottom": "rgb(124,106,62)",
+                        "left": "rgb(106,94,70)",
+                        "right": "rgb(112,100,70)"
+                }
         },
         {
                 "id": "wp_8736",
                 "name": "旅途风景 · 旷野纪行",
                 "file": "wallpaper/8736.opt.jpg",
                 "b64": false,
-                "size": 538256
+                "size": 538256,
+                "edgeColors": {
+                        "dominant": "rgb(173,162,169)",
+                        "top": "rgb(182,180,195)",
+                        "bottom": "rgb(158,145,151)",
+                        "left": "rgb(147,140,149)",
+                        "right": "rgb(205,183,182)"
+                }
         },
         {
                 "id": "wp_9f794a",
                 "name": "深邃星云 · 苍穹之境",
                 "file": "wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg",
                 "b64": false,
-                "size": 162765
+                "size": 162765,
+                "edgeColors": {
+                        "dominant": "rgb(40,28,25)",
+                        "top": "rgb(28,25,28)",
+                        "bottom": "rgb(48,35,34)",
+                        "left": "rgb(18,17,18)",
+                        "right": "rgb(66,36,23)"
+                }
         },
         {
                 "id": "hollow_knight_1",
                 "name": "空洞骑士 · 圣巢幽光",
                 "file": "wallpaper/hollow_knight.opt.jpg",
                 "b64": false,
-                "size": 711444
+                "size": 711444,
+                "edgeColors": {
+                        "dominant": "rgb(106,106,108)",
+                        "top": "rgb(124,125,128)",
+                        "bottom": "rgb(106,102,102)",
+                        "left": "rgb(101,103,111)",
+                        "right": "rgb(96,97,93)"
+                }
         },
         {
                 "id": "hollow_knight_2",
                 "name": "空洞骑士 · 泪水之城",
                 "file": "wallpaper/hollow_knight_2.opt.jpg",
                 "b64": false,
-                "size": 237050
+                "size": 237050,
+                "edgeColors": {
+                        "dominant": "rgb(88,43,27)",
+                        "top": "rgb(38,17,14)",
+                        "bottom": "rgb(149,83,47)",
+                        "left": "rgb(56,23,15)",
+                        "right": "rgb(112,52,32)"
+                }
         }
 ];
 
@@ -17324,11 +18902,25 @@ const START_DATE = '2024/03/12 00:00:00';
             if (wpStatus) wpStatus.textContent = text;
         }
 
-        function syncAmbientWallpaper(bgUrl) {
+        function syncAmbientWallpaper(bgUrl, wpObj) {
             const amb = document.getElementById('car-wallpaper-ambient');
             if (!amb) return;
             if (bgUrl) amb.style.backgroundImage = bgUrl;
-            const fit = getWallpaperFit();
+            const cur = wpObj || (typeof allWallpapers !== 'undefined' && allWallpapers[currentWallpaperIdx]);
+            if (cur && cur.edgeColors) {
+                amb.style.setProperty('--wp-edge-dominant', cur.edgeColors.dominant || '#101422');
+                amb.style.setProperty('--wp-edge-top', cur.edgeColors.top || 'transparent');
+                amb.style.setProperty('--wp-edge-bottom', cur.edgeColors.bottom || 'transparent');
+                amb.style.setProperty('--wp-edge-left', cur.edgeColors.left || 'transparent');
+                amb.style.setProperty('--wp-edge-right', cur.edgeColors.right || 'transparent');
+            } else {
+                amb.style.removeProperty('--wp-edge-dominant');
+                amb.style.removeProperty('--wp-edge-top');
+                amb.style.removeProperty('--wp-edge-bottom');
+                amb.style.removeProperty('--wp-edge-left');
+                amb.style.removeProperty('--wp-edge-right');
+            }
+            const fit = typeof getWallpaperFit === 'function' ? getWallpaperFit() : 'cover';
             if (fit === 'fit' || fit === 'center') {
                 amb.classList.add('active');
             } else {
@@ -17855,11 +19447,46 @@ const START_DATE = '2024/03/12 00:00:00';
                         ctx.drawImage(img, 0, 0, w, h);
                         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
 
+                        // Extract 8% edge border RGB colors for seamless ambient frosted glass
+                        function extractCanvasEdgeColors(cvs) {
+                            try {
+                                const cw = cvs.width, ch = cvs.height;
+                                const cctx = cvs.getContext('2d');
+                                const imgData = cctx.getImageData(0, 0, cw, ch);
+                                const d = imgData.data;
+                                function getAvg(x0, y0, x1, y1) {
+                                    let r = 0, g = 0, b = 0, count = 0;
+                                    const step = Math.max(1, Math.floor(Math.sqrt((x1 - x0) * (y1 - y0) / 100)));
+                                    for (let y = y0; y < y1; y += step) {
+                                        for (let x = x0; x < x1; x += step) {
+                                            const idx = (y * cw + x) * 4;
+                                            r += d[idx]; g += d[idx + 1]; b += d[idx + 2];
+                                            count++;
+                                        }
+                                    }
+                                    if (!count) return 'rgb(16,20,34)';
+                                    return `rgb(${Math.round(r/count)},${Math.round(g/count)},${Math.round(b/count)})`;
+                                }
+                                const bx = Math.max(2, Math.floor(cw * 0.08));
+                                const by = Math.max(2, Math.floor(ch * 0.08));
+                                const top = getAvg(0, 0, cw, by);
+                                const bottom = getAvg(0, ch - by, cw, ch);
+                                const left = getAvg(0, 0, bx, ch);
+                                const right = getAvg(cw - bx, 0, cw, ch);
+                                const dominant = getAvg(0, 0, cw, ch);
+                                return { dominant, top, bottom, left, right };
+                            } catch (e) {
+                                return null;
+                            }
+                        }
+                        const edgeColors = extractCanvasEdgeColors(canvas);
+
                         const newId = 'custom_' + Date.now();
                         const newWp = {
                             id: newId,
                             name: (file.name || '自定义壁纸').replace(/\.[^/.]+$/, ""),
-                            file: compressedDataUrl
+                            file: compressedDataUrl,
+                            edgeColors: edgeColors
                         };
                         const custom = getCustomWallpapers();
                         custom.push(newWp);
@@ -17872,7 +19499,7 @@ const START_DATE = '2024/03/12 00:00:00';
 
                         selectWallpaperByIdx(allWallpapers.length - 1);
                         renderWallpaperUI();
-                        showToast('✓ 自定义壁纸优化添加成功！');
+                        showToast('✓ 自定义壁纸优化并提取边缘色彩成功！');
                     } catch(err) {
                         const newWp = {
                             id: 'custom_' + Date.now(),
@@ -17898,7 +19525,6 @@ const START_DATE = '2024/03/12 00:00:00';
             };
             reader.readAsDataURL(file);
         }
-
         function promptAddWallpaperUrl() {
             const url = prompt('请输入壁纸图片的完整 URL 地址 (https://...):');
             if (!url || !url.trim()) return;
@@ -18944,7 +20570,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9420</div>
+                                <div class="car-diag-val">bcos v7.8.4.9430</div>
                             </div>
                         </div>
                     </div>
@@ -19769,388 +21395,490 @@ const START_DATE = '2024/03/12 00:00:00';
     }
 
     // === Text Editor app ===
-    function _bcosRenderTextEditor(content) {
-        _bcosInitMeFolder();
-        content.style.padding = '0';
-        content.style.display = 'flex';
-        content.style.flexDirection = 'column';
-        content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .4rem;display:flex;align-items:center;gap:.3rem;border-bottom:1px solid #333;flex-wrap:wrap;flex-shrink:0;">' +
-            '<button id="bcos-te-new" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📄 New</button>' +
-            '<button id="bcos-te-open" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">📂 Open</button>' +
-            '<button id="bcos-te-save" style="background:#1a1a1a;border:1px solid #333;color:#00ff41;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">💾 Save</button>' +
-            '<button id="bcos-te-apply" style="background:#1a1a1a;border:1px solid #333;color:#00aaff;cursor:pointer;font-size:11px;padding:.2rem .5rem;border-radius:3px;">▶ Apply</button>' +
-            '<select id="bcos-te-langsel" style="background:#0a0a0a;border:1px solid #333;color:#9cdcfe;font-size:10px;padding:.15rem .2rem;border-radius:3px;cursor:pointer;max-width:90px;"><option value="auto">🔍 Auto</option><option value="js">JavaScript</option><option value="ts">TypeScript</option><option value="html">HTML</option><option value="css">CSS</option><option value="json">JSON</option><option value="md">Markdown</option><option value="py">Python</option><option value="sh">Shell</option><option value="text">Plain</option></select>' +
-            '<span id="bcos-te-filename" style="color:#888;font-size:11px;margin-left:auto;">(untitled)</span>' +
-            '<span id="bcos-te-status" style="color:#666;font-size:10px;margin-left:.3rem;"></span>' +
-            '</div>' +
-            '<div style="padding:.3rem;display:flex;gap:.3rem;align-items:center;border-bottom:1px solid #333;background:#1a1a1a;flex-shrink:0;">' +
-            '<span style="color:#888;font-size:10px;white-space:nowrap;">File:</span>' +
-            '<input id="bcos-te-openname" type="text" placeholder="filename (e.g. notes.txt, readme.md)" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-family:inherit;font-size:11px;padding:.2rem .3rem;border-radius:3px;flex:1;" />' +
-            '<select id="bcos-te-filelist" style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .2rem;border-radius:3px;cursor:pointer;max-width:120px;"><option value="">📋 Files...</option></select>' +
-            '</div>' +
-            '<div id="bcos-te-editor-wrap" style="position:relative;flex:1;overflow:hidden;display:flex;">' +
-            '<div id="bcos-te-gutter" aria-hidden="true" style="flex-shrink:0;width:36px;background:#0d0d0d;border-right:1px solid #1a1a1a;padding:.5rem .3rem .5rem 0;font-family:monospace;font-size:12px;line-height:1.5;color:#444;text-align:right;overflow:hidden;user-select:none;box-sizing:border-box;white-space:pre;">1</div>' +
-            '<div style="position:relative;flex:1;overflow:hidden;">' +
-            '<pre id="bcos-te-highlight" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:.5rem;box-sizing:border-box;font-family:monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;pointer-events:none;overflow:hidden;background:#0a0a0a;color:#d4d4d4;z-index:1;"></pre>' +
-            '<textarea id="bcos-te-textarea" style="position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;color:transparent;caret-color:#e0e0e0;border:none;outline:none;font-family:monospace;font-size:12px;line-height:1.5;padding:.5rem;box-sizing:border-box;resize:none;z-index:2;white-space:pre-wrap;word-break:break-word;" placeholder="Type anything here... Use New to create a file, Open to load, Save to store." spellcheck="false"></textarea>' +
-            '</div>' +
-            '</div>' +
-            (_bcosEggState.eggTriggered ? '<div id="bcos-te-egg-panel" style="background:#1a1a2e;border-top:1px solid #FF6B9D;padding:.3rem;display:flex;gap:.3rem;align-items:center;flex-wrap:wrap;flex-shrink:0;">' +
-                '<span style="color:#FF6B9D;font-size:10px;font-weight:bold;">🔍</span>' +
-                '<input id="bcos-te-find" type="text" placeholder="查找 (Ctrl+F/Enter)..." style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .3rem;border-radius:3px;width:120px;" />' +
-                '<button id="bcos-te-findbtn" style="background:#58a6ff;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">🔍 查找</button>' +
-                '<button id="bcos-te-findprev" style="background:#2d3748;border:none;color:#ccc;padding:.15rem .3rem;border-radius:3px;cursor:pointer;font-size:10px;" title="上一个 (Shift+Enter)">▲</button>' +
-                '<button id="bcos-te-findnext" style="background:#2d3748;border:none;color:#ccc;padding:.15rem .3rem;border-radius:3px;cursor:pointer;font-size:10px;" title="下一个 (Enter)">▼</button>' +
-                '<span id="bcos-te-findcount" style="color:#00ff41;font-size:10px;font-weight:bold;"></span>' +
-                '<span style="color:#666;font-size:10px;">→</span>' +
-                '<input id="bcos-te-replace" type="text" placeholder="替换为..." style="background:#0a0a0a;border:1px solid #333;color:#e0e0e0;font-size:11px;padding:.15rem .3rem;border-radius:3px;width:80px;" />' +
-                '<button id="bcos-te-replacebtn" style="background:#FF6B9D;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">替换</button>' +
-                '<button id="bcos-te-replaceall" style="background:#a78bfa;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">一键全部</button>' +
-                '<button id="bcos-te-addrule" style="background:#00aaff;border:none;color:#fff;padding:.15rem .4rem;border-radius:3px;cursor:pointer;font-size:10px;">+规则</button>' +
-                '<div id="bcos-te-rules" style="font-size:9px;color:#888;max-height:30px;overflow-y:auto;width:100%;"></div>' +
-                '</div>' : '');
-        const ta = document.getElementById('bcos-te-textarea');
-        const fnLabel = document.getElementById('bcos-te-filename');
-        const openName = document.getElementById('bcos-te-openname');
-        const statusLabel = document.getElementById('bcos-te-status');
-        const hlPre = document.getElementById('bcos-te-highlight');
-        const gutter = document.getElementById('bcos-te-gutter');
-        const langSel = document.getElementById('bcos-te-langsel');
-        // Detect language from filename
-        function _teDetectLang() {
-            var fname = (openName.value || fnLabel.textContent || '').toLowerCase();
-            if (fname.endsWith('.js') || fname.endsWith('.mjs') || fname.endsWith('.jsx')) return 'js';
-            if (fname.endsWith('.ts') || fname.endsWith('.tsx')) return 'ts';
-            if (fname.endsWith('.html') || fname.endsWith('.htm')) return 'html';
-            if (fname.endsWith('.css')) return 'css';
-            if (fname.endsWith('.json')) return 'json';
-            if (fname.endsWith('.md') || fname.endsWith('.markdown')) return 'md';
-            if (fname.endsWith('.py')) return 'py';
-            if (fname.endsWith('.sh') || fname.endsWith('.bash')) return 'sh';
-            var code = (ta.value || '').trim();
-            if (code.charAt(0) === '<' || /^<!DOCTYPE/i.test(code)) return 'html';
-            return 'text';
-        }
-        // Syntax highlight + line numbers (debounced for large files)
-        _bcosTeHlTimer = null;
-        function _teHighlight() {
-            if (!hlPre || !ta || !hlPre.isConnected) return;
-            var code = ta.value;
-            if (!code) { hlPre.innerHTML = ''; if (gutter) gutter.textContent = '1'; return; }
-            var lang = (langSel && langSel.value !== 'auto') ? langSel.value : _teDetectLang();
-            var hlHtml = _bcosSyntaxHL(code, lang);
-            var findInput = document.getElementById('bcos-te-find');
-            if (findInput && findInput.value.trim()) {
-                var kw = findInput.value.trim();
-                var parts = hlHtml.split(/(<[^>]+>)/g);
-                var escapedKw = _bcosEscape(kw).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                var re = new RegExp(escapedKw, 'gi');
-                for (var i = 0; i < parts.length; i++) {
-                    if (!parts[i].startsWith('<')) {
-                        parts[i] = parts[i].replace(re, function(m) {
-                            return '<mark style="background:rgba(255,215,0,0.5);color:#fff;border-radius:2px;padding:0 1px;">' + m + '</mark>';
-                        });
-                    }
-                }
-                hlHtml = parts.join('');
-            }
-            hlPre.innerHTML = hlHtml;
-            // Update line numbers
-            if (gutter) {
-                var lineCount = code.split('\n').length;
-                var nums = [];
-                for (var i = 1; i <= lineCount; i++) nums.push(i);
-                gutter.textContent = nums.join('\n');
-            }
-        }
-        function _teHighlightDebounced() {
-            if (_bcosTeHlTimer) clearTimeout(_bcosTeHlTimer);
-            _bcosTeHlTimer = setTimeout(_teHighlight, 100);
-        }
-        // Sync scroll (highlight layer + gutter)
-        if (ta && hlPre) {
-            ta.addEventListener('input', _teHighlightDebounced);
-            ta.addEventListener('scroll', function() {
-                hlPre.scrollTop = ta.scrollTop;
-                hlPre.scrollLeft = ta.scrollLeft;
-                if (gutter) gutter.scrollTop = ta.scrollTop;
-            });
-            if (langSel) langSel.addEventListener('change', _teHighlight);
-            _teHighlight();
-        }
-        // Populate file list dropdown
-        const fileListSel = document.getElementById('bcos-te-filelist');
-        if (fileListSel) {
-            const files = Object.keys(_bcosFS.me.children).filter(n => _bcosFS.me.children[n].type === 'file');
-            files.forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name; opt.textContent = name;
-                fileListSel.appendChild(opt);
-            });
-            fileListSel.addEventListener('change', () => {
-                if (fileListSel.value) {
-                    openName.value = fileListSel.value;
-                    document.getElementById('bcos-te-open').click();
-                }
-            });
-        }
-        // Egg mode: find & replace handlers
-        if (_bcosEggState.eggTriggered) {
-            var findInput = document.getElementById('bcos-te-find');
-            var replaceInput = document.getElementById('bcos-te-replace');
-            var rulesDiv = document.getElementById('bcos-te-rules');
-            var findCount = document.getElementById('bcos-te-findcount');
-            var currentFindIndex = -1;
 
-            function _teDoSearch(dir) {
-                if (!findInput || !ta) return;
-                var kw = findInput.value;
-                if (!kw) {
-                    if (findCount) findCount.textContent = '';
-                    currentFindIndex = -1;
-                    _teHighlight();
-                    return;
-                }
-                var text = ta.value;
-                var lowerText = text.toLowerCase();
-                var lowerKw = kw.toLowerCase();
-                var matches = [];
-                var pos = lowerText.indexOf(lowerKw);
-                while (pos !== -1) {
-                    matches.push(pos);
-                    pos = lowerText.indexOf(lowerKw, pos + lowerKw.length || pos + 1);
-                }
-                if (matches.length === 0) {
-                    if (findCount) { findCount.textContent = '0/0'; findCount.style.color = '#f44'; }
-                    currentFindIndex = -1;
-                    _teHighlight();
-                    return;
-                }
-                if (dir === 1) {
-                    currentFindIndex = (currentFindIndex + 1) % matches.length;
-                } else if (dir === -1) {
-                    currentFindIndex = (currentFindIndex - 1 + matches.length) % matches.length;
-                } else if (currentFindIndex < 0 || currentFindIndex >= matches.length) {
-                    currentFindIndex = 0;
-                }
-                var matchPos = matches[currentFindIndex];
-                ta.selectionStart = matchPos;
-                ta.selectionEnd = matchPos + kw.length;
+// ============================================================================
+// macOS BCOS Code Studio Pro (Advanced Text & Code Editor)
+// ============================================================================
 
-                // Scroll match into view
-                var lines = text.slice(0, matchPos).split('\n');
-                var lineNum = lines.length;
-                var lineHeight = 18;
-                ta.scrollTop = Math.max(0, (lineNum - 3) * lineHeight);
+let _bcosTeTabs = [];
+let _bcosTeActiveId = null;
+_bcosTeHlTimer = null;
+let _bcosTeSplitMode = 'split'; // 'edit', 'split', 'preview'
 
-                if (findCount) {
-                    findCount.textContent = '(' + (currentFindIndex + 1) + '/' + matches.length + ')';
-                    findCount.style.color = '#00ff41';
-                }
-                _teHighlight();
-            }
+function _bcosRenderTextEditor(content) {
+    _bcosInitMeFolder();
+    content.style.padding = '0';
+    content.style.height = '100%';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = '#141724';
+    content.style.color = '#d4d4d4';
 
-            if (findInput) {
-                findInput.addEventListener('input', function() {
-                    currentFindIndex = -1;
-                    _teDoSearch(0);
-                });
-                findInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        _teDoSearch(e.shiftKey ? -1 : 1);
-                    }
-                });
-            }
-
-            var findBtn = document.getElementById('bcos-te-findbtn');
-            if (findBtn) findBtn.onclick = function() { _teDoSearch(1); };
-            var findPrevBtn = document.getElementById('bcos-te-findprev');
-            if (findPrevBtn) findPrevBtn.onclick = function() { _teDoSearch(-1); };
-            var findNextBtn = document.getElementById('bcos-te-findnext');
-            if (findNextBtn) findNextBtn.onclick = function() { _teDoSearch(1); };
-
-            // Shortcut Ctrl+F / Cmd+F inside editor
-            ta.addEventListener('keydown', function(e) {
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
-                    e.preventDefault();
-                    if (findInput) { findInput.focus(); findInput.select(); }
-                }
-            });
-
-            function _teUpdateRules() {
-                if (!rulesDiv) return;
-                rulesDiv.innerHTML = _bcosEggReplacements.map(function(r, i) {
-                    return '<span style="background:#1a1a2e;padding:.1rem .3rem;border-radius:2px;margin-right:.2rem;display:inline-block;">' + _bcosEscape(r.find) + ' → ' + _bcosEscape(r.replace) + ' <span style="color:#f44;cursor:pointer;" onclick="_bcosEggReplacements.splice(' + i + ',1);_teUpdateRules();">✕</span></span>';
-                }).join('') || '<span style="color:#555;">无规则</span>';
-            }
-            _teUpdateRules();
-            var replaceBtn = document.getElementById('bcos-te-replacebtn');
-            if (replaceBtn) replaceBtn.onclick = function() {
-                var f = findInput.value, r = replaceInput.value;
-                if (!f) { _teStatus('Enter find text', '#f44'); return; }
-                if (!_bcosEggReplacements.some(function(rule) { return rule.find === f; })) {
-                    _bcosEggReplacements.push({ find: f, replace: r || '' });
-                    _teUpdateRules();
-                }
-                var count = (ta.value.match(new RegExp(f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
-                ta.value = ta.value.split(f).join(r);
-                _teHighlight();
-                _teStatus('Replaced ' + count + ' occurrence(s)', '#00ff41');
-            };
-            var replaceAllBtn = document.getElementById('bcos-te-replaceall');
-            if (replaceAllBtn) replaceAllBtn.onclick = function() {
-                if (_bcosEggReplacements.length === 0) { _teStatus('No rules. Add rules first.', '#f44'); return; }
-                var total = 0;
-                _bcosEggReplacements.forEach(function(rule) {
-                    var count = (ta.value.match(new RegExp(rule.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
-                    ta.value = ta.value.split(rule.find).join(rule.replace);
-                    total += count;
-                });
-                _teHighlight();
-                _teStatus('Applied ' + _bcosEggReplacements.length + ' rules, ' + total + ' replacements', '#00ff41');
-            };
-            var addRuleBtn = document.getElementById('bcos-te-addrule');
-            if (addRuleBtn) addRuleBtn.onclick = function() {
-                var f = findInput.value, r = replaceInput.value;
-                if (!f) { _teStatus('Enter find text first', '#f44'); return; }
-                _bcosEggReplacements.push({ find: f, replace: r || '' });
-                _teUpdateRules();
-                findInput.value = ''; replaceInput.value = '';
-                _teStatus('Rule added: ' + f + ' → ' + (r || '(empty)'), '#00aaff');
-            };
-            // Command-line: type :replace/old/new in textarea last line
-            ta.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && ta.value.startsWith(':')) {
-                    e.preventDefault();
-                    var cmd = ta.value.trim().slice(1);
-                    if (cmd.startsWith('replace/')) {
-                        var parts = cmd.slice(8).split('/');
-                        if (parts.length >= 2) {
-                            _bcosEggReplacements.push({ find: parts[0], replace: parts[1] });
-                            _teUpdateRules();
-                            ta.value = '';
-                            _teStatus('Rule added via command: ' + parts[0] + ' → ' + parts[1], '#00aaff');
-                        }
-                    } else if (cmd === 'rules') {
-                        _teStatus(_bcosEggReplacements.length + ' rules active', '#00ff41');
-                    } else if (cmd === 'clear') {
-                        _bcosEggReplacements = [];
-                        _teUpdateRules();
-                        _teStatus('All rules cleared', '#f44');
-                    }
-                }
-            });
-        }
-        function _teStatus(msg, color) {
-            if (statusLabel) { statusLabel.textContent = msg; statusLabel.style.color = color || '#666'; }
-            setTimeout(() => { if (statusLabel) statusLabel.textContent = ''; }, 3000);
-        }
-        // New: create blank file
-        document.getElementById('bcos-te-new').onclick = () => {
-            ta.value = '';
-            openName.value = '';
-            fnLabel.textContent = '(untitled)';
-            if (langSel) langSel.value = 'auto';
-            _teHighlight();
-            _teStatus('New file created', '#00ff41');
-            ta.focus();
-        };
-        // Open: load file from VFS (create if doesn't exist)
-        document.getElementById('bcos-te-open').onclick = () => {
-            const name = (openName.value || '').trim();
-            if (!name) {
-                _teStatus('Enter a filename first', '#f44');
-                openName.focus();
-                return;
-            }
-            _bcosInitMeFolder();
-            // Check in me/ directory first
-            let file = _bcosFS.me.children[name];
-            let filePath = 'me/' + name;
-            if (!file) {
-                // Check top-level
-                file = _bcosFS[name];
-                filePath = name;
-            }
-            if (file && file.type === 'file') {
-                // If egg triggered and opening readme.md, show egg content
-                if (_bcosEggState.eggTriggered && (name === 'readme.md' || name === 'readme_md')) {
-                    ta.value = _bcosGetEggReadme();
-                } else {
-                    ta.value = file.content || '';
-                }
-                fnLabel.textContent = filePath;
-                openName.value = name;
-                if (langSel) langSel.value = 'auto';
-                _teHighlight();
-                _teStatus('Opened: ' + filePath, '#00ff41');
-            } else if (name === 'readme.md' || name === 'readme_md') {
-                // Default readme — always available even if not in VFS yet
-                if (_bcosEggState.eggTriggered) {
-                    ta.value = _bcosGetEggReadme();
-                } else {
-                    ta.value = _bcosGetDefaultReadme();
-                }
-                fnLabel.textContent = 'me/' + name;
-                openName.value = name;
-                if (langSel) langSel.value = 'auto';
-                _teHighlight();
-                _teStatus('Opened default: me/' + name, '#00ff41');
-            } else {
-                // File doesn't exist — create it as empty and open
-                _bcosFS.me.children[name] = { type: 'file', content: '' };
-                ta.value = '';
-                fnLabel.textContent = 'me/' + name;
-                if (langSel) langSel.value = 'auto';
-                _teHighlight();
-                _teStatus('Created new: me/' + name, '#00aaff');
-            }
-        };
-        // Save: save file to VFS
-        document.getElementById('bcos-te-save').onclick = () => {
-            const name = (openName.value || '').trim();
-            if (!name) {
-                _teStatus('Enter a filename first', '#f44');
-                openName.focus();
-                return;
-            }
-            _bcosInitMeFolder();
-            if (!_bcosFS.me.children[name]) {
-                _bcosFS.me.children[name] = { type: 'file', content: '' };
-            }
-            _bcosFS.me.children[name].content = ta.value;
-            fnLabel.textContent = 'me/' + name;
-            _teStatus('Saved: me/' + name + ' (' + ta.value.length + ' chars)', '#00ff41');
-        };
-        // Apply: push content to browser — renders as markdown/HTML
-        document.getElementById('bcos-te-apply').onclick = () => {
-            const raw = ta.value.trim();
-            if (!raw) { _teStatus('Nothing to apply — content is empty', '#f44'); return; }
-            if (_bcosEggState.eggTriggered) {
-                _bcosEggPreview(ta.value);
-                _teStatus('Live preview in browser! Click ✨ to apply to real page', '#00ff41');
-            } else {
-                _bcosBrowserHTML = _bcosSimpleMarkdown(raw);
-                _bcosBrowserCurrentURL = 'bunny://markdown-preview';
-                var _urlBar = document.getElementById('bcos-url-bar');
-                if (_urlBar) _urlBar.textContent = _bcosBrowserCurrentURL;
-                _bcosBrowserRefresh();
-                if (!_bcos.wins['browser']) _bcosOpenApp('browser');
-                else _bcosFocusWin('browser');
-                _teStatus('Rendered as markdown', '#00aaff');
-            }
-        };
-        // Allow Enter in filename input to trigger Open
-        openName.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('bcos-te-open').click();
-            }
-        });
+    // Initialize default tabs if empty
+    if (_bcosTeTabs.length === 0) {
+        const readmeContent = typeof _bcosGetDefaultReadme === 'function' ? _bcosGetDefaultReadme() : '# Welcome to BCOS\n\nEdit anything here.';
+        _bcosTeTabs = [
+            { id: 'tab_readme', name: 'readme.md', path: 'me/readme.md', content: readmeContent, dirty: false, lang: 'md' },
+            { id: 'tab_script', name: 'cockpit_app.js', path: 'me/cockpit_app.js', content: '// 兔可可智能座舱扩展脚本\nconsole.log("Cockpit System Ready.");\n\nfunction getStatus() {\n    return { soc: "88%", driveMode: "Sport+", temp: 22 };\n}\n', dirty: false, lang: 'js' }
+        ];
+        _bcosTeActiveId = 'tab_readme';
     }
 
-    // === Simple Markdown renderer for TextEditor Apply (non-egg mode) ===
+    content.innerHTML = `
+        <div class="bcos-te-wrap">
+            <!-- Tabs Bar -->
+            <div class="bcos-te-tabs" id="bcos-te-tabs-bar"></div>
+
+            <!-- Toolbar -->
+            <div class="bcos-te-bar">
+                <button class="bcos-te-btn" onclick="_bcosTeNewTab()" title="新建标签页">📄 新建</button>
+                <button class="bcos-te-btn" onclick="_bcosTeOpenFilePrompt()" title="打开文件">📂 打开</button>
+                <button class="bcos-te-btn" onclick="_bcosTeSaveActive()" title="保存到系统">💾 保存</button>
+                <button class="bcos-te-btn" onclick="_bcosTeExportFile()" title="导出到本地电脑">⬇️ 导出</button>
+                <label class="bcos-te-btn" style="cursor:pointer;" title="从电脑导入文件">
+                    📤 导入
+                    <input type="file" id="bcos-te-import-inp" style="display:none;" onchange="_bcosTeImportFile(event)">
+                </label>
+                <div style="width:1px;height:16px;background:rgba(255,255,255,0.1);margin:0 2px;"></div>
+                <button class="bcos-te-btn" onclick="_bcosTeToggleSplit()" id="bcos-te-split-btn" title="切换编辑/分栏/预览">👁️ 分栏预览</button>
+                <button class="bcos-te-btn" onclick="_bcosTeToggleSearch()" title="查找与替换 (Ctrl+F)">🔍 查找</button>
+                <button class="bcos-te-btn" onclick="_bcosTeFormatCode()" title="代码自动排版">🧹 排版</button>
+
+                <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+                    <select id="bcos-te-lang-sel" class="bcos-te-btn" onchange="_bcosTeChangeLang(this.value)" style="background:#0d0f17;cursor:pointer;">
+                        <option value="auto">🔍 Auto</option>
+                        <option value="md">Markdown</option>
+                        <option value="js">JavaScript</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="json">JSON</option>
+                        <option value="py">Python</option>
+                        <option value="sh">Shell</option>
+                        <option value="text">Plain Text</option>
+                    </select>
+                    <span id="bcos-te-status-msg" style="font-size:11px;color:#00ff41;padding-right:6px;"></span>
+                </div>
+            </div>
+
+            <!-- In-Editor Search & Replace Bar -->
+            <div id="bcos-te-search-bar" style="display:none;padding:4px 8px;background:#0d111a;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center;gap:6px;font-size:11px;">
+                <span>🔍</span>
+                <input type="text" id="bcos-te-find-inp" placeholder="查找..." style="background:#1e2433;border:1px solid #334155;color:#fff;padding:2px 6px;border-radius:4px;font-size:11px;width:120px;outline:none;" />
+                <button class="bcos-te-btn" onclick="_bcosTeFind(1)">▼ 下一个</button>
+                <button class="bcos-te-btn" onclick="_bcosTeFind(-1)">▲ 上一个</button>
+                <span id="bcos-te-find-count" style="color:#94a3b8;font-size:10px;"></span>
+                <span style="color:#64748b;">|</span>
+                <input type="text" id="bcos-te-replace-inp" placeholder="替换为..." style="background:#1e2433;border:1px solid #334155;color:#fff;padding:2px 6px;border-radius:4px;font-size:11px;width:100px;outline:none;" />
+                <button class="bcos-te-btn" onclick="_bcosTeReplace(false)">替换</button>
+                <button class="bcos-te-btn" onclick="_bcosTeReplace(true)">全部替换</button>
+                <button class="bcos-te-btn" onclick="_bcosTeToggleSearch()" style="margin-left:auto;color:#ef4444;">✕</button>
+            </div>
+
+            <!-- Main Editor Body with Split View -->
+            <div class="bcos-te-body" id="bcos-te-body-area">
+                <div id="bcos-te-editor-container" style="flex:1;display:flex;position:relative;overflow:hidden;height:100%;">
+                    <div class="bcos-te-gutter" id="bcos-te-gutter">1</div>
+                    <div style="position:relative;flex:1;overflow:hidden;height:100%;">
+                        <pre class="bcos-te-highlight" id="bcos-te-highlight" aria-hidden="true"></pre>
+                        <textarea class="bcos-te-textarea" id="bcos-te-textarea" placeholder="在此输入代码或文本..." spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <div class="bcos-te-preview-pane active" id="bcos-te-preview-pane"></div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="bcos-te-statusbar">
+                <span id="bcos-te-pos">行 1, 列 1</span>
+                <div style="display:flex;gap:12px;">
+                    <span id="bcos-te-length">0 字符 · 1 行</span>
+                    <span>UTF-8</span>
+                    <span id="bcos-te-lang-badge">Markdown</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    _bcosTeRenderTabs();
+    _bcosTeBindEvents();
+    _bcosTeLoadActiveTab();
+}
+
+function _bcosTeRenderTabs() {
+    const tabsBar = document.getElementById('bcos-te-tabs-bar');
+    if (!tabsBar) return;
+    tabsBar.innerHTML = _bcosTeTabs.map(tab => {
+        const isActive = tab.id === _bcosTeActiveId;
+        return `
+            <div class="bcos-te-tab ${isActive ? 'active' : ''}" onclick="_bcosTeSelectTab('${tab.id}')">
+                <span>${tab.name}${tab.dirty ? ' ●' : ''}</span>
+                <span class="bcos-te-tab-close" onclick="_bcosTeCloseTab('${tab.id}', event)">✕</span>
+            </div>
+        `;
+    }).join('') + '<button class="bcos-te-btn" onclick="_bcosTeNewTab()" style="margin:4px 8px;padding:2px 8px;font-size:12px;">+</button>';
+}
+
+function _bcosTeSelectTab(tabId) {
+    _bcosTeSaveCurState();
+    _bcosTeActiveId = tabId;
+    _bcosTeRenderTabs();
+    _bcosTeLoadActiveTab();
+}
+
+function _bcosTeSaveCurState() {
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    const ta = document.getElementById('bcos-te-textarea');
+    if (tab && ta) {
+        tab.content = ta.value;
+    }
+}
+
+function _bcosTeLoadActiveTab() {
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    if (!tab) return;
+    const ta = document.getElementById('bcos-te-textarea');
+    const langSel = document.getElementById('bcos-te-lang-sel');
+    const langBadge = document.getElementById('bcos-te-lang-badge');
+    if (ta) {
+        ta.value = tab.content;
+    }
+    if (langSel) langSel.value = tab.lang || 'auto';
+    if (langBadge) langBadge.textContent = (tab.lang || 'text').toUpperCase();
+    _bcosTeUpdateHighlight();
+    _bcosTeUpdatePreview();
+    _bcosTeUpdateStatus();
+}
+
+function _bcosTeNewTab(name, content, lang) {
+    _bcosTeSaveCurState();
+    const id = 'tab_' + Date.now();
+    const newTab = {
+        id: id,
+        name: name || 'untitled.md',
+        path: 'me/' + (name || 'untitled.md'),
+        content: content !== undefined ? content : '',
+        dirty: false,
+        lang: lang || 'md'
+    };
+    _bcosTeTabs.push(newTab);
+    _bcosTeActiveId = id;
+    _bcosTeRenderTabs();
+    _bcosTeLoadActiveTab();
+}
+
+function _bcosTeCloseTab(tabId, e) {
+    if (e) e.stopPropagation();
+    if (_bcosTeTabs.length <= 1) {
+        showToast('⚠️ 至少保留一个活动标签页');
+        return;
+    }
+    const idx = _bcosTeTabs.findIndex(t => t.id === tabId);
+    _bcosTeTabs.splice(idx, 1);
+    if (_bcosTeActiveId === tabId) {
+        _bcosTeActiveId = _bcosTeTabs[Math.max(0, idx - 1)].id;
+    }
+    _bcosTeRenderTabs();
+    _bcosTeLoadActiveTab();
+}
+
+function _bcosTeBindEvents() {
+    const ta = document.getElementById('bcos-te-textarea');
+    const hl = document.getElementById('bcos-te-highlight');
+    const gutter = document.getElementById('bcos-te-gutter');
+    if (!ta) return;
+
+    ta.addEventListener('input', () => {
+        const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+        if (tab) {
+            tab.content = ta.value;
+            if (!tab.dirty) {
+                tab.dirty = true;
+                _bcosTeRenderTabs();
+            }
+        }
+        _bcosTeDebouncedUpdate();
+    });
+
+    ta.addEventListener('scroll', () => {
+        if (hl) {
+            hl.scrollTop = ta.scrollTop;
+            hl.scrollLeft = ta.scrollLeft;
+        }
+        if (gutter) gutter.scrollTop = ta.scrollTop;
+    });
+
+    ta.addEventListener('click', _bcosTeUpdateStatus);
+    ta.addEventListener('keyup', _bcosTeUpdateStatus);
+
+    // Shortcut Ctrl+F / Cmd+F & Ctrl+S / Cmd+S
+    ta.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+            e.preventDefault();
+            _bcosTeToggleSearch();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+            e.preventDefault();
+            _bcosTeSaveActive();
+        } else if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            ta.value = ta.value.substring(0, start) + '    ' + ta.value.substring(end);
+            ta.selectionStart = ta.selectionEnd = start + 4;
+            ta.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+function _bcosTeDebouncedUpdate() {
+    if (_bcosTeHlTimer) clearTimeout(_bcosTeHlTimer);
+    _bcosTeHlTimer = setTimeout(() => {
+        _bcosTeUpdateHighlight();
+        _bcosTeUpdatePreview();
+        _bcosTeUpdateStatus();
+    }, 80);
+}
+
+function _bcosTeUpdateHighlight() {
+    const ta = document.getElementById('bcos-te-textarea');
+    const hl = document.getElementById('bcos-te-highlight');
+    const gutter = document.getElementById('bcos-te-gutter');
+    if (!ta || !hl) return;
+
+    const code = ta.value;
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    let lang = tab?.lang || 'text';
+    if (lang === 'auto') {
+        if (tab?.name?.endsWith('.js')) lang = 'js';
+        else if (tab?.name?.endsWith('.html')) lang = 'html';
+        else if (tab?.name?.endsWith('.css')) lang = 'css';
+        else if (tab?.name?.endsWith('.json')) lang = 'json';
+        else if (tab?.name?.endsWith('.py')) lang = 'py';
+        else if (tab?.name?.endsWith('.md')) lang = 'md';
+        else lang = 'text';
+    }
+
+    if (typeof _bcosSyntaxHL === 'function') {
+        hl.innerHTML = _bcosSyntaxHL(code, lang);
+    } else {
+        hl.textContent = code;
+    }
+
+    if (gutter) {
+        const count = code.split('\n').length;
+        let nums = '';
+        for (let i = 1; i <= count; i++) nums += i + '\n';
+        gutter.textContent = nums;
+    }
+}
+
+function _bcosTeUpdatePreview() {
+    const preview = document.getElementById('bcos-te-preview-pane');
+    const ta = document.getElementById('bcos-te-textarea');
+    if (!preview || !ta) return;
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    if (!tab) return;
+
+    if (typeof _bcosSimpleMarkdown === 'function') {
+        preview.innerHTML = _bcosSimpleMarkdown(ta.value);
+    } else {
+        preview.textContent = ta.value;
+    }
+}
+
+function _bcosTeUpdateStatus() {
+    const ta = document.getElementById('bcos-te-textarea');
+    const pos = document.getElementById('bcos-te-pos');
+    const len = document.getElementById('bcos-te-length');
+    if (!ta) return;
+
+    const val = ta.value;
+    const selStart = ta.selectionStart || 0;
+    const textBefore = val.substring(0, selStart);
+    const lines = textBefore.split('\n');
+    const lineNum = lines.length;
+    const colNum = lines[lines.length - 1].length + 1;
+
+    if (pos) pos.textContent = `行 ${lineNum}, 列 ${colNum}`;
+    if (len) len.textContent = `${val.length} 字符 · ${val.split('\n').length} 行`;
+}
+
+function _bcosTeToggleSplit() {
+    const editor = document.getElementById('bcos-te-editor-container');
+    const preview = document.getElementById('bcos-te-preview-pane');
+    const btn = document.getElementById('bcos-te-split-btn');
+    if (!editor || !preview) return;
+
+    if (_bcosTeSplitMode === 'split') {
+        // Switch to preview only
+        _bcosTeSplitMode = 'preview';
+        editor.style.display = 'none';
+        preview.style.display = 'block';
+        if (btn) btn.textContent = '👁️ 仅预览';
+    } else if (_bcosTeSplitMode === 'preview') {
+        // Switch to edit only
+        _bcosTeSplitMode = 'edit';
+        editor.style.display = 'flex';
+        preview.style.display = 'none';
+        if (btn) btn.textContent = '✏️ 仅编辑';
+    } else {
+        // Switch to split
+        _bcosTeSplitMode = 'split';
+        editor.style.display = 'flex';
+        preview.style.display = 'block';
+        if (btn) btn.textContent = '👁️ 分栏预览';
+    }
+}
+
+function _bcosTeToggleSearch() {
+    const bar = document.getElementById('bcos-te-search-bar');
+    if (!bar) return;
+    const isShowing = bar.style.display === 'flex';
+    bar.style.display = isShowing ? 'none' : 'flex';
+    if (!isShowing) {
+        const inp = document.getElementById('bcos-te-find-inp');
+        if (inp) { inp.focus(); inp.select(); }
+    }
+}
+
+let _bcosTeFindIndex = -1;
+function _bcosTeFind(dir) {
+    const ta = document.getElementById('bcos-te-textarea');
+    const inp = document.getElementById('bcos-te-find-inp');
+    const countEl = document.getElementById('bcos-te-find-count');
+    if (!ta || !inp || !inp.value) return;
+
+    const kw = inp.value;
+    const text = ta.value;
+    const lowerText = text.toLowerCase();
+    const lowerKw = kw.toLowerCase();
+    const matches = [];
+    let pos = lowerText.indexOf(lowerKw);
+    while (pos !== -1) {
+        matches.push(pos);
+        pos = lowerText.indexOf(lowerKw, pos + lowerKw.length || pos + 1);
+    }
+
+    if (matches.length === 0) {
+        if (countEl) countEl.textContent = '0/0';
+        return;
+    }
+
+    if (dir === 1) _bcosTeFindIndex = (_bcosTeFindIndex + 1) % matches.length;
+    else if (dir === -1) _bcosTeFindIndex = (_bcosTeFindIndex - 1 + matches.length) % matches.length;
+    else _bcosTeFindIndex = 0;
+
+    const matchPos = matches[_bcosTeFindIndex];
+    ta.selectionStart = matchPos;
+    ta.selectionEnd = matchPos + kw.length;
+    ta.focus();
+
+    if (countEl) countEl.textContent = `(${_bcosTeFindIndex + 1}/${matches.length})`;
+}
+
+function _bcosTeReplace(all) {
+    const ta = document.getElementById('bcos-te-textarea');
+    const findInp = document.getElementById('bcos-te-find-inp');
+    const replaceInp = document.getElementById('bcos-te-replace-inp');
+    if (!ta || !findInp || !findInp.value) return;
+
+    const kw = findInp.value;
+    const repl = replaceInp.value || '';
+    if (all) {
+        ta.value = ta.value.split(kw).join(repl);
+        showToast('✓ 已完成全部替换');
+    } else {
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        if (ta.value.substring(start, end).toLowerCase() === kw.toLowerCase()) {
+            ta.value = ta.value.substring(0, start) + repl + ta.value.substring(end);
+            ta.selectionStart = ta.selectionEnd = start + repl.length;
+        }
+        _bcosTeFind(1);
+    }
+    ta.dispatchEvent(new Event('input'));
+}
+
+function _bcosTeSaveActive() {
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    const ta = document.getElementById('bcos-te-textarea');
+    if (!tab || !ta) return;
+
+    _bcosInitMeFolder();
+    tab.content = ta.value;
+    tab.dirty = false;
+    _bcosFS.me.children[tab.name] = { type: 'file', content: ta.value };
+    _bcosTeRenderTabs();
+    const statusMsg = document.getElementById('bcos-te-status-msg');
+    if (statusMsg) {
+        statusMsg.textContent = '✓ 已保存到 VFS';
+        setTimeout(() => { if (statusMsg) statusMsg.textContent = ''; }, 2000);
+    }
+    showToast(`✓ 已保存: ${tab.name} (${ta.value.length} 字节)`);
+}
+
+function _bcosTeExportFile() {
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    const ta = document.getElementById('bcos-te-textarea');
+    if (!tab || !ta) return;
+
+    const blob = new Blob([ta.value], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = tab.name;
+    link.click();
+    showToast(`✓ 文件已导出下载: ${tab.name}`);
+}
+
+function _bcosTeImportFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        const content = evt.target.result;
+        let lang = 'text';
+        if (file.name.endsWith('.js')) lang = 'js';
+        else if (file.name.endsWith('.html')) lang = 'html';
+        else if (file.name.endsWith('.css')) lang = 'css';
+        else if (file.name.endsWith('.json')) lang = 'json';
+        else if (file.name.endsWith('.md')) lang = 'md';
+        _bcosTeNewTab(file.name, content, lang);
+        showToast(`✓ 已导入文件: ${file.name}`);
+    };
+    reader.readAsText(file);
+}
+
+function _bcosTeFormatCode() {
+    const ta = document.getElementById('bcos-te-textarea');
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    if (!ta) return;
+
+    const val = ta.value.trim();
+    if (tab && (tab.lang === 'json' || tab.name.endsWith('.json'))) {
+        try {
+            const parsed = JSON.parse(val);
+            ta.value = JSON.stringify(parsed, null, 2);
+            ta.dispatchEvent(new Event('input'));
+            showToast('✓ JSON 格式化排版完成');
+        } catch(e) {
+            showToast('⚠️ JSON 语法解析错误，无法格式化');
+        }
+    } else {
+        // Normalize line breaks and tabs
+        ta.value = val.replace(/\r\n/g, '\n');
+        ta.dispatchEvent(new Event('input'));
+        showToast('✓ 基础代码规整完成');
+    }
+}
+
+function _bcosTeChangeLang(val) {
+    const tab = _bcosTeTabs.find(t => t.id === _bcosTeActiveId);
+    if (tab) {
+        tab.lang = val;
+        _bcosTeUpdateHighlight();
+    }
+}
+
+
+        // === Simple Markdown renderer for TextEditor Apply (non-egg mode) ===
     function _bcosSimpleMarkdown(md) {
         try {
         // If content looks like HTML (starts with < or <!DOCTYPE), render with sanitization
@@ -23471,6 +25199,14 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.4.9430', title:'壁纸边缘RGB提取与毛玻璃底色融合、右键菜单防退出全屏、顶栏兔可可头像/Emoji、纪念日与应用商店及Code Studio重构', items:[
+            '【此改动适用于 index.html / car.html / car.css】[壁纸边缘RGB提取与智能光晕融合] 优化壁纸预处理算法（optimize_wallpapers.py），在生成壁纸元数据时精准提取上下左右四周 8% 边框像素均值及主色 RGB，写入 manifest.json 与 BUILTIN_WALLPAPERS。在「适应屏幕 (Fit to Screen)」及居中模式下，毛玻璃衬底动态注入 --wp-edge-dominant / --wp-edge-top / bottom / left / right 渐变光晕，彻底消除黑边空隙与割裂感；用户本地上传壁纸亦通过 Canvas 自动提取。',
+            '【此改动适用于 index.html / car.html】[重构右键菜单与全屏防退出修复] 根除点击右键菜单项及快捷功能时意外退出全屏的浏览器默认行为；移除 closeBcosOS 中强制 exitFullscreen 的限制；在右键菜单中加入实时全屏状态感知徽章与精准切换；彻底消除 window.prompt/alert 对全屏状态的打断。',
+            '【此改动适用于 index.html】[macOS 顶栏图标个性化切换] 将顶栏苹果标志升级为多模态标志：支持切换为兔可可高清头像写真（圆角光晕）、可爱萌兔专属 Emoji (🐰) 或经典 Apple 标志 ()；支持顶栏右键快速轮换或在系统菜单中随心挑选。',
+            '【此改动适用于 index.html】[重构 BCOS 兔可可纪念日应用] 全面升级为现代 macOS 卡片风格：拥有超大渐变天数计数器、实时毫秒流转时钟、历程里程碑成就树与进度条；添加自定义纪念日全面升级为应用内半透明毛玻璃模态弹窗，杜绝原生 prompt，并支持日期与 Emoji 快速选择。',
+            '【此改动适用于 index.html】[新增 BCOS 官方应用商店与工坊] 推出全新 macOS 风格应用商店：涵盖精选推荐、效率工具、娱乐游戏、已安装管理与自定义应用工坊；支持动画进度条模拟下载安装、自动同步生成桌面图标与 Dock 快捷方式；首批上线科学计算器、座舱天气看板、桌面便利贴、兔兔电台 Lo-Fi 白噪音合成器、复古贪吃蛇大冒险、像素画板 Studio；工坊支持单文件 HTML/JS 应用本地预处理与沙盒隔离运行。',
+            '【此改动适用于 index.html】[重构 BCOS 文本编辑器为 Code Studio Pro] 升级为专业级开发与写作工作台：支持多标签页并行编辑（带未保存指示）、行号代码槽（Gutter）、多语言语法高亮（JS/TS/HTML/CSS/JSON/Markdown/Python/Shell）、Markdown 实时双栏分栏预览、代码自动排版与格式化、查找/替换工具栏、文件导入/导出至本地电脑。'
+        ]},
         { ver:'v7.8.4.9420', title:'BCOS macOS 桌面重构、响应式窗体自适应、移动端触屏流畅滑动、壁纸毛玻璃全景衬底与车机防抽搐重构', items:[
             '【此改动适用于 index.html / car.html / car.css】[BCOS macOS 桌面质感重构] 全面废弃 Windows 风格任务栏，重构为现代 macOS 桌面体系：包含顶部半透明毛玻璃菜单栏（.bcos-menubar）、原生 Apple  菜单下拉面板、底部浮动毛玻璃 Dock 栏（应用呼吸悬停放大、运行状态指示光点）、窗口真实红黄绿三色交通灯控制系统（✕/−/+ 符号动效反馈）及自适应窗口布局。',
             '【此改动适用于 index.html】[移动端设置触屏滑动与全场景响应式自适应] 修复移动端系统设置窗口无法触屏向下滑动的痛点：解除外层拖拽拦截，注入原生 -webkit-overflow-scrolling: touch 与 touch-action: pan-y 动量滚动体系，重构壁纸图库平铺流，设置项切换保存并平滑还原滚动条位置；全端窗口自动适配手机竖屏/横屏模式（卡片式满屏流）。',
