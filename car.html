@@ -4537,6 +4537,7 @@
         }
 
         function nextWallpaper(isUserAction) {
+            if (!isUserAction && document.hidden) return;
             if (allWallpapers.length <= 1) return;
             currentWallpaperIdx = (currentWallpaperIdx + 1) % allWallpapers.length;
             localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
@@ -4545,6 +4546,7 @@
         }
 
         function prevWallpaper(isUserAction) {
+            if (!isUserAction && document.hidden) return;
             if (allWallpapers.length <= 1) return;
             currentWallpaperIdx = (currentWallpaperIdx - 1 + allWallpapers.length) % allWallpapers.length;
             localStorage.setItem('car_wp_current_idx', currentWallpaperIdx);
@@ -5189,6 +5191,7 @@
                 window.scrollTo(0, 0);
                 document.documentElement.scrollTop = 0;
                 document.body.scrollTop = 0;
+                updateDisplay();
                 acquireWakeLock();
             }
         });
@@ -5269,6 +5272,7 @@
 
         // --- Time & Calendar Calculation ---
         function updateDisplay() {
+            if (document.hidden) return;
             const now = new Date();
             const start = new Date(START_DATE);
             const diff = now - start;
