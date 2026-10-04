@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v7.8.4.9410 -->
+    <!-- VERSION: v7.8.4.9420 -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1310,7 +1310,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.4.9410</div>
+                <div class="subtitle">v7.8.4.9420</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1623,7 +1623,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9410</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.4.9420</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1668,7 +1668,7 @@
     <script>
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.4.9410',
+        VERSION: 'v7.8.4.9420',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2700,7 +2700,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.4.9410 已启动', 'info');
+        logEvent('兔可可王国 v7.8.4.9420 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -9537,7 +9537,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.4.9410 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.4.9420 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -10043,72 +10043,459 @@
             .bcos-window-resize { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 10; }
             .bcos-window-resize::after { content: ''; position: absolute; right: 2px; bottom: 2px; width: 8px; height: 8px; border-right: 2px solid #666; border-bottom: 2px solid #666; }
             .bcos-window-resize:hover::after { border-color: #aaa; }
-            .bcos-window-titlebar { background: linear-gradient(90deg, rgba(var(--accent-rgb, 255,107,157), 0.14) 0%, rgba(26, 30, 44, 0.95) 45%, rgba(18, 22, 34, 0.98) 100%); padding: .45rem .7rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 8px 8px 0 0; user-select: none; -webkit-user-select: none; touch-action: none; }
-            .bcos-window-title { font-size: 12.5px; color: var(--text, #fff); font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; margin: 0 .4rem; }
-            .bcos-window-controls { display: flex; align-items: center; gap: .45rem; flex-shrink: 0; }
-            .bcos-window-btn { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; border: none; font-size: 0; padding: 0; position: relative; will-change: transform; display: inline-flex; align-items: center; justify-content: center; touch-action: manipulation; }
-            .bcos-window-btn::before { content: ''; position: absolute; inset: -8px; cursor: pointer; }
-            .bcos-window-close, .bcos-win-btn-close { background: #ff5555; }
-            .bcos-window-close:hover, .bcos-win-btn-close:hover { background: #ff7777; transform: scale(1.15) translateZ(0); }
-            .bcos-win-btn-min { background: #ffbd2e; }
-            .bcos-win-btn-max { background: #27c93f; }
-            .bcos-window-content { flex: 1; overflow: auto; padding: .5rem; color: var(--text, #e2e8f0); }
-            .bcos-taskbar { height: 38px; background: rgba(10, 14, 22, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; padding: 0 .5rem; gap: .35rem; transform: translateZ(0); }
-            .bcos-start-btn { background: rgba(var(--accent-rgb, 255,107,157), 0.12); border: 1px solid rgba(var(--accent-rgb, 255,107,157), 0.35); color: var(--accent, #FF6B9D); padding: .25rem .65rem; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 600; border-radius: 5px; display: flex; align-items: center; gap: .35rem; transition: all .2s; }
-            .bcos-start-btn:hover { background: rgba(var(--accent-rgb, 255,107,157), 0.22); border-color: var(--accent, #FF6B9D); box-shadow: 0 0 10px rgba(var(--accent-rgb, 255,107,157), 0.3); }
-            .bcos-taskbar-items { flex: 1; display: flex; gap: .25rem; overflow: hidden; }
-            .bcos-taskbar-item { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #94a3b8; padding: .25rem .55rem; font-size: 11px; cursor: pointer; border-radius: 5px; max-width: 125px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: all .2s; }
-            .bcos-taskbar-item:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
-            .bcos-taskbar-item.active { background: rgba(var(--accent-rgb, 255,107,157), 0.18); color: var(--accent, #FF6B9D); border-color: var(--accent, #FF6B9D); box-shadow: 0 0 10px rgba(var(--accent-rgb, 255,107,157), 0.25); }
-            .bcos-taskbar-clock { color: #94a3b8; font-size: 12px; padding: 0 .5rem; flex-shrink: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
-            .bcos-start-menu { position: absolute; bottom: 42px; left: .5rem; width: 210px; background: rgba(18, 22, 34, 0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(var(--accent-rgb, 255,107,157), 0.25); border-radius: 8px; box-shadow: 0 -6px 28px rgba(0,0,0,.65), 0 0 14px rgba(var(--accent-rgb, 255,107,157), 0.18); padding: .35rem; z-index: 1000; display: none; }
-            .bcos-start-menu.show { display: block; }
-            .bcos-start-menu-item { display: flex; align-items: center; gap: .5rem; padding: .4rem .55rem; cursor: pointer; border-radius: 5px; font-size: 12px; color: #e2e8f0; transition: all .15s; }
-            .bcos-start-menu-item:hover { background: rgba(var(--accent-rgb, 255,107,157), 0.18); color: var(--accent, #FF6B9D); }
-            .bcos-start-menu-separator { height: 1px; background: rgba(255, 255, 255, 0.08); margin: .3rem 0; }
+
+            /* macOS Top Menu Bar */
+            .bcos-menubar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 30px;
+                background: rgba(20, 24, 36, 0.82);
+                backdrop-filter: blur(28px) saturate(190%);
+                -webkit-backdrop-filter: blur(28px) saturate(190%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 12px;
+                z-index: 9999;
+                user-select: none;
+                -webkit-user-select: none;
+                font-size: 13px;
+                color: #e2e8f0;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-menubar-left, .bcos-menubar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .bcos-menubar-apple {
+                font-size: 16px;
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+                transition: background .15s;
+                line-height: 1;
+            }
+            .bcos-menubar-apple:hover, .bcos-menubar-apple.active {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .bcos-menubar-appname {
+                font-weight: 700;
+                color: #ffffff;
+                font-size: 13px;
+                letter-spacing: 0.2px;
+            }
+            .bcos-menubar-item {
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: rgba(255, 255, 255, 0.85);
+                font-size: 12.5px;
+                transition: background .15s, color .15s;
+            }
+            .bcos-menubar-item:hover {
+                background: rgba(255, 255, 255, 0.15);
+                color: #ffffff;
+            }
+            .bcos-menubar-status-item {
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.85);
+                transition: background .15s;
+            }
+            .bcos-menubar-status-item:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .bcos-menubar-clock {
+                font-size: 12.5px;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.95);
+                padding: 0 4px;
+                font-variant-numeric: tabular-nums;
+            }
+
+            /* macOS Apple Dropdown Menu */
+            .bcos-apple-menu {
+                position: fixed;
+                top: 34px;
+                left: 8px;
+                min-width: 220px;
+                background: rgba(24, 28, 42, 0.94);
+                backdrop-filter: blur(32px) saturate(200%);
+                -webkit-backdrop-filter: blur(32px) saturate(200%);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 10px;
+                box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.3);
+                padding: 5px;
+                z-index: 10000;
+                display: none;
+                flex-direction: column;
+                gap: 2px;
+                animation: bcosMenuAnim .12s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .bcos-apple-menu.show {
+                display: flex;
+            }
+            @keyframes bcosMenuAnim {
+                from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .bcos-apple-menu-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 6px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12.5px;
+                color: rgba(255, 255, 255, 0.95);
+                transition: background .12s;
+                user-select: none;
+            }
+            .bcos-apple-menu-item:hover {
+                background: rgba(0, 122, 255, 0.88);
+                color: #ffffff;
+            }
+            .bcos-apple-menu-sep {
+                height: 1px;
+                background: rgba(255, 255, 255, 0.1);
+                margin: 3px 0;
+            }
+
+            /* macOS Floating Frosted Glass Dock */
+            .bcos-dock-wrap {
+                position: fixed;
+                bottom: 8px;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                pointer-events: none;
+                z-index: 9990;
+            }
+            .bcos-dock {
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 8px;
+                background: rgba(24, 30, 44, 0.68);
+                backdrop-filter: blur(32px) saturate(210%);
+                -webkit-backdrop-filter: blur(32px) saturate(210%);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+                box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+                transition: all .2s ease;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .bcos-dock-item {
+                position: relative;
+                width: 44px;
+                height: 48px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: transform .18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            .bcos-dock-item:hover {
+                transform: translateY(-8px) scale(1.22);
+            }
+            .bcos-dock-icon-box {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+                transition: background .15s, box-shadow .15s;
+            }
+            .bcos-dock-item:hover .bcos-dock-icon-box {
+                background: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+            }
+            .bcos-dock-dot {
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: #ffffff;
+                opacity: 0;
+                transform: scale(0);
+                transition: all .2s ease;
+                margin-top: 3px;
+                box-shadow: 0 0 5px #ffffff;
+            }
+            .bcos-dock-item.open .bcos-dock-dot {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+            .bcos-dock-item.active .bcos-dock-dot {
+                opacity: 1;
+                transform: scale(1.2);
+                background: var(--accent, #ff6b9d);
+                box-shadow: 0 0 8px var(--accent, #ff6b9d);
+            }
+            .bcos-dock-tooltip {
+                position: absolute;
+                bottom: 56px;
+                left: 50%;
+                transform: translateX(-50%) translateY(4px);
+                background: rgba(20, 24, 36, 0.92);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                padding: 3px 8px;
+                border-radius: 6px;
+                font-size: 11px;
+                color: #ffffff;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: all .15s ease;
+                box-shadow: 0 6px 16px rgba(0,0,0,.5);
+            }
+            .bcos-dock-item:hover .bcos-dock-tooltip {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            /* macOS Window Frame & Traffic Lights */
+            .bcos-window-titlebar {
+                background: rgba(30, 36, 52, 0.88);
+                padding: .45rem .8rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: move;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                border-radius: 12px 12px 0 0;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: none;
+                height: 36px;
+                box-sizing: border-box;
+            }
+            .bcos-window-title {
+                font-size: 12.5px;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 600;
+                letter-spacing: 0.2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex: 1;
+                min-width: 0;
+                margin: 0 .4rem;
+                text-align: center;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-window-controls {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+            .bcos-window-btn {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                cursor: pointer;
+                border: none;
+                font-size: 0;
+                padding: 0;
+                position: relative;
+                will-change: transform;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                touch-action: manipulation;
+                transition: transform .15s ease;
+            }
+            .bcos-window-btn::before {
+                content: '';
+                position: absolute;
+                inset: -6px;
+                cursor: pointer;
+            }
+            .bcos-window-close, .bcos-win-btn-close {
+                background: #ff5f56;
+                border: 0.5px solid rgba(224, 68, 62, 0.7);
+            }
+            .bcos-win-btn-min {
+                background: #ffbd2e;
+                border: 0.5px solid rgba(222, 161, 35, 0.7);
+            }
+            .bcos-win-btn-max {
+                background: #27c93f;
+                border: 0.5px solid rgba(26, 171, 41, 0.7);
+            }
+            .bcos-window-controls:hover .bcos-win-btn-close::after {
+                content: '✕';
+                font-size: 8px;
+                font-weight: 900;
+                color: rgba(70, 0, 0, 0.85);
+            }
+            .bcos-window-controls:hover .bcos-win-btn-min::after {
+                content: '−';
+                font-size: 10px;
+                font-weight: 900;
+                color: rgba(80, 50, 0, 0.85);
+                line-height: 0.5;
+            }
+            .bcos-window-controls:hover .bcos-win-btn-max::after {
+                content: '+';
+                font-size: 9px;
+                font-weight: 900;
+                color: rgba(0, 60, 0, 0.85);
+            }
+            .bcos-window-content {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow-y: auto !important;
+                overflow-x: hidden;
+                padding: .6rem;
+                color: var(--text, #e2e8f0);
+                -webkit-overflow-scrolling: touch !important;
+                touch-action: pan-y !important;
+                overscroll-behavior: contain !important;
+                overscroll-behavior-y: contain !important;
+            }
+
+            /* Legacy compatibility rules */
+            .bcos-taskbar { display: none !important; }
+            .bcos-start-menu { display: none !important; }
+
             .bcos-mini-terminal { background: #0a0a0a; color: #e0e0e0; padding: .5rem; font-family: inherit; font-size: 12px; height: 100%; overflow-y: auto; }
             .bcos-mini-terminal-input { background: transparent; border: none; outline: none; color: #e0e0e0; font-family: inherit; font-size: 12px; flex: 1; caret-color: #00ff41; }
             .bcos-file-item { display: flex; align-items: center; gap: .5rem; padding: .3rem .4rem; cursor: pointer; border-radius: 3px; font-size: 12px; }
             .bcos-file-item:hover { background: #2a2a2a; }
             .bcos-file-name { color: #00aaff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .bcos-file-meta { color: #666; font-size: 10px; white-space: nowrap; }
+
+            /* Mobile & Vertical Responsive Window Adaptation (横屏/竖屏自适应) */
             @media (max-width: 768px) {
+                .hide-on-mobile { display: none !important; }
                 #bcos-screen { padding: .35rem; font-size: 12px; }
-                .bcos-desktop-icon { width: 58px; height: 75px; }
-                .bcos-desktop-icon-emoji { font-size: 1.6rem; }
+                .bcos-desktop-icon { width: 56px; height: 72px; padding: .3rem; }
+                .bcos-desktop-icon-emoji { font-size: 1.5rem; }
+                .bcos-menubar {
+                    height: 28px;
+                    padding: 0 8px;
+                }
+                .bcos-menubar-apple {
+                    font-size: 14px;
+                }
+                .bcos-menubar-appname {
+                    font-size: 12px;
+                }
+                .bcos-menubar-status-item {
+                    font-size: 11px;
+                    padding: 1px 4px;
+                }
+                .bcos-menubar-clock {
+                    font-size: 11.5px;
+                }
+                .bcos-dock-wrap {
+                    bottom: 6px;
+                }
+                .bcos-dock {
+                    height: 46px;
+                    max-width: calc(100vw - 12px);
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    -webkit-overflow-scrolling: touch;
+                    touch-action: pan-x;
+                    padding: 3px 6px;
+                    gap: 4px;
+                    border-radius: 14px;
+                }
+                .bcos-dock-item {
+                    width: 36px;
+                    height: 40px;
+                    flex-shrink: 0;
+                }
+                .bcos-dock-item:hover {
+                    transform: none;
+                }
+                .bcos-dock-icon-box {
+                    width: 34px;
+                    height: 34px;
+                    font-size: 18px;
+                    border-radius: 8px;
+                }
+                .bcos-dock-tooltip {
+                    display: none !important;
+                }
+                /* Adaptive Responsive Windows for Mobile / Portrait */
                 .bcos-window {
-                    min-width: 0 !important;
-                    max-width: calc(100vw - 12px) !important;
+                    position: fixed !important;
+                    left: 6px !important;
+                    right: 6px !important;
                     width: calc(100vw - 12px) !important;
-                    max-height: calc(100vh - 70px) !important;
+                    max-width: calc(100vw - 12px) !important;
+                    top: 34px !important;
+                    height: calc(100dvh - 96px) !important;
+                    max-height: calc(100dvh - 96px) !important;
+                    transform: none !important;
+                    border-radius: 12px !important;
+                    min-width: 0 !important;
                 }
                 .bcos-window-titlebar {
-                    padding: .5rem .6rem !important;
-                    min-height: 38px !important;
+                    height: 38px !important;
+                    padding: 0 10px !important;
+                    cursor: default;
+                }
+                .bcos-window-controls {
+                    gap: 10px !important;
                 }
                 .bcos-window-btn {
-                    width: 24px !important;
-                    height: 24px !important;
-                    min-width: 24px !important;
-                    min-height: 24px !important;
+                    width: 22px !important;
+                    height: 22px !important;
+                    min-width: 22px !important;
+                    min-height: 22px !important;
+                    font-size: 11px !important;
+                    font-weight: 800 !important;
+                }
+                .bcos-win-btn-close::after {
+                    content: '✕' !important;
+                    font-size: 11px !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
+                }
+                .bcos-win-btn-min::after {
+                    content: '−' !important;
+                    font-size: 13px !important;
+                    line-height: 0.5 !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
+                }
+                .bcos-win-btn-max::after {
+                    content: '+' !important;
+                    font-size: 11px !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
                 }
                 .bcos-window-btn::before {
-                    inset: -10px !important;
+                    inset: -8px !important;
                 }
-                .bcos-window-close::after, .bcos-win-btn-close::after {
-                    content: '✕' !important;
-                    font-size: 12px !important;
-                    font-weight: 800 !important;
-                    color: rgba(0, 0, 0, 0.75) !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    line-height: 1 !important;
+                .bcos-window-resize {
+                    display: none !important;
                 }
                 .bcos-window-content {
-                    padding: .45rem !important;
-                    overflow-x: auto !important;
+                    padding: .5rem !important;
+                    overflow-y: auto !important;
+                    overflow-x: hidden !important;
                     -webkit-overflow-scrolling: touch !important;
+                    touch-action: pan-y !important;
+                    overscroll-behavior: contain !important;
+                    overscroll-behavior-y: contain !important;
                 }
             }
             /* Carrot cursor for bcos desktop mode — force override all third-party cursors */
@@ -10312,16 +10699,37 @@
         }
 
         /* Wallpaper Engine Layers */
+        .car-wallpaper-ambient {
+            position: absolute;
+            inset: -40px;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            filter: blur(48px) saturate(160%) brightness(0.65);
+            -webkit-filter: blur(48px) saturate(160%) brightness(0.65);
+            transform: scale(1.12) translateZ(0);
+            -webkit-transform: scale(1.12) translateZ(0);
+            opacity: 0;
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease;
+            z-index: 0;
+            pointer-events: none;
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-ambient.active {
+            opacity: 1;
+        }
         .car-wallpaper-layer {
             position: absolute;
             inset: 0;
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            background-color: #000000;
+            background-color: transparent;
             opacity: 0;
             transition: opacity 0.8s ease-in-out, background-size 0.3s ease;
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
             will-change: opacity;
             transform: translateZ(0);
@@ -10333,28 +10741,32 @@
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.wp-fit-fit {
             background-size: contain !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            background-color: #000000 !important;
+            background-color: transparent !important;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
         }
         .car-wallpaper-layer.wp-fit-stretch {
             background-size: 100% 100% !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.wp-fit-center {
             background-size: auto !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            background-color: #000000 !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.wp-fit-tile {
             background-size: auto !important;
             background-position: center center !important;
             background-repeat: repeat !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.active {
             opacity: 1;
@@ -14084,7 +14496,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.4.9410</span>
+                <span class="bcos-ctx-ver">v7.8.4.9420</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -14375,6 +14787,8 @@
         if (taskbar && dt) {
             taskbar.style.background = dt.taskbarBg;
         }
+        if (typeof _bcosRenderDock === 'function') _bcosRenderDock();
+        if (typeof _bcosUpdateDock === 'function') _bcosUpdateDock();
         if (!bg) return;
         let customBg = localStorage.getItem('bcosCustomBg');
         if (customBg) {
@@ -14506,6 +14920,96 @@
         });
     }
 
+    const BCOS_DOCK_ITEMS = [
+        { id: 'files', name: '访达 (Finder)', icon: '📁' },
+        { id: 'terminal', name: '终端 (Terminal)', icon: '💻' },
+        { id: 'browser', name: 'Safari 浏览器', icon: '🌐' },
+        { id: 'settings', name: '系统偏好设置', icon: '⚙️' },
+        { id: 'carlock', name: '座舱锁屏 (Car Lock)', icon: '🚗' },
+        { id: 'anniversary', name: '兔可可纪念日', icon: '💕' },
+        { id: 'monopoly', name: '大富翁模拟经营', icon: '🎲' },
+        { id: 'monitor', name: '活动监视器', icon: '📊' },
+        { id: 'texteditor', name: '文本编辑 (TextEdit)', icon: '📝' },
+        { id: 'logs', name: '控制台运行日志', icon: '📜' },
+        { id: 'about', name: '关于这台 BCOS', icon: 'ℹ️' }
+    ];
+
+    function _bcosRenderDock() {
+        const dock = document.getElementById('bcos-dock');
+        if (!dock) return;
+        const dt = _bcosGetDesktopTheme();
+        dock.innerHTML = BCOS_DOCK_ITEMS.map(item => {
+            const icon = (dt && dt.icons && dt.icons[item.id]) ? dt.icons[item.id] : item.icon;
+            const isOpen = !!_bcos.wins[item.id];
+            const isActive = _bcos.activeWin === item.id;
+            const cls = 'bcos-dock-item' + (isOpen ? ' open' : '') + (isActive ? ' active' : '');
+            return `<div class="${cls}" id="bcos-dock-${item.id}" onclick="_bcosDockClick('${item.id}')" title="${item.name}">
+                <div class="bcos-dock-tooltip">${item.name}</div>
+                <div class="bcos-dock-icon-box">${icon}</div>
+                <div class="bcos-dock-dot"></div>
+            </div>`;
+        }).join('');
+    }
+
+    function _bcosUpdateDock() {
+        const dock = document.getElementById('bcos-dock');
+        if (!dock) return;
+        BCOS_DOCK_ITEMS.forEach(item => {
+            const el = document.getElementById('bcos-dock-' + item.id);
+            if (!el) return;
+            const isOpen = !!_bcos.wins[item.id];
+            const isActive = _bcos.activeWin === item.id;
+            el.classList.toggle('open', isOpen);
+            el.classList.toggle('active', isActive);
+        });
+        const appTitleEl = document.getElementById('bcos-menubar-appname');
+        if (appTitleEl) {
+            const titleMap = {
+                terminal: 'Terminal', files: 'Finder', monitor: 'Activity Monitor', about: 'About BCOS',
+                browser: 'Safari', me: 'Finder', texteditor: 'TextEdit', anniversary: 'Anniversary',
+                monopoly: 'Monopoly', settings: 'System Settings', logs: 'Console'
+            };
+            appTitleEl.textContent = _bcos.activeWin ? (titleMap[_bcos.activeWin] || _bcos.activeWin) : 'Bunny Cockpit OS';
+        }
+    }
+
+    function _bcosDockClick(app) {
+        if (app === 'carlock' || app === 'car' || app === 'lock') {
+            showBcosCarLockscreen();
+            return;
+        }
+        const winId = _bcos.wins[app];
+        if (winId) {
+            const win = document.getElementById(winId);
+            if (win) {
+                if (_bcos.activeWin === app && win.style.display !== 'none') {
+                    _bcosMinimizeWin(app);
+                } else {
+                    _bcosFocusWin(app);
+                }
+                return;
+            }
+        }
+        _bcosOpenApp(app);
+    }
+
+    function _bcosToggleAppleMenu(e) {
+        if (e) e.stopPropagation();
+        const menu = document.getElementById('bcos-apple-menu');
+        const btn = document.getElementById('bcos-apple-btn');
+        if (menu) {
+            menu.classList.toggle('show');
+            if (btn) btn.classList.toggle('active', menu.classList.contains('show'));
+        }
+    }
+
+    function _bcosCloseAppleMenu() {
+        const menu = document.getElementById('bcos-apple-menu');
+        const btn = document.getElementById('bcos-apple-btn');
+        if (menu) menu.classList.remove('show');
+        if (btn) btn.classList.remove('active');
+    }
+
     function _bcosLaunchDesktop() {
         if (_bcos.clockInterval) clearInterval(_bcos.clockInterval);
         _bcos.mode = 'desktop';
@@ -14515,6 +15019,71 @@
         const meX = 60 + Math.random() * 80;
         const meY = 40 + Math.random() * 60;
         ov.innerHTML = `<div id="bcos-desktop">
+            <!-- macOS Top Menu Bar -->
+            <div class="bcos-menubar" id="bcos-menubar">
+                <div class="bcos-menubar-left">
+                    <div class="bcos-menubar-apple" id="bcos-apple-btn" onclick="_bcosToggleAppleMenu(event)" title="Apple Menu"></div>
+                    <div class="bcos-menubar-appname" id="bcos-menubar-appname">Bunny Cockpit OS</div>
+                    <div class="bcos-menubar-item hide-on-mobile" onclick="_bcosOpenApp('about')">关于</div>
+                    <div class="bcos-menubar-item hide-on-mobile" onclick="_bcosOpenApp('settings')">设置</div>
+                    <div class="bcos-menubar-item hide-on-mobile" onclick="showBcosCarLockscreen()">车机</div>
+                </div>
+                <div class="bcos-menubar-right">
+                    <div class="bcos-menubar-status-item" id="bcos-menubar-battery" onclick="_bcosOpenApp('settings')" title="车辆与电池状态">⚡ 88%</div>
+                    <div class="bcos-menubar-status-item" onclick="toggleFullscreen()" title="切换全屏">⛶</div>
+                    <div class="bcos-menubar-clock" id="bcos-clock">--:--</div>
+                </div>
+            </div>
+
+            <!-- macOS Apple Menu Dropdown -->
+            <div class="bcos-apple-menu" id="bcos-apple-menu">
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('about'); _bcosCloseAppleMenu();">
+                    <span>ℹ️</span><span>关于这台 BCOS (About)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('settings'); _bcosCloseAppleMenu();">
+                    <span>⚙️</span><span>系统偏好设置 (Settings)</span>
+                </div>
+                <div class="bcos-apple-menu-sep"></div>
+                <div class="bcos-apple-menu-item" onclick="showBcosCarLockscreen(); _bcosCloseAppleMenu();">
+                    <span>🚗</span><span>进入座舱锁屏 (Car Lock Screen)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('terminal'); _bcosCloseAppleMenu();">
+                    <span>💻</span><span>终端控制台 (Terminal)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('files'); _bcosCloseAppleMenu();">
+                    <span>📁</span><span>访达 / 文件管理 (Finder)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('monitor'); _bcosCloseAppleMenu();">
+                    <span>📊</span><span>活动监视器 (Activity Monitor)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('browser'); _bcosCloseAppleMenu();">
+                    <span>🌐</span><span>Safari 浏览器 (Browser)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('anniversary'); _bcosCloseAppleMenu();">
+                    <span>💕</span><span>兔可可纪念日 (Anniversary)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('monopoly'); _bcosCloseAppleMenu();">
+                    <span>🎲</span><span>大富翁模拟经营 (Monopoly)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('texteditor'); _bcosCloseAppleMenu();">
+                    <span>📝</span><span>文本编辑器 (Text Editor)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosOpenApp('logs'); _bcosCloseAppleMenu();">
+                    <span>📜</span><span>控制台运行日志 (Console Logs)</span>
+                </div>
+                <div class="bcos-apple-menu-sep"></div>
+                <div class="bcos-apple-menu-item" onclick="toggleFullscreen(); _bcosCloseAppleMenu();">
+                    <span>⛶</span><span>切换全屏模式 (Fullscreen)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="_bcosBackToTerminal(); _bcosCloseAppleMenu();">
+                    <span>⌨️</span><span>返回纯命令行终端 (Terminal CLI)</span>
+                </div>
+                <div class="bcos-apple-menu-item" onclick="closeBcosOS(); _bcosCloseAppleMenu();">
+                    <span>⏻</span><span>退出 BCOS 返回经典视图 (Exit)</span>
+                </div>
+            </div>
+
+            <!-- Wallpaper and Icons -->
             <div class="bcos-desktop-wallpaper" id="bcos-desktop-bg" style="background:${dt.wallpaper};">
                 <div class="bcos-desktop-icons">
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('terminal')"><div class="bcos-desktop-icon-emoji">${dt.icons.terminal}</div><div class="bcos-desktop-icon-label">Terminal</div></div>
@@ -14529,63 +15098,59 @@
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('texteditor')"><div class="bcos-desktop-icon-emoji">${dt.icons.editor||'📝'}</div><div class="bcos-desktop-icon-label">Text Editor</div></div>
                     <div class="bcos-desktop-icon" onclick="_bcosOpenApp('about')"><div class="bcos-desktop-icon-emoji">${dt.icons.about}</div><div class="bcos-desktop-icon-label">About</div></div>
                 </div>
-                <div class="bcos-desktop-icon" style="position:absolute;right:${meX}px;top:${meY}px;" onclick="_bcosOpenApp('me')"><div class="bcos-desktop-icon-emoji">${dt.icons.me}</div><div class="bcos-desktop-icon-label">me</div></div>
+                <div class="bcos-desktop-icon" style="position:absolute;right:${meX}px;top:${meY + 32}px;" onclick="_bcosOpenApp('me')"><div class="bcos-desktop-icon-emoji">${dt.icons.me}</div><div class="bcos-desktop-icon-label">me</div></div>
                 <div id="bcos-windows"></div>
             </div>
-            <div class="bcos-taskbar" style="background:${dt.taskbarBg};">
-                <button class="bcos-start-btn" style="border-color:${dt.accent};color:${dt.accent};" onclick="_bcosToggleStartMenu()">🐰 bcos</button>
-                <div class="bcos-taskbar-items" id="bcos-taskbar-items"></div>
-                <div class="bcos-taskbar-tray" style="flex-shrink:0;display:flex;align-items:center;gap:8px;margin-right:8px;">
-                    <span id="bcos-taskbar-fs" style="cursor:pointer;font-size:12px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,0.08);color:#fff;" onclick="toggleFullscreen()" title="切换全屏">⛶</span>
-                    <span style="cursor:pointer;font-size:12px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,0.08);color:#fff;" onclick="showBcosCarLockscreen()" title="进入座舱锁屏">🚗</span>
-                    <span id="bcos-taskbar-battery" style="font-size:11px;color:#00e5ff;cursor:pointer;padding:2px 4px;" onclick="_bcosOpenApp('settings')" title="车辆与电池状态">⚡ 88%</span>
-                </div>
-                <div class="bcos-taskbar-clock" id="bcos-clock">--:--</div>
-            </div>
-            <div class="bcos-start-menu" id="bcos-start-menu">
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('terminal');_bcosToggleStartMenu()">${dt.icons.terminal} Terminal (终端控制)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('files');_bcosToggleStartMenu()">${dt.icons.files} File Manager (文件管理)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monitor');_bcosToggleStartMenu()">${dt.icons.monitor} System Monitor (系统监视)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('browser');_bcosToggleStartMenu()">${dt.icons.browser} Browser (系统浏览器)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('anniversary');_bcosToggleStartMenu()">${dt.icons.anniversary||'💕'} 纪念日 (Anniversary)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('monopoly');_bcosToggleStartMenu()">🎲 大富翁模拟经营 (Monopoly)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('settings');_bcosToggleStartMenu()">⚙️ 系统设置 (System Settings)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('logs');_bcosToggleStartMenu()">📜 运行日志 (System Logs)</div>
-                <div class="bcos-start-menu-item" onclick="showBcosCarLockscreen();_bcosToggleStartMenu()">${dt.icons.car||'🚗'} 车机锁屏 (Car Lock Screen)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('texteditor');_bcosToggleStartMenu()">${dt.icons.editor||'📝'} Text Editor (代码文本)</div>
-                <div class="bcos-start-menu-item" onclick="_bcosOpenApp('about');_bcosToggleStartMenu()">${dt.icons.about} About bcos (关于系统)</div>
-                <div class="bcos-start-menu-separator"></div>
-                <div class="bcos-start-menu-item" onclick="_bcosBackToTerminal();_bcosToggleStartMenu()">⌨️ Back to Terminal</div>
-                <div class="bcos-start-menu-item" onclick="toggleFullscreen();_bcosToggleStartMenu()">⛶ Toggle Fullscreen (全屏)</div>
-                <div class="bcos-start-menu-item" onclick="closeBcosOS();_bcosToggleStartMenu()">⏻ Exit bcos to Classic View</div>
+
+            <!-- macOS Floating Dock -->
+            <div class="bcos-dock-wrap">
+                <div class="bcos-dock" id="bcos-dock"></div>
             </div>
         </div>`;
+        _bcosRenderDock();
+        _bcosUpdateDock();
         _bcosUpdateClock();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
         const bg = document.getElementById('bcos-desktop-bg');
         if (bg) {
-            bg.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
-            bg.addEventListener('click', () => { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show'); }); }
+            bg.addEventListener('touchmove', e => {
+                if (e.target === bg) e.preventDefault();
+            }, {passive:false});
+            bg.addEventListener('click', () => {
+                _bcosCloseAppleMenu();
+                const m = document.getElementById('bcos-start-menu'); if (m) m.classList.remove('show');
+            });
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#bcos-apple-menu') && !e.target.closest('#bcos-apple-btn')) {
+                _bcosCloseAppleMenu();
+            }
+        });
         _bcosBindEsc();
         if (typeof _bcosInitContextMenu === 'function') _bcosInitContextMenu();
         _bcosShowOOBE(ov);
         if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
-        
     }
 
     function _bcosUpdateClock() {
         const c = document.getElementById('bcos-clock');
         if (c) {
             const n = new Date();
-            c.textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0') + ':' + String(n.getSeconds()).padStart(2,'0');
+            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const dayStr = days[n.getDay()];
+            const month = n.getMonth() + 1;
+            const date = n.getDate();
+            const hh = String(n.getHours()).padStart(2, '0');
+            const mm = String(n.getMinutes()).padStart(2, '0');
+            c.textContent = `${dayStr} ${month}月${date}日 ${hh}:${mm}`;
         }
-        const b = document.getElementById('bcos-taskbar-battery');
+        const b = document.getElementById('bcos-menubar-battery') || document.getElementById('bcos-taskbar-battery');
         if (b) {
             const soc = localStorage.getItem('car_soc') || '88';
             b.textContent = '⚡ ' + soc + '%';
         }
     }
-    function _bcosToggleStartMenu() { const m = document.getElementById('bcos-start-menu'); if (m) m.classList.toggle('show'); }
+    function _bcosToggleStartMenu() { _bcosToggleAppleMenu(); }
     function _bcosBackToTerminal() {
         if (_bcos.clockInterval) { clearInterval(_bcos.clockInterval); _bcos.clockInterval = null; }
         if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; }
@@ -14643,16 +15208,18 @@
         if (!container) return;
         const win = document.createElement('div');
         win.className = 'bcos-window active-window'; win.id = winId; win.style.zIndex = ++_bcos.winZ;
-        const offset = Object.keys(_bcos.wins).length * 28;
+        const offset = (Object.keys(_bcos.wins).length * 28) % 180;
         const isMobile = window.innerWidth <= 768;
-        const maxW = isMobile ? Math.min(cfg.w, window.innerWidth - 12) : Math.min(cfg.w, Math.max(320, window.innerWidth - 16));
-        const maxH = isMobile ? Math.min(cfg.h, window.innerHeight - 80) : Math.min(cfg.h, Math.max(260, window.innerHeight - 70));
-        const leftX = isMobile ? 6 : Math.max(8, Math.min(30 + offset, Math.max(10, window.innerWidth - maxW - 8)));
-        const topY = isMobile ? Math.max(10, Math.min(16 + ((offset * 0.6) % 60), window.innerHeight - maxH - 50)) : Math.max(8, Math.min(20 + offset, Math.max(10, window.innerHeight - maxH - 50)));
-        win.style.cssText += `left:0;top:0;width:${maxW}px;height:${maxH}px;transform:translate3d(${leftX}px, ${topY}px, 0);`;
+        const maxW = isMobile ? Math.min(cfg.w, window.innerWidth - 12) : Math.min(cfg.w, Math.max(340, window.innerWidth - 24));
+        const maxH = isMobile ? Math.min(cfg.h, window.innerHeight - 96) : Math.min(cfg.h, Math.max(280, window.innerHeight - 90));
+        const leftX = isMobile ? 6 : Math.max(12, Math.min(36 + offset, Math.max(12, window.innerWidth - maxW - 20)));
+        const topY = isMobile ? 34 : Math.max(38, Math.min(42 + offset, Math.max(38, window.innerHeight - maxH - 64)));
+        if (!isMobile) {
+            win.style.cssText += `left:0;top:0;width:${maxW}px;height:${maxH}px;transform:translate3d(${leftX}px, ${topY}px, 0);`;
+        }
         win._bcosTX = leftX; win._bcosTY = topY;
         win._bcosOrigW = maxW; win._bcosOrigH = maxH;
-        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-win-btn-close" title="关闭" onmousedown="event.stopPropagation(); _bcosCloseWin('${app}')" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosCloseWin('${app}')" onclick="event.stopPropagation(); _bcosCloseWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-min" title="最小化" onmousedown="event.stopPropagation(); _bcosMinimizeWin('${app}')" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosMinimizeWin('${app}')" onclick="event.stopPropagation(); _bcosMinimizeWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-max" title="最大化" onmousedown="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosToggleMaximize('${winId}',event)" onclick="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)"></button></div><span class="bcos-window-title">${cfg.t}</span><div style="width:42px;"></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
+        win.innerHTML = `<div class="bcos-window-titlebar" onmousedown="_bcosDragStart('${winId}',event)" ontouchstart="_bcosTouchDragStart('${winId}',event)" ondblclick="_bcosToggleMaximize('${winId}',event)"><div class="bcos-window-controls"><button class="bcos-window-btn bcos-win-btn-close" title="关闭" onmousedown="event.stopPropagation(); _bcosCloseWin('${app}')" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosCloseWin('${app}')" onclick="event.stopPropagation(); _bcosCloseWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-min" title="最小化" onmousedown="event.stopPropagation(); _bcosMinimizeWin('${app}')" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosMinimizeWin('${app}')" onclick="event.stopPropagation(); _bcosMinimizeWin('${app}')"></button><button class="bcos-window-btn bcos-win-btn-max" title="最大化" onmousedown="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)" ontouchstart="event.stopPropagation(); event.preventDefault(); _bcosToggleMaximize('${winId}',event)" onclick="event.stopPropagation(); _bcosToggleMaximize('${winId}',event)"></button></div><span class="bcos-window-title">${cfg.t}</span><div style="width:48px;"></div></div><div class="bcos-window-content" id="${winId}-content"></div><div class="bcos-window-resize" onmousedown="_bcosResizeStart('${winId}',event)"></div>`;
         container.appendChild(win);
         _bcos.wins[app] = winId;
         _bcos.activeWin = app;
@@ -14751,6 +15318,7 @@
     }
     function _bcosCloseCatWin(winId) { const w = document.getElementById(winId); if (w) w.remove(); }
     function _bcosUpdateTaskbar() {
+        _bcosUpdateDock();
         const b = document.getElementById('bcos-taskbar-items');
         if (!b) return;
         const labels = {
@@ -14784,20 +15352,26 @@
     }
 
     function _bcosRenderSettingsApp(content) {
+        if (!content) return;
         content.id = 'bcos-settings-host';
         content.style.padding = '0';
-        content.style.overflow = 'auto';
+        content.style.overflowY = 'auto';
+        content.style.overflowX = 'hidden';
         content.style.height = '100%';
         content.style.background = '#161b22';
         content.style.color = '#e6edf3';
-        
+        content.style.webkitOverflowScrolling = 'touch';
+        content.style.touchAction = 'pan-y';
+        content.style.overscrollBehaviorY = 'contain';
+
+        const savedScroll = content.scrollTop || 0;
         let customBg = localStorage.getItem('bcosCustomBg') || '';
-        let html = '<div style="padding:1.5rem;max-width:800px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
-        html += '<h2 style="color:var(--accent);margin-top:0;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;">⚙️ BCOS System Settings (系统设置)</h2>';
+        let html = '<div style="padding:1.2rem;max-width:800px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;-webkit-overflow-scrolling:touch;touch-action:pan-y;">';
+        html += '<h2 style="color:var(--accent,#FF6B9D);margin-top:0;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;font-size:1.3rem;">⚙️ BCOS System Settings (系统设置)</h2>';
         
         // Themes
         html += '<h3 style="margin-bottom:.8rem;color:#ddd;font-size:1rem;">🎨 桌面氛围主题与强调色</h3>';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:2rem;">';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:1.8rem;touch-action:pan-y;">';
         for (const [id, t] of Object.entries(_bcosThemeDesktop)) {
             const current = document.documentElement.getAttribute('data-theme') || 'bunny';
             const border = current === id ? `3px solid ${t.accent}` : '3px solid transparent';
@@ -14807,11 +15381,11 @@
 
         // Wallpapers
         html += '<h3 style="margin-bottom:.8rem;color:#ddd;font-size:1rem;">🖼️ 桌面壁纸 (沿用车机锁屏图库)</h3>';
-        html += '<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:12px;margin-bottom:1rem;max-height:350px;overflow-y:auto;padding-right:8px;">';
+        html += '<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:12px;margin-bottom:1rem;touch-action:pan-y;padding-right:4px;">';
         if (window.BUILTIN_WALLPAPERS) {
             window.BUILTIN_WALLPAPERS.forEach(w => {
                 let thumbSrc = (window.wpBlobCache && window.wpBlobCache[w.file]) || (window.WP_PLACEHOLDER && window.WP_PLACEHOLDER[w.file]) || w.file;
-                const activeStyle = (customBg === w.file) ? `border:2px solid var(--accent);` : `border:2px solid rgba(255,255,255,0.1);`;
+                const activeStyle = (customBg === w.file) ? `border:2px solid var(--accent,#FF6B9D);` : `border:2px solid rgba(255,255,255,0.1);`;
                 html += `<div onclick="
                     localStorage.setItem('bcosCustomBg', '${w.file}');
                     if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
@@ -14828,7 +15402,7 @@
         " style="cursor:pointer;border-radius:8px;border:2px dashed rgba(255,255,255,0.3);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#888;font-size:12px;transition:0.2s;"><span style="font-size:24px;margin-bottom:4px;">🔄</span>恢复默认跟随主题</div>`;
         html += '</div>';
 
-        html += '<div style="display:flex;gap:8px;margin-bottom:2rem;">';
+        html += '<div style="display:flex;gap:8px;margin-bottom:2rem;touch-action:pan-y;">';
         html += `<input type="text" id="bcos-custom-bg-input" value="${!window.BUILTIN_WALLPAPERS?.find(w=>w.file===customBg) ? customBg : ''}" placeholder="或在此输入自定义壁纸 URL (HTTPS网络图片)" style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 12px;border-radius:6px;font-size:13px;outline:none;">`;
         html += `<button onclick="
             const val = document.getElementById('bcos-custom-bg-input').value.trim();
@@ -14836,24 +15410,24 @@
             else localStorage.removeItem('bcosCustomBg');
             if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
             if (window._bcosRenderSettingsApp) window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));
-        " style="background:var(--accent);color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">应用网络图片</button>`;
+        " style="background:var(--accent,#FF6B9D);color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;">应用网络图片</button>`;
         html += '</div>';
         
         // Classic Settings Ported
         html += '<h3 style="margin-bottom:.8rem;color:#ddd;font-size:1rem;">🛠️ 全局首选项 (大富翁生态)</h3>';
-        html += '<div style="background:rgba(255,255,255,0.03);padding:1.2rem;border-radius:12px;display:flex;flex-direction:column;gap:16px;font-size:14px;border:1px solid rgba(255,255,255,0.05);">';
+        html += '<div style="background:rgba(255,255,255,0.03);padding:1.2rem;border-radius:12px;display:flex;flex-direction:column;gap:16px;font-size:14px;border:1px solid rgba(255,255,255,0.05);margin-bottom:2rem;">';
         
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
         html += '<span>🔤 字体缩放比例 (影响所有应用)</span>';
-        html += `<div style="display:flex;align-items:center;gap:10px;"><input type="range" min="80" max="200" step="5" value="${localStorage.getItem('fontScale')||100}" oninput="if(window.setFontScale) setFontScale(this.value); this.nextElementSibling.textContent=this.value+'%';" style="width:150px;accent-color:var(--accent);"><span style="color:var(--accent);font-weight:bold;width:40px;text-align:right;">${localStorage.getItem('fontScale')||100}%</span></div>`;
+        html += `<div style="display:flex;align-items:center;gap:10px;"><input type="range" min="80" max="200" step="5" value="${localStorage.getItem('fontScale')||100}" oninput="if(window.setFontScale) setFontScale(this.value); this.nextElementSibling.textContent=this.value+'%';" style="width:130px;accent-color:var(--accent);"><span style="color:var(--accent);font-weight:bold;width:40px;text-align:right;">${localStorage.getItem('fontScale')||100}%</span></div>`;
         html += '</div>';
         
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
         html += '<span>📱 移动端 Tab 栏模式</span>';
         html += `<select onchange="if(window.setTabBarMode) setTabBarMode(this.value)" style="background:rgba(0,0,0,0.5);color:#fff;border:1px solid #444;padding:6px 10px;border-radius:6px;"><option value="always">始终显示</option><option value="auto-collapse">自动折叠</option><option value="hidden">隐藏</option></select>`;
         html += '</div>';
 
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
         html += '<span>🖥️ PC 侧边栏模式</span>';
         html += `<select onchange="if(window.setSidebarMode) setSidebarMode(this.value)" style="background:rgba(0,0,0,0.5);color:#fff;border:1px solid #444;padding:6px 10px;border-radius:6px;"><option value="auto">自动折叠(悬停展开)</option><option value="auto-hide">自动隐藏(点击恢复)</option><option value="locked-open">始终展开</option><option value="locked-collapsed">始终折叠</option></select>`;
         html += '</div>';
@@ -14862,27 +15436,30 @@
         const isPixel = localStorage.getItem('pixelFont') === '1' || document.body.classList.contains('pixel-font');
         const isMouse = localStorage.getItem('mouseBunny') !== '0';
 
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
         html += '<span>🐰 侧边栏头像风格</span>';
         html += `<div>` +
-            `<button onclick="window.setSidebarAvatar && window.setSidebarAvatar('emoji'); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${curAvatar==='emoji'?'var(--accent)':'#333'};color:${curAvatar==='emoji'?'#000':'#fff'};border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:6px;font-weight:${curAvatar==='emoji'?'bold':'normal'};">🐰 Emoji</button>` +
-            `<button onclick="window.setSidebarAvatar && window.setSidebarAvatar('photo'); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${curAvatar==='photo'?'var(--accent)':'#333'};color:${curAvatar==='photo'?'#000':'#fff'};border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:${curAvatar==='photo'?'bold':'normal'};">📷 照片</button>` +
+            `<button onclick="window.setSidebarAvatar && window.setSidebarAvatar('emoji'); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${curAvatar==='emoji'?'var(--accent,#FF6B9D)':'#333'};color:${curAvatar==='emoji'?'#000':'#fff'};border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:6px;font-weight:${curAvatar==='emoji'?'bold':'normal'};">🐰 Emoji</button>` +
+            `<button onclick="window.setSidebarAvatar && window.setSidebarAvatar('photo'); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${curAvatar==='photo'?'var(--accent,#FF6B9D)':'#333'};color:${curAvatar==='photo'?'#000':'#fff'};border:1px solid #555;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:${curAvatar==='photo'?'bold':'normal'};">📷 照片</button>` +
             `</div>`;
         html += '</div>';
 
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
         html += '<span>👾 像素字体模式</span>';
-        html += `<button onclick="window.togglePixelFont && window.togglePixelFont(); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${isPixel?'var(--accent)':'#333'};color:${isPixel?'#000':'#fff'};border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:${isPixel?'bold':'normal'};">${isPixel?'✅ 已开启':'❌ 已关闭'}</button>`;
+        html += `<button onclick="window.togglePixelFont && window.togglePixelFont(); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${isPixel?'var(--accent,#FF6B9D)':'#333'};color:${isPixel?'#000':'#fff'};border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:${isPixel?'bold':'normal'};">${isPixel?'✅ 已开启':'❌ 已关闭'}</button>`;
         html += '</div>';
 
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
         html += '<span>✨ 鼠标光效跟随</span>';
-        html += `<button onclick="window.toggleMouseBunny && window.toggleMouseBunny(); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${isMouse?'var(--accent)':'#333'};color:${isMouse?'#000':'#fff'};border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:${isMouse?'bold':'normal'};">${isMouse?'✅ 已开启':'❌ 已关闭'}</button>`;
+        html += `<button onclick="window.toggleMouseBunny && window.toggleMouseBunny(); window._bcosRenderSettingsApp && window._bcosRenderSettingsApp(document.getElementById('bcos-settings-host'));" style="background:${isMouse?'var(--accent,#FF6B9D)':'#333'};color:${isMouse?'#000':'#fff'};border:1px solid #555;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:${isMouse?'bold':'normal'};">${isMouse?'✅ 已开启':'❌ 已关闭'}</button>`;
         html += '</div>';
 
         html += '</div></div>';
         
         content.innerHTML = html;
+        if (savedScroll > 0) {
+            content.scrollTop = savedScroll;
+        }
         
         // Restore select values
         setTimeout(() => {
@@ -14915,24 +15492,23 @@
         if (typeof renderEvents === 'function') renderEvents();
     }
     function _bcosDragStart(winId, e) {
-        // Don't start drag if clicking on window controls (close button)
         if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
         const win = document.getElementById(winId); if (!win) return;
         document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
         win.classList.add('active-window');
         const r = win.getBoundingClientRect();
-        // Use transform instead of left/top for GPU-accelerated dragging
         win._bcosTX = r.left; win._bcosTY = r.top;
         win.style.left = '0'; win.style.top = '0';
         win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
         const ox = e.clientX - win._bcosTX, oy = e.clientY - win._bcosTY;
         function mv(ev) {
             const isMobile = window.innerWidth <= 768;
+            if (isMobile) return;
             const curW = win.offsetWidth || 300;
-            const minX = isMobile ? 0 : -curW + 60;
-            const maxX = Math.max(0, window.innerWidth - (isMobile ? curW : 60));
-            const minY = 0;
-            const maxY = Math.max(0, window.innerHeight - 44);
+            const minX = -curW + 60;
+            const maxX = Math.max(0, window.innerWidth - 60);
+            const minY = 30; // Cannot drag above macOS top menubar
+            const maxY = Math.max(30, window.innerHeight - 60);
             win._bcosTX = Math.max(minX, Math.min(maxX, ev.clientX - ox));
             win._bcosTY = Math.max(minY, Math.min(maxY, ev.clientY - oy));
             win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
@@ -14941,7 +15517,7 @@
         document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up); e.preventDefault();
     }
     function _bcosTouchDragStart(winId, e) {
-        // Don't start drag if touching window controls (close button)
+        if (window.innerWidth <= 768) return; // Prevent swipe/touch conflicts on mobile
         if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
         const win = document.getElementById(winId); if (!win || !e.touches[0]) return;
         document.querySelectorAll('.bcos-window').forEach(w => w.classList.remove('active-window'));
@@ -14954,12 +15530,11 @@
         function mv(ev) {
             if (!ev.touches[0]) return;
             const touch = ev.touches[0];
-            const isMobile = window.innerWidth <= 768;
             const curW = win.offsetWidth || 300;
-            const minX = isMobile ? 0 : -curW + 60;
-            const maxX = Math.max(0, window.innerWidth - (isMobile ? curW : 60));
-            const minY = 0; // Never allow dragging above top of viewport
-            const maxY = Math.max(0, window.innerHeight - 44);
+            const minX = -curW + 60;
+            const maxX = Math.max(0, window.innerWidth - 60);
+            const minY = 30;
+            const maxY = Math.max(30, window.innerHeight - 60);
             win._bcosTX = Math.max(minX, Math.min(maxX, touch.clientX - ox));
             win._bcosTY = Math.max(minY, Math.min(maxY, touch.clientY - oy));
             win.style.transform = `translate3d(${win._bcosTX}px, ${win._bcosTY}px, 0)`;
@@ -14970,7 +15545,8 @@
 
     // === Window maximize/restore on double-click titlebar ===
     function _bcosToggleMaximize(winId, e) {
-        if (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls')) return;
+        if (window.innerWidth <= 768) return;
+        if (e && (e.target.classList.contains('bcos-window-btn') || e.target.closest('.bcos-window-controls'))) return;
         const win = document.getElementById(winId); if (!win) return;
         if (win.classList.contains('maximized')) {
             // Restore
@@ -14989,6 +15565,7 @@
 
     // === Window resize via bottom-right handle ===
     function _bcosResizeStart(winId, e) {
+        if (window.innerWidth <= 768) return;
         const win = document.getElementById(winId); if (!win) return;
         e.stopPropagation(); e.preventDefault();
         const r = win.getBoundingClientRect();
@@ -15222,7 +15799,7 @@
             <div>${_bcosRepos.length} repositories | ${new Set(_bcosRepos.map(r=>r[2])).size} languages</div>
             <div style="margin-top:.5rem;color:#666;">Powered by Bunny Core</div>
             <div style="color:#666;">© 2014-${new Date().getFullYear()} kissggj123</div>
-            <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;" onclick="window.open('https://github.com/kissggj123?tab=repositories','_blank')">🌐 View on GitHub</button></div>
+            <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;border-radius:4px;" onclick="window.open('https://github.com/kissggj123/Bunny-Cockpit-OS','_blank')">🌐 View on GitHub</button></div>
         </div>`;
     }
 
@@ -16115,7 +16692,7 @@ const START_DATE = '2024/03/12 00:00:00';
         let currentQuoteIdx = 0;
 
         let carToastTimer = null;
-        function showToast(msg) {
+        function showCarToast(msg) {
             const t = document.getElementById('car-toast');
             if (!t) return;
             if (carToastTimer) clearTimeout(carToastTimer);
@@ -16126,6 +16703,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 carToastTimer = null;
             }, 2400);
         }
+        function showToast(msg) { showCarToast(msg); }
 
         // --- Theme Management ---
         let currentThemeIdx = 0;
@@ -16746,6 +17324,18 @@ const START_DATE = '2024/03/12 00:00:00';
             if (wpStatus) wpStatus.textContent = text;
         }
 
+        function syncAmbientWallpaper(bgUrl) {
+            const amb = document.getElementById('car-wallpaper-ambient');
+            if (!amb) return;
+            if (bgUrl) amb.style.backgroundImage = bgUrl;
+            const fit = getWallpaperFit();
+            if (fit === 'fit' || fit === 'center') {
+                amb.classList.add('active');
+            } else {
+                amb.classList.remove('active');
+            }
+        }
+
         // 国内网络优化: ①模糊占位先行(无黑屏) ②分片并行下载+实时进度 ③预加载下一张(切换零等待) ④SW 离线缓存
         function applyCurrentWallpaper() {
             const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
@@ -16756,6 +17346,8 @@ const START_DATE = '2024/03/12 00:00:00';
             if (mode === 'theme' || allWallpapers.length === 0) {
                 layer.classList.remove('active');
                 layer.classList.remove('wp-loading');
+                const amb = document.getElementById('car-wallpaper-ambient');
+                if (amb) amb.classList.remove('active');
                 updateWallpaperBadge('🎨 纯净座舱');
                 return;
             }
@@ -16775,6 +17367,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 layer.classList.remove('wp-loading');
                 layer.style.backgroundImage = `url("${wpBlobCache[cur.file]}")`;
                 layer.classList.add('active');
+                syncAmbientWallpaper(layer.style.backgroundImage);
                 updateWallpaperBadge(`🖼️ ${cur.name}`);
                 highlightActiveThumbnail();
                 wpPreloaded.add(cur.file);
@@ -16787,6 +17380,7 @@ const START_DATE = '2024/03/12 00:00:00';
             if (ph) {
                 layer.style.backgroundImage = `url("${ph}")`;
                 layer.classList.add('active');
+                syncAmbientWallpaper(layer.style.backgroundImage);
             }
             layer.classList.add('wp-loading');
             updateWallpaperBadge(`🖼️ ${cur.name} · 0%`);
@@ -16812,6 +17406,7 @@ const START_DATE = '2024/03/12 00:00:00';
                     layer.style.backgroundImage = `url("${placeholder}")`;
                     layer.classList.remove('wp-loading');
                     layer.classList.add('active');
+                    syncAmbientWallpaper(layer.style.backgroundImage);
                     updateWallpaperBadge(`🖼️ ${cur.name}`);
                     highlightActiveThumbnail();
                     return;
@@ -16822,6 +17417,7 @@ const START_DATE = '2024/03/12 00:00:00';
                     layer.style.backgroundImage = `url("${cur.file}")`;
                     layer.classList.remove('wp-loading');
                     layer.classList.add('active');
+                    syncAmbientWallpaper(layer.style.backgroundImage);
                     updateWallpaperBadge(`🖼️ ${cur.name}`);
                     highlightActiveThumbnail();
                     wpPreloaded.add(cur.file);
@@ -16832,6 +17428,7 @@ const START_DATE = '2024/03/12 00:00:00';
                     if (placeholder) {
                         layer.style.backgroundImage = `url("${placeholder}")`;
                         layer.classList.add('active');
+                        syncAmbientWallpaper(layer.style.backgroundImage);
                     }
                     updateWallpaperBadge(`🖼️ ${cur.name}`);
                 };
@@ -16845,6 +17442,7 @@ const START_DATE = '2024/03/12 00:00:00';
             layer.style.backgroundImage = `url("${objUrl}")`;
             layer.classList.remove('wp-loading');
             layer.classList.add('active');
+            syncAmbientWallpaper(layer.style.backgroundImage);
             updateWallpaperBadge(`🖼️ ${cur.name}`);
             highlightActiveThumbnail();
             wpPreloaded.add(cur.file);
@@ -17017,16 +17615,16 @@ const START_DATE = '2024/03/12 00:00:00';
                 size: 'cover',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             fit: {
                 title: 'Fit to Screen',
-                sub: '适应屏幕 (等比完整黑边)',
-                notice: 'Fit to Screen (适应屏幕 · 完整呈现)',
+                sub: '适应屏幕 (毛玻璃光晕无黑边)',
+                notice: 'Fit to Screen (适应屏幕 · 毛玻璃光晕填充)',
                 size: 'contain',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             stretch: {
                 title: 'Stretch to Fill Screen',
@@ -17035,16 +17633,16 @@ const START_DATE = '2024/03/12 00:00:00';
                 size: '100% 100%',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             center: {
                 title: 'Center',
-                sub: '居中 (原图1:1无缩放)',
-                notice: 'Center (居中 · 原始1:1像素)',
+                sub: '居中 (毛玻璃光晕无黑边)',
+                notice: 'Center (居中 · 原始1:1像素+毛玻璃)',
                 size: 'auto',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             tile: {
                 title: 'Tile',
@@ -17053,7 +17651,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 size: 'auto',
                 pos: 'center center',
                 repeat: 'repeat',
-                bg: '#000000'
+                bg: 'transparent'
             }
         };
 
@@ -17073,6 +17671,14 @@ const START_DATE = '2024/03/12 00:00:00';
                 layer.style.backgroundRepeat = cfg.repeat;
                 layer.style.backgroundColor = cfg.bg;
             });
+            const amb = document.getElementById('car-wallpaper-ambient');
+            if (amb) {
+                const isFitOrCenter = (mode === 'fit' || mode === 'center');
+                amb.classList.toggle('active', isFitOrCenter);
+                if (layers[0] && layers[0].style.backgroundImage) {
+                    amb.style.backgroundImage = layers[0].style.backgroundImage;
+                }
+            }
         }
 
         function setWallpaperFit(mode, showNotice = true) {
@@ -17200,9 +17806,6 @@ const START_DATE = '2024/03/12 00:00:00';
         function closeWallpaperModal() {
             const modal = document.getElementById('car-wallpaper-modal');
             if (modal) modal.classList.remove('active');
-            window.scrollTo(0, 0);
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
         }
 
         function triggerWallpaperFileInput() {
@@ -18036,6 +18639,13 @@ const START_DATE = '2024/03/12 00:00:00';
 
             const effectiveMode = (mode === 'auto') ? detectScreenGeometry() : mode;
 
+            if (root._lastAppliedGeometry === effectiveMode) {
+                const selectEl = document.getElementById('car-screen-geometry-select');
+                if (selectEl && selectEl.value !== mode) selectEl.value = mode;
+                return;
+            }
+            root._lastAppliedGeometry = effectiveMode;
+
             root.classList.remove('screen-circular', 'screen-ultrawide', 'screen-standard', 'screen-portrait');
             if (effectiveMode === 'circular') {
                 root.classList.add('screen-circular');
@@ -18068,12 +18678,14 @@ const START_DATE = '2024/03/12 00:00:00';
                 });
             };
 
-            // Responsive updates on orientation change with immediate + multi-step settle checks
+            let _lastGeomW = 0, _lastGeomH = 0;
             const onOrientationOrResize = () => {
+                const curW = window.innerWidth;
+                const curH = window.innerHeight;
+                if (curW === _lastGeomW && curH === _lastGeomH) return;
+                _lastGeomW = curW;
+                _lastGeomH = curH;
                 handleGeometryUpdate();
-                setTimeout(handleGeometryUpdate, 60);
-                setTimeout(handleGeometryUpdate, 180);
-                setTimeout(handleGeometryUpdate, 360);
             };
 
             // Always listen to window resize and orientation events
@@ -18095,8 +18707,6 @@ const START_DATE = '2024/03/12 00:00:00';
                     if (!_geometryObserver) {
                         _geometryObserver = new ResizeObserver(onOrientationOrResize);
                         _geometryObserver.observe(document.documentElement);
-                        const rootEl = document.getElementById('bcos-car-lockscreen') || document.getElementById('car-root');
-                        if (rootEl) _geometryObserver.observe(rootEl);
                     }
                 } catch (e) {}
             }
@@ -18122,6 +18732,13 @@ const START_DATE = '2024/03/12 00:00:00';
             el.id = 'bcos-car-lockscreen';
             document.body.appendChild(el);
         }
+        el.style.cssText = 'position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;contain:strict!important;z-index:100000!important;';
+
+        if (typeof _perfMonitor !== 'undefined' && _perfMonitor._rafId) {
+            cancelAnimationFrame(_perfMonitor._rafId);
+            _perfMonitor._rafId = null;
+            _perfMonitor._activeRAF = false;
+        }
 
         const savedTheme = targetTheme || localStorage.getItem('bcos_car_theme') || localStorage.getItem('car_theme') || 'theme-xpeng';
         const tIdx = THEMES.findIndex(t => t.id === savedTheme);
@@ -18139,6 +18756,7 @@ const START_DATE = '2024/03/12 00:00:00';
         }
 
         el.innerHTML = `<!-- Wallpaper Background Layer -->
+        <div class="car-wallpaper-ambient" id="car-wallpaper-ambient"></div>
         <div class="car-wallpaper-layer" id="car-wallpaper-layer"></div>
         <div class="car-wallpaper-overlay" id="car-wallpaper-overlay"></div>
 
@@ -18326,7 +18944,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9410</div>
+                                <div class="car-diag-val">bcos v7.8.4.9420</div>
                             </div>
                         </div>
                     </div>
@@ -20668,6 +21286,11 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Toast & Loading ==================== */
     function showToast(msg, type = 'info') {
+        const lockEl = document.getElementById('bcos-car-lockscreen');
+        if (lockEl && lockEl.style.display !== 'none' && typeof showCarToast === 'function') {
+            showCarToast(msg);
+            return;
+        }
         const container = document.getElementById('toast-container');
         if (!container) return;
         const toast = document.createElement('div');
@@ -22848,6 +23471,13 @@ const START_DATE = '2024/03/12 00:00:00';
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.4.9420', title:'BCOS macOS 桌面重构、响应式窗体自适应、移动端触屏流畅滑动、壁纸毛玻璃全景衬底与车机防抽搐重构', items:[
+            '【此改动适用于 index.html / car.html / car.css】[BCOS macOS 桌面质感重构] 全面废弃 Windows 风格任务栏，重构为现代 macOS 桌面体系：包含顶部半透明毛玻璃菜单栏（.bcos-menubar）、原生 Apple  菜单下拉面板、底部浮动毛玻璃 Dock 栏（应用呼吸悬停放大、运行状态指示光点）、窗口真实红黄绿三色交通灯控制系统（✕/−/+ 符号动效反馈）及自适应窗口布局。',
+            '【此改动适用于 index.html】[移动端设置触屏滑动与全场景响应式自适应] 修复移动端系统设置窗口无法触屏向下滑动的痛点：解除外层拖拽拦截，注入原生 -webkit-overflow-scrolling: touch 与 touch-action: pan-y 动量滚动体系，重构壁纸图库平铺流，设置项切换保存并平滑还原滚动条位置；全端窗口自动适配手机竖屏/横屏模式（卡片式满屏流）。',
+            '【此改动适用于 index.html / car.html / car.css】[壁纸 Fit to Screen 智能毛玻璃全景衬底] 彻底根除「适应屏幕 (Fit to Screen)」及居中模式下不同尺寸壁纸因比例不匹配产生的突兀黑边/黑条：引入 .car-wallpaper-ambient 氛围模糊层（超高饱和度与深度毛玻璃弥散），与主体壁纸像素毫秒级联动，使画面四周柔和过渡，呈现浑然一体的座舱沉浸体验。',
+            '【此改动适用于 index.html】[车机锁屏切换壁纸与设置防抽搐重构] 彻底根除 BCOS 锁屏下切换壁纸或设置时引起的剧烈抖动与抖搐现象：定位并消除全局 Toast 与 ResizeObserver 循环触发回流振荡链条，增加几何状态防抖锁存，优化关闭模态框无损流，实现与 car.html 一致的极致丝滑性能。',
+            '【此改动适用于 index.html】[关于界面链接重定向] 将 BCOS 关于界面与各处外部链接规范重定向至专属开源仓库：https://github.com/kissggj123/Bunny-Cockpit-OS。'
+        ]},
         { ver:'v7.8.4.9410', title:'车机锁屏壁纸多维自适应引擎 (Fill/Fit/Stretch/Center/Tile) & macOS 雾面浮层 Popover', items:[
             '【此改动适用于 index.html / car.html / car.css】[锁屏壁纸自适应比例引擎] 全面加入 5 种专业壁纸展示模式：① Fill Screen（充满屏幕 · 等比裁切铺满，默认推荐）② Fit to Screen（适应屏幕 · 等比缩放保留完整画幅，两侧/上下深黑自适应底色）③ Stretch to Fill Screen（拉伸充满屏幕 · 强制拉伸无黑边）④ Center（居中 · 原始1:1像素居中不拉伸）⑤ Tile（平铺 · 横向纵向阵列平铺，完美适配图案纹理与小图壁纸）',
             '【此改动适用于 index.html / car.html / car.css】[macOS 原生级半透明雾面玻璃 Popover] 打造与系统级桌面一致的浮动下拉弹窗体验：暗色超清透毛玻璃背景（blur 28px + 12px 圆角），当前选中项自带优雅勾选指示标记 ✓ 与 macOS 强调蓝高亮反馈；在壁纸管理弹窗与快捷控制中心全端同步，同时支持在锁屏背景右键唤出浮动上下文菜单与键盘 Escape 快捷闭合'

@@ -167,16 +167,37 @@
         }
 
         /* Wallpaper Engine Layers */
+        .car-wallpaper-ambient {
+            position: absolute;
+            inset: -40px;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            filter: blur(48px) saturate(160%) brightness(0.65);
+            -webkit-filter: blur(48px) saturate(160%) brightness(0.65);
+            transform: scale(1.12) translateZ(0);
+            -webkit-transform: scale(1.12) translateZ(0);
+            opacity: 0;
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease;
+            z-index: 0;
+            pointer-events: none;
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-ambient.active {
+            opacity: 1;
+        }
         .car-wallpaper-layer {
             position: absolute;
             inset: 0;
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            background-color: #000000;
+            background-color: transparent;
             opacity: 0;
             transition: opacity 0.8s ease-in-out, background-size 0.3s ease;
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
             will-change: opacity;
             transform: translateZ(0);
@@ -188,28 +209,32 @@
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.wp-fit-fit {
             background-size: contain !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            background-color: #000000 !important;
+            background-color: transparent !important;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
         }
         .car-wallpaper-layer.wp-fit-stretch {
             background-size: 100% 100% !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.wp-fit-center {
             background-size: auto !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            background-color: #000000 !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.wp-fit-tile {
             background-size: auto !important;
             background-position: center center !important;
             background-repeat: repeat !important;
+            background-color: transparent !important;
         }
         .car-wallpaper-layer.active {
             opacity: 1;
@@ -2789,6 +2814,7 @@
 <body class="theme-xpeng">
     <div id="car-root">
         <!-- Wallpaper Background Layer -->
+        <div class="car-wallpaper-ambient" id="car-wallpaper-ambient"></div>
         <div class="car-wallpaper-layer" id="car-wallpaper-layer"></div>
         <div class="car-wallpaper-overlay" id="car-wallpaper-overlay"></div>
 
@@ -2979,7 +3005,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9410</div>
+                                <div class="car-diag-val">bcos v7.8.4.9420</div>
                             </div>
                         </div>
                     </div>
@@ -4038,6 +4064,18 @@
             if (wpStatus) wpStatus.textContent = text;
         }
 
+        function syncAmbientWallpaper(bgUrl) {
+            const amb = document.getElementById('car-wallpaper-ambient');
+            if (!amb) return;
+            if (bgUrl) amb.style.backgroundImage = bgUrl;
+            const fit = getWallpaperFit();
+            if (fit === 'fit' || fit === 'center') {
+                amb.classList.add('active');
+            } else {
+                amb.classList.remove('active');
+            }
+        }
+
         // 国内网络优化: ①模糊占位先行(无黑屏) ②分片并行下载+实时进度 ③预加载下一张(切换零等待) ④SW 离线缓存
         function applyCurrentWallpaper() {
             const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
@@ -4048,6 +4086,8 @@
             if (mode === 'theme' || allWallpapers.length === 0) {
                 layer.classList.remove('active');
                 layer.classList.remove('wp-loading');
+                const amb = document.getElementById('car-wallpaper-ambient');
+                if (amb) amb.classList.remove('active');
                 updateWallpaperBadge('🎨 纯净座舱');
                 return;
             }
@@ -4067,6 +4107,7 @@
                 layer.classList.remove('wp-loading');
                 layer.style.backgroundImage = `url("${wpBlobCache[cur.file]}")`;
                 layer.classList.add('active');
+                syncAmbientWallpaper(layer.style.backgroundImage);
                 updateWallpaperBadge(`🖼️ ${cur.name}`);
                 highlightActiveThumbnail();
                 wpPreloaded.add(cur.file);
@@ -4079,6 +4120,7 @@
             if (ph) {
                 layer.style.backgroundImage = `url("${ph}")`;
                 layer.classList.add('active');
+                syncAmbientWallpaper(layer.style.backgroundImage);
             }
             layer.classList.add('wp-loading');
             updateWallpaperBadge(`🖼️ ${cur.name} · 0%`);
@@ -4104,6 +4146,7 @@
                     layer.style.backgroundImage = `url("${placeholder}")`;
                     layer.classList.remove('wp-loading');
                     layer.classList.add('active');
+                    syncAmbientWallpaper(layer.style.backgroundImage);
                     updateWallpaperBadge(`🖼️ ${cur.name}`);
                     highlightActiveThumbnail();
                     return;
@@ -4114,6 +4157,7 @@
                     layer.style.backgroundImage = `url("${cur.file}")`;
                     layer.classList.remove('wp-loading');
                     layer.classList.add('active');
+                    syncAmbientWallpaper(layer.style.backgroundImage);
                     updateWallpaperBadge(`🖼️ ${cur.name}`);
                     highlightActiveThumbnail();
                     wpPreloaded.add(cur.file);
@@ -4124,6 +4168,7 @@
                     if (placeholder) {
                         layer.style.backgroundImage = `url("${placeholder}")`;
                         layer.classList.add('active');
+                        syncAmbientWallpaper(layer.style.backgroundImage);
                     }
                     updateWallpaperBadge(`🖼️ ${cur.name}`);
                 };
@@ -4137,6 +4182,7 @@
             layer.style.backgroundImage = `url("${objUrl}")`;
             layer.classList.remove('wp-loading');
             layer.classList.add('active');
+            syncAmbientWallpaper(layer.style.backgroundImage);
             updateWallpaperBadge(`🖼️ ${cur.name}`);
             highlightActiveThumbnail();
             wpPreloaded.add(cur.file);
@@ -4296,16 +4342,16 @@
                 size: 'cover',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             fit: {
                 title: 'Fit to Screen',
-                sub: '适应屏幕 (等比完整黑边)',
-                notice: 'Fit to Screen (适应屏幕 · 完整呈现)',
+                sub: '适应屏幕 (毛玻璃光晕无黑边)',
+                notice: 'Fit to Screen (适应屏幕 · 毛玻璃光晕填充)',
                 size: 'contain',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             stretch: {
                 title: 'Stretch to Fill Screen',
@@ -4314,16 +4360,16 @@
                 size: '100% 100%',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             center: {
                 title: 'Center',
-                sub: '居中 (原图1:1无缩放)',
-                notice: 'Center (居中 · 原始1:1像素)',
+                sub: '居中 (毛玻璃光晕无黑边)',
+                notice: 'Center (居中 · 原始1:1像素+毛玻璃)',
                 size: 'auto',
                 pos: 'center center',
                 repeat: 'no-repeat',
-                bg: '#000000'
+                bg: 'transparent'
             },
             tile: {
                 title: 'Tile',
@@ -4332,7 +4378,7 @@
                 size: 'auto',
                 pos: 'center center',
                 repeat: 'repeat',
-                bg: '#000000'
+                bg: 'transparent'
             }
         };
 
@@ -4352,6 +4398,14 @@
                 layer.style.backgroundRepeat = cfg.repeat;
                 layer.style.backgroundColor = cfg.bg;
             });
+            const amb = document.getElementById('car-wallpaper-ambient');
+            if (amb) {
+                const isFitOrCenter = (mode === 'fit' || mode === 'center');
+                amb.classList.toggle('active', isFitOrCenter);
+                if (layers[0] && layers[0].style.backgroundImage) {
+                    amb.style.backgroundImage = layers[0].style.backgroundImage;
+                }
+            }
         }
 
         function setWallpaperFit(mode, showNotice = true) {
@@ -5303,6 +5357,13 @@
             })();
 
             const effectiveMode = (mode === 'auto') ? detectScreenGeometry() : mode;
+
+            if (root._lastAppliedGeometry === effectiveMode) {
+                const selectEl = document.getElementById('car-screen-geometry-select');
+                if (selectEl && selectEl.value !== mode) selectEl.value = mode;
+                return;
+            }
+            root._lastAppliedGeometry = effectiveMode;
 
             root.classList.remove('screen-circular', 'screen-ultrawide', 'screen-standard', 'screen-portrait');
             if (effectiveMode === 'circular') {
