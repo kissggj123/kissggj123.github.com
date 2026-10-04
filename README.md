@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.4.9409-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.4.9410-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -39,6 +39,7 @@
 - **统一胶囊状态微组件**：顶部状态栏全要素标准化为 28px 药丸胶囊徽章（网络/档位/动力遥测/常亮保持/壁纸/导航中心），高低对齐、圆角统一，支持微发光悬浮动效与轻量 Cyber 气泡提示。
 - **动力与续航遥测系统**：支持精准输入与滑块调节电量 SoC（0%~100%），支持 **WLTP 国家标准工况** 与 **动态实估工况** 双标准自由切换与快捷步进调校。
 - **现代化座舱壁纸引擎**：
+  - **多维比例自适应 (macOS 原生级 Popover)**：支持 5 种专业自适应缩放模式（Fill Screen 充满屏幕、Fit to Screen 适应屏幕等比完整、Stretch to Fill Screen 强制拉伸填满、Center 居中原始1:1像素、Tile 平铺阵列网格），适配任何比例的车载中控大屏、竖屏、异形屏与自定义上传图片。
   - **自动轮播**：自动检测壁纸库图片并按设定时长（1~30分钟）平滑循环换幕。
   - **固定壁纸**：支持自主上传本地图片或填入在线外链，固定精美座舱背景。
   - **纯净色彩**：一键去除壁纸，呈现极简科技感座舱氛围底色。
@@ -68,7 +69,24 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.4.9409** *(当前版本)*
+### **v7.8.4.9410** *(当前版本)*
+
+#### 【核心功能升级与壁纸自适应引擎】
+1. **车机锁屏壁纸多维自适应引擎** `[适用于 index.html / car.html / car.css]`：
+   - **全面引入 5 种专业壁纸缩放自适应模式**：
+     - `Fill Screen` (充满屏幕)：按原图纵横比等比缩放并完全填满屏幕，裁切多余区域，无黑边，默认推荐；
+     - `Fit to Screen` (适应屏幕)：等比缩放至最大完整容纳于屏幕，完整展示画幅细节，边缘两侧或上下呈现纯净 OLED 深黑座舱底色；
+     - `Stretch to Fill Screen` (拉伸充满屏幕)：宽高强制拉伸填满屏幕视口，完全不留黑边；
+     - `Center` (居中)：保持图片原始 1:1 物理像素居中展示，不进行任何缩放拉伸，纤毫毕现；
+     - `Tile` (平铺)：以原始像素尺寸在横向与纵向平铺阵列重复展开，完美契合纹理图案与小图壁纸。
+2. **macOS 原生级半透明雾面玻璃 Popover 菜单** `[适用于 index.html / car.html / car.css]`：
+   - **像素级还原系统级下拉浮层**：采用 `backdrop-filter: blur(28px) saturate(190%)` 超清透雾面质感、12px 圆角与微晶高光棱线；
+   - **交互与操作体验**：当前选定模式带有优雅高亮的对勾「`✓`」指示，鼠标移入呈现 macOS 经典强调蓝动效；
+   - **全场景同步支持**：在壁纸管理弹窗与快捷控制中心（Quick Settings）双端同步实时联动，支持在锁屏背景空白处右键瞬时呼出浮动菜单与按键盘 `Escape` 键随时收起。
+
+---
+
+### **v7.8.4.9409**
 
 #### 【UI 重构与体验优化】
 1. **消除非全屏状态下「累计航程」与时间的不对齐缺陷** `[适用于 index.html / car.html / car.css]`：

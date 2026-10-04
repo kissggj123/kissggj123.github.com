@@ -173,8 +173,9 @@
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
+            background-color: #000000;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 0.8s ease-in-out, background-size 0.3s ease;
             z-index: 0;
             pointer-events: none;
             will-change: opacity;
@@ -182,6 +183,33 @@
             -webkit-transform: translateZ(0);
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-layer.wp-fit-fill {
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+        .car-wallpaper-layer.wp-fit-fit {
+            background-size: contain !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: #000000 !important;
+        }
+        .car-wallpaper-layer.wp-fit-stretch {
+            background-size: 100% 100% !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+        .car-wallpaper-layer.wp-fit-center {
+            background-size: auto !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: #000000 !important;
+        }
+        .car-wallpaper-layer.wp-fit-tile {
+            background-size: auto !important;
+            background-position: center center !important;
+            background-repeat: repeat !important;
         }
         .car-wallpaper-layer.active {
             opacity: 1;
@@ -206,6 +234,135 @@
             -webkit-backdrop-filter: blur(var(--car-wp-blur, 1px));
             z-index: 1;
             pointer-events: none;
+        }
+
+        /* macOS Frosted Glass Wallpaper Fit Popover */
+        .car-wp-fit-dropdown-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .car-wp-fit-trigger-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid var(--car-border, rgba(255, 255, 255, 0.12));
+            border-radius: 8px;
+            padding: .5rem .8rem;
+            color: var(--car-text, #f1f5f9);
+            font-size: .88rem;
+            cursor: pointer;
+            outline: none;
+            transition: all .2s ease;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .car-wp-fit-trigger-btn:hover {
+            border-color: var(--car-accent, #00eaff);
+            background: rgba(0, 234, 255, 0.08);
+        }
+        .wp-fit-trigger-icon {
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .wp-fit-trigger-title {
+            font-weight: 600;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        }
+        .wp-fit-trigger-sub {
+            font-size: .78rem;
+            color: var(--car-text-dim, #94a3b8);
+            margin-right: auto;
+        }
+        .wp-fit-trigger-arrow {
+            color: var(--car-text-dim, #94a3b8);
+            font-size: .75rem;
+            transition: transform .2s ease;
+        }
+        .car-wp-fit-dropdown-wrap.open .wp-fit-trigger-arrow {
+            transform: rotate(180deg);
+        }
+        .car-wp-fit-popover {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 250px;
+            width: 100%;
+            background: rgba(36, 36, 40, 0.92);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.35);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            box-sizing: border-box;
+            animation: wpFitPopAnim .15s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .car-wp-fit-dropdown-wrap.open .car-wp-fit-popover {
+            display: flex;
+        }
+        .car-wp-fit-floating {
+            position: fixed !important;
+            z-index: 99999 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+        }
+        @keyframes wpFitPopAnim {
+            from {
+                opacity: 0;
+                transform: translateY(-4px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .car-wp-fit-opt {
+            display: flex;
+            align-items: center;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-size: .88rem;
+            color: rgba(255, 255, 255, 0.95);
+            transition: background .15s ease, color .15s ease;
+        }
+        .car-wp-fit-opt:hover {
+            background: rgba(0, 122, 255, 0.9) !important;
+            color: #ffffff !important;
+        }
+        .car-wp-fit-opt .opt-check {
+            width: 20px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .car-wp-fit-opt .opt-name {
+            flex-shrink: 0;
+            font-weight: 500;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        }
+        .car-wp-fit-opt .opt-hint {
+            margin-left: auto;
+            font-size: .72rem;
+            color: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .car-wp-fit-opt:hover .opt-hint {
+            color: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.22);
         }
 
         /* The lockscreen is an interactive UI: moving its entire content layer
@@ -2822,7 +2979,7 @@
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.4.9409</div>
+                                <div class="car-diag-val">bcos v7.8.4.9410</div>
                             </div>
                         </div>
                     </div>
@@ -2908,6 +3065,16 @@
                         <option value="ultrawide">📏 贯穿带状超宽屏 (21:9+)</option>
                         <option value="standard">💻 标准中控横屏 (16:9)</option>
                         <option value="portrait">📱 垂直中控竖屏 (9:16)</option>
+                    </select>
+                </div>
+                <div class="car-setting-item">
+                    <span class="car-setting-label"><span>📐</span> 壁纸缩放自适应 (适配不同壁纸)</span>
+                    <select id="car-wp-fit-quick-select" onchange="setWallpaperFit(this.value)" class="car-select-sm">
+                        <option value="fill">Fill Screen (充满屏幕)</option>
+                        <option value="fit">Fit to Screen (适应屏幕)</option>
+                        <option value="stretch">Stretch to Fill Screen (拉伸充满)</option>
+                        <option value="center">Center (居中)</option>
+                        <option value="tile">Tile (平铺)</option>
                     </select>
                 </div>
                 <div class="car-setting-item">
@@ -3069,6 +3236,53 @@
                     </div>
                     <div class="car-wp-grid" id="car-wp-grid">
                         <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Wallpaper Fit / Scaling Mode (macOS Style Popover) -->
+                <div class="car-input-group">
+                    <label class="car-input-label">壁纸缩放自适应 (适配不同比例与尺寸图片)</label>
+                    <div class="car-wp-fit-dropdown-wrap" id="wp-fit-dropdown-wrap">
+                        <button type="button" class="car-wp-fit-trigger-btn" id="wp-fit-trigger-btn" onclick="toggleWpFitDropdown(event)" aria-haspopup="true" aria-expanded="false">
+                            <span class="wp-fit-trigger-icon">📐</span>
+                            <span class="wp-fit-trigger-title" id="wp-fit-trigger-title">Fill Screen</span>
+                            <span class="wp-fit-trigger-sub" id="wp-fit-trigger-sub">充满屏幕 (默认)</span>
+                            <span class="wp-fit-trigger-arrow">▾</span>
+                        </button>
+                        <div class="car-wp-fit-popover" id="wp-fit-popover">
+                            <div class="car-wp-fit-opt active" data-fit="fill" onclick="selectWallpaperFit('fill')">
+                                <span class="opt-check">✓</span>
+                                <span class="opt-name">Fill Screen</span>
+                                <span class="opt-hint">充满屏幕</span>
+                            </div>
+                            <div class="car-wp-fit-opt" data-fit="fit" onclick="selectWallpaperFit('fit')">
+                                <span class="opt-check"></span>
+                                <span class="opt-name">Fit to Screen</span>
+                                <span class="opt-hint">适应屏幕</span>
+                            </div>
+                            <div class="car-wp-fit-opt" data-fit="stretch" onclick="selectWallpaperFit('stretch')">
+                                <span class="opt-check"></span>
+                                <span class="opt-name">Stretch to Fill Screen</span>
+                                <span class="opt-hint">拉伸充满屏幕</span>
+                            </div>
+                            <div class="car-wp-fit-opt" data-fit="center" onclick="selectWallpaperFit('center')">
+                                <span class="opt-check"></span>
+                                <span class="opt-name">Center</span>
+                                <span class="opt-hint">居中</span>
+                            </div>
+                            <div class="car-wp-fit-opt" data-fit="tile" onclick="selectWallpaperFit('tile')">
+                                <span class="opt-check"></span>
+                                <span class="opt-name">Tile</span>
+                                <span class="opt-hint">平铺</span>
+                            </div>
+                        </div>
+                        <select id="select-wp-fit" style="display:none;" onchange="setWallpaperFit(this.value)">
+                            <option value="fill">Fill Screen</option>
+                            <option value="fit">Fit to Screen</option>
+                            <option value="stretch">Stretch to Fill Screen</option>
+                            <option value="center">Center</option>
+                            <option value="tile">Tile</option>
+                        </select>
                     </div>
                 </div>
 
@@ -4070,10 +4284,176 @@
             });
         }
 
+        // ==========================================
+        // Wallpaper Scaling / Fit Engine (macOS Style)
+        // Options: fill, fit, stretch, center, tile
+        // ==========================================
+        const WP_FIT_CONFIGS = {
+            fill: {
+                title: 'Fill Screen',
+                sub: '充满屏幕 (默认裁切填充)',
+                notice: 'Fill Screen (充满屏幕 · 等比铺满)',
+                size: 'cover',
+                pos: 'center center',
+                repeat: 'no-repeat',
+                bg: '#000000'
+            },
+            fit: {
+                title: 'Fit to Screen',
+                sub: '适应屏幕 (等比完整黑边)',
+                notice: 'Fit to Screen (适应屏幕 · 完整呈现)',
+                size: 'contain',
+                pos: 'center center',
+                repeat: 'no-repeat',
+                bg: '#000000'
+            },
+            stretch: {
+                title: 'Stretch to Fill Screen',
+                sub: '拉伸充满屏幕 (强制填满)',
+                notice: 'Stretch to Fill Screen (拉伸充满屏幕)',
+                size: '100% 100%',
+                pos: 'center center',
+                repeat: 'no-repeat',
+                bg: '#000000'
+            },
+            center: {
+                title: 'Center',
+                sub: '居中 (原图1:1无缩放)',
+                notice: 'Center (居中 · 原始1:1像素)',
+                size: 'auto',
+                pos: 'center center',
+                repeat: 'no-repeat',
+                bg: '#000000'
+            },
+            tile: {
+                title: 'Tile',
+                sub: '平铺 (阵列网格铺满)',
+                notice: 'Tile (平铺 · 横纵重复阵列)',
+                size: 'auto',
+                pos: 'center center',
+                repeat: 'repeat',
+                bg: '#000000'
+            }
+        };
+
+        function getWallpaperFit() {
+            return localStorage.getItem('car_wp_fit') || 'fill';
+        }
+
+        function applyWallpaperFit(fitMode) {
+            const mode = fitMode || getWallpaperFit();
+            const cfg = WP_FIT_CONFIGS[mode] || WP_FIT_CONFIGS.fill;
+            const layers = document.querySelectorAll('.car-wallpaper-layer');
+            layers.forEach(layer => {
+                layer.classList.remove('wp-fit-fill', 'wp-fit-fit', 'wp-fit-stretch', 'wp-fit-center', 'wp-fit-tile');
+                layer.classList.add('wp-fit-' + mode);
+                layer.style.backgroundSize = cfg.size;
+                layer.style.backgroundPosition = cfg.pos;
+                layer.style.backgroundRepeat = cfg.repeat;
+                layer.style.backgroundColor = cfg.bg;
+            });
+        }
+
+        function setWallpaperFit(mode, showNotice = true) {
+            if (!WP_FIT_CONFIGS[mode]) mode = 'fill';
+            localStorage.setItem('car_wp_fit', mode);
+            applyWallpaperFit(mode);
+            updateWallpaperFitUI(mode);
+            if (showNotice) {
+                const cfg = WP_FIT_CONFIGS[mode];
+                showToast(`✓ 壁纸自适应模式: ${cfg.notice}`);
+            }
+        }
+
+        function selectWallpaperFit(mode) {
+            setWallpaperFit(mode, true);
+            closeWpFitDropdown();
+        }
+
+        function updateWallpaperFitUI(fitMode) {
+            const mode = fitMode || getWallpaperFit();
+            const cfg = WP_FIT_CONFIGS[mode] || WP_FIT_CONFIGS.fill;
+
+            // Update modal dropdown trigger
+            const titleEl = document.getElementById('wp-fit-trigger-title');
+            if (titleEl) titleEl.textContent = cfg.title;
+            const subEl = document.getElementById('wp-fit-trigger-sub');
+            if (subEl) subEl.textContent = cfg.sub;
+
+            // Update modal popover options active checkmark
+            document.querySelectorAll('#wp-fit-popover .car-wp-fit-opt').forEach(opt => {
+                const isCur = opt.getAttribute('data-fit') === mode;
+                opt.classList.toggle('active', isCur);
+                const check = opt.querySelector('.opt-check');
+                if (check) check.textContent = isCur ? '✓' : '';
+            });
+
+            // Update floating popover active checkmark
+            document.querySelectorAll('#car-wp-fit-floating-menu .car-wp-fit-opt').forEach(opt => {
+                const isCur = opt.getAttribute('data-fit') === mode;
+                opt.classList.toggle('active', isCur);
+                const check = opt.querySelector('.opt-check');
+                if (check) check.textContent = isCur ? '✓' : '';
+            });
+
+            // Sync hidden / native select
+            const nativeSel = document.getElementById('select-wp-fit');
+            if (nativeSel) nativeSel.value = mode;
+
+            // Sync quick menu select
+            const quickSel = document.getElementById('car-wp-fit-quick-select');
+            if (quickSel) quickSel.value = mode;
+        }
+
+        function toggleWpFitDropdown(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            const wrap = document.getElementById('wp-fit-dropdown-wrap');
+            if (!wrap) return;
+            const isOpen = wrap.classList.contains('open');
+            if (isOpen) {
+                closeWpFitDropdown();
+            } else {
+                wrap.classList.add('open');
+            }
+        }
+
+        function closeWpFitDropdown() {
+            const wrap = document.getElementById('wp-fit-dropdown-wrap');
+            if (wrap) wrap.classList.remove('open');
+        }
+
+        function openWpFitContextMenu(x, y) {
+            const menu = document.getElementById('car-wp-fit-floating-menu');
+            if (!menu) return;
+            updateWallpaperFitUI();
+            menu.style.display = 'flex';
+            
+            const menuW = 250;
+            const menuH = 200;
+            const maxX = window.innerWidth - menuW - 10;
+            const maxY = window.innerHeight - menuH - 10;
+            const finalX = Math.max(10, Math.min(x, maxX));
+            const finalY = Math.max(10, Math.min(y, maxY));
+            
+            menu.style.left = finalX + 'px';
+            menu.style.top = finalY + 'px';
+        }
+
+        function closeWpFitFloatingMenu() {
+            const menu = document.getElementById('car-wp-fit-floating-menu');
+            if (menu) menu.style.display = 'none';
+        }
+
         function openWallpaperModal() {
             closeMenuModal();
             const mode = localStorage.getItem('car_wp_mode') || 'slideshow';
             updateWallpaperModeButtons(mode);
+
+            const fit = localStorage.getItem('car_wp_fit') || 'fill';
+            updateWallpaperFitUI(fit);
 
             const dim = localStorage.getItem('car_wp_dim') || '45';
             const dimSlider = document.getElementById('slider-wp-dim');
@@ -4776,6 +5156,7 @@
             openMenuModal();
         }
         function openMenuModal() {
+            updateWallpaperFitUI();
             document.getElementById('car-menu-modal').classList.add('active');
         }
         function closeMenuModal() {
@@ -5038,6 +5419,7 @@
             // Load wallpapers & manifest
             const savedIdx = localStorage.getItem('car_wp_current_idx');
             if (savedIdx !== null) currentWallpaperIdx = parseInt(savedIdx, 10) || 0;
+            applyWallpaperFit();
             applyCurrentWallpaper();
             fetchWallpaperManifest(false);
             restartWallpaperTimer();
@@ -5089,6 +5471,33 @@
             window.addEventListener('touchstart', firstInteraction);
         };
 
+        // Global click-outside & context menu listeners for macOS wallpaper fit popover
+        document.addEventListener('click', (e) => {
+            const wrap = document.getElementById('wp-fit-dropdown-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                closeWpFitDropdown();
+            }
+            const floating = document.getElementById('car-wp-fit-floating-menu');
+            if (floating && !floating.contains(e.target)) {
+                closeWpFitFloatingMenu();
+            }
+        });
+
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.car-modal') || e.target.closest('input') || e.target.closest('select') || e.target.closest('button')) {
+                return;
+            }
+            e.preventDefault();
+            openWpFitContextMenu(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeWpFitDropdown();
+                closeWpFitFloatingMenu();
+            }
+        });
+
         window.updateLockscreenAvatar = updateLockscreenAvatar;
         window.toggleLockscreenAvatar = toggleLockscreenAvatar;
         window.toggleMinimalistMode = toggleMinimalistMode;
@@ -5097,7 +5506,43 @@
         window.setScreenGeometry = setScreenGeometry;
         window.applyScreenGeometry = applyScreenGeometry;
         window.toggleCompletedMilestones = toggleCompletedMilestones;
+        window.setWallpaperFit = setWallpaperFit;
+        window.selectWallpaperFit = selectWallpaperFit;
+        window.applyWallpaperFit = applyWallpaperFit;
+        window.toggleWpFitDropdown = toggleWpFitDropdown;
+        window.closeWpFitDropdown = closeWpFitDropdown;
+        window.openWpFitContextMenu = openWpFitContextMenu;
+        window.closeWpFitFloatingMenu = closeWpFitFloatingMenu;
     </script>
     <canvas id="car-keepalive-canvas" width="1" height="1" style="display:none;position:fixed;pointer-events:none;"></canvas>
+
+    <!-- macOS Style Floating Wallpaper Fit Menu -->
+    <div id="car-wp-fit-floating-menu" class="car-wp-fit-popover car-wp-fit-floating" style="display:none;">
+        <div class="car-wp-fit-opt active" data-fit="fill" onclick="selectWallpaperFit('fill');closeWpFitFloatingMenu();">
+            <span class="opt-check">✓</span>
+            <span class="opt-name">Fill Screen</span>
+            <span class="opt-hint">充满屏幕</span>
+        </div>
+        <div class="car-wp-fit-opt" data-fit="fit" onclick="selectWallpaperFit('fit');closeWpFitFloatingMenu();">
+            <span class="opt-check"></span>
+            <span class="opt-name">Fit to Screen</span>
+            <span class="opt-hint">适应屏幕</span>
+        </div>
+        <div class="car-wp-fit-opt" data-fit="stretch" onclick="selectWallpaperFit('stretch');closeWpFitFloatingMenu();">
+            <span class="opt-check"></span>
+            <span class="opt-name">Stretch to Fill Screen</span>
+            <span class="opt-hint">拉伸充满屏幕</span>
+        </div>
+        <div class="car-wp-fit-opt" data-fit="center" onclick="selectWallpaperFit('center');closeWpFitFloatingMenu();">
+            <span class="opt-check"></span>
+            <span class="opt-name">Center</span>
+            <span class="opt-hint">居中</span>
+        </div>
+        <div class="car-wp-fit-opt" data-fit="tile" onclick="selectWallpaperFit('tile');closeWpFitFloatingMenu();">
+            <span class="opt-check"></span>
+            <span class="opt-name">Tile</span>
+            <span class="opt-hint">平铺</span>
+        </div>
+    </div>
 </body>
 </html>

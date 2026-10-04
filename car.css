@@ -163,8 +163,9 @@
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
+            background-color: #000000;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 0.8s ease-in-out, background-size 0.3s ease;
             z-index: 0;
             pointer-events: none;
             will-change: opacity;
@@ -172,6 +173,33 @@
             -webkit-transform: translateZ(0);
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+        }
+        .car-wallpaper-layer.wp-fit-fill {
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+        .car-wallpaper-layer.wp-fit-fit {
+            background-size: contain !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: #000000 !important;
+        }
+        .car-wallpaper-layer.wp-fit-stretch {
+            background-size: 100% 100% !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+        .car-wallpaper-layer.wp-fit-center {
+            background-size: auto !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: #000000 !important;
+        }
+        .car-wallpaper-layer.wp-fit-tile {
+            background-size: auto !important;
+            background-position: center center !important;
+            background-repeat: repeat !important;
         }
         .car-wallpaper-layer.active {
             opacity: 1;
@@ -196,6 +224,135 @@
             -webkit-backdrop-filter: blur(var(--car-wp-blur, 1px));
             z-index: 1;
             pointer-events: none;
+        }
+
+        /* macOS Frosted Glass Wallpaper Fit Popover */
+        .car-wp-fit-dropdown-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .car-wp-fit-trigger-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid var(--car-border, rgba(255, 255, 255, 0.12));
+            border-radius: 8px;
+            padding: .5rem .8rem;
+            color: var(--car-text, #f1f5f9);
+            font-size: .88rem;
+            cursor: pointer;
+            outline: none;
+            transition: all .2s ease;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .car-wp-fit-trigger-btn:hover {
+            border-color: var(--car-accent, #00eaff);
+            background: rgba(0, 234, 255, 0.08);
+        }
+        .wp-fit-trigger-icon {
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .wp-fit-trigger-title {
+            font-weight: 600;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        }
+        .wp-fit-trigger-sub {
+            font-size: .78rem;
+            color: var(--car-text-dim, #94a3b8);
+            margin-right: auto;
+        }
+        .wp-fit-trigger-arrow {
+            color: var(--car-text-dim, #94a3b8);
+            font-size: .75rem;
+            transition: transform .2s ease;
+        }
+        .car-wp-fit-dropdown-wrap.open .wp-fit-trigger-arrow {
+            transform: rotate(180deg);
+        }
+        .car-wp-fit-popover {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 250px;
+            width: 100%;
+            background: rgba(36, 36, 40, 0.92);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.35);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            box-sizing: border-box;
+            animation: wpFitPopAnim .15s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .car-wp-fit-dropdown-wrap.open .car-wp-fit-popover {
+            display: flex;
+        }
+        .car-wp-fit-floating {
+            position: fixed !important;
+            z-index: 99999 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+        }
+        @keyframes wpFitPopAnim {
+            from {
+                opacity: 0;
+                transform: translateY(-4px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .car-wp-fit-opt {
+            display: flex;
+            align-items: center;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-size: .88rem;
+            color: rgba(255, 255, 255, 0.95);
+            transition: background .15s ease, color .15s ease;
+        }
+        .car-wp-fit-opt:hover {
+            background: rgba(0, 122, 255, 0.9) !important;
+            color: #ffffff !important;
+        }
+        .car-wp-fit-opt .opt-check {
+            width: 20px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .car-wp-fit-opt .opt-name {
+            flex-shrink: 0;
+            font-weight: 500;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        }
+        .car-wp-fit-opt .opt-hint {
+            margin-left: auto;
+            font-size: .72rem;
+            color: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .car-wp-fit-opt:hover .opt-hint {
+            color: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.22);
         }
 
         /* The lockscreen is an interactive UI: moving its entire content layer
