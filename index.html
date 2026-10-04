@@ -1253,18 +1253,26 @@
     <script>
         // Apply theme immediately before paint to prevent flash/black screen
         (function() {
-            var t = localStorage.getItem('theme') || 'bunny';
-            document.documentElement.setAttribute('data-theme', t);
-            var pf = localStorage.getItem('pixelFont') === '1';
-            if (pf) document.documentElement.classList.add('font-pixel');
-            // DPI-aware scaling: use matchMedia for efficient detection (avoids layout thrashing)
-            var dpiScale = 1;
-            if (window.matchMedia && window.matchMedia('(min-resolution: 2dppx)').matches) {
-                dpiScale = 1.15;
-            } else if (window.matchMedia && window.matchMedia('(min-resolution: 1.5dppx)').matches) {
-                dpiScale = 1.08;
-            }
-            document.documentElement.style.setProperty('--dpi-scale', dpiScale);
+            try {
+                var t = (window.localStorage && localStorage.getItem('theme')) || 'bunny';
+                document.documentElement.setAttribute('data-theme', t);
+                var pf = (window.localStorage && localStorage.getItem('pixelFont')) === '1';
+                if (pf) document.documentElement.classList.add('font-pixel');
+                // DPI-aware scaling: use matchMedia for efficient detection (avoids layout thrashing)
+                var dpiScale = 1;
+                if (typeof window.matchMedia === 'function') {
+                    var m2 = window.matchMedia('(min-resolution: 2dppx)');
+                    if (m2 && m2.matches) {
+                        dpiScale = 1.15;
+                    } else {
+                        var m15 = window.matchMedia('(min-resolution: 1.5dppx)');
+                        if (m15 && m15.matches) {
+                            dpiScale = 1.08;
+                        }
+                    }
+                }
+                document.documentElement.style.setProperty('--dpi-scale', dpiScale);
+            } catch(e) {}
         })();
     </script>
 </head>
@@ -1666,6 +1674,33 @@
     </div>
 
     <script>
+    /* ==================== Resilience Polyfills & Helpers ==================== */
+    if (typeof Element !== 'undefined' && !Element.prototype.remove) {
+        Element.prototype.remove = function() {
+            if (this.parentNode) this.parentNode.removeChild(this);
+        };
+    }
+    function isStandaloneMode() {
+        try {
+            return (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator && window.navigator.standalone) || false;
+        } catch(e) { return false; }
+    }
+    function safeSetItem(key, value) {
+        try { localStorage.setItem(key, value); return true; }
+        catch(e) { console.warn('[localStorage] Failed to save:', key, e); return false; }
+    }
+    function safeGetItem(key, fallback) {
+        try { const v = localStorage.getItem(key); return v === null ? fallback : v; }
+        catch(e) { return fallback; }
+    }
+    function safeRemoveItem(key) {
+        try { localStorage.removeItem(key); return true; }
+        catch(e) { console.warn('[localStorage] Failed to remove:', key, e); return false; }
+    }
+    window.safeSetItem = safeSetItem;
+    window.safeGetItem = safeGetItem;
+    window.safeRemoveItem = safeRemoveItem;
+
     /* ==================== Config ==================== */
     const CONFIG = {
         VERSION: 'v7.8.4.9430',
@@ -2430,7 +2465,7 @@
     // === Platform detection + Performance adaptive config ===
     const _isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     if (_isMobile) document.documentElement.classList.add('touch-device');
-    const _isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const _isStandalone = isStandaloneMode();
     const _perfConfig = {
         modalLockMs: _isMobile ? 200 : 80,
         clickGuardMs: _isMobile ? 250 : 0,
@@ -4734,11 +4769,11 @@
         // Auto-handle jail for player 0 in AutoPilot
         if (p.jailTurns > 0) {
             if (p.jailFree) {
-                useJailCardAndRoll();
+                if (typeof window.useJailCardAndRoll === 'function') window.useJailCardAndRoll();
             } else if (p.money >= 500) {
-                payBailAndRoll();
+                if (typeof window.payBailAndRoll === 'function') window.payBailAndRoll();
             } else {
-                tryDoubleEscape();
+                if (typeof window.tryDoubleEscape === 'function') window.tryDoubleEscape();
             }
             return;
         }
@@ -4944,9 +4979,9 @@
         if (!mono || !mono.autoPilot || mono.currentPlayer !== 0) return false;
         const p = mono.players[0];
         if (p.jailTurns > 0) {
-            if (p.jailFree) useJailCardAndRoll();
-            else if (p.money >= 500) payBailAndRoll();
-            else tryDoubleEscape();
+            if (p.jailFree) { if (typeof window.useJailCardAndRoll === 'function') window.useJailCardAndRoll(); }
+            else if (p.money >= 500) { if (typeof window.payBailAndRoll === 'function') window.payBailAndRoll(); }
+            else { if (typeof window.tryDoubleEscape === 'function') window.tryDoubleEscape(); }
             return true;
         }
         const tile = mono.tiles[p.pos];
@@ -14386,7 +14421,7 @@
                 }
             },
             install: () => {
-                const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                const standalone = isStandaloneMode();
                 if (standalone) { _bcosPrint('<span class="bcos-success">✓ Already running in PWA mode</span>'); return; }
                 if (_deferredPrompt) { _deferredPrompt.prompt(); _deferredPrompt.userChoice.then(r => { _bcosPrint('<span class="bcos-success">✓ PWA install: ' + r.outcome + '</span>'); _deferredPrompt = null; }); return; }
                 const ua = navigator.userAgent;
@@ -15913,6 +15948,7 @@
     }
 
     function _bcosRenderSettingsApp(content) {
+        window._bcosRenderSettingsApp = _bcosRenderSettingsApp;
         if (!content) return;
         content.id = 'bcos-settings-host';
         content.style.padding = '0';
@@ -17150,7 +17186,7 @@ function _bcosSyncDesktopAppIcons() {
                 desktopIcons.appendChild(iconDiv);
             }
         } else {
-            if (el) el.remove();
+            if (el) { if (typeof el.remove === 'function') el.remove(); else if (el.parentNode) el.parentNode.removeChild(el); }
         }
     });
 
@@ -17166,7 +17202,7 @@ function _bcosSyncDesktopAppIcons() {
                 desktopIcons.appendChild(iconDiv);
             }
         } else {
-            if (el) el.remove();
+            if (el) { if (typeof el.remove === 'function') el.remove(); else if (el.parentNode) el.parentNode.removeChild(el); }
         }
     });
 }
@@ -18048,11 +18084,12 @@ function _bcosRenderSnake(content) {
     if (_bcosSnakeTimer) clearInterval(_bcosSnakeTimer);
     _bcosSnakeTimer = setInterval(step, 110);
 
-    window._bcosSnakeMove = (dx, dy) => {
+    const _bcosSnakeMove = (dx, dy) => {
         if (dir.x !== -dx || dir.y !== -dy) {
             dir = {x: dx, y: dy};
         }
     };
+    window._bcosSnakeMove = _bcosSnakeMove;
 
     window._bcosSnakeKey = (e) => {
         if (e.key === 'ArrowUp' || e.key === 'w') _bcosSnakeMove(0, -1);
@@ -18851,12 +18888,12 @@ const START_DATE = '2024/03/12 00:00:00';
 
         function getCustomWallpapers() {
             try {
-                return JSON.parse(localStorage.getItem('car_custom_wallpapers') || '[]');
+                return JSON.parse(safeGetItem('car_custom_wallpapers', '[]'));
             } catch(e) { return []; }
         }
 
         function saveCustomWallpapers(list) {
-            localStorage.setItem('car_custom_wallpapers', JSON.stringify(list));
+            safeSetItem('car_custom_wallpapers', JSON.stringify(list));
         }
 
         function fetchWallpaperManifest(showNotice) {
@@ -18943,13 +18980,18 @@ const START_DATE = '2024/03/12 00:00:00';
         // 已预加载的壁纸集合 (轮播切换零等待)
         const wpPreloaded = new Set();
         // 已解码壁纸的 objectURL 缓存: file -> objectURL, 避免重复下载/解码
-        const wpBlobCache = {};
+        const wpBlobCache = window.wpBlobCache || (window.wpBlobCache = {});
         // base64 文本 -> JPEG Blob
         function b64ToJpegBlob(b64Text) {
-            const bin = atob(b64Text.replace(/\s+/g, ''));
-            const bytes = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-            return new Blob([bytes], { type: 'image/jpeg' });
+            try {
+                const bin = atob(b64Text.replace(/\s+/g, ''));
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return new Blob([bytes], { type: 'image/jpeg' });
+            } catch(e) {
+                console.warn('b64ToJpegBlob decode error:', e);
+                return new Blob([], { type: 'image/jpeg' });
+            }
         }
         let wpLoadToken = 0; // 防竞态: 快速切换壁纸时只保留最后一次请求
         let wpAbortCtrl = null; // 取消上一次未完成的壁纸下载
@@ -19901,7 +19943,7 @@ const START_DATE = '2024/03/12 00:00:00';
         }
 
         function handleSafariFullscreen() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const isStandalone = isStandaloneMode();
             const icon = document.getElementById('car-fs-icon');
             if (isStandalone) {
                 showToast('📱 当前已作为独立 App 运行，享受 100% 沉浸全屏！');
@@ -19930,11 +19972,11 @@ const START_DATE = '2024/03/12 00:00:00';
         // --- Custom Anniversaries ---
         function getCustomAnniversaries() {
             try {
-                return JSON.parse(localStorage.getItem('bcos_custom_anniversaries') || '[]');
+                return JSON.parse(safeGetItem('bcos_custom_anniversaries', '[]'));
             } catch(e) { return []; }
         }
         function saveCustomAnniversaries(list) {
-            localStorage.setItem('bcos_custom_anniversaries', JSON.stringify(list));
+            safeSetItem('bcos_custom_anniversaries', JSON.stringify(list));
             renderMilestones();
         }
 
@@ -24249,9 +24291,9 @@ function _bcosTeChangeLang(val) {
     function initMouseTrail() {
         trailCanvas = document.getElementById('trail-canvas');
         fxCanvas = document.getElementById('bunny-canvas');
-        if (!trailCanvas || !fxCanvas) return;
-        trailCtx = trailCanvas.getContext('2d');
-        fxCtx = fxCanvas.getContext('2d');
+        trailCtx = trailCanvas.getContext ? trailCanvas.getContext('2d') : null;
+        fxCtx = fxCanvas.getContext ? fxCanvas.getContext('2d') : null;
+        if (!trailCtx || !fxCtx) return;
 
         function resize() {
             trailCanvas.width = window.innerWidth;
@@ -25233,7 +25275,7 @@ function _bcosTeChangeLang(val) {
             _deferredPrompt = e;
             // Show banner only if not previously dismissed and not already installed
             const dismissed = safeGetItem('pwa_install_dismissed', '');
-            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const standalone = isStandaloneMode();
             if (!dismissed && !standalone) {
                 const banner = document.getElementById('pwa-install-banner');
                 if (banner) {
@@ -25271,7 +25313,7 @@ function _bcosTeChangeLang(val) {
 
     async function installPWA() {
         // Check if already in standalone mode (PWA already installed)
-        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        const standalone = isStandaloneMode();
         if (standalone) {
             monoLog('🐰 应用已在 PWA 模式下运行', 'success');
             return;

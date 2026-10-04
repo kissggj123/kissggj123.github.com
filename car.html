@@ -3433,6 +3433,33 @@
     </div>
 
     <script>
+        // Global resilience polyfills
+        if (typeof Element !== 'undefined' && !Element.prototype.remove) {
+            Element.prototype.remove = function() {
+                if (this.parentNode) this.parentNode.removeChild(this);
+            };
+        }
+        function isStandaloneMode() {
+            try {
+                return (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator && window.navigator.standalone) || false;
+            } catch(e) { return false; }
+        }
+        function safeSetItem(key, value) {
+            try { localStorage.setItem(key, value); return true; }
+            catch(e) { console.warn('[localStorage] Failed to save:', key, e); return false; }
+        }
+        function safeGetItem(key, fallback) {
+            try { const v = localStorage.getItem(key); return v === null ? fallback : v; }
+            catch(e) { return fallback; }
+        }
+        function safeRemoveItem(key) {
+            try { localStorage.removeItem(key); return true; }
+            catch(e) { console.warn('[localStorage] Failed to remove:', key, e); return false; }
+        }
+        window.safeSetItem = safeSetItem;
+        window.safeGetItem = safeGetItem;
+        window.safeRemoveItem = safeRemoveItem;
+
         const START_DATE = '2024/03/12 00:00:00';
         const MILESTONES = [
             { days: 100, label: '100天纪念' },
@@ -3603,14 +3630,12 @@
         }
 
         function toggleLockscreenAvatar() {
-            const current = localStorage.getItem('sidebarAvatar') || 'emoji';
+            const current = safeGetItem('sidebarAvatar', 'emoji');
             const next = current === 'photo' ? 'emoji' : 'photo';
-            if (typeof setSidebarAvatar === 'function') {
-                setSidebarAvatar(next);
-            } else if (typeof window.setSidebarAvatar === 'function') {
+            if (typeof window.setSidebarAvatar === 'function') {
                 window.setSidebarAvatar(next);
             } else {
-                localStorage.setItem('sidebarAvatar', next);
+                safeSetItem('sidebarAvatar', next);
                 updateLockscreenAvatar(next);
             }
             showToast(next === 'photo' ? '🐰 已切换为兔可可写真照片头像' : '🐰 已切换为经典 Emoji 头像');
@@ -4128,12 +4153,12 @@
 
         function getCustomWallpapers() {
             try {
-                return JSON.parse(localStorage.getItem('car_custom_wallpapers') || '[]');
+                return JSON.parse(safeGetItem('car_custom_wallpapers', '[]'));
             } catch(e) { return []; }
         }
 
         function saveCustomWallpapers(list) {
-            localStorage.setItem('car_custom_wallpapers', JSON.stringify(list));
+            safeSetItem('car_custom_wallpapers', JSON.stringify(list));
         }
 
         function fetchWallpaperManifest(showNotice) {
@@ -4220,13 +4245,18 @@
         // 已预加载的壁纸集合 (轮播切换零等待)
         const wpPreloaded = new Set();
         // 已解码壁纸的 objectURL 缓存: file -> objectURL, 避免重复下载/解码
-        const wpBlobCache = {};
+        const wpBlobCache = window.wpBlobCache || (window.wpBlobCache = {});
         // base64 文本 -> JPEG Blob
         function b64ToJpegBlob(b64Text) {
-            const bin = atob(b64Text.replace(/\s+/g, ''));
-            const bytes = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-            return new Blob([bytes], { type: 'image/jpeg' });
+            try {
+                const bin = atob(b64Text.replace(/\s+/g, ''));
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return new Blob([bytes], { type: 'image/jpeg' });
+            } catch(e) {
+                console.warn('b64ToJpegBlob decode error:', e);
+                return new Blob([], { type: 'image/jpeg' });
+            }
         }
         let wpLoadToken = 0; // 防竞态: 快速切换壁纸时只保留最后一次请求
         let wpAbortCtrl = null; // 取消上一次未完成的壁纸下载
@@ -5200,7 +5230,7 @@
         }
 
         function handleSafariFullscreen() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const isStandalone = isStandaloneMode();
             const icon = document.getElementById('car-fs-icon');
             if (isStandalone) {
                 showToast('📱 当前已作为独立 App 运行，享受 100% 沉浸全屏！');
@@ -5229,11 +5259,11 @@
         // --- Custom Anniversaries ---
         function getCustomAnniversaries() {
             try {
-                return JSON.parse(localStorage.getItem('bcos_custom_anniversaries') || '[]');
+                return JSON.parse(safeGetItem('bcos_custom_anniversaries', '[]'));
             } catch(e) { return []; }
         }
         function saveCustomAnniversaries(list) {
-            localStorage.setItem('bcos_custom_anniversaries', JSON.stringify(list));
+            safeSetItem('bcos_custom_anniversaries', JSON.stringify(list));
             renderMilestones();
         }
 
@@ -5876,7 +5906,7 @@
         });
 
         function installCarPWA() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const isStandalone = isStandaloneMode();
             if (isStandalone) {
                 showToast('✓ 当前已作为独立 PWA 应用运行');
                 return;
@@ -5995,6 +6025,7 @@
         });
 
         window.updateLockscreenAvatar = updateLockscreenAvatar;
+        window.setSidebarAvatar = (mode) => { localStorage.setItem('sidebarAvatar', mode); updateLockscreenAvatar(mode); };
         window.toggleLockscreenAvatar = toggleLockscreenAvatar;
         window.toggleMinimalistMode = toggleMinimalistMode;
         window.installCarPWA = installCarPWA;
