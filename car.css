@@ -157,33 +157,47 @@
         }
 
         /* Wallpaper Engine Layers */
+        /* Wallpaper Engine Ambient Glow & Real Pixel Edge Filling */
         .car-wallpaper-ambient {
             position: absolute;
-            inset: -45px;
+            inset: -55px;
             background-size: cover !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
-            background-color: var(--wp-edge-dominant, #101422);
-            filter: blur(52px) saturate(180%) brightness(0.7);
-            -webkit-filter: blur(52px) saturate(180%) brightness(0.7);
-            transform: scale(1.15) translateZ(0);
-            -webkit-transform: scale(1.15) translateZ(0);
+            background-color: var(--wp-edge-dominant, #0d121d);
+            filter: blur(56px) saturate(240%) brightness(0.92);
+            -webkit-filter: blur(56px) saturate(240%) brightness(0.92);
+            transform: scale(1.18);
             opacity: 0;
-            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), background-image 0.3s ease, background-color 0.4s ease;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), background-image 0.5s ease, background-color 0.5s ease;
             z-index: 0;
             pointer-events: none;
-            will-change: opacity, transform, background-color;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+            will-change: opacity;
         }
         .car-wallpaper-ambient::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, transparent 30%, var(--wp-edge-dominant, rgba(16,20,34,0.8)) 100%),
-                        linear-gradient(to bottom, var(--wp-edge-top, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-bottom, transparent) 100%),
-                        linear-gradient(to right, var(--wp-edge-left, transparent) 0%, transparent 20%, transparent 80%, var(--wp-edge-right, transparent) 100%);
-            opacity: 0.88;
+            background:
+                /* Top Edge Radiance (Real Top Border Pixels Illumination) */
+                radial-gradient(ellipse 120% 55% at 50% -5%, var(--wp-edge-top, rgba(255,255,255,0.2)) 0%, rgba(var(--wp-edge-top-rgb, 16,20,34), 0.7) 40%, transparent 85%),
+                /* Bottom Edge Radiance (Real Bottom Border Pixels Illumination) */
+                radial-gradient(ellipse 120% 55% at 50% 105%, var(--wp-edge-bottom, rgba(255,255,255,0.2)) 0%, rgba(var(--wp-edge-bottom-rgb, 16,20,34), 0.7) 40%, transparent 85%),
+                /* Left Edge Radiance (Real Left Border Pixels Illumination) */
+                radial-gradient(ellipse 55% 120% at -5% 50%, var(--wp-edge-left, rgba(255,255,255,0.25)) 0%, rgba(var(--wp-edge-left-rgb, 16,20,34), 0.75) 45%, transparent 85%),
+                /* Right Edge Radiance (Real Right Border Pixels Illumination) */
+                radial-gradient(ellipse 55% 120% at 105% 50%, var(--wp-edge-right, rgba(255,255,255,0.25)) 0%, rgba(var(--wp-edge-right-rgb, 16,20,34), 0.75) 45%, transparent 85%);
+            mix-blend-mode: screen;
+            opacity: 0.96;
+            pointer-events: none;
+            transition: background 0.6s ease, opacity 0.6s ease;
+        }
+        .car-wallpaper-ambient::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 35%, rgba(10, 14, 24, 0.35) 75%, var(--wp-edge-dominant, rgba(10, 14, 24, 0.85)) 100%);
+            opacity: 0.82;
             pointer-events: none;
         }
         .car-wallpaper-ambient.active {
@@ -197,14 +211,16 @@
             background-repeat: no-repeat;
             background-color: transparent;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out, background-size 0.3s ease;
+            transition: opacity 0.8s ease-in-out, background-size 0.35s ease;
             z-index: 1;
             pointer-events: none;
             will-change: opacity;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: high-quality;
+        }
+        .car-wallpaper-layer.wp-fit-smart {
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
         }
         .car-wallpaper-layer.wp-fit-fill {
             background-size: cover !important;
@@ -212,12 +228,15 @@
             background-repeat: no-repeat !important;
             background-color: transparent !important;
         }
-        .car-wallpaper-layer.wp-fit-fit {
+        .car-wallpaper-layer.wp-fit-fit,
+        .car-wallpaper-layer.wp-fit-center,
+        .car-wallpaper-layer.wp-fit-contain {
             background-size: contain !important;
             background-position: center center !important;
             background-repeat: no-repeat !important;
             background-color: transparent !important;
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
+            filter: drop-shadow(0 0 35px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 75px var(--wp-edge-dominant, rgba(16,20,34,0.5)));
+            -webkit-filter: drop-shadow(0 0 35px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 75px var(--wp-edge-dominant, rgba(16,20,34,0.5)));
         }
         .car-wallpaper-layer.wp-fit-stretch {
             background-size: 100% 100% !important;
@@ -228,6 +247,9 @@
         .car-wallpaper-layer.wp-fit-center {
             background-size: auto !important;
             background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+        }
             background-repeat: no-repeat !important;
             background-color: transparent !important;
         }
@@ -419,7 +441,7 @@
             align-items: center;
             justify-content: space-between;
             padding-bottom: clamp(0.4rem, 1vh, 0.75rem);
-            border-bottom: 1px solid var(--car-border);
+            border-bottom: none !important;
             transition: opacity .4s ease;
             flex-shrink: 0;
             min-height: 40px;
@@ -1587,7 +1609,7 @@
             align-items: center;
             justify-content: center;
             padding-top: .6rem;
-            border-top: 1px solid var(--car-border);
+            border-top: none !important;
             transition: opacity .4s ease;
             flex-shrink: 0;
             z-index: 10;

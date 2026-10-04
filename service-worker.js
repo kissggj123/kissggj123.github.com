@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.4.9430 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v7.8.4.9430';
+// Service Worker - Bunny CC v7.8.5.9440 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.5.9440';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -20,13 +20,20 @@ const RELATIVE_CORE_ASSETS = [
     'icon/1024.png', 'icon/icon.png',
     'wallpaper/manifest.json',
     'wallpaper/placeholders.json',
+    'wallpaper/Starlight210128.opt.jpg',
     'wallpaper/Starlight210128.min.b64.p1',
     'wallpaper/Starlight210128.min.b64.p2',
     'wallpaper/Starlight210128.min.b64.p3',
+    'wallpaper/Starlight210128.min.b64.p4',
+    'wallpaper/1126942.opt.jpg',
     'wallpaper/1126942.min.b64.p1',
+    'wallpaper/1126942.min.b64.p2',
+    'wallpaper/1126942.min.b64.p3',
+    'wallpaper/IMG_2833.opt.jpg',
     'wallpaper/IMG_2833.min.b64.p1',
     'wallpaper/IMG_2833.min.b64.p2',
     'wallpaper/IMG_2833.min.b64.p3',
+    'wallpaper/IMG_2833.min.b64.p4',
     'wallpaper/1204143.opt.jpg',
     'wallpaper/177002252600796.opt.jpg',
     'wallpaper/177002254500-200.opt.jpg',
@@ -43,6 +50,7 @@ const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).h
 
 // Old cache versions to force-purge (ensures icon refresh & cache invalidation)
 const OLD_CACHE_PATTERNS = [
+    'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
     'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
     'bunny-cc-v7.8.3.9393', 'bunny-cc-runtime-v7.8.3.9393',
     'bunny-cc-v7.8.3.9392', 'bunny-cc-runtime-v7.8.3.9392',
