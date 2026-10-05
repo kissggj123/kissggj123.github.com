@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.6.9460-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.6.9470-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -69,7 +69,16 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.6.9460** *(当前版本)*
+### **v7.8.6.9470** *(当前版本)*
+
+#### 【车辆品牌自定义与桌面图标排版优化】
+1. **车辆品牌 / 车型 / 版本 / VIN 可选可自定义** `[适用于 index.html]`：系统设置「车辆与能耗」新增车辆档案卡片，内置蔚来、乐道、小鹏、理想、特斯拉、比亚迪、极氪、小米、问界、阿维塔、smart、MINI 等品牌及常见车型联动选择，亦可选择「自定义品牌 / 自定义车型」手动输入，并可自定义版本名称与 VIN（留空自动生成）；「关于本系统」中的车辆识别与能耗页副标题随之实时同步，设置持久化保存，并支持一键恢复默认 NIO ET7。
+2. **桌面图标名称显示优化** `[适用于 index.html]`：图标名称改用无衬线字体并取消按字符强制断行，修复 `Code Studio`、`Sand Studio Pro` 等英文名称被拆成 `Stud io` 的问题。
+3. 版本号、PWA 缓存与文档同步升级至 **v7.8.6.9470**。
+
+---
+
+### **v7.8.6.9460**
 
 #### 【桌面图标与壁纸库显示修复】
 1. **桌面图标标签被压扁/截断/缺失修复** `[适用于 index.html]`：修复图标列过长时 Flex 布局压缩图标高度，导致图标名称只剩一线、完全消失或上下图标相互重叠的问题；图标与标签改为不可压缩，手机竖屏下重新适配图标尺寸并保证 Dock 栏始终在底部可见。
