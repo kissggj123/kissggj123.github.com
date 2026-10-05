@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.6.9470-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.6.9480-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -69,7 +69,21 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.6.9470** *(当前版本)*
+### **v7.8.6.9480** *(当前版本)*
+
+#### 【桌面图标避让顶栏与 Dock 栏遮挡深度修复】
+1. **桌面图标顶栏与 Dock 避让区重构** `[适用于 index.html]`：
+   - 彻底解决顶部图标被 30px macOS 顶栏切断遮挡（半截 Emoji）、以及底部图标被 Dock 程序坞遮挡的问题。
+   - 桌面图标容器顶部内边距调整为 `top: 38px`（移动端 `34px`），完全避让顶栏。
+   - 容器最大高度限制为 `calc(100% - 122px)`（移动端 `calc(100% - 114px - safe-area)`），垂直排布空间在触及 Dock 之前自动向上换列，杜绝底部图标与 Dock 栏重叠。
+2. **自由拖拽坐标与空位算法避让限制**：
+   - 升级图标状态版本至 `v3`，自动清除旧版记录的撞栏与沉底坐标。
+   - 拖拽过程、吸附对齐、自由空位寻找算法与位置记忆全面加入 `minY`（顶栏避让）与 `maxY`（Dock 避让），图标无论如何拖动都永远停留在安全可用可视区域。
+3. 版本号、PWA 缓存与文档同步升级至 **v7.8.6.9480**。
+
+---
+
+### **v7.8.6.9470**
 
 #### 【车辆品牌自定义与桌面图标排版优化】
 1. **车辆品牌 / 车型 / 版本 / VIN 可选可自定义** `[适用于 index.html]`：系统设置「车辆与能耗」新增车辆档案卡片，内置蔚来、乐道、小鹏、理想、特斯拉、比亚迪、极氪、小米、问界、阿维塔、smart、MINI 等品牌及常见车型联动选择，亦可选择「自定义品牌 / 自定义车型」手动输入，并可自定义版本名称与 VIN（留空自动生成）；「关于本系统」中的车辆识别与能耗页副标题随之实时同步，设置持久化保存，并支持一键恢复默认 NIO ET7。
