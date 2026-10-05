@@ -14,12 +14,12 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="兔可可王国 · bcos 🐰">
     <meta name="twitter:description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.6.9450">
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.6.9450">
-    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.6.9450">
-    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.6.9450">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.6.9450">
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.6.9450">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=7.8.6.9460">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon/32.png?v=7.8.6.9460">
+    <link rel="icon" type="image/png" sizes="64x64" href="./icon/64.png?v=7.8.6.9460">
+    <link rel="icon" type="image/png" sizes="128x128" href="./icon/128.png?v=7.8.6.9460">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon/192.png?v=7.8.6.9460">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?v=7.8.6.9460">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" media="print" onload="this.media='all'">
@@ -1319,7 +1319,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v7.8.6.9450</div>
+                <div class="subtitle">v7.8.6.9460</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -1632,7 +1632,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.6.9450</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v7.8.6.9460</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -1704,7 +1704,7 @@
 
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.6.9450',
+        VERSION: 'v7.8.6.9460',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
@@ -2737,7 +2737,7 @@
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.6.9450 已启动', 'info');
+        logEvent('兔可可王国 v7.8.6.9460 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
@@ -2795,6 +2795,8 @@
             mono.players.forEach(p => {
                 if (p.pos >= mono.tiles.length) p.pos = 0;
             });
+            // Persist rebuilt tiles to localStorage so mismatch warning only runs once
+            saveMonopoly();
         }
         mono.players.forEach(p => {
             if (p.shield === undefined || p.shield === true) p.shield = p.shield === true ? 1 : 0; if (p.shield === false) p.shield = 0;
@@ -9574,7 +9576,7 @@
 
                 <!-- Version Info -->
                 <div style="text-align:center;font-size:.65rem;color:var(--text2);padding:.3rem 0;">
-                    BunnyBot 大富翁 v7.8.6.9450 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
+                    BunnyBot 大富翁 v7.8.6.9460 | 环形岛屿 · 全功能地产交易 · 智能AI引擎 · 资产清算救济
                 </div>
 
                 <button class="btn btn-primary" style="width:100%;margin-top:.5rem;" onclick="closeModal()">关闭</button>
@@ -9855,7 +9857,7 @@
             #bcos-desktop { height: 100%; display: flex; flex-direction: column; background: #1a1a2e; }
             .bcos-desktop-wallpaper { flex: 1; position: relative; overflow: hidden; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); transform: translateZ(0); }
             .bcos-desktop-wallpaper::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px); background-size: 30px 30px; }
-            .bcos-desktop-icons { position: absolute; top: 1rem; left: 1rem; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; max-height: calc(100% - 2.5rem); gap: 0.7rem; z-index: 1; }
+            .bcos-desktop-icons { position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; max-height: calc(100% - 76px); gap: 8px 10px; z-index: 1; }
             .bcos-win-btn-close { background: #ff5f56; }
             .bcos-win-btn-close:hover { background: #ff7b73; transform: scale(1.15) translateZ(0); }
             .bcos-win-btn-min { background: #ffbd2e; }
@@ -9865,20 +9867,18 @@
             #bcos-te-textarea::selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
             #bcos-te-textarea::-moz-selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
             #bcos-te-highlight { color: #d4d4d4 !important; }
-            .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: .3rem; cursor: pointer; width: 70px; height: 85px; padding: .5rem; border-radius: 4px; transition: background .15s, transform .1s; will-change: transform; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-            .bcos-desktop-icon:hover { background: rgba(0,0,0,.12); }
+            .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; cursor: pointer; width: 72px; min-height: 80px; height: auto; flex-shrink: 0 !important; padding: 6px 4px 6px; border-radius: 8px; box-sizing: border-box; transition: background .15s, transform .1s; will-change: transform; backface-visibility: hidden; -webkit-backface-visibility: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+            .bcos-desktop-icon:hover { background: rgba(255,255,255,.1); }
             .bcos-desktop-icon:active { transform: scale(0.92) translateZ(0); }
-            .bcos-desktop-icon-emoji { font-size: 2rem; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
-            .bcos-desktop-icon-label { font-size: 11px; color: #fff; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.7); font-weight: 600; }
+            .bcos-desktop-icon-emoji { font-size: 2rem; line-height: 1.1; flex-shrink: 0 !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); pointer-events: none; }
+            .bcos-desktop-icon-label { font-size: 11px; line-height: 1.3; color: #fff; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.95), 0 0 3px rgba(0,0,0,.85); font-weight: 600; width: 100%; max-width: 100%; min-height: 15px; max-height: 29px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-all; pointer-events: none; flex-shrink: 0 !important; box-sizing: border-box; }
             .bcos-window { position: absolute; background: rgba(18, 22, 34, 0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; box-shadow: 0 10px 36px rgba(0,0,0,.65); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; overflow: hidden; will-change: transform; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: border-color .2s, box-shadow .2s; }
             .bcos-window.active-window { border-color: var(--accent, #FF6B9D) !important; box-shadow: 0 14px 44px rgba(0,0,0,.7), 0 0 18px rgba(var(--accent-rgb, 255,107,157), 0.28) !important; }
             .bcos-window.maximized { width: 100% !important; height: calc(100% - 30px - 74px) !important; top: 30px !important; left: 0 !important; transform: none !important; border-radius: 0; border: none; }
             .bcos-window.maximized .bcos-window-titlebar { border-radius: 0; }
             .bcos-window.maximized .bcos-window-resize { display: none; }
             #bcos-overlay.bcos-win-interacting iframe { pointer-events: none !important; }
-            .bcos-desktop-icon { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-            .bcos-desktop-icon.bcos-icon-dragging { opacity: .85; transform: scale(1.06) translateZ(0); z-index: 50 !important; transition: none; background: rgba(255,255,255,.14); }
-            .bcos-desktop-icon-label { max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-all; line-height: 1.25; }
+            .bcos-desktop-icon.bcos-icon-dragging { opacity: .85; transform: scale(1.06) translateZ(0); z-index: 50 !important; transition: none; background: rgba(255,255,255,.16); }
 
             /* ===== Modern BCOS Acrylic Context Menu ===== */
             .bcos-context-menu {
@@ -10465,8 +10465,33 @@
             @media (max-width: 768px) {
                 .hide-on-mobile { display: none !important; }
                 #bcos-screen { padding: .35rem; font-size: 12px; }
-                .bcos-desktop-icon { width: 56px; height: 72px; padding: .3rem; }
-                .bcos-desktop-icon-emoji { font-size: 1.5rem; }
+                .bcos-desktop-icons {
+                    top: 6px !important;
+                    left: 6px !important;
+                    max-height: calc(100% - 68px) !important;
+                    gap: 6px 8px !important;
+                }
+                .bcos-desktop-icon {
+                    width: 66px !important;
+                    min-height: 72px !important;
+                    height: auto !important;
+                    padding: 4px 2px 5px !important;
+                    gap: 3px !important;
+                    flex-shrink: 0 !important;
+                }
+                .bcos-desktop-icon-emoji {
+                    font-size: 28px !important;
+                    line-height: 1.1 !important;
+                    flex-shrink: 0 !important;
+                }
+                .bcos-desktop-icon-label {
+                    font-size: 10.5px !important;
+                    line-height: 1.25 !important;
+                    min-height: 14px !important;
+                    max-height: 28px !important;
+                    -webkit-line-clamp: 2 !important;
+                    flex-shrink: 0 !important;
+                }
                 .bcos-menubar {
                     height: 28px;
                     padding: 0 8px;
@@ -10485,7 +10510,14 @@
                     font-size: 11.5px;
                 }
                 .bcos-dock-wrap {
-                    bottom: 6px;
+                    position: absolute !important;
+                    bottom: max(6px, env(safe-area-inset-bottom, 6px)) !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    display: flex !important;
+                    justify-content: center !important;
+                    z-index: 9995 !important;
+                    pointer-events: auto !important;
                 }
                 .bcos-dock {
                     height: 46px;
@@ -11351,6 +11383,13 @@
         }
         .car-wp-fit-dropdown-wrap.open .car-wp-fit-popover {
             display: flex;
+        }
+        /* Inside the scrolling modal the popover expands inline so it can never be clipped */
+        .car-wp-fit-dropdown-wrap > .car-wp-fit-popover {
+            position: static;
+            top: auto;
+            margin-top: 6px;
+            max-height: none;
         }
         .car-wp-fit-floating {
             position: fixed !important;
@@ -12800,6 +12839,7 @@
             transform: translateY(20px);
             transition: transform .3s ease;
             max-height: 88vh;
+            max-height: 88dvh;
             overflow-y: auto;
             overflow-x: hidden;
             overscroll-behavior: contain !important;
@@ -12892,11 +12932,12 @@
         /* Wallpaper Gallery Grid */
         .car-wp-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: .8rem;
-            max-height: 52vh;
-            overflow-y: auto;
-            padding: .4rem;
+            /* No nested scroller: the modal itself scrolls so every wallpaper card is fully reachable */
+            max-height: none;
+            overflow: visible;
+            padding: .5rem .4rem;
         }
         .car-wp-item {
             position: relative;
@@ -12904,8 +12945,9 @@
             overflow: hidden;
             border: 2px solid transparent;
             cursor: pointer;
-            aspect-ratio: 16/9;
-            background: rgba(0, 0, 0, 0.4);
+            aspect-ratio: 16/10;
+            min-height: 78px;
+            background: rgba(0, 0, 0, 0.55);
             transition: all .2s;
         }
         .car-wp-item:hover {
@@ -12919,7 +12961,8 @@
         .car-wp-item img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            /* contain: show the complete wallpaper (no cropped thumbnails) for any aspect ratio */
+            object-fit: contain;
             display: block;
         }
         .car-wp-item .label {
@@ -15014,7 +15057,7 @@
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.6.9450</span>
+                <span class="bcos-ctx-ver">v7.8.6.9460</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
@@ -15175,7 +15218,9 @@
     // ============================================================================
     // BCOS Desktop Icon Manager — drag to move / rename / delete (persisted)
     // ============================================================================
-    const _BCOS_ICON_STATE_KEY = 'bcos_desktop_icon_state_v1';
+    const _BCOS_ICON_STATE_KEY = 'bcos_desktop_icon_state_v2';
+    // v1 stored coordinates captured from squashed flex items (overlapping icons / hidden labels) -> purge once
+    try { localStorage.removeItem('bcos_desktop_icon_state_v1'); } catch(e) {}
     const _BCOS_STORE_APP_IDS = ['calculator', 'weather', 'notes', 'radio', 'snake', 'paint'];
     let _bcosIconSeq = 0;
     let _bcosIconJustDragged = false;
@@ -15266,6 +15311,24 @@
         return { x: 16, y: 16 };
     }
 
+    // Guard against overlapping icons in the same column (e.g. coordinates saved while icons were squashed)
+    function _bcosIconSeparate(items) {
+        const cols = {};
+        items.forEach(it => {
+            const key = Math.round(it.s.x / 40);
+            (cols[key] = cols[key] || []).push(it);
+        });
+        let changed = false;
+        Object.keys(cols).forEach(k => {
+            const col = cols[k].sort((a, b) => a.s.y - b.s.y);
+            for (let i = 1; i < col.length; i++) {
+                const minY = col[i - 1].s.y + col[i - 1].h + 6;
+                if (col[i].s.y < minY) { col[i].s.y = minY; changed = true; }
+            }
+        });
+        return changed;
+    }
+
     function _bcosApplyDesktopIconState() {
         const wall = document.getElementById('bcos-desktop-bg');
         if (!wall) return;
@@ -15288,6 +15351,12 @@
 
         if (st.frozen) {
             const wr = wall.getBoundingClientRect();
+            const _sepItems = [];
+            els.forEach(el => {
+                const _s = st.icons[el.dataset.iconId];
+                if (_s && !_s.hidden && typeof _s.x === 'number' && typeof _s.y === 'number') _sepItems.push({ s: _s, h: Math.max(el.offsetHeight || 0, 80) });
+            });
+            if (_bcosIconSeparate(_sepItems)) dirty = true;
             els.forEach(el => {
                 const id = el.dataset.iconId;
                 const s = st.icons[id] || (st.icons[id] = {});
@@ -15331,6 +15400,14 @@
             s.x = Math.round(r.left - wr.left);
             s.y = Math.round(r.top - wr.top);
         });
+        (function() {
+            const items = [];
+            wall.querySelectorAll('.bcos-desktop-icon').forEach(el => {
+                const s = el.dataset.iconId && st.icons[el.dataset.iconId];
+                if (s && !s.hidden) items.push({ s: s, h: Math.max(el.offsetHeight || 0, 80) });
+            });
+            _bcosIconSeparate(items);
+        })();
         st.frozen = true;
         _bcosIconStateSave(st);
         _bcosApplyDesktopIconState();
@@ -16648,7 +16725,7 @@
         } else if (_bcosSettingsActiveTab === 'about') {
             html += hero('ℹ️', '关于本系统', 'Bunny Cockpit OS · 兔可可智能座舱系统');
             html += card(`
-                ${row('系统版本', '<span style="font-family:monospace;color:#00ff41;font-weight:bold;">v7.8.6.9450</span>', 'Build 20261005 · Official Release')}
+                ${row('系统版本', '<span style="font-family:monospace;color:#00ff41;font-weight:bold;">v7.8.6.9460</span>', 'Build 20261005 · Official Release')}
                 ${row('计算芯片', '<span style="color:#fff;">Bunny M3 HyperDrive (8-Core AI)</span>', '车载车规级智能计算平台')}
                 ${row('高速显存', '<span style="color:#fff;">16 GB LPDDR5X (Unified)</span>', '高带宽硬件加速显存')}
                 ${row('系统内核', '<span style="font-family:monospace;color:#94a3b8;">BCOS Darwin 24.1.0 aarch64</span>', 'POSIX 兼容虚拟环境')}
@@ -16659,7 +16736,7 @@
             html += hero('⚙️', '通用偏好', '管理存储空间、软件更新与系统基础首选项');
             html += card(`
                 ${row('💾 BCOS 虚拟存储', '<span style="color:#34c759;font-weight:600;">12.8 MB / 512 MB</span>', '包含文稿、离线缓存与应用商店安装包')}
-                ${row('🔄 软件更新', '<span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (v7.8.6.9450)</span>', '支持 Service Worker 离线热更新')}
+                ${row('🔄 软件更新', '<span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (v7.8.6.9460)</span>', '支持 Service Worker 离线热更新')}
                 ${row('🌐 系统语言', '<span style="color:#fff;">简体中文 (中国大陆)</span>', 'Apple SF Pro / PingFang SC 智能回退')}
                 ${row('⏰ 日期与时间', '<span style="color:#007aff;">网络时间自动对时 (已同步)</span>', '精确到秒，实时更新 Dock 与菜单栏时钟')}
             `);
@@ -22158,7 +22235,7 @@ const START_DATE = '2024/03/12 00:00:00';
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.6.9450</div>
+                                <div class="car-diag-val">bcos v7.8.6.9460</div>
                             </div>
                         </div>
                     </div>
@@ -22406,7 +22483,7 @@ const START_DATE = '2024/03/12 00:00:00';
                 <!-- Gallery Grid -->
                 <div class="car-input-group">
                     <div class="car-input-label">
-                        <span>可选用壁纸列表 (<span id="wp-count">3</span> 张)</span>
+                        <span>可选用壁纸列表 (<span id="wp-count">14</span> 张)</span>
                         <span style="font-size:.7rem;color:var(--car-accent);cursor:pointer;" onclick="fetchWallpaperManifest(true)">🔄 刷新检测文件夹</span>
                     </div>
                     <div class="car-wp-grid" id="car-wp-grid">
@@ -22739,6 +22816,7 @@ const START_DATE = '2024/03/12 00:00:00';
     window.setWallpaperFit = setWallpaperFit;
     window.selectWallpaperFit = selectWallpaperFit;
     window.applyWallpaperFit = applyWallpaperFit;
+    window.getWallpaperFit = getWallpaperFit;
     window.toggleWpFitDropdown = toggleWpFitDropdown;
     window.closeWpFitDropdown = closeWpFitDropdown;
     window.openWpFitContextMenu = openWpFitContextMenu;
@@ -25755,7 +25833,7 @@ function _bcosTeChangeLang(val) {
         // Debounced resize — re-render game UI and adjust DPI-aware font scaling
         let _resizeTimer = null;
         window.addEventListener('resize', () => {
-            if (getWallpaperFit() === 'smart') applyWallpaperFit('smart');
+            if (typeof window.getWallpaperFit === 'function' && window.getWallpaperFit() === 'smart' && typeof window.applyWallpaperFit === 'function') window.applyWallpaperFit('smart');
             clearTimeout(_resizeTimer);
             _resizeTimer = setTimeout(() => {
                 resize();

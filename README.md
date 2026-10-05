@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.6.9450-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.6.9460-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -69,7 +69,18 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.6.9450** *(当前版本)*
+### **v7.8.6.9460** *(当前版本)*
+
+#### 【桌面图标与壁纸库显示修复】
+1. **桌面图标标签被压扁/截断/缺失修复** `[适用于 index.html]`：修复图标列过长时 Flex 布局压缩图标高度，导致图标名称只剩一线、完全消失或上下图标相互重叠的问题；图标与标签改为不可压缩，手机竖屏下重新适配图标尺寸并保证 Dock 栏始终在底部可见。
+2. **图标坐标自动纠偏**：升级桌面图标状态存储，清除旧版本在压缩状态下保存的错误坐标，并对同列图标强制最小垂直间距，杜绝重叠。
+3. **锁屏壁纸选择框显示不全修复** `[适用于 index.html / car.html]`：壁纸缩略图不再被裁切（完整显示任意比例壁纸），取消壁纸列表的嵌套滚动、由弹窗整体滚动，缩放模式下拉菜单改为内嵌展开，不再被弹窗边缘遮挡。
+4. **控制台报错修复** `[适用于 index.html]`：修复窗口缩放时 `getWallpaperFit is not defined` 的作用域错误；大富翁存档地图变更后重建的棋盘立即写回存档，避免每次启动重复告警。
+5. 版本号、PWA 缓存与文档同步升级至 **v7.8.6.9460**。
+
+---
+
+### **v7.8.6.9450**
 
 #### 【BCOS 操作系统全场景深度重构与生态升级】
 1. **BCOS 访达 (Finder) 深度重构** `[适用于 index.html]`：
