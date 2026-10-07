@@ -1,0 +1,1846 @@
+/* ===== css/bcos-a.css — bcos 系统样式 (原 _bcosInjectCSS 注入, 模块化拆分) ===== */
+
+            #bcos-overlay {
+                position: fixed; inset: 0; z-index: 9999; display: none; overscroll-behavior: none;
+                background: #0a0a0a; color: #e0e0e0;
+                font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+                font-size: 14px; line-height: 1.5; overflow: hidden;
+            }
+            #bcos-overlay.active { display: block; animation: bcosFade .3s ease; }
+            @keyframes bcosFade { from { opacity: 0; transform: translateZ(0); } to { opacity: 1; transform: translateZ(0); } }
+            @keyframes bcosBlink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
+            #bcos-screen { height: 100%; overflow-y: auto; padding: 1rem; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+            #bcos-screen::-webkit-scrollbar { width: 6px; }
+            #bcos-screen::-webkit-scrollbar-track { background: #111; }
+            #bcos-screen::-webkit-scrollbar-thumb { background: #333; }
+            .bcos-boot-line { color: #888; font-size: 12px; }
+            .bcos-boot-ok { color: #00ff41; }
+            .bcos-logo { color: #00ff41; font-size: 14px; white-space: pre; line-height: 1.2; text-shadow: 0 0 6px rgba(0,255,65,.4); }
+            .bcos-welcome { color: #e0e0e0; margin: .3rem 0; }
+            .bcos-last-login { color: #888; font-size: 12px; margin-bottom: .5rem; }
+            .bcos-prompt-user { color: #00ff41; font-weight: bold; }
+            .bcos-prompt-host { color: #00aaff; font-weight: bold; }
+            .bcos-prompt-path { color: #ffaa00; }
+            .bcos-prompt-symbol { color: #e0e0e0; }
+            #bcos-input-line { display: flex; align-items: center; gap: 0; }
+            #bcos-input { background: transparent; border: none; outline: none; color: #e0e0e0; font-family: inherit; font-size: inherit; flex: 1; caret-color: #00ff41; padding: 0; }
+            .bcos-cmd-not-found { color: #ff4444; }
+            .bcos-suggestion { color: #ffaa00; }
+            .bcos-info { color: #00aaff; }
+            .bcos-success { color: #00ff41; }
+            .bcos-warn { color: #ffaa00; }
+            .bcos-error { color: #ff4444; }
+            .bcos-dim { color: #666; }
+            .bcos-link { color: #00aaff; text-decoration: underline; cursor: pointer; }
+            .bcos-link:hover { color: #00ffff; }
+            .bcos-repo-name { color: #00aaff; }
+            .bcos-repo-stars { color: #ffaa00; }
+            .bcos-repo-fork { color: #ff8800; font-size: 10px; }
+            .bcos-repo-date { color: #666; font-size: 11px; }
+            #bcos-desktop { height: 100%; display: flex; flex-direction: column; background: #1a1a2e; }
+            .bcos-desktop-wallpaper { flex: 1; position: relative; overflow: hidden; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); transform: translateZ(0); }
+            .bcos-desktop-wallpaper::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px); background-size: 30px 30px; }
+            .bcos-desktop-icons { position: absolute; top: 38px; left: 12px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; max-height: calc(100% - 122px); gap: 8px 10px; z-index: 1; }
+            .bcos-win-btn-close { background: #ff5f56; }
+            .bcos-win-btn-close:hover { background: #ff7b73; transform: scale(1.15) translateZ(0); }
+            .bcos-win-btn-min { background: #ffbd2e; }
+            .bcos-win-btn-min:hover { background: #ffd066; transform: scale(1.15) translateZ(0); }
+            .bcos-win-btn-max { background: #27c93f; }
+            .bcos-win-btn-max:hover { background: #3be055; transform: scale(1.15) translateZ(0); }
+            #bcos-te-textarea::selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
+            #bcos-te-textarea::-moz-selection { background: rgba(51, 153, 255, 0.45) !important; color: transparent !important; }
+            #bcos-te-highlight { color: #d4d4d4 !important; }
+            .bcos-desktop-icon { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; cursor: pointer; width: 72px; min-height: 80px; height: auto; flex-shrink: 0 !important; padding: 6px 4px 6px; border-radius: 8px; box-sizing: border-box; transition: background .15s, transform .1s; will-change: transform; backface-visibility: hidden; -webkit-backface-visibility: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+            .bcos-desktop-icon:hover { background: rgba(255,255,255,.1); }
+            .bcos-desktop-icon:active { transform: scale(0.92) translateZ(0); }
+            .bcos-desktop-icon-emoji { font-size: 2rem; line-height: 1.1; flex-shrink: 0 !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); pointer-events: none; }
+            .bcos-desktop-icon-label { font-size: 11px; line-height: 1.3; color: #fff; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.95), 0 0 3px rgba(0,0,0,.85); font-weight: 600; width: 100%; max-width: 100%; min-height: 15px; max-height: 29px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: normal; overflow-wrap: break-word; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif; letter-spacing: 0; pointer-events: none; flex-shrink: 0 !important; box-sizing: border-box; }
+            .bcos-window { position: absolute; background: rgba(18, 22, 34, 0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; box-shadow: 0 10px 36px rgba(0,0,0,.65); display: flex; flex-direction: column; min-width: 280px; min-height: 180px; overflow: hidden; will-change: transform; transform: translateZ(0); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: border-color .2s, box-shadow .2s; }
+            .bcos-window.active-window { border-color: var(--accent, #FF6B9D) !important; box-shadow: 0 14px 44px rgba(0,0,0,.7), 0 0 18px rgba(var(--accent-rgb, 255,107,157), 0.28) !important; }
+            .bcos-window.maximized { width: 100% !important; height: calc(100% - 30px - 74px) !important; top: 30px !important; left: 0 !important; transform: none !important; border-radius: 0; border: none; }
+            .bcos-window.maximized .bcos-window-titlebar { border-radius: 0; }
+            .bcos-window.maximized .bcos-window-resize { display: none; }
+            #bcos-overlay.bcos-win-interacting iframe { pointer-events: none !important; }
+            .bcos-desktop-icon.bcos-icon-dragging { opacity: .85; transform: scale(1.06) translateZ(0); z-index: 50 !important; transition: none; background: rgba(255,255,255,.16); }
+
+            /* ===== Modern BCOS Acrylic Context Menu ===== */
+            .bcos-context-menu {
+                position: fixed;
+                background: rgba(18, 22, 34, 0.94);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.25);
+                border-radius: 12px;
+                padding: 6px;
+                z-index: 999999;
+                display: none;
+                min-width: 230px;
+                max-width: 280px;
+                font-size: 12.5px;
+                color: #e2e8f0;
+                user-select: none;
+                animation: bcosCtxFadeIn .15s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            @keyframes bcosCtxFadeIn {
+                from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+                to { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            .bcos-ctx-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 6px 10px 6px 8px;
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--accent, #ff6b9d);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                margin-bottom: 4px;
+            }
+            .bcos-ctx-ver {
+                font-size: 10px;
+                color: #64748b;
+                font-family: monospace;
+            }
+            .bcos-ctx-group-title {
+                font-size: 10px;
+                font-weight: 700;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 6px 10px 2px 10px;
+            }
+            .bcos-ctx-separator {
+                height: 1px;
+                background: rgba(255, 255, 255, 0.07);
+                margin: 4px 6px;
+            }
+            .bcos-context-menu-item {
+                padding: 6px 10px;
+                cursor: pointer;
+                border-radius: 6px;
+                transition: all .12s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 500;
+            }
+            .bcos-context-menu-item:hover {
+                background: var(--accent, #ff6b9d);
+                color: #000;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            }
+            .bcos-context-menu-item:hover .ctx-shortcut,
+            .bcos-context-menu-item:hover .ctx-badge {
+                color: #000;
+                background: rgba(0, 0, 0, 0.15);
+            }
+            .ctx-icon {
+                font-size: 14px;
+                width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .ctx-text {
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .ctx-shortcut {
+                font-size: 10px;
+                color: #94a3b8;
+                background: rgba(255, 255, 255, 0.08);
+                padding: 1px 5px;
+                border-radius: 4px;
+                font-family: monospace;
+            }
+            .ctx-badge {
+                font-size: 10px;
+                background: rgba(0, 234, 255, 0.2);
+                color: #00eaff;
+                padding: 1px 6px;
+                border-radius: 10px;
+                font-weight: bold;
+            }
+            .bcos-context-menu-item.ctx-danger:hover {
+                background: #ef4444;
+                color: #fff;
+            }
+
+            /* ===== BCOS Boot Animation ===== */
+            #bcos-boot-screen {
+                position: absolute;
+                inset: 0;
+                background: #0a0a12;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                color: #fff;
+                transition: opacity 0.6s ease;
+            }
+            #bcos-boot-screen.fade-out {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .bcos-boot-logo {
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid rgba(255,255,255,0.2);
+                box-shadow: 0 0 36px rgba(167,139,250,0.5);
+                margin-bottom: 1.5rem;
+                animation: bcos-boot-pulse 2.5s ease-in-out infinite;
+                transform: translate3d(0, 0, 0);
+                -webkit-transform: translate3d(0, 0, 0);
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                will-change: opacity, filter;
+            }
+            @keyframes bcos-boot-pulse {
+                0%, 100% {
+                    opacity: 0.88;
+                    filter: drop-shadow(0 0 8px rgba(167,139,250,0.3));
+                }
+                50% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 22px rgba(167,139,250,0.85));
+                }
+            }
+            .bcos-boot-title {
+                font-size: 1.4rem;
+                font-weight: 300;
+                letter-spacing: 0.15em;
+                color: rgba(255,255,255,0.9);
+                margin-bottom: 0.4rem;
+            }
+            .bcos-boot-ver {
+                font-size: 0.7rem;
+                color: rgba(255,255,255,0.3);
+                letter-spacing: 0.1em;
+                margin-bottom: 2.5rem;
+            }
+            .bcos-boot-progress-wrap {
+                width: 200px;
+                height: 3px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-bottom: 1rem;
+            }
+            .bcos-boot-progress-bar {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(90deg, #a78bfa, #06FFA5);
+                border-radius: 2px;
+                transition: width 0.3s ease;
+            }
+            .bcos-boot-status {
+                font-size: 0.7rem;
+                color: rgba(255,255,255,0.4);
+                letter-spacing: 0.05em;
+                min-height: 1em;
+                text-align: center;
+            }
+            /* Apple-style dots spinner */
+            .bcos-boot-dots {
+                display: flex;
+                gap: 6px;
+                margin-top: 2.5rem;
+            }
+            .bcos-boot-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.3);
+                animation: bcos-dot-blink 1.2s ease-in-out infinite;
+            }
+            .bcos-boot-dot:nth-child(2) { animation-delay: 0.2s; }
+            .bcos-boot-dot:nth-child(3) { animation-delay: 0.4s; }
+            @keyframes bcos-dot-blink {
+                0%, 80%, 100% { background: rgba(255,255,255,0.15); transform: scale(0.8); }
+                40%            { background: rgba(167,139,250,0.9); transform: scale(1.2); }
+            }
+
+            .bcos-window-resize { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; z-index: 10; }
+            .bcos-window-resize::after { content: ''; position: absolute; right: 2px; bottom: 2px; width: 8px; height: 8px; border-right: 2px solid #666; border-bottom: 2px solid #666; }
+            .bcos-window-resize:hover::after { border-color: #aaa; }
+
+            /* macOS Top Menu Bar */
+            .bcos-menubar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 30px;
+                background: rgba(20, 24, 36, 0.82);
+                backdrop-filter: blur(28px) saturate(190%);
+                -webkit-backdrop-filter: blur(28px) saturate(190%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 12px;
+                z-index: 9999;
+                user-select: none;
+                -webkit-user-select: none;
+                font-size: 13px;
+                color: #e2e8f0;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-menubar-left, .bcos-menubar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .bcos-menubar-apple {
+                cursor: pointer;
+                padding: 2px 4px;
+                border-radius: 6px;
+                transition: background .15s, transform .15s;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+            }
+            .bcos-menubar-apple:hover, .bcos-menubar-apple.active {
+                background: rgba(255, 255, 255, 0.18);
+                transform: scale(1.08);
+            }
+            .bcos-menubar-avatar-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+            }
+            .bcos-menubar-avatar-img {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1.5px solid var(--accent, #ff6b9d);
+                box-shadow: 0 0 6px rgba(255, 107, 157, 0.4);
+                display: block;
+            }
+            .bcos-menubar-appname {
+                font-weight: 700;
+                color: #ffffff;
+                font-size: 13px;
+                letter-spacing: 0.2px;
+            }
+            .bcos-menubar-item {
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: rgba(255, 255, 255, 0.85);
+                font-size: 12.5px;
+                transition: background .15s, color .15s;
+            }
+            .bcos-menubar-item:hover {
+                background: rgba(255, 255, 255, 0.15);
+                color: #ffffff;
+            }
+            .bcos-menubar-status-item {
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.85);
+                transition: background .15s;
+            }
+            .bcos-menubar-status-item:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .bcos-menubar-clock {
+                font-size: 12.5px;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.95);
+                padding: 0 4px;
+                font-variant-numeric: tabular-nums;
+            }
+
+            /* macOS Apple Dropdown Menu */
+            .bcos-apple-menu {
+                position: fixed;
+                top: 34px;
+                left: 8px;
+                min-width: 220px;
+                background: rgba(24, 28, 42, 0.94);
+                backdrop-filter: blur(32px) saturate(200%);
+                -webkit-backdrop-filter: blur(32px) saturate(200%);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 10px;
+                box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.3);
+                padding: 5px;
+                z-index: 10000;
+                display: none;
+                flex-direction: column;
+                gap: 2px;
+                animation: bcosMenuAnim .12s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .bcos-apple-menu.show {
+                display: flex;
+            }
+            @keyframes bcosMenuAnim {
+                from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .bcos-apple-menu-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 6px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12.5px;
+                color: rgba(255, 255, 255, 0.95);
+                transition: background .12s;
+                user-select: none;
+            }
+            .bcos-apple-menu-item:hover {
+                background: rgba(0, 122, 255, 0.88);
+                color: #ffffff;
+            }
+            .bcos-apple-menu-sep {
+                height: 1px;
+                background: rgba(255, 255, 255, 0.1);
+                margin: 3px 0;
+            }
+
+            /* macOS Floating Frosted Glass Dock */
+            .bcos-dock-wrap {
+                position: fixed;
+                bottom: 8px;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                pointer-events: none;
+                z-index: 9990;
+            }
+            .bcos-dock {
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 8px;
+                background: rgba(24, 30, 44, 0.68);
+                backdrop-filter: blur(32px) saturate(210%);
+                -webkit-backdrop-filter: blur(32px) saturate(210%);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+                box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
+                transition: all .2s ease;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .bcos-dock-item {
+                position: relative;
+                width: 44px;
+                height: 48px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: transform .18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            .bcos-dock-item:hover {
+                transform: translateY(-8px) scale(1.22);
+            }
+            .bcos-dock-icon-box {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+                transition: background .15s, box-shadow .15s;
+            }
+            .bcos-dock-item:hover .bcos-dock-icon-box {
+                background: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+            }
+            .bcos-dock-dot {
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: #ffffff;
+                opacity: 0;
+                transform: scale(0);
+                transition: all .2s ease;
+                margin-top: 3px;
+                box-shadow: 0 0 5px #ffffff;
+            }
+            .bcos-dock-item.open .bcos-dock-dot {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+            .bcos-dock-item.active .bcos-dock-dot {
+                opacity: 1;
+                transform: scale(1.2);
+                background: var(--accent, #ff6b9d);
+                box-shadow: 0 0 8px var(--accent, #ff6b9d);
+            }
+            .bcos-dock-tooltip {
+                position: absolute;
+                bottom: 56px;
+                left: 50%;
+                transform: translateX(-50%) translateY(4px);
+                background: rgba(20, 24, 36, 0.92);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                padding: 3px 8px;
+                border-radius: 6px;
+                font-size: 11px;
+                color: #ffffff;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: all .15s ease;
+                box-shadow: 0 6px 16px rgba(0,0,0,.5);
+            }
+            .bcos-dock-divider { width: 1px; height: 30px; background: rgba(255, 255, 255, 0.15); margin: 0 4px; flex-shrink: 0; }
+            .bcos-dock-clock-widget { display: flex; align-items: center; gap: 7px; padding: 3px 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); cursor: pointer; transition: all 0.2s ease; height: 40px; box-sizing: border-box; flex-shrink: 0; }
+            .bcos-dock-clock-widget:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(-4px) scale(1.05); box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
+            .bcos-dock-cal-box { width: 30px; height: 32px; border-radius: 6px; overflow: hidden; background: #ffffff; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.35); flex-shrink: 0; }
+            .bcos-dock-cal-month { width: 100%; height: 10px; background: #ef4444; color: #fff; font-size: 8px; font-weight: 800; line-height: 10px; text-align: center; letter-spacing: -0.5px; }
+            .bcos-dock-cal-day { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #1e293b; line-height: 1; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+            .bcos-dock-clock-text { display: flex; flex-direction: column; justify-content: center; line-height: 1.15; text-align: left; }
+            .bcos-dock-clock-time { font-size: 12px; font-weight: 700; color: #ffffff; font-variant-numeric: tabular-nums; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+            .bcos-dock-clock-date { font-size: 10px; color: rgba(255, 255, 255, 0.7); white-space: nowrap; }
+            .bcos-dock-item:hover .bcos-dock-tooltip {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            /* macOS Window Frame & Traffic Lights */
+            .bcos-window-titlebar {
+                background: rgba(30, 36, 52, 0.88);
+                padding: .45rem .8rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: move;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                border-radius: 12px 12px 0 0;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: none;
+                height: 36px;
+                box-sizing: border-box;
+            }
+            .bcos-window-title {
+                font-size: 12.5px;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 600;
+                letter-spacing: 0.2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex: 1;
+                min-width: 0;
+                margin: 0 .4rem;
+                text-align: center;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-window-controls {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+            .bcos-window-btn {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                cursor: pointer;
+                border: none;
+                font-size: 0;
+                padding: 0;
+                position: relative;
+                will-change: transform;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                touch-action: manipulation;
+                transition: transform .15s ease;
+            }
+            .bcos-window-btn::before {
+                content: '';
+                position: absolute;
+                inset: -6px;
+                cursor: pointer;
+            }
+            .bcos-window-close, .bcos-win-btn-close {
+                background: #ff5f56;
+                border: 0.5px solid rgba(224, 68, 62, 0.7);
+            }
+            .bcos-win-btn-min {
+                background: #ffbd2e;
+                border: 0.5px solid rgba(222, 161, 35, 0.7);
+            }
+            .bcos-win-btn-max {
+                background: #27c93f;
+                border: 0.5px solid rgba(26, 171, 41, 0.7);
+            }
+            .bcos-window-controls:hover .bcos-win-btn-close::after {
+                content: '✕';
+                font-size: 8px;
+                font-weight: 900;
+                color: rgba(70, 0, 0, 0.85);
+            }
+            .bcos-window-controls:hover .bcos-win-btn-min::after {
+                content: '−';
+                font-size: 10px;
+                font-weight: 900;
+                color: rgba(80, 50, 0, 0.85);
+                line-height: 0.5;
+            }
+            .bcos-window-controls:hover .bcos-win-btn-max::after {
+                content: '+';
+                font-size: 9px;
+                font-weight: 900;
+                color: rgba(0, 60, 0, 0.85);
+            }
+            .bcos-window-content {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow-y: auto !important;
+                overflow-x: hidden;
+                padding: .6rem;
+                color: var(--text, #e2e8f0);
+                -webkit-overflow-scrolling: touch !important;
+                touch-action: pan-y !important;
+                overscroll-behavior: contain !important;
+                overscroll-behavior-y: contain !important;
+            }
+
+            /* Legacy compatibility rules */
+            .bcos-taskbar { display: none !important; }
+            .bcos-start-menu { display: none !important; }
+
+            .bcos-mini-terminal { background: #0a0a0a; color: #e0e0e0; padding: .5rem; font-family: inherit; font-size: 12px; height: 100%; overflow-y: auto; }
+            .bcos-mini-terminal-input { background: transparent; border: none; outline: none; color: #e0e0e0; font-family: inherit; font-size: 12px; flex: 1; caret-color: #00ff41; }
+            .bcos-file-item { display: flex; align-items: center; gap: .5rem; padding: .3rem .4rem; cursor: pointer; border-radius: 3px; font-size: 12px; }
+.bcos-file-item:hover { background: rgba(255,255,255,0.08); }
+            .bcos-finder-side-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; font-size: 13px; color: #cbd5e1; cursor: pointer; transition: all 0.15s ease; margin-bottom: 2px; }
+            .bcos-finder-side-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+            .bcos-finder-side-item.active { background: #007aff; color: #fff; font-weight: 600; }
+            .bcos-finder-tb-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; }
+            .bcos-finder-tb-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
+            .bcos-finder-entry { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: background 0.12s; border-bottom: 1px solid rgba(255,255,255,0.03); }
+            .bcos-finder-entry:hover { background: rgba(255,255,255,0.07); }
+            .bcos-finder-entry:active { background: rgba(0,122,255,0.25); }
+
+            .bcos-file-name { color: #00aaff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .bcos-file-meta { color: #666; font-size: 10px; white-space: nowrap; }
+
+            /* Mobile & Vertical Responsive Window Adaptation (横屏/竖屏自适应) */
+            @media (max-width: 768px) {
+                .hide-on-mobile { display: none !important; }
+                #bcos-screen { padding: .35rem; font-size: 12px; }
+                .bcos-desktop-icons {
+                    top: 34px !important;
+                    left: 8px !important;
+                    max-height: calc(100% - 114px - env(safe-area-inset-bottom, 0px)) !important;
+                    gap: 6px 8px !important;
+                }
+                .bcos-desktop-icon {
+                    width: 66px !important;
+                    min-height: 72px !important;
+                    height: auto !important;
+                    padding: 4px 2px 5px !important;
+                    gap: 3px !important;
+                    flex-shrink: 0 !important;
+                }
+                .bcos-desktop-icon-emoji {
+                    font-size: 28px !important;
+                    line-height: 1.1 !important;
+                    flex-shrink: 0 !important;
+                }
+                .bcos-desktop-icon-label {
+                    font-size: 10.5px !important;
+                    line-height: 1.25 !important;
+                    min-height: 14px !important;
+                    max-height: 28px !important;
+                    -webkit-line-clamp: 2 !important;
+                    flex-shrink: 0 !important;
+                }
+                .bcos-menubar {
+                    height: 28px;
+                    padding: 0 8px;
+                }
+                .bcos-menubar-apple {
+                    font-size: 14px;
+                }
+                .bcos-menubar-appname {
+                    font-size: 12px;
+                }
+                .bcos-menubar-status-item {
+                    font-size: 11px;
+                    padding: 1px 4px;
+                }
+                .bcos-menubar-clock {
+                    font-size: 11.5px;
+                }
+                .bcos-dock-wrap {
+                    position: absolute !important;
+                    bottom: max(6px, env(safe-area-inset-bottom, 6px)) !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    display: flex !important;
+                    justify-content: center !important;
+                    z-index: 9995 !important;
+                    pointer-events: auto !important;
+                }
+                .bcos-dock {
+                    height: 46px;
+                    max-width: calc(100vw - 12px);
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    -webkit-overflow-scrolling: touch;
+                    touch-action: pan-x;
+                    padding: 3px 6px;
+                    gap: 4px;
+                    border-radius: 14px;
+                }
+                .bcos-dock-item {
+                    width: 36px;
+                    height: 40px;
+                    flex-shrink: 0;
+                }
+                .bcos-dock-item:hover {
+                    transform: none;
+                }
+                .bcos-dock-icon-box {
+                    width: 34px;
+                    height: 34px;
+                    font-size: 18px;
+                    border-radius: 8px;
+                }
+                .bcos-dock-tooltip {
+                    display: none !important;
+                }
+                /* Adaptive Responsive Windows for Mobile / Portrait */
+                .bcos-window {
+                    position: fixed !important;
+                    left: 6px !important;
+                    right: 6px !important;
+                    width: calc(100vw - 12px) !important;
+                    max-width: calc(100vw - 12px) !important;
+                    top: 34px !important;
+                    height: calc(100dvh - 96px) !important;
+                    max-height: calc(100dvh - 96px) !important;
+                    transform: none !important;
+                    border-radius: 12px !important;
+                    min-width: 0 !important;
+                }
+                .bcos-window-titlebar {
+                    height: 38px !important;
+                    padding: 0 10px !important;
+                    cursor: default;
+                }
+                .bcos-window-controls {
+                    gap: 10px !important;
+                }
+                .bcos-window-btn {
+                    width: 22px !important;
+                    height: 22px !important;
+                    min-width: 22px !important;
+                    min-height: 22px !important;
+                    font-size: 11px !important;
+                    font-weight: 800 !important;
+                }
+                .bcos-win-btn-close::after {
+                    content: '✕' !important;
+                    font-size: 11px !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
+                }
+                .bcos-win-btn-min::after {
+                    content: '−' !important;
+                    font-size: 13px !important;
+                    line-height: 0.5 !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
+                }
+                .bcos-win-btn-max::after {
+                    content: '+' !important;
+                    font-size: 11px !important;
+                    color: rgba(0, 0, 0, 0.75) !important;
+                }
+                .bcos-window-btn::before {
+                    inset: -8px !important;
+                }
+                .bcos-window-resize {
+                    display: none !important;
+                }
+                .bcos-window-content {
+                    padding: .5rem !important;
+                    overflow-y: auto !important;
+                    overflow-x: hidden !important;
+                    -webkit-overflow-scrolling: touch !important;
+                    touch-action: pan-y !important;
+                    overscroll-behavior: contain !important;
+                    overscroll-behavior-y: contain !important;
+                }
+            }
+
+            /* ===== macOS BCOS Anniversary App ===== */
+            .bcos-anni-container {
+                padding: 1.2rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1.2rem;
+                max-width: 760px;
+                margin: 0 auto;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-anni-hero {
+                position: relative;
+                border-radius: 16px;
+                padding: 1.5rem 1.2rem;
+                background: linear-gradient(135deg, rgba(255, 107, 157, 0.22) 0%, rgba(167, 139, 250, 0.18) 50%, rgba(30, 41, 59, 0.5) 100%);
+                border: 1px solid rgba(255, 107, 157, 0.35);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                text-align: center;
+                overflow: hidden;
+            }
+            .bcos-anni-big-days {
+                font-size: clamp(2.8rem, 6vw, 4.2rem);
+                font-weight: 900;
+                line-height: 1;
+                background: linear-gradient(135deg, #ffffff 30%, #ff8db3 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                letter-spacing: 1px;
+                font-variant-numeric: tabular-nums;
+            }
+            .bcos-anni-unit {
+                font-size: 0.85rem;
+                font-weight: 800;
+                letter-spacing: 4px;
+                color: var(--accent, #ff6b9d);
+                margin: 0.3rem 0;
+                text-transform: uppercase;
+            }
+            .bcos-anni-subtime {
+                font-size: 0.95rem;
+                color: rgba(255, 255, 255, 0.9);
+                font-variant-numeric: tabular-nums;
+                margin-top: 0.2rem;
+            }
+            .bcos-anni-since {
+                font-size: 0.75rem;
+                color: rgba(255, 255, 255, 0.6);
+                margin-top: 0.5rem;
+            }
+            .bcos-anni-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+            .bcos-anni-btn {
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                color: #ffffff;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all .15s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .bcos-anni-btn:hover {
+                background: rgba(255, 255, 255, 0.18);
+                transform: translateY(-1px);
+            }
+            .bcos-anni-btn.primary {
+                background: var(--accent, #ff6b9d);
+                color: #000;
+                border-color: transparent;
+                font-weight: 700;
+            }
+            .bcos-anni-btn.primary:hover {
+                background: #ff85ae;
+                box-shadow: 0 4px 16px rgba(255, 107, 157, 0.4);
+            }
+            .bcos-anni-section-title {
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.85);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding-bottom: 6px;
+            }
+            .bcos-anni-ms-item {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 8px 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 12px;
+                margin-bottom: 6px;
+                transition: background .15s;
+            }
+            .bcos-anni-ms-item.reached {
+                border-left: 3px solid #00ff41;
+                background: rgba(0, 255, 65, 0.05);
+            }
+            .bcos-anni-ms-item.next {
+                border-left: 3px solid var(--accent, #ff6b9d);
+                background: rgba(255, 107, 157, 0.08);
+                box-shadow: 0 0 12px rgba(255, 107, 157, 0.2);
+            }
+
+            /* ===== macOS BCOS App Store ===== */
+            .bcos-store-wrap {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: #111420;
+                color: #e2e8f0;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-store-nav {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 12px;
+                background: rgba(255, 255, 255, 0.03);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                overflow-x: auto;
+                flex-shrink: 0;
+            }
+            .bcos-store-tab {
+                padding: 5px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.7);
+                transition: all .15s ease;
+                white-space: nowrap;
+            }
+            .bcos-store-tab:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #ffffff;
+            }
+            .bcos-store-tab.active {
+                background: var(--accent, #ff6b9d);
+                color: #000000;
+            }
+            .bcos-store-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 1rem;
+                -webkit-overflow-scrolling: touch;
+            }
+            .bcos-store-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 12px;
+            }
+            .bcos-store-card {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+            }
+            .bcos-store-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(255, 255, 255, 0.22);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            }
+            .bcos-store-card-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .bcos-store-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                flex-shrink: 0;
+            }
+            .bcos-store-btn {
+                background: #007aff;
+                color: #ffffff;
+                border: none;
+                padding: 5px 14px;
+                border-radius: 14px;
+                font-size: 11.5px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all .15s ease;
+            }
+            .bcos-store-btn:hover {
+                background: #0066d6;
+            }
+            .bcos-store-btn.installed {
+                background: rgba(255, 255, 255, 0.12);
+                color: #ffffff;
+            }
+            .bcos-store-btn.danger {
+                background: rgba(239, 68, 68, 0.15);
+                color: #ef4444;
+                border: 1px solid rgba(239, 68, 68, 0.3);
+            }
+
+            /* ===== macOS BCOS Code Studio Pro ===== */
+            .bcos-te-wrap {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: #141724;
+                color: #d4d4d4;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            }
+            .bcos-te-tabs {
+                display: flex;
+                align-items: center;
+                background: #0d0f17;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                overflow-x: auto;
+                height: 34px;
+                flex-shrink: 0;
+            }
+            .bcos-te-tab {
+                padding: 0 12px;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.6);
+                cursor: pointer;
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+                background: transparent;
+                transition: background .12s;
+                white-space: nowrap;
+            }
+            .bcos-te-tab:hover {
+                background: rgba(255, 255, 255, 0.04);
+                color: #ffffff;
+            }
+            .bcos-te-tab.active {
+                background: #141724;
+                color: #ffffff;
+                border-top: 2px solid var(--accent, #ff6b9d);
+            }
+            .bcos-te-tab-close {
+                border-radius: 50%;
+                width: 14px;
+                height: 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                color: #888;
+            }
+            .bcos-te-tab-close:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
+            }
+            .bcos-te-bar {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 4px 8px;
+                background: rgba(255, 255, 255, 0.03);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                flex-wrap: wrap;
+                flex-shrink: 0;
+            }
+            .bcos-te-btn {
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                color: #ffffff;
+                padding: 3px 8px;
+                border-radius: 5px;
+                font-size: 11px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                transition: background .15s;
+            }
+            .bcos-te-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .bcos-te-btn.active {
+                background: var(--accent, #ff6b9d);
+                color: #000;
+                border-color: transparent;
+                font-weight: bold;
+            }
+            .bcos-te-editor-container {
+                flex: 1;
+                display: flex;
+                position: relative;
+                overflow: hidden;
+            }
+            .bcos-te-gutter {
+                width: 44px;
+                background: #0d0f17;
+                border-right: 1px solid rgba(255, 255, 255, 0.08);
+                color: #555c6d;
+                font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.55;
+                padding: 8px 6px 8px 0;
+                text-align: right;
+                user-select: none;
+                overflow: hidden;
+                box-sizing: border-box;
+                white-space: pre;
+            }
+            .bcos-te-textarea-box {
+                flex: 1;
+                position: relative;
+                overflow: hidden;
+            }
+            .bcos-te-textarea {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                background: #141724;
+                color: #e2e8f0;
+                font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.55;
+                padding: 8px 10px;
+                border: none;
+                outline: none;
+                resize: none;
+                box-sizing: border-box;
+                white-space: pre;
+                overflow: auto;
+                tab-size: 4;
+            }
+            .bcos-te-preview-pane {
+                flex: 1;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                background: #10131d;
+                padding: 12px 16px;
+                overflow-y: auto;
+                font-size: 13px;
+                line-height: 1.6;
+                color: #e2e8f0;
+                display: none;
+            }
+            .bcos-te-preview-pane.active {
+                display: block;
+            }
+            .bcos-te-statusbar {
+                height: 22px;
+                background: #0b0d14;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 10px;
+                font-size: 10.5px;
+                color: #8b949e;
+                flex-shrink: 0;
+                user-select: none;
+            }
+            /* Carrot cursor for bcos desktop mode — force override all third-party cursors */
+            #bcos-overlay.bcos-desktop-mode,
+            #bcos-overlay.bcos-desktop-mode *,
+            #bcos-overlay.bcos-desktop-mode .bcos-window,
+            #bcos-overlay.bcos-desktop-mode .bcos-window-titlebar,
+            #bcos-overlay.bcos-desktop-mode .bcos-window-content,
+            #bcos-overlay.bcos-desktop-mode .bcos-desktop-icon,
+            #bcos-overlay.bcos-desktop-mode .bcos-taskbar,
+            #bcos-overlay.bcos-desktop-mode .bcos-start-menu,
+            #bcos-overlay.bcos-desktop-mode button,
+            #bcos-overlay.bcos-desktop-mode input,
+            #bcos-overlay.bcos-desktop-mode a,
+            #bcos-overlay.bcos-desktop-mode span,
+            #bcos-overlay.bcos-desktop-mode div {
+                cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3C!-- Carrot body --%3E%3Cpath d='M10 4 L12 2 L14 4 L13 7 L16 10 L20 14 L24 18 L26 22 L24 26 L20 24 L16 20 L12 16 L9 13 L6 14 L4 12 L6 10 L8 8 Z' fill='%23ff8c00' stroke='%23cc6600' stroke-width='0.5'/%3E%3C!-- Carrot ridges --%3E%3Cpath d='M12 6 L14 8 M14 9 L16 11 M16 12 L18 14 M18 15 L20 17 M20 18 L22 20' stroke='%23cc6600' stroke-width='0.8' fill='none'/%3E%3C!-- Carrot leaves --%3E%3Cpath d='M10 4 Q8 0 6 1 Q9 2 10 4' fill='%23228b22'/%3E%3Cpath d='M12 2 Q11 -1 9 0 Q11 1 12 2' fill='%23228b22'/%3E%3Cpath d='M14 4 Q16 0 18 1 Q15 2 14 4' fill='%23228b22'/%3E%3Cpath d='M10 4 Q7 1 5 2 Q8 3 10 4' fill='%2332cd32'/%3E%3C/svg%3E") 2 2, default !important;
+            }
+            #bcos-overlay.bcos-desktop-mode .bcos-window-btn,
+            #bcos-overlay.bcos-desktop-mode .bcos-start-btn,
+            #bcos-overlay.bcos-desktop-mode .bcos-taskbar-item,
+            #bcos-overlay.bcos-desktop-mode .bcos-desktop-icon,
+            #bcos-overlay.bcos-desktop-mode .bcos-bm-btn,
+            #bcos-overlay.bcos-desktop-mode .bcos-link {
+                cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M10 4 L12 2 L14 4 L13 7 L16 10 L20 14 L24 18 L26 22 L24 26 L20 24 L16 20 L12 16 L9 13 L6 14 L4 12 L6 10 L8 8 Z' fill='%23ff8c00' stroke='%23cc6600' stroke-width='0.5'/%3E%3Cpath d='M12 6 L14 8 M14 9 L16 11 M16 12 L18 14 M18 15 L20 17 M20 18 L22 20' stroke='%23cc6600' stroke-width='0.8' fill='none'/%3E%3Cpath d='M10 4 Q8 0 6 1 Q9 2 10 4' fill='%23228b22'/%3E%3Cpath d='M12 2 Q11 -1 9 0 Q11 1 12 2' fill='%23228b22'/%3E%3Cpath d='M14 4 Q16 0 18 1 Q15 2 14 4' fill='%23228b22'/%3E%3Cpath d='M10 4 Q7 1 5 2 Q8 3 10 4' fill='%2332cd32'/%3E%3C/svg%3E") 2 2, pointer !important;
+            }
+            /* BCOS Anniversary Window App Styles */
+            .bcos-anni-container { height: 100%; overflow-y: auto; padding: .8rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #e2e8f0; }
+            .bcos-anni-banner { background: linear-gradient(135deg, rgba(255,107,157,.15) 0%, rgba(167,139,250,.15) 100%); border: 1px solid rgba(255,107,157,.3); border-radius: 12px; padding: 1rem; text-align: center; margin-bottom: .8rem; }
+            .bcos-anni-big-days { font-size: 2.8rem; font-weight: 900; color: #ff6b9d; font-family: monospace; line-height: 1; text-shadow: 0 0 16px rgba(255,107,157,.4); }
+            .bcos-anni-unit { font-size: .85rem; color: #aaa; margin-top: .15rem; }
+            .bcos-anni-subtime { font-size: 1.05rem; font-weight: 700; color: #a78bfa; margin-top: .4rem; font-family: monospace; }
+            .bcos-anni-since { font-size: .7rem; color: #888; margin-top: .3rem; }
+            .bcos-anni-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .8rem; justify-content: center; }
+            .bcos-anni-btn { background: #1a1a2e; border: 1px solid #334155; color: #cbd5e1; padding: .4rem .8rem; border-radius: 6px; cursor: pointer; font-size: .75rem; font-weight: 600; display: inline-flex; align-items: center; gap: .3rem; transition: all .2s; }
+            .bcos-anni-btn:hover { border-color: #ff6b9d; color: #ff6b9d; }
+            .bcos-anni-btn.primary { background: linear-gradient(135deg, #ff6b9d, #a78bfa); color: #fff; border: none; box-shadow: 0 2px 10px rgba(255,107,157,.3); }
+            .bcos-anni-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(255,107,157,.5); }
+            .bcos-anni-section-title { font-size: .8rem; font-weight: 700; color: #ff6b9d; margin: .8rem 0 .4rem 0; display: flex; align-items: center; gap: .3rem; }
+            .bcos-anni-ms-list { display: flex; flex-direction: column; gap: .35rem; }
+            .bcos-anni-ms-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); padding: .35rem .6rem; border-radius: 6px; font-size: .75rem; }
+            .bcos-anni-ms-item.reached { border-left: 3px solid #00ff41; color: #e2e8f0; }
+            .bcos-anni-ms-item.next { border-left: 3px solid #ff6b9d; background: rgba(255,107,157,.08); font-weight: 700; }
+
+            /* ===== BCOS Car Cockpit Lockscreen CSS (Fully Synchronized with car.html) ===== */
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            overscroll-behavior: none !important;
+            -webkit-user-select: none;
+            user-select: none;
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            position: fixed !important;
+            inset: 0 !important;
+            overflow: hidden !important;
+            background: #000;
+            color: #e6f7ff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: auto !important;
+        }
+
+        html.bcos-carlock-active {
+            font-size: 16px !important;
+        }
+
+        html.bcos-carlock-active,
+        body.bcos-carlock-active {
+            overflow: hidden !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            position: fixed !important;
+            inset: 0 !important;
+            overscroll-behavior: none !important;
+            -webkit-overflow-scrolling: auto !important;
+            touch-action: pan-y;
+        }
+
+        /* Vehicle Touchscreen Specific Optimizations */
+        #bcos-car-lockscreen, #car-root {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: pan-y;
+        }
+        #bcos-car-lockscreen button, #car-root button,
+        #bcos-car-lockscreen .clickable, #car-root .clickable {
+            min-height: 44px;
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+        #bcos-car-lockscreen .car-slider-thumb, #car-root .car-slider-thumb {
+            touch-action: none;
+            cursor: grab;
+        }
+        #bcos-car-lockscreen .car-slider-thumb:active, #car-root .car-slider-thumb:active {
+            cursor: grabbing;
+        }
+        :root {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.74);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+            --car-wp-dim: rgba(5, 8, 17, 0.45);
+            --car-wp-blur: 1px;
+        }
+        #bcos-car-lockscreen.theme-xpeng, #car-root.theme-xpeng, body.theme-xpeng {
+            --car-bg: radial-gradient(circle at 50% 30%, #0d1a33 0%, #050811 75%, #020308 100%);
+            --car-accent: #00eaff;
+            --car-accent2: #a78bfa;
+            --car-glow: rgba(0, 234, 255, 0.45);
+            --car-panel: rgba(10, 20, 40, 0.74);
+            --car-border: rgba(0, 234, 255, 0.25);
+            --car-text: #e6f7ff;
+            --car-text-dim: #7f9eb2;
+        }
+        #bcos-car-lockscreen.theme-bunny, #car-root.theme-bunny, body.theme-bunny {
+            --car-bg: radial-gradient(circle at 50% 30%, #301726 0%, #150912 75%, #0a0408 100%);
+            --car-accent: #ff6b9d;
+            --car-accent2: #ffd166;
+            --car-glow: rgba(255, 107, 157, 0.45);
+            --car-panel: rgba(40, 15, 30, 0.74);
+            --car-border: rgba(255, 107, 157, 0.3);
+            --car-text: #fff0f5;
+            --car-text-dim: #c48b9f;
+        }
+        #bcos-car-lockscreen.theme-aurora, #car-root.theme-aurora, body.theme-aurora {
+            --car-bg: radial-gradient(circle at 50% 30%, #082623 0%, #041412 75%, #020807 100%);
+            --car-accent: #06ffa5;
+            --car-accent2: #38bdf8;
+            --car-glow: rgba(6, 255, 165, 0.45);
+            --car-panel: rgba(6, 32, 28, 0.74);
+            --car-border: rgba(6, 255, 165, 0.3);
+            --car-text: #e6fffb;
+            --car-text-dim: #7bb3aa;
+        }
+        #bcos-car-lockscreen.theme-carbon, #car-root.theme-carbon, body.theme-carbon {
+            --car-bg: radial-gradient(circle at 50% 30%, #2b1114 0%, #120708 75%, #080304 100%);
+            --car-accent: #ff334b;
+            --car-accent2: #fbbf24;
+            --car-glow: rgba(255, 51, 75, 0.45);
+            --car-panel: rgba(35, 12, 16, 0.74);
+            --car-border: rgba(255, 51, 75, 0.3);
+            --car-text: #fff1f2;
+            --car-text-dim: #c2888f;
+        }
+        #bcos-car-lockscreen.theme-stealth, #car-root.theme-stealth, body.theme-stealth {
+            --car-bg: #000000;
+            --car-accent: #d1d5db;
+            --car-accent2: #6b7280;
+            --car-glow: rgba(255, 255, 255, 0.12);
+            --car-panel: rgba(20, 20, 20, 0.88);
+            --car-border: rgba(255, 255, 255, 0.15);
+            --car-text: #e5e7eb;
+            --car-text-dim: #6b7280;
+        }
+
+        #bcos-car-lockscreen, #car-root {
+            z-index: 100000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: max(0.75rem, env(safe-area-inset-top, 0.75rem)) max(1.2rem, env(safe-area-inset-right, 1.2rem)) max(0.75rem, env(safe-area-inset-bottom, 0.75rem)) max(1.2rem, env(safe-area-inset-left, 1.2rem));
+            overflow: hidden;
+            box-sizing: border-box;
+            touch-action: pan-y;
+            overscroll-behavior: none !important;
+            background: var(--car-bg);
+            /* GPU-composite to its own layer — prevents iOS repaint jitter */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            /* Entrance fade hides the brief DOM-injection flash on mobile */
+            animation: carLockscreenEntrance 0.25s ease-out both;
+        }
+        @keyframes carLockscreenEntrance {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+                /* Wallpaper Engine Ambient Glow & Real Pixel Edge Filling */
+        .car-wallpaper-ambient {
+            position: absolute;
+            inset: -55px;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: var(--wp-edge-dominant, #0d121d);
+            filter: blur(56px) saturate(240%) brightness(0.92);
+            -webkit-filter: blur(56px) saturate(240%) brightness(0.92);
+            transform: scale(1.18);
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), background-image 0.5s ease, background-color 0.5s ease;
+            z-index: 0;
+            pointer-events: none;
+            will-change: opacity;
+        }
+        .car-wallpaper-ambient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                /* Top Edge Radiance (Real Top Border Pixels Illumination) */
+                radial-gradient(ellipse 120% 55% at 50% -5%, var(--wp-edge-top, rgba(255,255,255,0.2)) 0%, rgba(var(--wp-edge-top-rgb, 16,20,34), 0.7) 40%, transparent 85%),
+                /* Bottom Edge Radiance (Real Bottom Border Pixels Illumination) */
+                radial-gradient(ellipse 120% 55% at 50% 105%, var(--wp-edge-bottom, rgba(255,255,255,0.2)) 0%, rgba(var(--wp-edge-bottom-rgb, 16,20,34), 0.7) 40%, transparent 85%),
+                /* Left Edge Radiance (Real Left Border Pixels Illumination) */
+                radial-gradient(ellipse 55% 120% at -5% 50%, var(--wp-edge-left, rgba(255,255,255,0.25)) 0%, rgba(var(--wp-edge-left-rgb, 16,20,34), 0.75) 45%, transparent 85%),
+                /* Right Edge Radiance (Real Right Border Pixels Illumination) */
+                radial-gradient(ellipse 55% 120% at 105% 50%, var(--wp-edge-right, rgba(255,255,255,0.25)) 0%, rgba(var(--wp-edge-right-rgb, 16,20,34), 0.75) 45%, transparent 85%);
+            mix-blend-mode: screen;
+            opacity: 0.96;
+            pointer-events: none;
+            transition: background 0.6s ease, opacity 0.6s ease;
+        }
+        .car-wallpaper-ambient::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 35%, rgba(10, 14, 24, 0.35) 75%, var(--wp-edge-dominant, rgba(10, 14, 24, 0.85)) 100%);
+            opacity: 0.82;
+            pointer-events: none;
+        }
+        .car-wallpaper-ambient.active {
+            opacity: 1;
+        }
+        .car-wallpaper-layer {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out, background-size 0.35s ease;
+            z-index: 1;
+            pointer-events: none;
+            will-change: opacity;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: high-quality;
+        }
+        .car-wallpaper-layer.wp-fit-smart {
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+        .car-wallpaper-layer.wp-fit-fill {
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+        }
+        .car-wallpaper-layer.wp-fit-fit,
+        .car-wallpaper-layer.wp-fit-center,
+        .car-wallpaper-layer.wp-fit-contain {
+            background-size: contain !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+            filter: drop-shadow(0 0 35px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 75px var(--wp-edge-dominant, rgba(16,20,34,0.5)));
+            -webkit-filter: drop-shadow(0 0 35px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 75px var(--wp-edge-dominant, rgba(16,20,34,0.5)));
+        }
+        .car-wallpaper-layer.wp-fit-stretch {
+            background-size: 100% 100% !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+        }
+        .car-wallpaper-layer.wp-fit-center {
+            background-size: auto !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+        }
+        .car-wallpaper-layer.wp-fit-tile {
+            background-size: auto !important;
+            background-position: center center !important;
+            background-repeat: repeat !important;
+            background-color: transparent !important;
+        }
+        .car-wallpaper-layer.active {
+            opacity: 1;
+        }
+        .car-wallpaper-layer.wp-loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.09) 50%, transparent 70%);
+            background-size: 200% 100%;
+            animation: wp-shimmer 1.4s linear infinite;
+        }
+        @keyframes wp-shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
+        .car-wallpaper-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--car-wp-dim, rgba(5, 8, 17, 0.45));
+            backdrop-filter: blur(var(--car-wp-blur, 1px));
+            -webkit-backdrop-filter: blur(var(--car-wp-blur, 1px));
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* macOS Frosted Glass Wallpaper Fit Popover */
+        .car-wp-fit-dropdown-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .car-wp-fit-trigger-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid var(--car-border, rgba(255, 255, 255, 0.12));
+            border-radius: 8px;
+            padding: .5rem .8rem;
+            color: var(--car-text, #f1f5f9);
+            font-size: .88rem;
+            cursor: pointer;
+            outline: none;
+            transition: all .2s ease;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .car-wp-fit-trigger-btn:hover {
+            border-color: var(--car-accent, #00eaff);
+            background: rgba(0, 234, 255, 0.08);
+        }
+        .wp-fit-trigger-icon {
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .wp-fit-trigger-title {
+            font-weight: 600;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        }
+        .wp-fit-trigger-sub {
+            font-size: .78rem;
+            color: var(--car-text-dim, #94a3b8);
+            margin-right: auto;
+        }
+        .wp-fit-trigger-arrow {
+            color: var(--car-text-dim, #94a3b8);
+            font-size: .75rem;
+            transition: transform .2s ease;
+        }
+        .car-wp-fit-dropdown-wrap.open .wp-fit-trigger-arrow {
+            transform: rotate(180deg);
+        }
+        .car-wp-fit-popover {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 250px;
+            width: 100%;
+            background: rgba(36, 36, 40, 0.92);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.35);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            box-sizing: border-box;
+            animation: wpFitPopAnim .15s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .car-wp-fit-dropdown-wrap.open .car-wp-fit-popover {
+            display: flex;
+        }
+        /* Inside the scrolling modal the popover expands inline so it can never be clipped */
+        .car-wp-fit-dropdown-wrap > .car-wp-fit-popover {
+            position: static;
+            top: auto;
+            margin-top: 6px;
+            max-height: none;
+        }
+        .car-wp-fit-floating {
+            position: fixed !important;
+            z-index: 99999 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+        }
+        @keyframes wpFitPopAnim {
+            from {
+                opacity: 0;
+                transform: translateY(-4px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .car-wp-fit-opt {
+            display: flex;
+            align-items: center;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-size: .88rem;
+            color: rgba(255, 255, 255, 0.95);
+            transition: background .15s ease, color .15s ease;
+        }
+        .car-wp-fit-opt:hover {
+            background: rgba(0, 122, 255, 0.9) !important;
+            color: #ffffff !important;
+        }
+        .car-wp-fit-opt .opt-check {
+            width: 20px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .car-wp-fit-opt .opt-name {
+            flex-shrink: 0;
+            font-weight: 500;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        }
+        .car-wp-fit-opt .opt-hint {
+            margin-left: auto;
+            font-size: .72rem;
+            color: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .car-wp-fit-opt:hover .opt-hint {
+            color: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* The lockscreen is an interactive UI: moving its entire content layer
+           for burn-in protection makes WebKit recomposite and repaint the full viewport on taps/gestures.
+           Keep content layer stationary to eliminate touch and PWA viewport jitter. */
+        .car-content-layer,
+        #bcos-car-lockscreen .car-content-layer,
+        #car-root .car-content-layer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: none !important;
+            transform: none !important;
+            -webkit-transform: none !important;
+            will-change: auto !important;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+        }
+
+        /* Header / Top Status Bar */
+        .car-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: clamp(0.4rem, 1vh, 0.75rem);
+            border-bottom: none !important;
+            transition: opacity .4s ease;
+            flex-shrink: 0;
+            min-height: 40px;
+            gap: 0.6rem;
+            z-index: 10;
+        }
+        .car-brand {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+            font-weight: 800;
+            color: var(--car-accent);
+            text-shadow: 0 0 14px var(--car-glow);
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            min-width: 0;
+            flex: 1;
+            letter-spacing: 0.5px;
+        }
+        .car-brand::-webkit-scrollbar {
+            display: none;
+        }
+        .car-brand-title {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .car-badge {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            padding: 0 0.75rem;
+            height: 28px;
+            min-height: 28px !important;
+            max-height: 28px;
+            border-radius: 999px;
+            font-size: .75rem;
+            color: var(--car-accent2);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .35rem;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            white-space: nowrap;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .car-badge .badge-icon {
+            font-size: 0.85rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .car-badge.clickable {
+            cursor: pointer;
+        }
+        .car-badge.clickable:hover {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 12px var(--car-glow);
+            transform: translateY(-1px);
+        }
+
+        /* Top actions buttons */
+        .car-top-actions {
+            display: none;
+            align-items: center;
+            gap: .5rem;
+        }
+        #bcos-car-lockscreen.show-top-actions .car-top-actions,
+        #car-root.show-top-actions .car-top-actions,
+        body.show-top-actions .car-top-actions {
+            display: flex;
+        }
+        .car-top-status-right {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .car-top-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--car-border);
+            color: var(--car-text);
+            cursor: pointer;
+            outline: none;
+        }
+        .car-top-btn:hover {
+            background: rgba(0, 234, 255, 0.12);
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 14px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-top-btn:active {
+            transform: scale(0.96);
+        }
+        .car-mini-trigger {
+            opacity: 0.9;
+        }
+
+        .car-icon-btn {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            color: var(--car-text);
+            padding: .35rem .75rem;
+            border-radius: 8px;
+            font-size: .8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            transition: all .2s;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .car-icon-btn:hover, .car-icon-btn:active {
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 12px var(--car-glow);
+        }
+
+        /* Main Cockpit Split Layout */
+        .car-main-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: clamp(0.75rem, 1.8vw, 1.5rem);
+            align-items: stretch;
+            padding: clamp(0.3rem, 1vh, 0.8rem) 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scrollbar-width: none;
+        }
+        .car-main-grid::-webkit-scrollbar {
+            display: none;
+        }
+        @media (max-width: 900px) {
+            .car-main-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Left Column: Big Clock & Anniversary Hero */
+        .car-hero-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0;
+            min-width: 0;
+        }
+        .car-clock-box {
+            margin-bottom: clamp(0.4rem, 1.4vh, 1.1rem);
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .car-digital-clock {
+            font-size: clamp(2.4rem, 5.5vw, 5.2rem);
+            font-weight: 900;
+            font-family: 'SF Mono', 'Courier New', Courier, monospace, "Segoe UI";
+            letter-spacing: 1px;
+            line-height: 1;
+            color: var(--car-accent);
+            text-shadow: 0 0 28px var(--car-glow);
+            font-variant-numeric: tabular-nums;
+            transition: filter 1.2s ease, opacity 1.2s ease;
+        }
