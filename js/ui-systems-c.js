@@ -1253,6 +1253,13 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.6.9482', title:'index.html 模块化重构：18 JS + 6 CSS 独立模块、圆角矩形屏适配、PWA 强制刷新', items:[
+            '【此改动适用于 index.html】[新增] 模块化架构：1.5MB 单文件 index.html 拆分为 18 个 JS 模块与 6 个 CSS 模块 —— js/core.js（核心/配置/状态）、js/renderer.js（渲染模块）、js/game-logic-a/b/c.js（游戏逻辑）、js/ui.js（UI 模块）、js/icons.js（图标模块）、js/wallpaper.js（壁纸管理模块）、js/os.js/os-apps-a/b/c.js（系统应用）等，CSS 拆分为 css/base.css / ui.css / effects.css / car-lockscreen-a/b.css，附 MODULES.md 模块说明文档，可维护性质变',
+            '【此改动适用于 index.html】[新增] 圆角矩形屏适配模块：新增 css/rounded-screen.css 与 js/screen.js，通过 ?rounded=1 参数或 localStorage 开关启用，为车机中控异形屏提供四角遮罩、侧边栏/任务栏安全内收与弹窗留边；默认零侵入，普通矩形屏无任何视觉变化',
+            '【此改动适用于 index.html】[优化] 车机锁屏样式由运行时 JS 注入改为 <link> 预加载：原 _bcosInjectCSS() 157KB 样式字符串改为空实现（保留函数名兼容两处历史调用），样式提前至页面解析阶段生效，消除首屏样式闪烁，行为等价',
+            '【此改动适用于 index.html】[优化] 壁纸静态数据分离：34KB 模糊占位图、37.5KB 锁屏 HTML 模板、12.8KB 内置壁纸列表移入 js/wallpaper-data.js 独立加载，主逻辑文件瘦身，缓存粒度更细，离线可用性不变',
+            '【此改动适用于 index.html】[PWA 强制刷新] Service Worker 缓存升级至 v7.8.6.9482，预缓存全部 24 个新模块，旧版本缓存强制清理，离线客户端自动更新'
+        ]},
         { ver:'v7.8.4.9430', title:'壁纸边缘RGB提取与毛玻璃底色融合、右键菜单防退出全屏、顶栏兔可可头像/Emoji、纪念日与应用商店及Code Studio重构', items:[
             '【此改动适用于 index.html / car.html / car.css】[壁纸边缘RGB提取与智能光晕融合] 优化壁纸预处理算法（optimize_wallpapers.py），在生成壁纸元数据时精准提取上下左右四周 8% 边框像素均值及主色 RGB，写入 manifest.json 与 BUILTIN_WALLPAPERS。在「适应屏幕 (Fit to Screen)」及居中模式下，毛玻璃衬底动态注入 --wp-edge-dominant / --wp-edge-top / bottom / left / right 渐变光晕，彻底消除黑边空隙与割裂感；用户本地上传壁纸亦通过 Canvas 自动提取。',
             '【此改动适用于 index.html / car.html】[重构右键菜单与全屏防退出修复] 根除点击右键菜单项及快捷功能时意外退出全屏的浏览器默认行为；移除 closeBcosOS 中强制 exitFullscreen 的限制；在右键菜单中加入实时全屏状态感知徽章与精准切换；彻底消除 window.prompt/alert 对全屏状态的打断。',
