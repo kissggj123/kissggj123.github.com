@@ -1191,7 +1191,7 @@ function _bcosResolvePath(path) {
         return `
             <div class="bcos-ctx-header">
                 <span>🐰 BCOS COCKPIT OS</span>
-                <span class="bcos-ctx-ver">v7.8.6.9482</span>
+                <span class="bcos-ctx-ver">${CONFIG.VERSION}</span>
             </div>
             
             <div class="bcos-ctx-group-title">文件与创作</div>
