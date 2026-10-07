@@ -31,11 +31,12 @@
 | `js/os.js` | 终端 (cd/ls/pwd) / 路径解析 |
 | `js/icons.js` | **图标模块**: 桌面图标状态 / 拖拽 / 重命名 / 右键菜单 |
 | `js/os-apps-a/b/c.js` | bcos 系统应用 (启动动画 / macOS 风格应用 / 系统 dialogs) |
-| `js/wallpaper-data.js` | **壁纸数据**: 模糊占位图 + 车机锁屏 HTML 模板 (须在 wallpaper.js 前加载) |
+| `js/wallpaper-data.js` | **壁纸数据**: 模糊占位图 + 车机锁屏 HTML 模板 + 内置壁纸列表 (须在 wallpaper.js 前加载) |
+| `js/ui-systems-c.js` | 鼠标轨迹 / PWA / 更新日志 / 主循环 |
 | `js/wallpaper.js` | **壁纸管理模块**: 车机锁屏 IIFE — 壁纸引擎/缓存/预加载/适配/上传管理 |
 | `js/apps.js` | 应用: 我的文件夹 / 文本编辑器 |
 | `js/ui-systems-a.js` | 抽卡 / 主题 / 导航 / 周年 / 事件日志 |
-| `js/ui-systems-b.js` | Toast·Loading / 上帝模式 / 存档槽 / 头像特效 / 触摸动效 / 鼠标轨迹 / PWA / 更新日志 / 主循环 |
+| `js/ui-systems-b.js` | Toast·Loading / 上帝模式 / 存档槽 / 头像特效 / 触摸动效 |
 
 ## 三处"手术" (唯一的手工级改动, 均有脚本审计)
 1. `_bcosInjectCSS()` (157KB 静态 CSS): 内容原样提取为 `css/car-lockscreen-a/b.css`,
@@ -46,6 +47,9 @@
 3. 车机锁屏 HTML 模板 (37.5KB, `el.innerHTML = \`...\``): 移入 `js/wallpaper-data.js` 为
    `window.__WP_HTML`, 原处改为 `el.innerHTML = window.__WP_HTML;`。
    模板经检查: 零 `${}` 插值、零反斜杠转义, 纯静态 HTML。
+4. `BUILTIN_WALLPAPERS` (12.8KB 内置壁纸列表): 移入 `js/wallpaper-data.js` 为
+   `window.__BUILTIN_WALLPAPERS`, 原处改为 `const BUILTIN_WALLPAPERS = window.__BUILTIN_WALLPAPERS;`。
+   经检查为纯数据数组 (无函数/标识符引用)。
 
 ## 圆角矩形屏适配
 - 启用: URL 加 `?rounded=1`, 或 `localStorage.setItem('bcos-rounded-screen','1')`,

@@ -18,7 +18,7 @@ const RELATIVE_CORE_ASSETS = [
     'js/ui.js', 'js/os.js', 'js/icons.js',
     'js/os-apps-a.js', 'js/os-apps-b.js', 'js/os-apps-c.js',
     'js/wallpaper-data.js', 'js/wallpaper.js',
-    'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js',
+    'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js', 'js/ui-systems-c.js',
     'manifest.json',
     'manifest-car.json',
     'favicon.ico',
