@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.3.9373 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v7.8.3.9373';
+// Service Worker - Bunny CC v7.8.6.9480 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.6.9480';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -11,20 +11,29 @@ const RELATIVE_CORE_ASSETS = [
     'car.html',
     'car.css',
     'manifest.json',
+    'manifest-car.json',
     'favicon.ico',
+    'dist/Bunny CC_Profile.JPG',
     'icon/16.png', 'icon/32.png', 'icon/48.png', 'icon/64.png',
     'icon/72.png', 'icon/96.png', 'icon/128.png', 'icon/144.png',
     'icon/192.png', 'icon/256.png', 'icon/300.png', 'icon/512.png',
     'icon/1024.png', 'icon/icon.png',
     'wallpaper/manifest.json',
     'wallpaper/placeholders.json',
+    'wallpaper/Starlight210128.opt.jpg',
     'wallpaper/Starlight210128.min.b64.p1',
     'wallpaper/Starlight210128.min.b64.p2',
     'wallpaper/Starlight210128.min.b64.p3',
+    'wallpaper/Starlight210128.min.b64.p4',
+    'wallpaper/1126942.opt.jpg',
     'wallpaper/1126942.min.b64.p1',
+    'wallpaper/1126942.min.b64.p2',
+    'wallpaper/1126942.min.b64.p3',
+    'wallpaper/IMG_2833.opt.jpg',
     'wallpaper/IMG_2833.min.b64.p1',
     'wallpaper/IMG_2833.min.b64.p2',
     'wallpaper/IMG_2833.min.b64.p3',
+    'wallpaper/IMG_2833.min.b64.p4',
     'wallpaper/1204143.opt.jpg',
     'wallpaper/177002252600796.opt.jpg',
     'wallpaper/177002254500-200.opt.jpg',
@@ -41,6 +50,12 @@ const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).h
 
 // Old cache versions to force-purge (ensures icon refresh & cache invalidation)
 const OLD_CACHE_PATTERNS = [
+    'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
+    'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
+    'bunny-cc-v7.8.3.9393', 'bunny-cc-runtime-v7.8.3.9393',
+    'bunny-cc-v7.8.3.9392', 'bunny-cc-runtime-v7.8.3.9392',
+    'bunny-cc-v7.8.3.9391', 'bunny-cc-runtime-v7.8.3.9391',
+    'bunny-cc-v7.8.3.9390', 'bunny-cc-runtime-v7.8.3.9390',
     'bunny-cc-v7.8.1.9367', 'bunny-cc-runtime-v7.8.1.9367',
     'bunny-cc-v7.8.1.9366', 'bunny-cc-runtime-v7.8.1.9366',
     'bunny-cc-v7.8.1.9365', 'bunny-cc-runtime-v7.8.1.9365',
@@ -174,21 +189,56 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Navigation requests: network-first with cache fallback
+    // Navigation requests: Fast network-with-timeout (1500ms) with instant cache fallback
+    // In mainland China without proxy, GitHub Pages connections often stall for 15-30s.
+    // By timing out after 1.5s and immediately serving the cached index/car HTML,
+    // we eliminate the white-screen freeze completely while allowing background updates!
     if (req.mode === 'navigate') {
         event.respondWith(
-            fetch(req).then(resp => {
-                const clone = resp.clone();
-                caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                return resp;
-            }).catch(() => {
-                return caches.match(req).then(r => {
-                    if (r) return r;
-                    if (pathname.endsWith('car.html') || pathname.includes('/car')) {
-                        return caches.match(new URL('car.html', SCOPE_BASE).href);
+            new Promise((resolve) => {
+                let resolved = false;
+                const timeoutId = setTimeout(async () => {
+                    if (!resolved) {
+                        resolved = true;
+                        const cached = await caches.match(req);
+                        if (cached) return resolve(cached);
+                        const fallbackUrl = (pathname.endsWith('car.html') || pathname.includes('/car'))
+                            ? new URL('car.html', SCOPE_BASE).href
+                            : new URL('index.html', SCOPE_BASE).href;
+                        const fallback = await caches.match(fallbackUrl);
+                        if (fallback) return resolve(fallback);
+                        const rootFallback = await caches.match(SCOPE_BASE);
+                        if (rootFallback) return resolve(rootFallback);
                     }
-                    return caches.match(new URL('index.html', SCOPE_BASE).href)
-                        .then(fallback => fallback || caches.match(SCOPE_BASE));
+                }, 1500);
+
+                fetch(req).then(resp => {
+                    clearTimeout(timeoutId);
+                    if (!resolved) {
+                        resolved = true;
+                        const clone = resp.clone();
+                        caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+                        resolve(resp);
+                    } else {
+                        // Background update runtime cache
+                        const clone = resp.clone();
+                        caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+                    }
+                }).catch(async (err) => {
+                    clearTimeout(timeoutId);
+                    if (!resolved) {
+                        resolved = true;
+                        const cached = await caches.match(req);
+                        if (cached) return resolve(cached);
+                        const fallbackUrl = (pathname.endsWith('car.html') || pathname.includes('/car'))
+                            ? new URL('car.html', SCOPE_BASE).href
+                            : new URL('index.html', SCOPE_BASE).href;
+                        const fallback = await caches.match(fallbackUrl);
+                        if (fallback) return resolve(fallback);
+                        const rootFallback = await caches.match(SCOPE_BASE);
+                        if (rootFallback) return resolve(rootFallback);
+                        resolve(new Response('Offline - No cache available', { status: 503 }));
+                    }
                 });
             })
         );
