@@ -1221,7 +1221,7 @@ function _bcosRefreshStoreIfOpen() {
         } else if (_bcosSettingsActiveTab === 'about') {
             html += hero('ℹ️', '关于本系统', 'Bunny Cockpit OS · 兔可可智能座舱系统');
             html += card(`
-                ${row('系统版本', '<span style="font-family:monospace;color:#00ff41;font-weight:bold;">${CONFIG.VERSION}</span>', 'Build 20261005 · Official Release')}
+                ${row('系统版本', '<span style="font-family:monospace;color:#00ff41;font-weight:bold;">' + CONFIG.VERSION + '</span>', 'Build 20261005 · Official Release')}
                 ${row('计算芯片', '<span style="color:#fff;">Bunny M3 HyperDrive (8-Core AI)</span>', '车载车规级智能计算平台')}
                 ${row('高速显存', '<span style="color:#fff;">16 GB LPDDR5X (Unified)</span>', '高带宽硬件加速显存')}
                 ${row('系统内核', '<span style="font-family:monospace;color:#94a3b8;">BCOS Darwin 24.1.0 aarch64</span>', 'POSIX 兼容虚拟环境')}
@@ -1232,7 +1232,7 @@ function _bcosRefreshStoreIfOpen() {
             html += hero('⚙️', '通用偏好', '管理存储空间、软件更新与系统基础首选项');
             html += card(`
                 ${row('💾 BCOS 虚拟存储', '<span style="color:#34c759;font-weight:600;">12.8 MB / 512 MB</span>', '包含文稿、离线缓存与应用商店安装包')}
-                ${row('🔄 软件更新', '<span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (${CONFIG.VERSION})</span>', '支持 Service Worker 离线热更新')}
+                ${row('🔄 软件更新', '<span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (' + CONFIG.VERSION + ')</span>', '支持 Service Worker 离线热更新')}
                 ${row('🌐 系统语言', '<span style="color:#fff;">简体中文 (中国大陆)</span>', 'Apple SF Pro / PingFang SC 智能回退')}
                 ${row('⏰ 日期与时间', '<span style="color:#007aff;">网络时间自动对时 (已同步)</span>', '精确到秒，实时更新 Dock 与菜单栏时钟')}
             `);
