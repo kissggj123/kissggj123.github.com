@@ -450,6 +450,21 @@ let _bcosFinderPath = 'me';
             netType = navigator.connection.effectiveType || netType;
             netEff = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : netEff;
         }
+        // ---- 模块化状态检测 (v7.8.6.9482+): 检查 6 CSS + 19 JS 模块实际加载情况 ----
+        const _bcosModCss = ['base','ui','effects','car-lockscreen-a','car-lockscreen-b','rounded-screen'];
+        const _bcosModJs = ['screen','core','game','renderer','game-logic-a','game-logic-b','game-logic-c','ui','os','icons','os-apps-a','os-apps-b','os-apps-c','wallpaper-data','wallpaper','apps','ui-systems-a','ui-systems-b','ui-systems-c'];
+        const _loadedCss = new Set([...document.querySelectorAll('link[rel="stylesheet"]')].map(l => (l.getAttribute('href')||'').split('/').pop().replace(/\.css(\?.*)?$/,'')));
+        const _loadedJs = new Set([...document.querySelectorAll('script[src]')].map(s => (s.getAttribute('src')||'').split('/').pop().replace(/\.js(\?.*)?$/,'')));
+        const _modDot = (name, ok) => `<span title="${name}${ok?' ✓':' ✗ 404'}" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ok?'#00ff41':'#f44'};margin:1px;"></span>`;
+        const _cssDots = _bcosModCss.map(n => _modDot('css/'+n+'.css', _loadedCss.has(n))).join('');
+        const _jsDots = _bcosModJs.map(n => _modDot('js/'+n+'.js', _loadedJs.has(n))).join('');
+        const _cssOk = _bcosModCss.filter(n => _loadedCss.has(n)).length;
+        const _jsOk = _bcosModJs.filter(n => _loadedJs.has(n)).length;
+        const _modHtml = `<div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;">`
+            + `<div style="color:#888;font-size:10px;">📦 Modules: <span style="color:${_cssOk===6?'#00ff41':'#f44'};">CSS ${_cssOk}/6</span> · <span style="color:${_jsOk===19?'#00ff41':'#f44'};">JS ${_jsOk}/19</span></div>`
+            + `<div style="margin-top:.25rem;"><div style="color:#666;font-size:9px;">CSS</div><div>${_cssDots}</div></div>`
+            + `<div style="margin-top:.2rem;"><div style="color:#666;font-size:9px;">JS</div><div>${_jsDots}</div></div>`
+            + `${(_cssOk<6||_jsOk<19)?'<div style="color:#f44;font-size:10px;margin-top:.2rem;">⚠️ 有模块缺失（悬停红点查看文件名）</div>':''}</div>`;
         // Build structure once with placeholder elements for dynamic data
         root.innerHTML = `<div style="text-align:center;margin-bottom:.5rem;color:#00ff41;font-weight:bold;">📊 bcos System Monitor</div>
         <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-cpu" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-cpu-bar" style="height:8px;border-radius:4px;"></div></div></div>
@@ -458,6 +473,7 @@ let _bcosFinderPath = 'me';
         <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-dom" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-dom-bar" style="height:8px;border-radius:4px;"></div></div></div>
         <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">GPU: ${_bcosEscape(gpuShort)}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};height:8px;width:${_gpuInfo.gpuAccelerated ? 80 : 20}%;border-radius:4px;"></div></div><div style="color:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};font-size:10px;margin-top:.2rem;">● ${_gpuInfo.gpuAccelerated ? 'GPU Accelerated' : 'No GPU accel'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div></div>
         <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Network: ${netType} ${netEff!=='—'?'| '+netEff:''}</div><div style="color:#00ff41;font-size:10px;margin-top:.2rem;">● Connected</div></div>
+        ${_modHtml}
         <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
             <div style="color:#00ff41;font-size:11px;">Repository Stats:</div>
             <div style="color:#e0e0e0;font-size:11px;">Total: ${t} | Original: ${o} | Forks: ${f}</div>
@@ -522,6 +538,23 @@ let _bcosFinderPath = 'me';
             <div>${_bcosRepos.length} repositories | ${new Set(_bcosRepos.map(r=>r[2])).size} languages</div>
             <div style="margin-top:.5rem;color:#666;">Powered by Bunny Core</div>
             <div style="color:#666;">© 2014-${new Date().getFullYear()} kissggj123</div>
+            <div style="margin-top:.6rem;border-top:1px solid #333;padding-top:.5rem;text-align:left;">
+                <div style="color:#00ff41;font-size:11px;font-weight:bold;margin-bottom:.3rem;">📦 模块化架构 <span style="color:#888;font-weight:normal;">v7.8.6.9482</span></div>
+                <div style="color:#aaa;font-size:10px;line-height:1.6;">
+                    <div>🏗️ <b style="color:#e0e0e0;">index.html</b> 由 1.5MB 单文件拆分为 <b style="color:#00ff41;">19 JS + 6 CSS</b> 独立模块</div>
+                    <div style="margin-top:.25rem;color:#888;">— JS 模块 —</div>
+                    <div>🖥️ screen.js <span style="color:#666;">屏幕检测</span> · 🧩 core.js <span style="color:#666;">核心/配置/状态</span></div>
+                    <div>🎮 game.js <span style="color:#666;">大富翁初始化</span> · 🎨 renderer.js <span style="color:#666;">渲染模块</span></div>
+                    <div>🎲 game-logic-a/b/c.js <span style="color:#666;">游戏逻辑（托管/股票/赌场）</span></div>
+                    <div>🪟 ui.js <span style="color:#666;">UI 模块</span> · 💻 os.js <span style="color:#666;">终端</span> · 🎯 icons.js <span style="color:#666;">图标模块</span></div>
+                    <div>📱 os-apps-a/b/c.js <span style="color:#666;">系统应用</span> · 🖼️ wallpaper-data.js + wallpaper.js <span style="color:#666;">壁纸管理</span></div>
+                    <div>📝 apps.js <span style="color:#666;">应用</span> · ⚙️ ui-systems-a/b/c.js <span style="color:#666;">UI 系统</span></div>
+                    <div style="margin-top:.25rem;color:#888;">— CSS 模块 —</div>
+                    <div>🎨 base.css <span style="color:#666;">基础</span> · 🧱 ui.css <span style="color:#666;">组件</span> · ✨ effects.css <span style="color:#666;">动效</span></div>
+                    <div>🚗 car-lockscreen-a/b.css <span style="color:#666;">车机锁屏</span> · ⭕ rounded-screen.css <span style="color:#666;">圆角屏适配</span></div>
+                    <div style="margin-top:.25rem;color:#666;font-size:9px;">详见仓库根目录 MODULES.md（含 4 处无损提取审计）</div>
+                </div>
+            </div>
             <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;border-radius:4px;" onclick="window.open('https://github.com/kissggj123/Bunny-Cockpit-OS','_blank')">🌐 View on GitHub</button></div>
         </div>`;
     }
