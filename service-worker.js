@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.6.9480 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v7.8.6.9480';
+// Service Worker - Bunny CC v7.8.6.9481 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.6.9481';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -10,6 +10,15 @@ const RELATIVE_CORE_ASSETS = [
     'index.html',
     'car.html',
     'car.css',
+    'css/base.css', 'css/ui.css', 'css/effects.css',
+    'css/car-lockscreen-a.css', 'css/car-lockscreen-b.css', 'css/rounded-screen.css',
+    'js/screen.js',
+    'js/core.js', 'js/game.js', 'js/renderer.js',
+    'js/game-logic-a.js', 'js/game-logic-b.js', 'js/game-logic-c.js',
+    'js/ui.js', 'js/os.js', 'js/icons.js',
+    'js/os-apps-a.js', 'js/os-apps-b.js', 'js/os-apps-c.js',
+    'js/wallpaper-data.js', 'js/wallpaper.js',
+    'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js',
     'manifest.json',
     'manifest-car.json',
     'favicon.ico',
@@ -50,6 +59,7 @@ const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).h
 
 // Old cache versions to force-purge (ensures icon refresh & cache invalidation)
 const OLD_CACHE_PATTERNS = [
+    'bunny-cc-v7.8.6.9480', 'bunny-cc-runtime-v7.8.6.9480',
     'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
     'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
     'bunny-cc-v7.8.3.9393', 'bunny-cc-runtime-v7.8.3.9393',
