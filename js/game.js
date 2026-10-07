@@ -28,7 +28,7 @@ function initMonopoly() {
             if (gp) gp.style.display = '';
         }
         renderEvents();
-        logEvent('兔可可王国 v7.8.6.9480 已启动', 'info');
+        logEvent('兔可可王国 v7.8.6.9482 已启动', 'info');
 
         // Resume pending AI action if interrupted by page refresh
         // Critical: if it's AI's turn and game has started, ALWAYS resume to prevent stuck state
