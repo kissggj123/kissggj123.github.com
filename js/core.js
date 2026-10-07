@@ -28,7 +28,7 @@
 
     /* ==================== Config ==================== */
     const CONFIG = {
-        VERSION: 'v7.8.6.9482',
+        VERSION: window.BCOS_VERSION || 'v7.8.6.9482',
         SAVE_KEY: 'bunny_cc_v7.7.2.9293',
         MONO_SAVE_KEY: 'bunny_mono_v6',
         START_DATE: '2024/03/12 00:00:00',
