@@ -2,7 +2,7 @@
 
 > **Bunny Cockpit OS (bcos)** · 专为智能新能源车机中控大屏、桌面及移动端精心打造的沉浸式虚拟操作系统与纪念日流转空间。
 
-![Version](https://img.shields.io/badge/version-v7.8.6.9480-00eaff.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-v7.8.6.9482-00eaff.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-NIO%20%7C%20XPENG%20%7C%20Li%20Auto%20%7C%20Tesla%20%7C%20Web%20PWA-ff6b9d.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
@@ -69,7 +69,26 @@
 
 ## 📋 版本更新日志
 
-### **v7.8.6.9480** *(当前版本)*
+### **v7.8.6.9482** *(当前版本)*
+
+#### 【index.html 模块化重构】
+1. **模块化架构** `[适用于 index.html]` `[新增]`：
+   - 1.5MB 单文件 `index.html` 拆分为 **18 个 JS 模块** + **6 个 CSS 模块**，附 `MODULES.md` 模块说明文档。
+   - JS：`js/screen.js`（屏幕检测）、`js/core.js`（核心/配置/状态）、`js/game.js`（大富翁初始化）、`js/renderer.js`（**渲染模块**）、`js/game-logic-a/b/c.js`（游戏逻辑）、`js/ui.js`（**UI 模块**）、`js/os.js`（终端）、`js/icons.js`（**图标模块**）、`js/os-apps-a/b/c.js`（系统应用）、`js/wallpaper-data.js` + `js/wallpaper.js`（**壁纸管理模块**）、`js/apps.js`（应用）、`js/ui-systems-a/b/c.js`（UI 系统）。
+   - CSS：`css/base.css`（基础）、`css/ui.css`（组件）、`css/effects.css`（动效）、`css/car-lockscreen-a/b.css`（车机锁屏样式）、`css/rounded-screen.css`（圆角屏适配）。
+2. **圆角矩形屏适配** `[适用于 index.html]` `[新增]`：
+   - 新增 `css/rounded-screen.css` 与 `js/screen.js`，通过 `?rounded=1` 参数或 localStorage 开关启用，为车机中控异形屏提供四角遮罩与安全边距，默认零侵入。
+3. **样式预加载优化** `[适用于 index.html]` `[优化]`：
+   - 车机锁屏 157KB 样式由运行时 JS 注入改为 `<link>` 预加载，消除首屏样式闪烁。
+   - 壁纸静态数据（34KB 占位图 / 37.5KB HTML 模板 / 12.8KB 内置列表）分离至 `js/wallpaper-data.js` 独立加载。
+4. **PWA 强制刷新** `[优化]`：Service Worker 缓存升级至 `v7.8.6.9482`，预缓存全部 24 个新模块。
+5. 版本号、PWA 缓存与文档同步升级至 **v7.8.6.9482**。
+
+---
+
+### **v7.8.6.9480**
+
+### **v7.8.6.9480**
 
 #### 【桌面图标避让顶栏与 Dock 栏遮挡深度修复】
 1. **桌面图标顶栏与 Dock 避让区重构** `[适用于 index.html]`：
@@ -330,6 +349,48 @@
 - **iOS Safari**：点击底部分享按钮 ➔「添加到主屏幕」。
 - **Chrome / Edge**：点击地址栏右侧的「安装应用」图标 ➔「安装」。
 - **车机浏览器**：支持书签全屏或车机快捷方式常驻。
+
+---
+
+## 🌳 项目文件结构
+
+```
+kissggj123.github.com/
+├── index.html              # 主入口（模块化后仅 37KB，引用下方 css/js）
+├── car.html                # 车机锁屏独立页
+├── car.css                 # 车机页样式
+├── service-worker.js       # PWA 离线缓存（v7.8.6.9482）
+├── manifest.json           # PWA 清单
+├── MODULES.md              # 模块说明文档
+├── css/                    # 样式模块（6）
+│   ├── base.css            # 主题变量 / 基础 / 背景 / 布局
+│   ├── ui.css              # UI 组件（卡片/按钮/弹窗/Toast…）
+│   ├── effects.css         # 响应式 / GPU 加速 / 动效
+│   ├── car-lockscreen-a.css# 车机锁屏样式（上）
+│   ├── car-lockscreen-b.css# 车机锁屏样式（下）
+│   └── rounded-screen.css  # 圆角矩形屏适配（新增）
+├── js/                     # 脚本模块（19，按序加载）
+│   ├── screen.js           # 屏幕形态检测（head 同步）
+│   ├── core.js             # 兼容垫片 / 配置 / 游戏数据 / 状态
+│   ├── game.js             # 大富翁：初始化 / 经济 / 新闻
+│   ├── renderer.js         # 渲染模块
+│   ├── game-logic-a.js     # 自动托管 / 回合 / 银行 / 载具
+│   ├── game-logic-b.js     # 股票 / 拍卖 / 卡片 / 巫师
+│   ├── game-logic-c.js     # 市场 / 赌场 / AI
+│   ├── ui.js               # UI 模块（弹窗助手）
+│   ├── os.js               # 终端系统
+│   ├── icons.js            # 图标模块（桌面图标管理）
+│   ├── os-apps-a.js        # 系统应用 A
+│   ├── os-apps-b.js        # 系统应用 B（含 Monitor / About）
+│   ├── os-apps-c.js        # 系统应用 C
+│   ├── wallpaper-data.js   # 壁纸静态数据（占位图/模板/列表）
+│   ├── wallpaper.js        # 壁纸管理模块（锁屏 IIFE）
+│   ├── apps.js             # 应用（文件夹 / 文本编辑器）
+│   ├── ui-systems-a.js     # 抽卡 / 主题 / 导航
+│   ├── ui-systems-b.js     # Toast / 存档 / 头像特效
+│   └── ui-systems-c.js     # 鼠标轨迹 / PWA / 更新日志 / 主循环
+└── wallpaper/              # 壁纸资源（base64 分片）
+```
 
 ---
 
