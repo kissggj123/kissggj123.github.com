@@ -189,7 +189,7 @@ window.__WP_HTML = `<!-- Wallpaper Background Layer -->
                             </div>
                             <div class="car-diag-item clickable" onclick="openMenuModal()" data-tooltip="打开中控设置导航">
                                 <div class="car-diag-label">CORE SYSTEM 💻</div>
-                                <div class="car-diag-val">bcos v7.8.6.9482</div>
+                                <div class="car-diag-val">bcos ${CONFIG.VERSION}</div>
                             </div>
                         </div>
                     </div>
