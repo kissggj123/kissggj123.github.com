@@ -1,0 +1,307 @@
+/* ==================== Responsive ==================== */
+        /* Global: prevent pinch-zoom and double-tap zoom; allow pan */
+        html, body { touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
+        /* Touch optimization — prevent double-tap zoom on interactive elements */
+        .btn, .tab-item, .toggle, .sidebar-logo, .mono-tile-cell, .card-title {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        /* Prevent text selection on game UI for better mobile experience */
+        .mono-board, .tab-bar, .sidebar { -webkit-user-select: none; user-select: none; }
+        /* Extra small screens (phones) */
+        @media (max-width: 480px) {
+            body { overflow-y: auto; overflow-x: hidden; }
+            .app { flex-direction: column; height: auto; min-height: 100vh; }
+            .sidebar { display: none; }
+            .content { flex: 1; padding: .75rem; padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem)); }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .anniversary-days { font-size: 2.2rem; }
+            .card { padding: .75rem; }
+            .mono-tile-cell { width: 50px; min-height: 64px; }
+            .modal { padding: 1rem; max-width: 95%; }
+            .modal-title { font-size: 1rem; }
+        }
+        /* Small screens (tablets / large phones) */
+        @media (max-width: 768px) {
+            body { overflow-y: auto; overflow-x: hidden; }
+            .app { flex-direction: column; height: auto; min-height: 100vh; }
+            .sidebar { display: none; }
+            .content { flex: 1; padding: 1rem; padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem)); }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .anniversary-days { font-size: 2.5rem; }
+            .card { padding: 1rem; }
+            /* Bottom Sheet modal on mobile */
+            .modal-overlay { align-items: flex-end; }
+            .modal {
+                border-radius: 16px 16px 0 0;
+                max-height: 85vh;
+                width: 100%;
+                max-width: 100%;
+                padding: 1rem;
+                padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
+                animation: slideUpSheet .3s ease-out;
+            }
+            .modal-drag-handle { display: block; }
+        }
+        /* Medium screens (small desktops / large tablets in landscape) */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .sidebar { width: 180px; }
+            .content { padding: 1rem; }
+        }
+        /* Large screens (desktops) */
+        @media (min-width: 1440px) {
+            .sidebar { width: 240px; }
+            .content { padding: 2rem; }
+            .grid-auto { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+        }
+        /* Extra large screens */
+        @media (min-width: 1920px) {
+            .content { max-width: 1600px; margin: 0 auto; }
+        }
+        /* PWA Standalone Mode: Retain full screen layout */
+        @media (display-mode: standalone) and (max-width: 768px) {
+            .sidebar { display: none; }
+        }
+        body.in-bcos .tab-bar,
+        body.in-bcos #tab-fab {
+            display: none !important;
+        }
+        @keyframes slideUpSheet {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        /* ==================== GPU / Hardware Acceleration ==================== */
+        /* Promote animated/frequently-updated elements to GPU layers */
+        /* Only apply backface-visibility broadly; will-change only on actively animating elements */
+        .mono-tile-cell, .mono-ring-dot, .card, .btn, .tab-item, .modal-overlay > div {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        /* Canvas elements get GPU compositing */
+        canvas {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Ring canvas — dedicated GPU layer */
+        #mono-ring-canvas {
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        /* Map strip — GPU compositing for smooth scrolling */
+        #mono-map-strip {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Player dots on ring — GPU layer for smooth animation */
+        .mono-ring-dot {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Modal overlay — GPU for smooth fade */
+        .modal-overlay {
+            will-change: opacity;
+        }
+        .modal-overlay > div {
+            transform: translateZ(0);
+        }
+        /* News ticker — GPU for smooth scroll animation */
+        .news-ticker-inner {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Mouse trail canvas — GPU */
+        #trail-canvas, #bunny-canvas {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Sidebar — no persistent will-change; transitions are infrequent */
+        .sidebar {
+            will-change: auto;
+        }
+        /* Tab bar — no persistent will-change; transitions are infrequent */
+        .tab-bar {
+            will-change: auto;
+        }
+        /* Egg FAB — GPU for smooth drag */
+        #egg-fab {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        /* Disable will-change on idle elements to free GPU memory */
+        .mono-tile-cell:not(.current):not(:hover) {
+            will-change: auto;
+        }
+        /* ==================== Render Optimization ==================== */
+        /* Contain layout/paint for cards to reduce reflow cost */
+        .card, .modal-overlay > div, .mono-tile-cell {
+            contain: layout style paint;
+        }
+        /* Skip rendering for off-screen content in long views */
+        .view.active > .card:nth-child(n+5) {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 300px;
+        }
+        /* Button press ripple effect */
+        @keyframes rippleEffect {
+            0%   { transform: scale(0); opacity: 0.5; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            opacity: 0;
+        }
+        .btn:active::after {
+            animation: rippleEffect .4s ease-out;
+        }
+        .btn { position: relative; overflow: hidden; }
+        /* Tab item active press animation */
+        .tab-item:active { transform: scale(0.92); transition: transform .1s; }
+        .tab-item { transition: color var(--transition), transform .15s ease; }
+        /* Respect reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* ==================== Mobile-Exclusive Touch Bloom — Theme-Specific ==================== */
+        /* Independent from PC trail system — lightweight CSS-only bloom at touch points */
+        html.touch-device .touch-bloom {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0;
+            animation: touchBloom 0.6s ease-out forwards;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+        @keyframes touchBloom {
+            0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0.5; }
+            40%  { opacity: 0.35; }
+            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+        }
+        /* Theme-specific bloom shapes — each theme gets a unique visual */
+        html.touch-device[data-theme="bunny"] .touch-bloom {
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        html.touch-device[data-theme="forest"] .touch-bloom {
+            border-radius: 50% 0 50% 50% / 50% 0 50% 50%;
+        }
+        html.touch-device[data-theme="ocean"] .touch-bloom {
+            border-radius: 50%;
+            border-style: double;
+            border-width: 3px;
+        }
+        html.touch-device[data-theme="starlight"] .touch-bloom {
+            border-radius: 30%;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            border: none !important;
+        }
+        html.touch-device[data-theme="cyber"] .touch-bloom {
+            border-radius: 2px;
+        }
+        html.touch-device[data-theme="sunset"] .touch-bloom {
+            border-radius: 50%;
+        }
+        html.touch-device[data-theme="mint"] .touch-bloom {
+            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+        }
+        html.touch-device[data-theme="rose"] .touch-bloom {
+            border-radius: 50% 0 50% 50%;
+        }
+        html.touch-device[data-theme="aurora"] .touch-bloom {
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+        html.touch-device[data-theme="galaxy"] .touch-bloom {
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+        html.touch-device[data-theme="candy"] .touch-bloom {
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        html.touch-device[data-theme="matrix"] .touch-bloom {
+            border-radius: 0;
+        }
+        /* ==================== Mobile Player Move Animation ==================== */
+        /* One-shot bounce when a player moves — GPU-accelerated, no infinite loops */
+        html.touch-device .mono-ring-dot.player-moved {
+            animation: mPlayerBounce 0.5s cubic-bezier(.34,1.56,.64,1) !important;
+        }
+        @keyframes mPlayerBounce {
+            0%   { transform: translate(-50%, -50%) scale(0.5); }
+            50%  { transform: translate(-50%, -50%) scale(1.6); }
+            100% { transform: translate(-50%, -50%) scale(1.25); }
+        }
+        /* ==================== Mobile Player Card Active Effect ==================== */
+        /* Theme-specific active player card glow using pseudo-element */
+        html.touch-device .mono-player.active {
+            position: relative;
+        }
+        html.touch-device .mono-player.active::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-sm, 8px);
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(var(--accent-rgb),.12), transparent);
+            animation: mPlayerCardGlow 2s ease-in-out infinite;
+            will-change: opacity;
+        }
+        @keyframes mPlayerCardGlow { 0%,100%{opacity:.3} 50%{opacity:.6} }
+        /* Mobile: softer trail canvas opacity for gentler visual */
+        html.touch-device #trail-canvas { opacity: 0.7; }
+        /* Mobile: add subtle glow to active buttons instead of relying on trail */
+        html.touch-device .btn:active {
+            filter: brightness(1.15);
+            transform: scale(0.96);
+        }
+        /* Mobile: gentle bounce for tab switches */
+        html.touch-device .tab-item:active {
+            transform: scale(0.88);
+            transition: transform .08s;
+        }
+        /* Mobile: card tap feedback — subtle lift without trail dependency */
+        html.touch-device .game-card:active,
+        html.touch-device .mono-tile-cell:active {
+            transform: scale(0.97);
+            transition: transform .08s;
+        }
+        /* Mobile: dice roll animation — theme-adaptive shake */
+        html.touch-device .mono-dice-num.rolling {
+            animation: mDiceShake 0.4s ease-in-out !important;
+        }
+        @keyframes mDiceShake {
+            0%,100% { transform: translateX(0) rotate(0); }
+            25% { transform: translateX(-3px) rotate(-5deg); }
+            50% { transform: translateX(3px) rotate(5deg); }
+            75% { transform: translateX(-2px) rotate(-3deg); }
+        }
+        /* Theme-adaptive BCOS button — in main stylesheet for first-load visibility */
+        .bcos-btn { width:100%; margin-top:.6rem; padding:.6rem; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; cursor:pointer; border-radius:var(--radius-sm); transition:all .25s ease; position:relative; overflow:hidden; }
+        .bcos-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transform:translateX(-100%); transition:transform .5s; }
+        .bcos-btn:hover::after { transform:translateX(100%); }
+        [data-theme="bunny"] .bcos-btn { background:linear-gradient(135deg,#FFF0F5,#FF6B9D); border:1px solid #FF6B9D; color:#fff; box-shadow:0 2px 12px rgba(255,107,157,.3); }
+        [data-theme="forest"] .bcos-btn { background:linear-gradient(135deg,#F0F7EE,#4CAF50); border:1px solid #4CAF50; color:#fff; box-shadow:0 2px 12px rgba(76,175,80,.3); }
+        [data-theme="ocean"] .bcos-btn { background:linear-gradient(135deg,#E8F4FD,#0EA5E9); border:1px solid #0EA5E9; color:#fff; box-shadow:0 2px 12px rgba(14,165,233,.3); }
+        [data-theme="starlight"] .bcos-btn { background:linear-gradient(135deg,#1a1a2e,#a78bfa); border:1px solid #a78bfa; color:#fff; box-shadow:0 2px 12px rgba(167,139,250,.4); }
+        [data-theme="cyber"] .bcos-btn { background:linear-gradient(135deg,#0c0a1d,#fbbf24); border:1px solid #fbbf24; color:#0c0a1d; box-shadow:0 0 16px rgba(251,191,36,.4); text-shadow:0 0 4px rgba(236,72,153,.5); }
+        [data-theme="sunset"] .bcos-btn { background:linear-gradient(135deg,#FFF3E0,#FF6B35); border:1px solid #FF6B35; color:#fff; box-shadow:0 2px 12px rgba(255,107,53,.3); }
+        [data-theme="mint"] .bcos-btn { background:linear-gradient(135deg,#E8F5E9,#26A69A); border:1px solid #26A69A; color:#fff; box-shadow:0 2px 12px rgba(38,166,154,.3); }
+        [data-theme="rose"] .bcos-btn { background:linear-gradient(135deg,#FCE4EC,#E91E63); border:1px solid #E91E63; color:#fff; box-shadow:0 2px 12px rgba(233,30,99,.3); }
+        [data-theme="aurora"] .bcos-btn { background:linear-gradient(135deg,#0B1026,#06FFA5); border:1px solid #06FFA5; color:#0B1026; box-shadow:0 0 16px rgba(6,255,165,.4); }
+        [data-theme="galaxy"] .bcos-btn { background:linear-gradient(135deg,#0F0C29,#C084FC); border:1px solid #C084FC; color:#fff; box-shadow:0 0 16px rgba(192,132,252,.4); }
+        [data-theme="candy"] .bcos-btn { background:linear-gradient(135deg,#FFF8E7,#FF4081); border:1px solid #FF4081; color:#fff; box-shadow:0 2px 12px rgba(255,64,129,.3); }
+        [data-theme="matrix"] .bcos-btn { background:linear-gradient(135deg,#000000,#003B00); border:1px solid #00FF41; color:#00FF41; box-shadow:0 0 16px rgba(0,255,65,.4); font-family:'Courier New',monospace; }
+    
