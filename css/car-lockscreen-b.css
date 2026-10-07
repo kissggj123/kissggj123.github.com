@@ -1,0 +1,2179 @@
+/* ===== css/bcos-b.css — bcos 系统样式 (原 _bcosInjectCSS 注入, 模块化拆分) ===== */
+        .car-digital-date {
+            font-size: clamp(0.85rem, 1.5vw, 1.25rem);
+            color: var(--car-text-dim);
+            margin-top: .4rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            flex-wrap: wrap;
+        }
+
+        /* Anniversary Hero Card - Cyber Cockpit Horizon Glass */
+        .car-hero-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(10, 18, 30, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+            padding: clamp(0.85rem, 1.8vh, 1.35rem) clamp(1rem, 2vw, 1.6rem);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            box-shadow: 0 16px 42px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 24px rgba(0, 229, 255, 0.04);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .car-hero-card:hover {
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 32px var(--car-glow);
+        }
+        #bcos-car-lockscreen.car-idle-dimmed .car-digital-clock,
+        #bcos-car-lockscreen.car-idle-dimmed .car-hero-days,
+        #car-root.car-idle-dimmed .car-digital-clock,
+        #car-root.car-idle-dimmed .car-hero-days {
+            filter: brightness(0.92);
+            opacity: 0.92;
+        }
+        .car-hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 5%, rgba(255, 255, 255, 0.45) 30%, var(--car-accent) 50%, rgba(255, 255, 255, 0.45) 70%, transparent 95%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .car-hero-card::after {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, var(--car-glow) 0%, transparent 70%);
+            opacity: 0.18;
+            pointer-events: none;
+        }
+        .car-hero-content-split {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+        .car-hero-main-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .car-hero-gauge-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .65rem;
+            flex-shrink: 0;
+            padding: .2rem 0.2rem .2rem 1.2rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .car-hero-title {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--car-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: .25rem;
+        }
+        .car-hero-title-main {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+        .car-hero-beacon {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            box-shadow: 0 0 8px var(--car-accent);
+            animation: carBeaconPulse 2s ease-in-out infinite;
+        }
+        @keyframes carBeaconPulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.25); box-shadow: 0 0 12px var(--car-accent); }
+        }
+        .car-hero-badge-tag {
+            font-size: .65rem;
+            color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            letter-spacing: 0.6px;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-weight: 600;
+        }
+
+        /* Circular HUD Milestone Gauge Ring */
+        .car-gauge-ring-wrap {
+            position: relative;
+            width: 94px;
+            height: 94px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .car-gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .car-gauge-track {
+            stroke: rgba(255, 255, 255, 0.07);
+        }
+        .car-gauge-bar {
+            stroke: var(--car-accent);
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--car-glow));
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), stroke 0.3s;
+        }
+        .car-gauge-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+        }
+        .car-gauge-pct {
+            font-size: 1.38rem;
+            font-weight: 900;
+            line-height: 1;
+            font-family: 'SF Mono', "SF Pro Display", -apple-system, BlinkMacSystemFont, monospace;
+            color: var(--car-accent);
+            text-shadow: 0 0 12px var(--car-glow);
+        }
+        .car-gauge-sub {
+            font-size: 0.62rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.8px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* High-Tech Cockpit Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+        [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(10, 20, 35, 0.95);
+            border: 1px solid var(--car-accent);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 10px var(--car-glow);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 99999;
+        }
+        [data-tooltip]:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .car-top-bar [data-tooltip]::before {
+            bottom: auto;
+            top: calc(100% + 8px);
+            transform: translateX(-50%) translateY(-4px);
+        }
+        .car-top-bar [data-tooltip]:hover::before {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Companion & Anniversary Vitals */
+        .car-hero-vitals {
+            display: flex;
+            gap: .45rem;
+            width: 100%;
+            justify-content: center;
+        }
+        .car-vital-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9px;
+            padding: 3px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 58px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .car-vital-chip:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .car-vital-chip .vital-label {
+            font-size: 0.54rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.6px;
+            font-weight: 600;
+        }
+        .car-vital-chip .vital-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'SF Mono', Consolas, monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .car-vital-chip .vital-val small {
+            font-size: 0.54rem;
+            opacity: 0.65;
+            font-weight: 500;
+        }
+        .car-heart-pulse {
+            display: inline-block;
+            animation: carHeartBeat 1.8s ease-in-out infinite;
+        }
+        @keyframes carHeartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.22); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        /* Top Bar Enhancements */
+        .car-brand-title {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .car-brand-text {
+            letter-spacing: 1px;
+        }
+        .theme-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            box-shadow: 0 0 6px var(--car-glow);
+            display: inline-block;
+            margin-right: 4px;
+        }
+        .car-gear-badge {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .car-hero-days-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: .55rem;
+            margin: .25rem 0 .2rem 0;
+        }
+        .car-hero-days {
+            font-size: clamp(2.8rem, 5.2vw, 4.4rem);
+            font-weight: 900;
+            line-height: 1;
+            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            background: linear-gradient(135deg, #ffffff 40%, var(--car-accent) 95%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 16px var(--car-glow));
+            letter-spacing: -1.5px;
+            font-variant-numeric: tabular-nums;
+            transition: filter 1.2s ease, opacity 1.2s ease;
+        }
+        .car-hero-unit {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 1.5px;
+        }
+        .car-hero-time-row {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .65rem;
+            flex-wrap: nowrap;
+        }
+        .car-hero-time-tag {
+            font-size: .66rem;
+            font-weight: 600;
+            color: var(--car-text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0 6px;
+            height: 20px;
+            line-height: 20px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            margin: 0;
+            vertical-align: middle;
+        }
+        .car-hero-time {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--car-accent);
+            font-family: 'SF Mono', Consolas, Monaco, monospace;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: baseline;
+            min-height: 1.35rem;
+            line-height: 1.35rem;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .car-ms-frac {
+            font-size: 0.72em;
+            opacity: 0.65;
+            font-weight: 600;
+            letter-spacing: 0;
+            margin-left: 2px;
+            display: inline-block;
+            min-width: 2.5em;
+            font-variant-numeric: tabular-nums;
+            line-height: inherit;
+        }
+        .car-hero-progress-box {
+            background: rgba(255, 255, 255, 0.035);
+            border-radius: 12px;
+            padding: .55rem .8rem;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+        .car-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .78rem;
+            color: var(--car-text);
+            margin-bottom: .45rem;
+            font-weight: 600;
+            gap: .5rem;
+        }
+        .car-progress-bar-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .car-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            border-radius: 6px;
+            box-shadow: 0 0 12px var(--car-glow);
+            transition: width .5s ease;
+            position: relative;
+        }
+        .car-progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            animation: progressGlint 2.8s ease-in-out infinite;
+        }
+        @keyframes progressGlint {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        /* Right Column: Side Widgets (Protected from Overflow) */
+        .car-side-col {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+            height: 100%;
+            max-height: 100%;
+            min-height: 0;
+            justify-content: space-between;
+        }
+        .car-widget-card {
+            background: var(--car-panel);
+            border: 1px solid var(--car-border);
+            border-radius: 16px;
+            padding: .85rem 1.15rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            transition: border-color .3s ease, box-shadow .3s ease, transform .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .car-widget-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            pointer-events: none;
+        }
+        .car-widget-card:hover {
+            border-color: var(--car-accent);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 15px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+        }
+        .car-widget-header .title {
+            font-size: .82rem;
+            font-weight: 700;
+            color: var(--car-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* EV Battery & Range Hero Component */
+        .car-battery-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .4rem 0 .6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: .6rem;
+        }
+        .car-battery-left {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+        }
+        .car-battery-icon-wrap {
+            display: flex;
+            align-items: center;
+        }
+        .car-battery-outline {
+            width: 58px;
+            height: 28px;
+            border: 2.5px solid var(--car-accent);
+            border-radius: 6px;
+            padding: 2.5px;
+            box-shadow: 0 0 12px var(--car-glow);
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .car-battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            border-radius: 3px;
+            transition: width .5s ease, background .3s;
+        }
+        .car-battery-fill.low {
+            background: #ff334b !important;
+            box-shadow: 0 0 10px rgba(255, 51, 75, 0.6);
+        }
+        .car-battery-fill.mid {
+            background: #fbbf24 !important;
+        }
+        .car-battery-nipple {
+            width: 4px;
+            height: 12px;
+            background: var(--car-accent);
+            border-radius: 0 2px 2px 0;
+            margin-left: 2px;
+        }
+        .car-battery-soc-val {
+            font-size: 1.85rem;
+            font-weight: 900;
+            font-family: 'SF Mono', monospace;
+            line-height: 1;
+            color: var(--car-accent);
+            text-shadow: 0 0 12px var(--car-glow);
+        }
+        .car-battery-soc-val .unit {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-left: 2px;
+            color: var(--car-text-dim);
+        }
+        .car-battery-right {
+            text-align: right;
+        }
+        .car-battery-range-val {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--car-accent2);
+            font-family: 'SF Mono', monospace;
+            line-height: 1;
+        }
+        .car-battery-range-val .unit {
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--car-text-dim);
+            margin-left: 2px;
+        }
+        .car-battery-edit-btn {
+            font-size: .7rem;
+            color: var(--car-accent);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--car-border);
+            padding: .15rem .45rem;
+            border-radius: 6px;
+            margin-top: .3rem;
+            display: inline-block;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .car-battery-edit-btn:hover {
+            border-color: var(--car-accent);
+            transform: scale(1.05);
+        }
+
+        /* Companion quote box */
+        .car-companion-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+        .car-companion-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .car-companion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: .25rem;
+        }
+        .car-companion-title {
+            font-size: .75rem;
+            color: var(--car-accent);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .car-companion-action-pill {
+            font-size: .62rem;
+            color: var(--car-text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .car-rabbit-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 18px var(--car-glow);
+            flex-shrink: 0;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            animation: carRabbitPulse 3.5s ease-in-out infinite;
+            will-change: filter, opacity;
+            isolation: isolate;
+        }
+        .car-rabbit-avatar.avatar-photo {
+            background: transparent !important;
+            border: 2px solid var(--car-accent) !important;
+            box-shadow: 0 0 18px var(--car-glow) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            isolation: isolate;
+        }
+        .car-slider-thumb.thumb-photo {
+            background: transparent !important;
+            border: 2px solid var(--car-accent) !important;
+            box-shadow: 0 0 18px var(--car-glow) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            isolation: isolate;
+        }
+        .car-title-avatar-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            border: 1px solid var(--car-accent);
+            display: inline-block;
+            box-shadow: 0 0 6px var(--car-glow);
+        }
+        .car-brand-avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .car-brand-avatar .car-avatar-img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            vertical-align: middle;
+            margin-right: 4px;
+            display: inline-block;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            contain: paint;
+        }
+        .car-companion-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        .car-thumb-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-select: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        @keyframes carRabbitPulse {
+            0%, 100% {
+                transform: translate3d(0, 0, 0);
+                filter: brightness(1) drop-shadow(0 0 3px var(--car-glow));
+            }
+            50% {
+                transform: translate3d(0, 0, 0);
+                filter: brightness(1.08) drop-shadow(0 0 10px var(--car-glow));
+            }
+        }
+        .car-quote-text {
+            font-size: .88rem;
+            line-height: 1.45;
+            color: var(--car-text);
+            font-style: italic;
+        }
+
+        /* Cockpit diagnostics grid */
+        .car-diag-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .55rem;
+        }
+        .car-diag-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: .45rem .65rem;
+            border-radius: 10px;
+            transition: border-color .2s;
+        }
+        .car-diag-item:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .car-diag-item.clickable {
+            cursor: pointer;
+            transition: all .2s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+        .car-diag-item.clickable:hover {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-diag-item.clickable:active {
+            transform: scale(0.97);
+        }
+        .car-diag-label {
+            font-size: .65rem;
+            color: var(--car-text-dim);
+            letter-spacing: 0.5px;
+            margin-bottom: .2rem;
+            font-weight: 600;
+        }
+        .car-diag-val {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Music EQ Visualizer Bars */
+        .car-eq-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 16px;
+            contain: layout paint;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+        .car-eq-bar {
+            width: 3px;
+            background: var(--car-accent);
+            border-radius: 2px;
+            transform-origin: bottom center;
+            -webkit-transform-origin: bottom center;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
+            animation: eqBounce 1.2s ease-in-out infinite alternate;
+        }
+        .car-eq-bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+        .car-eq-bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+        .car-eq-bar:nth-child(3) { height: 55%; animation-delay: 0.2s; }
+        .car-eq-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+        .car-eq-bar:nth-child(5) { height: 70%; animation-delay: 0.15s; }
+        .car-eq-bar:nth-child(6) { height: 45%; animation-delay: 0.35s; }
+        @keyframes eqBounce {
+            0% { transform: scaleY(0.25) translateZ(0); }
+            100% { transform: scaleY(1) translateZ(0); }
+        }
+
+        /* Milestone Scroller Layout Fix (Prevent Overlap & Block Pull-Down Refresh) */
+        .car-milestone-card {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            touch-action: pan-y !important;
+        }
+        .car-milestone-scroller {
+            flex: 1;
+            min-height: 50px;
+            /* Fill the remaining card height so lower milestones are not clipped. */
+            max-height: none;
+            overflow-y: auto;
+            overscroll-behavior: contain !important;
+            overscroll-behavior-y: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+            padding-right: .3rem;
+        }
+        .car-milestone-scroller::-webkit-scrollbar {
+            width: 4px;
+        }
+        .car-milestone-scroller::-webkit-scrollbar-thumb {
+            background: var(--car-border);
+            border-radius: 2px;
+        }
+        /* Milestone Fold Toggle Bar */
+        .car-ms-fold-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .75rem;
+            padding: .38rem .65rem;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9px;
+            color: var(--car-text-dim);
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+            transition: background .2s ease, border-color .2s ease, color .2s ease;
+            margin-bottom: .35rem;
+        }
+        .car-ms-fold-toggle:hover, .car-ms-fold-toggle:active {
+            background: rgba(0, 234, 255, 0.08);
+            border-color: rgba(0, 234, 255, 0.35);
+            color: #fff;
+        }
+        .car-ms-fold-toggle .fold-left {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+        }
+        .car-ms-fold-toggle .fold-icon {
+            font-size: .82rem;
+            line-height: 1;
+        }
+        .car-ms-fold-toggle .fold-title {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--car-text);
+        }
+        .car-ms-fold-toggle .fold-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: rgba(0, 234, 255, 0.12);
+            color: var(--car-accent);
+            border: 1px solid rgba(0, 234, 255, 0.25);
+            line-height: 1.2;
+        }
+        .car-ms-fold-toggle .fold-arrow {
+            font-size: .68rem;
+            color: var(--car-accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .car-ms-fold-toggle:hover .fold-arrow {
+            color: #fff;
+            text-shadow: 0 0 6px var(--car-glow);
+        }
+        .car-ms-completed-group {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+            margin-bottom: .35rem;
+            padding-left: .25rem;
+            border-left: 2px solid rgba(0, 255, 65, 0.25);
+        }
+        .car-ms-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .78rem;
+            padding: .42rem .65rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: background .2s, transform .15s, border-color .2s;
+            gap: .5rem;
+            touch-action: pan-y;
+            position: relative;
+        }
+        .car-ms-row:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(2px);
+        }
+        .ms-row-left {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .ms-row-right {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            flex-shrink: 0;
+        }
+        .ms-date {
+            font-size: .72rem;
+            color: var(--car-text-dim);
+            font-family: monospace;
+        }
+        .ms-pill {
+            font-size: .65rem;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .car-ms-row.reached {
+            border-color: rgba(0, 255, 65, 0.2);
+            color: #d1fae5;
+            opacity: 0.88;
+        }
+        .car-ms-row.reached .ms-pill {
+            background: rgba(0, 255, 65, 0.15);
+            color: #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+        }
+        .car-ms-row.next, .car-ms-row.in-progress {
+            border: 1px solid rgba(0, 234, 255, 0.35) !important;
+            background: linear-gradient(90deg, rgba(0, 234, 255, 0.14) 0%, rgba(167, 139, 250, 0.08) 100%) !important;
+            font-weight: 700;
+            box-shadow: 0 0 16px rgba(0, 234, 255, 0.22), inset 0 0 8px rgba(0, 234, 255, 0.05);
+            position: relative;
+        }
+        .car-ms-row.next::before, .car-ms-row.in-progress::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3.5px;
+            background: var(--car-accent);
+            border-radius: 8px 0 0 8px;
+            box-shadow: 0 0 8px var(--car-accent);
+        }
+        .car-ms-row.in-progress .in-progress-title {
+            color: #fff;
+            text-shadow: 0 0 10px var(--car-glow);
+        }
+        .in-progress-pill {
+            background: linear-gradient(135deg, rgba(0, 234, 255, 0.4), rgba(167, 139, 250, 0.35)) !important;
+            color: #fff !important;
+            border: 1px solid var(--car-accent) !important;
+            box-shadow: 0 0 10px var(--car-glow) !important;
+            font-weight: 700;
+        }
+        .car-ms-row:not(.reached):not(.next):not(.in-progress) .ms-pill {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--car-text-dim);
+        }
+
+        /* Bottom Unlock Slider Track */
+        .car-bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: .6rem;
+            border-top: none !important;
+            transition: opacity .4s ease;
+            flex-shrink: 0;
+            z-index: 10;
+            margin-top: auto;
+        }
+        .car-slider-track {
+            contain: layout style;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            position: relative;
+            width: min(440px, 92%);
+            height: clamp(44px, 6vh, 52px);
+            background: rgba(10, 20, 40, 0.88);
+            border: 1px solid var(--car-border);
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            user-select: none;
+            touch-action: none !important;
+            overscroll-behavior: none !important;
+            overflow: hidden;
+            transition: border-color .3s, box-shadow .3s;
+        }
+        .car-slider-track:hover {
+            border-color: var(--car-accent);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 0 14px var(--car-glow);
+        }
+        .car-slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0%;
+            background: linear-gradient(90deg, var(--car-accent2), var(--car-accent));
+            opacity: 0.2;
+            border-radius: 26px;
+            transition: none;
+            pointer-events: none;
+        }
+        .car-slider-text {
+            font-size: .88rem;
+            color: var(--car-text-dim);
+            font-weight: 600;
+            letter-spacing: 1px;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            transition: opacity .2s;
+        }
+        .slider-arrow {
+            display: inline-block;
+            color: var(--car-accent);
+            opacity: 0.4;
+            letter-spacing: -1px;
+            animation: sliderArrowMove 1.5s ease-in-out infinite;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform, opacity;
+        }
+        .slider-arrow:last-child {
+            animation-delay: 0.75s;
+        }
+        @keyframes sliderArrowMove {
+            0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+            50% { transform: translate3d(4px, 0, 0); opacity: 1; }
+        }
+        .slider-hint-text {
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .car-slider-thumb {
+            position: absolute;
+            left: 4px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--car-accent), var(--car-accent2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            cursor: grab;
+            box-shadow: 0 0 16px var(--car-glow);
+            transition: transform 0.1s ease-out;
+            touch-action: none !important;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+        }
+        .car-slider-thumb:active {
+            cursor: grabbing;
+            transform: translate3d(0, 0, 0) scale(1.08);
+            box-shadow: 0 0 24px var(--car-glow);
+        }
+
+        /* Responsive Breakpoints Across Devices & Heights */
+        @media (max-width: 1100px) {
+            #car-top-battery {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 800px) {
+            #car-wakelock-badge {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .car-hero-gauge-col {
+                display: none !important;
+            }
+            .car-brand {
+                font-size: 0.85rem;
+            }
+            #car-theme-name {
+                display: none !important;
+            }
+        }
+
+        @media (max-height: 800px) {
+            #car-root, #bcos-car-lockscreen {
+                padding: max(0.5rem, env(safe-area-inset-top, 0.5rem)) max(0.9rem, env(safe-area-inset-right, 0.9rem)) max(0.5rem, env(safe-area-inset-bottom, 0.5rem)) max(0.9rem, env(safe-area-inset-left, 0.9rem));
+            }
+            .car-top-bar {
+                padding-bottom: 0.35rem;
+                min-height: 36px;
+            }
+            .car-main-grid {
+                padding: 0.25rem 0;
+                gap: 0.8rem;
+            }
+            .car-clock-box {
+                margin-bottom: 0.35rem;
+            }
+            .car-digital-clock {
+                font-size: clamp(2.1rem, 4.8vw, 3.8rem);
+            }
+            .car-hero-card {
+                padding: 0.7rem 0.95rem;
+                border-radius: 16px;
+            }
+            .car-hero-days-val {
+                font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+            }
+            .car-gauge-box {
+                width: 76px;
+                height: 76px;
+            }
+            .car-widget-card {
+                padding: 0.5rem 0.8rem;
+                border-radius: 14px;
+            }
+            .car-side-col {
+                gap: 0.45rem;
+            }
+            .car-battery-soc-val {
+                font-size: 1.45rem;
+            }
+            .car-battery-range-val {
+                font-size: 1.05rem;
+            }
+            .car-diag-grid {
+                gap: 0.35rem;
+            }
+            .car-diag-item {
+                padding: 0.3rem 0.5rem;
+            }
+            .car-milestone-scroller {
+                max-height: none;
+            }
+            .car-bottom-bar {
+                padding-top: 0.35rem;
+            }
+            .car-slider-track {
+                height: 44px;
+            }
+        }
+
+        /* Modals & Dialogs */
+        .car-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 200000 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .25s ease, visibility .25s ease;
+            padding: 1.5rem;
+            touch-action: pan-y;
+            overscroll-behavior: none !important;
+        }
+        .car-modal-overlay.active {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+        }
+        .car-modal {
+            background: #0b1120;
+            border: 1px solid var(--car-border);
+            border-radius: 20px;
+            padding: 1.6rem 2rem;
+            max-width: 580px;
+            width: min(580px, calc(100vw - 2rem));
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px var(--car-glow);
+            transform: translateY(20px);
+            transition: transform .3s ease;
+            max-height: 88vh;
+            max-height: 88dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            box-sizing: border-box;
+        }
+        
+        @media (max-width: 600px) {
+            .car-modal {
+                padding: 1.2rem 1.2rem !important;
+                border-radius: 16px !important;
+                max-height: 90vh !important;
+            }
+            .car-modal-grid {
+                grid-template-columns: 1fr !important;
+                gap: .6rem !important;
+            }
+        }
+
+        .car-modal-overlay.active .car-modal {
+            transform: translateY(0);
+        }
+        .car-modal-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--car-accent);
+            margin-bottom: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .car-modal-close {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            padding: 0;
+            line-height: 1;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .car-modal-close:hover {
+            background: rgba(255, 60, 60, 0.15);
+            border-color: rgba(255, 90, 90, 0.6);
+            color: #ff8080;
+            transform: rotate(90deg);
+        }
+        .car-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .8rem;
+            margin: 1.2rem 0;
+        }
+        .car-modal-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--car-text);
+            padding: .85rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            font-size: .85rem;
+            font-weight: 600;
+            transition: all .2s;
+            text-decoration: none;
+        }
+        .car-modal-btn:hover {
+            border-color: var(--car-accent);
+            background: rgba(0, 234, 255, 0.12);
+            color: var(--car-accent);
+            transform: translateY(-2px);
+        }
+        .car-modal-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Wallpaper Gallery Grid */
+        .car-wp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: .8rem;
+            /* No nested scroller: the modal itself scrolls so every wallpaper card is fully reachable */
+            max-height: none;
+            overflow: visible;
+            padding: .5rem .4rem;
+        }
+        .car-wp-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+            aspect-ratio: 16/10;
+            min-height: 78px;
+            background: rgba(0, 0, 0, 0.55);
+            transition: all .2s;
+        }
+        .car-wp-item:hover {
+            transform: scale(1.03);
+            border-color: var(--car-accent2);
+        }
+        .car-wp-item.active {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 15px var(--car-glow);
+        }
+        .car-wp-item img {
+            width: 100%;
+            height: 100%;
+            /* contain: show the complete wallpaper (no cropped thumbnails) for any aspect ratio */
+            object-fit: contain;
+            display: block;
+        }
+        .car-wp-item .label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: .2rem .4rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            font-size: .68rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+        .car-wp-item .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--car-accent);
+            color: #000;
+            font-size: .6rem;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        /* Form Controls inside modals */
+        .car-form-section {
+            margin-bottom: 1.2rem;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .car-form-title {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--car-accent2);
+            margin-bottom: .6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .car-input-group {
+            margin-bottom: .8rem;
+        }
+
+        /* Unified Cockpit Option Selector */
+        .car-option-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.55rem;
+            width: 100%;
+            margin-top: 0.35rem;
+            box-sizing: border-box;
+        }
+        .car-option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--car-border);
+            border-radius: 12px;
+            color: var(--car-text-dim);
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+            text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            min-height: 52px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .car-option-btn .opt-icon {
+            font-size: 1.15rem;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+            transition: transform 0.2s ease;
+        }
+        .car-option-btn .opt-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--car-text);
+            line-height: 1.25;
+            white-space: normal;
+            word-break: keep-all;
+        }
+        .car-option-btn .opt-desc {
+            font-size: 0.65rem;
+            color: var(--car-text-dim);
+            margin-top: 0.2rem;
+            line-height: 1.2;
+        }
+        .car-option-btn:hover {
+            border-color: var(--car-accent);
+            color: var(--car-text);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+        .car-option-btn:hover .opt-icon {
+            transform: scale(1.15);
+        }
+        .car-option-btn.active {
+            border-color: var(--car-accent) !important;
+            color: #fff !important;
+            background: rgba(0, 234, 255, 0.12) !important;
+            box-shadow: 0 0 14px var(--car-glow), inset 0 0 8px rgba(0, 234, 255, 0.1) !important;
+        }
+        .car-option-btn.active .opt-title {
+            color: var(--car-accent) !important;
+        }
+        .car-option-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--car-accent);
+        }
+
+        /* Cockpit Quick Selector Tags */
+        .car-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .car-quick-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--car-border);
+            color: var(--car-text-dim);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+            user-select: none;
+            -webkit-user-select: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
+            box-sizing: border-box;
+        }
+        .car-quick-tag:hover {
+            background: rgba(0, 234, 255, 0.12);
+            border-color: var(--car-accent);
+            color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+            transform: translateY(-1px);
+        }
+        .car-quick-tag:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        /* Cockpit Setting List Rows */
+        .car-setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            gap: 0.8rem;
+            box-sizing: border-box;
+        }
+        .car-setting-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--car-border);
+        }
+        .car-setting-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--car-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .car-input-label {
+            display: block;
+            font-size: .75rem;
+            color: var(--car-text-dim);
+            margin-bottom: .3rem;
+        }
+        .car-input-control {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--car-border);
+            border-radius: 8px;
+            padding: .5rem .8rem;
+            color: var(--car-text);
+            font-size: .9rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color .2s;
+        }
+        .car-input-control:focus {
+            border-color: var(--car-accent);
+        }
+        .car-range-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .car-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--car-accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+
+        /* Responsive Breakpoint for Limited Height Screens (Laptops, Car Consoles, Tablets) */
+        @media (max-height: 760px) {
+            #bcos-car-lockscreen, #car-root {
+                padding: .65rem 1.2rem;
+            }
+            .car-top-bar {
+                padding-bottom: .4rem;
+            }
+            .car-digital-clock {
+                font-size: clamp(2.4rem, 5.8vw, 4.2rem);
+            }
+            .car-clock-box {
+                margin-bottom: .5rem;
+            }
+            .car-hero-card {
+                padding: .85rem 1.15rem;
+            }
+            .car-hero-days {
+                font-size: clamp(2.2rem, 4.2vw, 3.2rem);
+            }
+            .car-hero-time-row {
+                margin-bottom: .5rem;
+            }
+            .car-hero-time {
+                font-size: 1rem;
+                margin: 0;
+            }
+            .car-hero-progress-box {
+                padding: .5rem .8rem;
+            }
+            .car-side-col {
+                gap: .45rem;
+            }
+            .car-widget-card {
+                padding: .6rem .95rem;
+            }
+            .car-battery-hero {
+                padding: .25rem 0 .45rem 0;
+                margin-bottom: .4rem;
+            }
+            .car-battery-soc-val {
+                font-size: 1.5rem;
+            }
+            .car-diag-grid {
+                gap: .4rem;
+            }
+            .car-milestone-scroller {
+                min-height: 40px;
+                max-height: none;
+            }
+            .car-bottom-bar {
+                padding-top: .4rem;
+            }
+            .car-slider-track {
+                height: 44px;
+            }
+            .car-slider-thumb {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* Portrait cockpit screens: keep the dashboard readable in a vertical
+           flow while the center area, rather than the whole page, scrolls. */
+        @media (orientation: portrait), (max-aspect-ratio: 1 / 1) {
+            #bcos-car-lockscreen, #car-root {
+                padding: max(.55rem, env(safe-area-inset-top, .55rem)) max(.7rem, env(safe-area-inset-right, .7rem)) max(.55rem, env(safe-area-inset-bottom, .55rem)) max(.7rem, env(safe-area-inset-left, .7rem));
+            }
+            .car-top-bar { min-height: 34px; padding-bottom: .35rem; gap: .4rem; }
+            .car-brand { font-size: .78rem; gap: .3rem; }
+            .car-gear-badge, #car-top-battery, #car-wakelock-badge, #car-wp-badge { display: none !important; }
+            .car-mini-trigger { padding: .22rem .45rem; font-size: .72rem; }
+            .car-main-grid { grid-template-columns: minmax(0, 1fr); align-items: start; gap: .6rem; padding: .45rem 0 .6rem; }
+            .car-hero-col { justify-content: flex-start; }
+            .car-clock-box { margin-bottom: .5rem; }
+            .car-digital-clock { font-size: clamp(2.25rem, 10vw, 4.1rem); }
+            .car-digital-date { font-size: .72rem; margin-top: .25rem; gap: .35rem; }
+            .car-hero-card { padding: .75rem .85rem; border-radius: 18px; }
+            .car-hero-content-split { gap: .6rem; }
+            .car-hero-title { font-size: .8rem; }
+            .car-hero-days { font-size: clamp(2.35rem, 11vw, 3.7rem); }
+            .car-hero-unit { font-size: .9rem; }
+            .car-hero-time-row { margin-bottom: .5rem; }
+            .car-hero-time { font-size: .88rem; min-height: 1.25rem; line-height: 1.25rem; }
+            .car-hero-progress-box { padding: .5rem .65rem; }
+            .car-progress-header { font-size: .72rem; }
+            .car-gauge-ring-wrap { width: 78px; height: 78px; }
+            .car-gauge-pct { font-size: 1.15rem; }
+            .car-hero-gauge-col { gap: .35rem; padding: .15rem 0 .15rem .65rem; }
+            .car-vital-chip { min-width: 48px; padding: 2px 4px; }
+            .car-vital-chip .vital-val { font-size: .64rem; }
+            .car-side-col { height: auto; max-height: none; gap: .6rem; justify-content: flex-start; }
+            .car-widget-card { padding: .65rem .75rem; border-radius: 14px; }
+            .car-companion-action-pill, .car-eq-container { display: none; }
+            .car-diag-grid { gap: .35rem; }
+            .car-diag-item { padding: .35rem .45rem; }
+            .car-milestone-card { flex: none; }
+            .car-milestone-scroller { flex: none; min-height: 0; max-height: min(28dvh, 250px); }
+            .car-bottom-bar { flex-shrink: 0; padding-top: .35rem; }
+            .car-slider-track { height: 42px; }
+        }
+
+        @media (max-width: 480px) and (max-aspect-ratio: 4 / 5) {
+            .car-hero-gauge-col { display: none; }
+            .car-hero-badge-tag { display: none; }
+            .car-diag-grid { grid-template-columns: 1fr; }
+        }
+
+                /* Toast Notification: Strict capsule pill, impossible to stretch vertically or horizontally */
+        .car-toast {
+            position: fixed !important;
+            top: auto !important;
+            bottom: 5.2rem !important;
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) translateY(8px) !important;
+            width: max-content !important;
+            min-width: 0 !important;
+            max-width: min(86vw, 420px) !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: 48px !important;
+            box-sizing: border-box !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: .55rem 1.4rem !important;
+            margin: 0 !important;
+            border-radius: 24px !important;
+            background: rgba(10, 20, 40, 0.96) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1.5px solid var(--car-accent) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px var(--car-glow) !important;
+            color: var(--car-text) !important;
+            font-size: .85rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.3px !important;
+            z-index: 999999 !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: opacity .25s cubic-bezier(0.2, 0.9, 0.3, 1), transform .25s cubic-bezier(0.2, 0.9, 0.3, 1), visibility .25s !important;
+        }
+        .car-toast.show {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+
+        /* Safari Immersive Fullscreen Fallback */
+        body.safari-pseudo-fullscreen,
+        body.safari-pseudo-fullscreen #bcos-car-lockscreen,
+        body.safari-pseudo-fullscreen #car-root {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            z-index: 999999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Mobile CPU & GPU Hardware Acceleration Compositing */
+        #bcos-car-lockscreen,
+        #car-root {
+            contain: strict;
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+            will-change: transform, opacity;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .car-wallpaper-layer,
+        .car-content-layer,
+        .car-clock-box,
+        .car-digital-clock,
+        .car-slider-thumb,
+        .car-slider-track {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        /* Minimalist Clean Lockscreen Mode (Reference Screenshot Match) */
+        .car-minimalist-mode .car-hero-card,
+        .car-minimalist-mode .car-side-col {
+            display: none !important;
+        }
+        .car-minimalist-mode .car-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            grid-template-columns: 1fr !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            padding: 0 0 0 clamp(1.2rem, 3.5vw, 3.5rem) !important;
+            margin: auto 0 !important;
+        }
+        .car-minimalist-mode .car-hero-col {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+        }
+        .car-minimalist-mode .car-clock-box {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            padding: 0 !important;
+            margin: auto 0 !important;
+            align-self: flex-start !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            transform: translateZ(0) !important;
+            -webkit-transform: translateZ(0) !important;
+        }
+        .car-minimalist-mode .car-digital-clock {
+            font-size: clamp(3.2rem, 7.8vw, 6.4rem) !important;
+            letter-spacing: 1.5px !important;
+            line-height: 1 !important;
+            color: var(--car-accent) !important;
+            text-shadow: 0 0 32px var(--car-glow), 0 3px 14px rgba(0, 0, 0, 0.85) !important;
+            font-variant-numeric: tabular-nums !important;
+        }
+        .car-minimalist-mode .car-digital-date {
+            font-size: clamp(0.9rem, 1.8vw, 1.35rem) !important;
+            margin-top: clamp(0.4rem, 1.2vh, 0.85rem) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            justify-content: flex-start !important;
+        }
+        /* Mobile Portrait adaptive layout for minimalist mode */
+        @media (orientation: portrait), (max-aspect-ratio: 1 / 1) {
+            .car-minimalist-mode .car-main-grid {
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                padding: 0 !important;
+            }
+            .car-minimalist-mode .car-hero-col {
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .car-minimalist-mode .car-clock-box {
+                align-items: center !important;
+                align-self: center !important;
+                text-align: center !important;
+            }
+            .car-minimalist-mode .car-digital-clock {
+                font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+            }
+            .car-minimalist-mode .car-digital-date {
+                justify-content: center !important;
+                font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+            }
+        /* ==========================================================================
+           Smart Cockpit Display Geometry Engine (Curved, Circular, Ultra-Wide & Portrait)
+           ========================================================================== */
+
+        .car-select-sm {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--car-text);
+            border: 1px solid var(--car-border);
+            border-radius: 8px;
+            padding: .35rem .6rem;
+            font-size: .8rem;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .car-select-sm:focus {
+            border-color: var(--car-accent);
+            box-shadow: 0 0 10px var(--car-glow);
+        }
+        .car-select-sm option {
+            background: #0d1322;
+            color: #fff;
+        }
+
+        /* 1. MINI Cooper Circular OLED Display & 1:1 Square Mode (.screen-circular) */
+        #bcos-car-lockscreen.screen-circular,
+        #car-root.screen-circular {
+            --car-circle-inset: max(2.2rem, 10vmin);
+            padding: max(1.2rem, 8vmin) max(1.6rem, 11vmin) max(1.6rem, 9vmin) !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+        }
+
+        /* Circular top bar: contracts towards center to prevent circular bezel cutoff */
+        .screen-circular .car-top-bar {
+            width: 100% !important;
+            max-width: min(84vmin, 680px) !important;
+            margin: 0 auto !important;
+            justify-content: space-between !important;
+            padding: 0 .4rem .3rem !important;
+            min-height: 36px !important;
+        }
+        .screen-circular .car-gear-badge,
+        .screen-circular #car-wakelock-badge,
+        .screen-circular #car-wp-badge {
+            display: none !important; /* Hide peripheral status badges on round screens */
+        }
+        .screen-circular .car-brand {
+            font-size: .82rem !important;
+        }
+
+        /* Circular Main Grid: Radially centered instrument cluster */
+        .screen-circular .car-main-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            grid-template-columns: none !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            width: 100% !important;
+            max-width: min(82vmin, 580px) !important;
+            margin: auto !important;
+            padding: 0 !important;
+            gap: .5rem !important;
+            text-align: center !important;
+        }
+        .screen-circular .car-hero-col {
+            width: 100% !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+        .screen-circular .car-clock-box {
+            align-items: center !important;
+            align-self: center !important;
+            text-align: center !important;
+            margin: 0 0 .35rem 0 !important;
+            padding: 0 !important;
+        }
+        .screen-circular .car-digital-clock {
+            font-size: clamp(2.4rem, 9.5vmin, 4.2rem) !important;
+            letter-spacing: 1px !important;
+        }
+        .screen-circular .car-digital-date {
+            justify-content: center !important;
+            font-size: clamp(0.72rem, 2.6vmin, 0.95rem) !important;
+            margin-top: .2rem !important;
+        }
+        .screen-circular .car-hero-card {
+            width: 100% !important;
+            max-width: min(440px, 80vmin) !important;
+            border-radius: 20px !important;
+            padding: .65rem .85rem !important;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.6), 0 0 18px var(--car-glow) !important;
+        }
+        .screen-circular .car-hero-days {
+            font-size: clamp(2.2rem, 9.5vmin, 3.6rem) !important;
+        }
+        .screen-circular .car-side-col {
+            display: none !important; /* Conceal secondary side-cards so circular boundary is never breached */
+        }
+
+        /* Circular Bottom Bar & Slider */
+        .screen-circular .car-bottom-bar {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            padding: 0 0 max(0.5rem, 3.5vmin) 0 !important;
+            flex-shrink: 0 !important;
+        }
+        .screen-circular .car-slider-track {
+            width: min(280px, 64vmin) !important;
+            height: clamp(38px, 6vmin, 46px) !important;
+            border-radius: 24px !important;
+        }
+
+        /* Circular Minimalist Mode (Perfect Round Watch / MINI Central Gauge) */
+        .screen-circular.car-minimalist-mode .car-main-grid {
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+        }
+        .screen-circular.car-minimalist-mode .car-clock-box {
+            align-items: center !important;
+            align-self: center !important;
+            text-align: center !important;
+        }
+        .screen-circular.car-minimalist-mode .car-digital-clock {
+            font-size: clamp(3.0rem, 14vmin, 5.5rem) !important;
+        }
+        .screen-circular.car-minimalist-mode .car-digital-date {
+            justify-content: center !important;
+            font-size: clamp(0.85rem, 3.2vmin, 1.25rem) !important;
+        }
+
+        /* 2. Panoramic Ultra-Wide Displays (.screen-ultrawide - 21:9 ~ 32:9 带状中控屏) */
+        #bcos-car-lockscreen.screen-ultrawide,
+        #car-root.screen-ultrawide {
+            padding: max(0.45rem, env(safe-area-inset-top, 0.45rem)) max(1.8rem, env(safe-area-inset-right, 1.8rem)) max(0.45rem, env(safe-area-inset-bottom, 0.45rem)) max(1.8rem, env(safe-area-inset-left, 1.8rem)) !important;
+        }
+        .screen-ultrawide .car-top-bar {
+            padding-bottom: .25rem !important;
+            min-height: 34px !important;
+        }
+        .screen-ultrawide .car-main-grid {
+            display: grid !important;
+            grid-template-columns: minmax(320px, 1.15fr) minmax(340px, 1.35fr) minmax(280px, 0.95fr) !important;
+            grid-template-rows: 1fr !important;
+            gap: clamp(0.8rem, 1.8vw, 1.8rem) !important;
+            align-items: center !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+            padding: .15rem 0 !important;
+        }
+        .screen-ultrawide .car-hero-col {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            height: 100% !important;
+            min-height: 0 !important;
+        }
+        .screen-ultrawide .car-clock-box {
+            margin-bottom: 0 !important;
+            padding: .8rem 1rem !important;
+        }
+        .screen-ultrawide .car-digital-clock {
+            font-size: clamp(2.4rem, 4.5vw, 4.0rem) !important;
+        }
+        .screen-ultrawide .car-hero-card {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: .85rem 1.1rem !important;
+        }
+        .screen-ultrawide .car-side-col {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            min-height: 0 !important;
+            gap: .5rem !important;
+        }
+        .screen-ultrawide .car-milestone-scroller {
+            max-height: clamp(100px, 20vh, 180px) !important;
+        }
+        .screen-ultrawide .car-bottom-bar {
+            padding-top: .2rem !important;
+        }
+        .screen-ultrawide .car-slider-track {
+            height: 40px !important;
+            width: min(380px, 60vw) !important;
+        }
+
+        /* 3. Curved / Waterfall Safe Insets (防曲面屏边缘触控死区与畸变) */
+        #bcos-car-lockscreen,
+        #car-root {
+            --car-curved-padding: clamp(0.75rem, env(safe-area-inset-left, 0.75rem), 2.5rem);
+            padding-left: max(var(--car-curved-padding), env(safe-area-inset-left, 0.75rem));
+            padding-right: max(var(--car-curved-padding), env(safe-area-inset-right, 0.75rem));
+        }
+
+        /* 4. Explicit Portrait Mode (.screen-portrait - 9:16 / Vertical Center Console) */
+        #bcos-car-lockscreen.screen-portrait,
+        #car-root.screen-portrait {
+            padding: max(.55rem, env(safe-area-inset-top, .55rem)) max(.7rem, env(safe-area-inset-right, .7rem)) max(.55rem, env(safe-area-inset-bottom, .55rem)) max(.7rem, env(safe-area-inset-left, .7rem)) !important;
+        }
+        .screen-portrait .car-top-bar { min-height: 34px !important; padding-bottom: .35rem !important; gap: .4rem !important; }
+        .screen-portrait .car-brand { font-size: .78rem !important; gap: .3rem !important; }
+        .screen-portrait .car-gear-badge,
+        .screen-portrait #car-top-battery,
+        .screen-portrait #car-wakelock-badge,
+        .screen-portrait #car-wp-badge { display: none !important; }
+        .screen-portrait .car-mini-trigger { padding: .22rem .45rem !important; font-size: .72rem !important; }
+        .screen-portrait .car-main-grid { grid-template-columns: minmax(0, 1fr) !important; align-items: start !important; gap: .6rem !important; padding: .45rem 0 .6rem !important; }
+        .screen-portrait .car-hero-col { justify-content: flex-start !important; }
+        .screen-portrait .car-clock-box { margin-bottom: .5rem !important; }
+        .screen-portrait .car-digital-clock { font-size: clamp(2.25rem, 10vw, 4.1rem) !important; }
+        .screen-portrait .car-digital-date { font-size: .72rem !important; margin-top: .25rem !important; gap: .35rem !important; }
+        .screen-portrait .car-hero-card { padding: .75rem .85rem !important; border-radius: 18px !important; }
+        .screen-portrait .car-hero-content-split { gap: .6rem !important; }
+        .screen-portrait .car-hero-title { font-size: .8rem !important; }
+        .screen-portrait .car-hero-days { font-size: clamp(2.35rem, 11vw, 3.7rem) !important; }
+        .screen-portrait .car-hero-unit { font-size: .9rem !important; }
+        .screen-portrait .car-hero-time-row { margin-bottom: .5rem !important; }
+        .screen-portrait .car-hero-time { font-size: .88rem !important; min-height: 1.25rem !important; line-height: 1.25rem !important; }
+        .screen-portrait .car-hero-progress-box { padding: .5rem .65rem !important; }
+        .screen-portrait .car-progress-header { font-size: .72rem !important; }
+        .screen-portrait .car-gauge-ring-wrap { width: 78px !important; height: 78px !important; }
+        .screen-portrait .car-gauge-pct { font-size: 1.15rem !important; }
+        .screen-portrait .car-hero-gauge-col { gap: .35rem !important; padding: .15rem 0 .15rem .65rem !important; }
+        .screen-portrait .car-vital-chip { min-width: 48px !important; padding: 2px 4px !important; }
+        .screen-portrait .car-vital-chip .vital-val { font-size: .64rem !important; }
+        .screen-portrait .car-side-col { height: auto !important; max-height: none !important; gap: .6rem !important; justify-content: flex-start !important; }
+        .screen-portrait .car-widget-card { padding: .65rem .75rem !important; border-radius: 14px !important; }
+        .screen-portrait .car-companion-action-pill, .screen-portrait .car-eq-container { display: none !important; }
+        .screen-portrait .car-diag-grid { gap: .35rem !important; }
+        .screen-portrait .car-diag-item { padding: .35rem .45rem !important; }
+        .screen-portrait .car-milestone-card { flex: none !important; }
+        .screen-portrait .car-milestone-scroller { flex: none !important; min-height: 0 !important; max-height: min(34dvh, 280px) !important; touch-action: pan-y !important; }
+        .screen-portrait .car-bottom-bar { flex-shrink: 0 !important; padding-top: .35rem !important; }
+        .screen-portrait .car-slider-track { height: 42px !important; }
+        .screen-portrait.car-minimalist-mode .car-main-grid {
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            padding: 0 !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-hero-col {
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-clock-box {
+            align-items: center !important;
+            align-self: center !important;
+            text-align: center !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-digital-clock {
+            font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+        }
+        .screen-portrait.car-minimalist-mode .car-digital-date {
+            justify-content: center !important;
+            font-size: clamp(0.8rem, 3.2vw, 1.05rem) !important;
+        }
+
+        /* Mobile Landscape Responsive Optimization (Phones in Landscape: height <= 520px) */
+        @media (orientation: landscape) and (max-height: 520px) {
+            #bcos-car-lockscreen,
+            #car-root {
+                padding: max(0.35rem, env(safe-area-inset-top, 0.35rem)) max(1rem, env(safe-area-inset-right, 1rem)) max(0.35rem, env(safe-area-inset-bottom, 0.35rem)) max(1rem, env(safe-area-inset-left, 1rem)) !important;
+            }
+            .car-top-bar {
+                min-height: 30px !important;
+                padding-bottom: 0.2rem !important;
+                gap: 0.4rem !important;
+            }
+            .car-brand {
+                font-size: 0.8rem !important;
+            }
+            .car-main-grid {
+                grid-template-columns: 1.15fr 0.85fr !important;
+                gap: 0.75rem !important;
+                padding: 0.2rem 0 !important;
+                align-items: center !important;
+                flex: 1 !important;
+                min-height: 0 !important;
+            }
+            .car-hero-card {
+                padding: 0.6rem 0.8rem !important;
+                border-radius: 13px !important;
+            }
+            .car-hero-days {
+                font-size: clamp(2rem, 5.5vw, 3.2rem) !important;
+            }
+            .car-hero-time-row {
+                margin-bottom: 0.35rem !important;
+            }
+            .car-hero-time {
+                font-size: 0.82rem !important;
+                margin: 0 !important;
+            }
+            .car-clock-box {
+                margin-bottom: 0.3rem !important;
+                padding: 0.4rem 0.6rem !important;
+            }
+            .car-digital-clock {
+                font-size: clamp(1.8rem, 4.5vw, 2.6rem) !important;
+            }
+            .car-digital-date {
+                font-size: 0.72rem !important;
+                margin-top: 0.15rem !important;
+            }
+            .car-gauge-ring-wrap {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .car-gauge-pct {
+                font-size: 0.95rem !important;
+            }
+            .car-side-col {
+                gap: 0.45rem !important;
+                justify-content: space-between !important;
+                min-height: 0 !important;
+            }
+            .car-widget-card {
+                padding: 0.5rem 0.7rem !important;
+                border-radius: 12px !important;
+            }
+            .car-companion-box {
+                padding: 0.4rem 0.6rem !important;
+            }
+            .car-rabbit-avatar {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 1.2rem !important;
+            }
+            .car-battery-hero {
+                padding: 0.2rem 0 !important;
+                margin-bottom: 0.25rem !important;
+            }
+            .car-battery-soc-val {
+                font-size: 1.35rem !important;
+            }
+            .car-battery-range-val {
+                font-size: 0.95rem !important;
+            }
+            .car-diag-grid {
+                gap: 0.25rem !important;
+            }
+            .car-diag-item {
+                padding: 0.25rem 0.4rem !important;
+                font-size: 0.68rem !important;
+            }
+            .car-milestone-scroller {
+                max-height: clamp(80px, 22vh, 130px) !important;
+                gap: 0.25rem !important;
+            }
+            .car-bottom-bar {
+                padding-top: 0.2rem !important;
+            }
+            .car-slider-track {
+                height: 38px !important;
+                width: min(340px, 52vw) !important;
+            }
+            .car-slider-thumb {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 1.1rem !important;
+            }
+        }
+

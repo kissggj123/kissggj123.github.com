@@ -1,0 +1,73 @@
+/* ===== css/rounded-screen.css — 圆角矩形屏适配模块 =====
+ *
+ * 用途: 让 bcos 在圆角矩形屏幕 (车机中控屏、异形全面屏等) 上显示正常,
+ *       避免四角内容被物理圆角裁掉, 同时不影响普通矩形屏的布局。
+ *
+ * 启用方式 (三选一):
+ *   1. URL 参数: index.html?rounded=1
+ *   2. localStorage: localStorage.setItem('bcos-rounded-screen', '1')
+ *   3. 手动: document.documentElement.setAttribute('data-screen', 'rounded')
+ * 启用后由 js/screen.js 自动打标, 本文件只负责样式。
+ *
+ * 设计原则: 默认零侵入 — 未启用时本文件不产生任何视觉变化。
+ */
+
+:root {
+    /* 圆角半径: 可按实际屏幕调整 */
+    --screen-radius: 28px;
+    /* 安全边距: 挪用系统 safe-area, 无刘海屏时为 0, 无影响 */
+    --screen-safe-top: env(safe-area-inset-top, 0px);
+    --screen-safe-right: env(safe-area-inset-right, 0px);
+    --screen-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --screen-safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ---------- 四角遮罩: 用与机身同色的圆角蒙层模拟物理圆角 ----------
+ * 不改变任何布局, 仅视觉裁剪; pointer-events:none 不拦截交互。
+ * z-index 取极大值确保盖住所有 fixed 弹窗/壁纸层。 */
+html[data-screen="rounded"] body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    pointer-events: none;
+    border-radius: var(--screen-radius);
+    /* 以页面底色铺满四角之外, 圆角内保持透明露出内容 */
+    box-shadow: 0 0 0 9999px #000;
+}
+
+/* 圆角模式下给 body 一个同样的圆角, 让背景层与遮罩对齐 */
+html[data-screen="rounded"] body {
+    border-radius: var(--screen-radius);
+    overflow: clip;
+}
+
+/* ---------- 关键 UI 避开圆角区 ----------
+ * 侧边栏 / 任务栏 / 顶部栏在圆角屏上向内收, 防止按钮落进被遮罩的死角。
+ * 使用 :where() 包裹以保持 0 特异度, 不干扰原有样式优先级。 */
+html[data-screen="rounded"] :where(.sidebar) {
+    padding-top: max(10px, var(--screen-safe-top));
+    padding-bottom: max(10px, var(--screen-safe-bottom));
+    border-top-left-radius: var(--screen-radius);
+    border-bottom-left-radius: var(--screen-radius);
+}
+html[data-screen="rounded"] :where(.taskbar, #taskbar) {
+    padding-left: max(12px, var(--screen-safe-left));
+    padding-right: max(12px, var(--screen-safe-right));
+    padding-bottom: max(8px, var(--screen-safe-bottom));
+    border-bottom-left-radius: var(--screen-radius);
+    border-bottom-right-radius: var(--screen-radius);
+}
+html[data-screen="rounded"] :where(.menubar, #menubar) {
+    padding-top: max(6px, var(--screen-safe-top));
+    padding-left: max(12px, var(--screen-safe-left));
+    padding-right: max(12px, var(--screen-safe-right));
+    border-top-left-radius: var(--screen-radius);
+    border-top-right-radius: var(--screen-radius);
+}
+
+/* 模态框在圆角屏上留出边距, 避免贴边被遮罩裁掉圆角 */
+html[data-screen="rounded"] :where(.modal, #modal-content .modal) {
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 32px);
+}
