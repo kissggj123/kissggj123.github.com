@@ -12,6 +12,7 @@ const RELATIVE_CORE_ASSETS = [
     'car.css',
     'css/base.css', 'css/ui.css', 'css/effects.css',
     'css/car-lockscreen-a.css', 'css/car-lockscreen-b.css', 'css/rounded-screen.css',
+    'js/version.js',
     'js/screen.js',
     'js/core.js', 'js/game.js', 'js/renderer.js',
     'js/game-logic-a.js', 'js/game-logic-b.js', 'js/game-logic-c.js',
