@@ -1268,6 +1268,9 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v8.0.8902', title:'版本验证推送', items:[
+            '[PWA] Service Worker 缓存升级至 v8.0.8902，旧版本缓存强制清理'
+        ]},
         { ver:'v8.0.8901', title:'BCOS 8.0 Aurora 全面重构', items:[
             '[重构] 新启动屏：极光渐变 Logo + 进度条 + 状态提示',
             '[重构] 悬浮菜单栏：灵动岛风胶囊，屏幕顶部中央',
