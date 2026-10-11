@@ -1,57 +1,32 @@
-/* ===== js/desktop.js — BCOS 桌面渲染引擎 (v8.0.2 重写) =====
- *
- * 真实背景元素: #bg-layer (index.html)
- * 桌面只渲染: 壁纸 + me 文件夹
+/* ===== js/desktop.js — v8.1.0.8910 =====
+ * 7.8.6 负责桌面主体 (壁纸/图标), 此文件只做 Aurora 增强
+ * 壁纸: 使用 7.8.6 的 _bcosApplyDesktopTheme (稳定)
  */
 function _bcosSyncDesktopAppIcons() {
+    // 8.0 需求: 桌面不显示普通图标 (抽屉是唯一入口)
+    // 但保留图标 DOM 供抽屉收集
     const container = document.querySelector('.bcos-desktop-icons');
-    if (container) container.innerHTML = '';
-    document.querySelectorAll('.bcos-desktop-icon').forEach(el => {
-        if (el.id !== 'bcos-me-folder') el.remove();
-    });
+    if (container) {
+        // 隐藏而非删除, 抽屉需要收集
+        container.style.display = 'none';
+        console.log('[Desktop] 桌面图标已隐藏 (抽屉模式)');
+    }
 }
 
 function _bcosDesktopRender() {
-    console.log('[Desktop] 渲染桌面…');
-    _bcosSyncDesktopAppIcons();
-    _bcosDesktopApplyWallpaper();
-    _bcosDesktopRenderMe();
-    console.log('[Desktop] ✅ 桌面渲染完成');
-}
-
-// v8.0.1 hybrid: 壁纸交还给 7.8.6 的 _bcosApplyDesktopTheme (稳定版逻辑)
-function _bcosDesktopApplyWallpaper() {
+    console.log('[Desktop] v8.1.0 渲染…');
+    // 壁纸由 7.8.6 的 _bcosApplyDesktopTheme 处理
     if (window._bcosApplyDesktopTheme) {
-        console.log('[Desktop] 调用 7.8.6 壁纸逻辑');
         window._bcosApplyDesktopTheme();
-    } else {
-        console.warn('[Desktop] _bcosApplyDesktopTheme 未定义');
     }
+    _bcosSyncDesktopAppIcons();
+    console.log('[Desktop] ✅ 完成');
 }
 
-function _bcosDesktopRenderMe() {
-    if (document.getElementById('bcos-me-folder')) return;
-    const me = document.createElement('div');
-    me.id = 'bcos-me-folder';
-    me.className = 'bcos-desktop-icon';
-    me.innerHTML = '<div style="font-size:44px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));">📁</div>' +
-                   '<div style="color:#fff;font-size:12px;margin-top:6px;text-shadow:0 1px 4px rgba(0,0,0,.6);">me</div>';
-    me.style.cssText = 'position:fixed;bottom:104px;left:50%;transform:translateX(-50%);z-index:10;' +
-                       'display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:12px 16px;';
-    me.onclick = () => { if (typeof _bcosOpenApp === 'function') _bcosOpenApp('me'); };
-    document.body.appendChild(me);
-    console.log('[Desktop] me 文件夹已渲染');
-}
-
+// 兼容旧调用
 window._bcosDesktopSetWallpaper = function(file) {
-    if (window._bcosWallpaperSet) {
-        // 检查缓存
-        const cache = window.wpBlobCache || {};
-        const url = (cache[file] && cache[file].startsWith('blob:')) ? cache[file] : file;
-        window._bcosWallpaperSet(url);
-    } else {
-        console.warn('[Desktop] 壁纸管理器未加载');
-    }
+    try { localStorage.setItem('bcosCustomBg', file); } catch(e) {}
+    if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
 };
 window._bcosDesktopRender = _bcosDesktopRender;
-console.log('[Desktop] 桌面渲染引擎 v8.0.2 已加载');
+console.log('[Desktop] v8.1.0 已加载');
