@@ -3,71 +3,6 @@ let _bcosFinderPath = 'me';
     let _bcosFinderHistIdx = 0;
     let _bcosFinderFilter = '';
 
-    // ===== 用户文件系统 (localStorage 持久化) =====
-    const _BCOS_UFS_KEY = 'bcos_user_fs_v1';
-    function _bcosUfsLoad() {
-        try {
-            const raw = localStorage.getItem(_BCOS_UFS_KEY);
-            if (raw) return JSON.parse(raw);
-        } catch(e) {}
-        return { type: 'dir', children: {} };
-    }
-    function _bcosUfsSave(root) {
-        try { localStorage.setItem(_BCOS_UFS_KEY, JSON.stringify(root)); } catch(e) {
-            if (typeof showToast === 'function') showToast('⚠️ 存储空间不足');
-        }
-    }
-    function _bcosUfsGetNode(pathParts) {
-        const root = _bcosUfsLoad();
-        let cur = root;
-        for (const p of pathParts) {
-            if (!cur.children || !cur.children[p] || cur.children[p].type !== 'dir') return null;
-            cur = cur.children[p];
-        }
-        return { root, node: cur };
-    }
-    window._bcosUfsMkdir = function(name) {
-        name = (name || '').trim().replace(/[\/]/g, '');
-        if (!name) return;
-        const parts = (_bcosFinderPath || 'me').replace(/^(me|home\/bunny\/me)\/?/, '').split('/').filter(Boolean);
-        const { root, node } = _bcosUfsGetNode(parts) || {};
-        if (!node) { alert('当前目录不支持创建'); return; }
-        if (node.children[name]) { alert('已存在同名项目'); return; }
-        node.children[name] = { type: 'dir', children: {}, created: Date.now() };
-        _bcosUfsSave(root);
-        _bcosFinderRefreshUI();
-        if (typeof showToast === 'function') showToast('📁 已创建文件夹: ' + name);
-    };
-    window._bcosUfsMkfile = function(name) {
-        name = (name || '').trim().replace(/[\/]/g, '');
-        if (!name) return;
-        const parts = (_bcosFinderPath || 'me').replace(/^(me|home\/bunny\/me)\/?/, '').split('/').filter(Boolean);
-        const { root, node } = _bcosUfsGetNode(parts) || {};
-        if (!node) { alert('当前目录不支持创建'); return; }
-        if (node.children[name]) { alert('已存在同名项目'); return; }
-        node.children[name] = { type: 'file', content: '', created: Date.now(), modified: Date.now() };
-        _bcosUfsSave(root);
-        _bcosFinderRefreshUI();
-        if (typeof showToast === 'function') showToast('📄 已创建文件: ' + name);
-    };
-    window._bcosUfsDelete = function(name) {
-        if (!confirm('确定删除 "' + name + '" 吗？')) return;
-        const parts = (_bcosFinderPath || 'me').replace(/^(me|home\/bunny\/me)\/?/, '').split('/').filter(Boolean);
-        const { root, node } = _bcosUfsGetNode(parts) || {};
-        if (!node || !node.children[name]) return;
-        delete node.children[name];
-        _bcosUfsSave(root);
-        _bcosFinderRefreshUI();
-    };
-    window._bcosUfsPromptMkdir = function() {
-        const n = prompt('新建文件夹名称:', '新建文件夹');
-        if (n) _bcosUfsMkdir(n);
-    };
-    window._bcosUfsPromptMkfile = function() {
-        const n = prompt('新建文件名称:', '新建文件.txt');
-        if (n) _bcosUfsMkfile(n);
-    };
-
     function _bcosVfsResolveNode(pathStr) {
         _bcosInitMeFolder();
         pathStr = (pathStr || 'me').trim().replace(/^\/+/, '');
@@ -102,28 +37,14 @@ let _bcosFinderPath = 'me';
         if (pathStr === 'desktop' || pathStr === 'home/bunny/desktop') {
             return { type: 'dir', path: 'desktop', displayName: '桌面 (Desktop)', children: _bcosFS.desktop.children };
         }
-        // Subpath inside me folder (合并 localStorage 用户文件)
+        // Subpath inside me folder
         const parts = pathStr.replace(/^(me|home\/bunny\/me)\/?/, '').split('/').filter(Boolean);
         let cur = _bcosFS.me;
         for (let i = 0; i < parts.length; i++) {
             const sub = cur.children && cur.children[parts[i]];
             if (sub && sub.type === 'dir') cur = sub; else return null;
         }
-        // 合并用户文件系统
-        const ufsData = _bcosUfsGetNode(parts);
-        const merged = Object.assign({}, cur.children);
-        if (ufsData && ufsData.node && ufsData.node.children) {
-            Object.assign(merged, ufsData.node.children);
-        }
-        // 标记用户文件
-        const marked = {};
-        Object.keys(merged).forEach(k => {
-            marked[k] = merged[k];
-            if (ufsData && ufsData.node && ufsData.node.children && ufsData.node.children[k]) {
-                marked[k] = Object.assign({}, merged[k], { _user: true });
-            }
-        });
-        return { type: 'dir', path: 'me' + (parts.length ? '/' + parts.join('/') : ''), displayName: parts.length ? parts[parts.length - 1] : '文稿 (Documents)', children: marked };
+        return { type: 'dir', path: 'me' + (parts.length ? '/' + parts.join('/') : ''), displayName: parts.length ? parts[parts.length - 1] : '文稿 (Documents)', children: cur.children };
     }
 
     function _bcosFileIcon(name, isDir) {
@@ -396,16 +317,11 @@ let _bcosFinderPath = 'me';
             onOk: (val) => {
                 val = _bcosCleanAppName(val);
                 if (!val) val = 'untitled.md';
-                // v8.0.1: 持久化到 localStorage
-                const parts = (_bcosFinderPath || 'me').replace(/^(me|home\/bunny\/me)\/?/, '').split('/').filter(Boolean);
-                const ufs = _bcosUfsGetNode(parts);
-                if (!ufs) { showToast('⚠️ 当前目录不支持创建'); return; }
-                if (ufs.node.children[val]) { showToast('⚠️ 该名称已存在'); return; }
-                const fileNode = { type: 'file', content: '# ' + val + '\n\n', created: Date.now(), modified: Date.now(), _user: true };
-                ufs.node.children[val] = fileNode;
-                _bcosUfsSave(ufs.root);
+                const node = _bcosVfsResolveNode(_bcosFinderPath);
+                if (!node || node.type !== 'dir') return;
+                node.children[val] = { type: 'file', content: '# ' + val + '\n\n' };
                 _bcosFinderRefreshUI();
-                _bcosTeOpenVfsFile(val, fileNode, _bcosFinderPath + '/' + val);
+                _bcosTeOpenVfsFile(val, node.children[val], _bcosFinderPath + '/' + val);
                 showToast('✓ 已新建文件并打开: ' + val);
             }
         });
@@ -420,13 +336,10 @@ let _bcosFinderPath = 'me';
             onOk: (val) => {
                 val = _bcosCleanAppName(val);
                 if (!val) return;
-                // v8.0.1: 持久化到 localStorage
-                const parts = (_bcosFinderPath || 'me').replace(/^(me|home\/bunny\/me)\/?/, '').split('/').filter(Boolean);
-                const ufs = _bcosUfsGetNode(parts);
-                if (!ufs) { showToast('⚠️ 当前目录不支持创建'); return; }
-                if (ufs.node.children[val]) { showToast('⚠️ 该名称已存在'); return; }
-                ufs.node.children[val] = { type: 'dir', children: {}, created: Date.now(), _user: true };
-                _bcosUfsSave(ufs.root);
+                const node = _bcosVfsResolveNode(_bcosFinderPath);
+                if (!node || node.type !== 'dir') return;
+                if (node.children[val]) { showToast('⚠️ 该名称已存在'); return; }
+                node.children[val] = { type: 'dir', children: {} };
                 _bcosFinderRefreshUI();
                 showToast('✓ 已创建文件夹: ' + val);
             }
@@ -519,137 +432,100 @@ let _bcosFinderPath = 'me';
         }, { passive: true });
     }
 
-    // ===== Monitor v8.0.1: Aurora 重构 =====
     function _bcosRenderMonitor(content) {
-        content.style.padding = '0';
-        content.style.overflow = 'auto';
-        const cpuCores = navigator.hardwareConcurrency || 4;
-        const devMem = navigator.deviceMemory || 8;
-        const gpuShort = (_gpuInfo.renderer || 'Unknown').length > 32 ? _gpuInfo.renderer.substring(0, 32) + '...' : (_gpuInfo.renderer || 'Unknown');
+        content.style.padding = '.5rem';
+        content.innerHTML = '<div id="bcos-monitor-root" style="font-size:12px;color:#e0e0e0;"></div>';
+        const root = document.getElementById('bcos-monitor-root');
         const t = _bcosRepos.length, o = _bcosRepos.filter(r=>!r[7]).length, f = t-o;
         const lc = new Set(_bcosRepos.map(r=>r[2])).size;
-        const ts = _bcosRepos.reduce((s,r)=>s+r[3],0);
+        const ts = _bcosRepos.reduce((s,r)=>s+r[3],0), tf = _bcosRepos.reduce((s,r)=>s+r[4],0);
         const lm = {}; _bcosRepos.forEach(r=>{lm[r[2]]=(lm[r[2]]||0)+1;});
-        const topLangs = Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,5);
-
-        const gaugeCard = (id, icon, label, valId, barId, color) => `
-            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                    <span style="font-size:18px;">${icon}</span>
-                    <span style="font-size:12px;font-weight:600;color:#aab0d0;">${label}</span>
-                    <span style="flex:1;"></span>
-                    <span id="${valId}" style="font-size:13px;font-weight:700;color:${color};font-variant-numeric:tabular-nums;">—</span>
-                </div>
-                <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;">
-                    <div id="${barId}" style="height:100%;width:0%;background:linear-gradient(90deg,${color},${color}aa);border-radius:4px;transition:width .6s cubic-bezier(.34,1.3,.64,1);"></div>
-                </div>
-            </div>`;
-
-        content.innerHTML = `<div style="padding:14px;max-width:560px;margin:0 auto;">
-            <div style="text-align:center;margin-bottom:14px;">
-                <div style="font-size:36px;margin-bottom:6px;">📊</div>
-                <div style="font-size:17px;font-weight:800;color:#f2f4ff;">活动监视器</div>
-                <div style="font-size:11px;color:rgba(242,244,255,.45);">Aurora 内核 · 实时监控 v8.0.1</div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                ${gaugeCard('cpu', '⚡', 'CPU (估算)', 'mon-cpu-val', 'mon-cpu-bar', '#7c8cff')}
-                ${gaugeCard('mem', '🧠', '内存', 'mon-mem-val', 'mon-mem-bar', '#34c759')}
-                ${gaugeCard('dom', '🌳', 'DOM 节点', 'mon-dom-val', 'mon-dom-bar', '#ff9500')}
-                ${gaugeCard('fps', '🎬', 'FPS', 'mon-fps-val', 'mon-fps-bar', '#ff8cc6')}
-            </div>
-            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#f2f4ff;">🖥️ 硬件</div>
-                <div style="font-size:11.5px;color:#aab0d0;line-height:1.8;">
-                    <div>CPU: ${cpuCores} 核心</div>
-                    <div>内存: ${devMem} GB</div>
-                    <div>GPU: ${_bcosEscape(gpuShort)}</div>
-                    <div>${_gpuInfo.gpuAccelerated ? '✅ GPU 加速已启用' : '⚠️ 无 GPU 加速'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div>
-                </div>
-            </div>
-            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#f2f4ff;">🐙 仓库统计</div>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;">
-                    <div><div style="font-size:18px;font-weight:800;color:#7c8cff;">${t}</div><div style="font-size:10px;color:#888;">总数</div></div>
-                    <div><div style="font-size:18px;font-weight:800;color:#34c759;">${o}</div><div style="font-size:10px;color:#888;">原创</div></div>
-                    <div><div style="font-size:18px;font-weight:800;color:#ff9500;">${f}</div><div style="font-size:10px;color:#888;">Fork</div></div>
-                    <div><div style="font-size:18px;font-weight:800;color:#ff8cc6;">${lc}</div><div style="font-size:10px;color:#888;">语言</div></div>
-                </div>
-                <div style="margin-top:8px;font-size:11px;color:#aab0d0;">★ ${ts} Stars · Top: ${topLangs.map(([l,c]) => `<span style="color:${_bcosLangColors[l]||'#e0e0e0'};">● ${l}</span>`).join(' ')}</div>
-            </div>
-            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;margin-bottom:10px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                    <div style="font-size:12px;font-weight:700;color:#f2f4ff;">⚙️ 运行中进程</div>
-                    <button onclick="_bcosMonKillAll()" style="background:rgba(255,69,58,.15);border:1px solid rgba(255,69,58,.4);color:#ff6b62;padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer;">全部结束</button>
-                </div>
-                <div id="mon-proc-list" style="font-size:11.5px;"></div>
-            </div>
-            <div style="text-align:center;font-size:10px;color:rgba(242,244,255,.3);">每 2 秒更新 · v8.0.1 Aurora</div>
-        </div>`;
-
-        const $ = (id) => document.getElementById(id);
-        let _frames = 0, _lastFpsT = performance.now(), _fps = 60;
-        const _fpsLoop = () => {
-            _frames++;
-            const now = performance.now();
-            if (now - _lastFpsT >= 1000) { _fps = Math.round(_frames * 1000 / (now - _lastFpsT)); _frames = 0; _lastFpsT = now; }
-            if (content.isConnected) requestAnimationFrame(_fpsLoop);
-        };
-        requestAnimationFrame(_fpsLoop);
-
-        function _monUpdate() {
-            if (!content.isConnected) { if (window._bcosMonitorTimer) { clearInterval(window._bcosMonitorTimer); window._bcosMonitorTimer = null; } return; }
-            // CPU: 浏览器无法直接读取, 用长任务+帧率估算 (标注为估算值)
-            const _lt = (window._bcosPerf && window._bcosPerf.longTasks) || 0;
-            const cpu = Math.min(95, Math.round(12 + Math.random() * 25 + _lt * 2));
-            if ($('mon-cpu-val')) { $('mon-cpu-val').textContent = cpu + '%'; $('mon-cpu-bar').style.width = cpu + '%'; }
-            // 内存
-            let memPct = 0, memTxt = '—';
-            if (performance.memory) {
-                const u = performance.memory.usedJSHeapSize / 1048576, lim = performance.memory.jsHeapSizeLimit / 1048576;
-                memPct = Math.min(100, Math.round(u / lim * 100));
-                memTxt = Math.round(u) + 'MB';
-            } else { memPct = Math.round(20 + Math.random() * 30); memTxt = memPct + '%'; }
-            if ($('mon-mem-val')) { $('mon-mem-val').textContent = memTxt; $('mon-mem-bar').style.width = memPct + '%'; }
-            // DOM
-            const ov = document.getElementById('bcos-overlay');
-            const nodes = ov ? ov.querySelectorAll('*').length : 0;
-            const domPct = Math.min(100, Math.round(nodes / 40));
-            if ($('mon-dom-val')) { $('mon-dom-val').textContent = nodes; $('mon-dom-bar').style.width = domPct + '%'; }
-            // FPS
-            if ($('mon-fps-val')) { $('mon-fps-val').textContent = _fps; $('mon-fps-bar').style.width = Math.min(100, _fps / 60 * 100) + '%'; }
+        const topLangs = Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,c])=>{const col=_bcosLangColors[l]||'#e0e0e0';return `<div style="color:${col};font-size:11px;">● ${_bcosEscape(l)}: ${c}</div>`;}).join('');
+        // Pre-compute static values once
+        const cpuCores = navigator.hardwareConcurrency || 4;
+        const devMem = navigator.deviceMemory || (4 + Math.floor(Math.random()*8));
+        const gpuShort = _gpuInfo.renderer.length > 28 ? _gpuInfo.renderer.substring(0, 28) + '...' : _gpuInfo.renderer;
+        let netType = 'GitHub Archive', netEff = '—';
+        if (navigator.connection) {
+            netType = navigator.connection.effectiveType || netType;
+            netEff = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : netEff;
         }
-        function _monUpdateProcs() {
-            const listEl = document.getElementById('mon-proc-list');
-            if (!listEl || !content.isConnected) return;
-            const wins = (window._bcos && window._bcos.wins) || {};
-            const ids = Object.keys(wins);
-            if (!ids.length) {
-                listEl.innerHTML = '<div style="color:#888;text-align:center;padding:8px;">暂无运行中的窗口</div>';
-                return;
+        // ---- 模块化状态检测 (v7.8.6.9482+): 检查 6 CSS + 19 JS 模块实际加载情况 ----
+        const _bcosModCss = ['base','ui','effects','car-lockscreen-a','car-lockscreen-b','rounded-screen'];
+        const _bcosModJs = ['screen','core','game','renderer','game-logic-a','game-logic-b','game-logic-c','ui','os','icons','os-apps-a','os-apps-b','os-apps-c','wallpaper-data','wallpaper','apps','ui-systems-a','ui-systems-b','ui-systems-c'];
+        const _loadedCss = new Set([...document.querySelectorAll('link[rel="stylesheet"]')].map(l => (l.getAttribute('href')||'').split('/').pop().replace(/\.css(\?.*)?$/,'')));
+        const _loadedJs = new Set([...document.querySelectorAll('script[src]')].map(s => (s.getAttribute('src')||'').split('/').pop().replace(/\.js(\?.*)?$/,'')));
+        const _modDot = (name, ok) => `<span title="${name}${ok?' ✓':' ✗ 404'}" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ok?'#00ff41':'#f44'};margin:1px;"></span>`;
+        const _cssDots = _bcosModCss.map(n => _modDot('css/'+n+'.css', _loadedCss.has(n))).join('');
+        const _jsDots = _bcosModJs.map(n => _modDot('js/'+n+'.js', _loadedJs.has(n))).join('');
+        const _cssOk = _bcosModCss.filter(n => _loadedCss.has(n)).length;
+        const _jsOk = _bcosModJs.filter(n => _loadedJs.has(n)).length;
+        const _modHtml = `<div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;">`
+            + `<div style="color:#888;font-size:10px;">📦 Modules: <span style="color:${_cssOk===6?'#00ff41':'#f44'};">CSS ${_cssOk}/6</span> · <span style="color:${_jsOk===19?'#00ff41':'#f44'};">JS ${_jsOk}/19</span></div>`
+            + `<div style="margin-top:.25rem;"><div style="color:#666;font-size:9px;">CSS</div><div>${_cssDots}</div></div>`
+            + `<div style="margin-top:.2rem;"><div style="color:#666;font-size:9px;">JS</div><div>${_jsDots}</div></div>`
+            + `${(_cssOk<6||_jsOk<19)?'<div style="color:#f44;font-size:10px;margin-top:.2rem;">⚠️ 有模块缺失（悬停红点查看文件名）</div>':''}</div>`;
+        // Build structure once with placeholder elements for dynamic data
+        root.innerHTML = `<div style="text-align:center;margin-bottom:.5rem;color:#00ff41;font-weight:bold;">📊 bcos System Monitor</div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-cpu" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-cpu-bar" style="height:8px;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-mem" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-mem-bar" style="height:8px;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Repo Memory: ${t} repos / ${lc} langs</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:#00aaff;height:8px;width:67%;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div id="bcos-mon-dom" style="color:#888;font-size:10px;"></div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div id="bcos-mon-dom-bar" style="height:8px;border-radius:4px;"></div></div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">GPU: ${_bcosEscape(gpuShort)}</div><div style="background:#1a1a1a;height:8px;border-radius:4px;margin-top:.2rem;"><div style="background:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};height:8px;width:${_gpuInfo.gpuAccelerated ? 80 : 20}%;border-radius:4px;"></div></div><div style="color:${_gpuInfo.gpuAccelerated ? '#00ff41' : '#f44'};font-size:10px;margin-top:.2rem;">● ${_gpuInfo.gpuAccelerated ? 'GPU Accelerated' : 'No GPU accel'}${_gpuInfo.isAppleSilicon ? ' (Apple Silicon)' : ''}</div></div>
+        <div style="background:#0a0a0a;padding:.4rem;border-radius:3px;margin-bottom:.3rem;"><div style="color:#888;font-size:10px;">Network: ${netType} ${netEff!=='—'?'| '+netEff:''}</div><div style="color:#00ff41;font-size:10px;margin-top:.2rem;">● Connected</div></div>
+        ${_modHtml}
+        <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
+            <div style="color:#00ff41;font-size:11px;">Repository Stats:</div>
+            <div style="color:#e0e0e0;font-size:11px;">Total: ${t} | Original: ${o} | Forks: ${f}</div>
+            <div style="color:#e0e0e0;font-size:11px;">Stars: ★ ${ts} | Forks: ⑂ ${tf} | Langs: ${lc}</div>
+        </div>
+        <div style="border-top:1px solid #333;margin-top:.3rem;padding-top:.3rem;">
+            <div style="color:#00ff41;font-size:11px;">Top Languages:</div>
+            ${topLangs}
+        </div>
+        <div style="color:#666;font-size:9px;margin-top:.3rem;text-align:center;">Updates every 2s</div>`;
+        // Cache DOM refs for targeted updates (avoids full innerHTML rebuild)
+        const cpuEl = document.getElementById('bcos-mon-cpu');
+        const cpuBar = document.getElementById('bcos-mon-cpu-bar');
+        const memEl = document.getElementById('bcos-mon-mem');
+        const memBar = document.getElementById('bcos-mon-mem-bar');
+        const domEl = document.getElementById('bcos-mon-dom');
+        const domBar = document.getElementById('bcos-mon-dom-bar');
+        function _bcosMonitorUpdate() {
+            if (!root || !root.isConnected) { if (_bcosMonitorTimer) { clearInterval(_bcosMonitorTimer); _bcosMonitorTimer = null; } return; }
+            const cpuLoad = Math.round(15 + Math.random() * 35);
+            if (cpuEl) {
+                cpuEl.textContent = 'CPU: ' + cpuCores + ' cores @ ' + (2.0+Math.random()*1.5).toFixed(1) + 'GHz (' + cpuLoad + '%)';
+                cpuBar.style.background = cpuLoad > 80 ? '#f44' : '#00ff41';
+                cpuBar.style.width = cpuLoad + '%';
             }
-            listEl.innerHTML = ids.map(id => {
-                const active = window._bcos.activeWin === id;
-                return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.05);">
-                    <span style="width:8px;height:8px;border-radius:50%;background:${active ? '#34c759' : '#7c8cff'};"></span>
-                    <span style="flex:1;color:#e0e0e0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${id}${active ? ' <span style="font-size:10px;color:#34c759;">● 前台</span>' : ''}</span>
-                    <button onclick="_bcosMonKill('${id}')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#ff8c86;padding:2px 8px;border-radius:6px;font-size:10px;cursor:pointer;">结束</button>
-                </div>`;
-            }).join('');
+            let memUsed = 0, memTotal = 0, memPct = 0;
+            if (performance.memory) {
+                memUsed = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                memTotal = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
+                memPct = Math.min(100, Math.round(memUsed / memTotal * 100));
+            } else {
+                memUsed = Math.round(50 + Math.random() * 200);
+                memTotal = Math.round(devMem * 1024 * 0.6);
+                memPct = Math.min(100, Math.round(memUsed / memTotal * 100));
+            }
+            if (memEl) {
+                memEl.textContent = 'Device Memory: ' + devMem + ' GB | JS Heap: ' + memUsed + ' / ' + memTotal + ' MB (' + memPct + '%)';
+                memBar.style.background = memPct > 80 ? '#f44' : '#00aaff';
+                memBar.style.width = memPct + '%';
+            }
+            // Count DOM nodes only within bcos overlay (much cheaper than document.querySelectorAll('*'))
+            const bcosOv = document.getElementById('bcos-overlay');
+            const domNodes = bcosOv ? bcosOv.querySelectorAll('*').length : 0;
+            if (domEl) {
+                domEl.textContent = 'DOM Nodes: ' + domNodes;
+                domBar.style.background = '#ffaa00';
+                domBar.style.width = Math.min(100, Math.round(domNodes/30)) + '%';
+            }
         }
-        window._bcosMonKill = function(id) {
-            if (window._bcosCloseWin) window._bcosCloseWin(id);
-            setTimeout(_monUpdateProcs, 300);
-        };
-        window._bcosMonKillAll = function() {
-            if (!confirm('结束所有窗口？')) return;
-            const wins = (window._bcos && window._bcos.wins) || {};
-            Object.keys(wins).forEach(id => { if (window._bcosCloseWin) try { window._bcosCloseWin(id); } catch(e){} });
-            setTimeout(_monUpdateProcs, 300);
-        };
-        _monUpdate();
-        _monUpdateProcs();
-        if (window._bcosMonitorTimer) clearInterval(window._bcosMonitorTimer);
-        window._bcosMonitorTimer = setInterval(() => { _monUpdate(); _monUpdateProcs(); }, 2000);
+        _bcosMonitorUpdate();
+        if (_bcosMonitorTimer) clearInterval(_bcosMonitorTimer);
+        _bcosMonitorTimer = setInterval(_bcosMonitorUpdate, 2000);
     }
 
     function _bcosRenderAbout(content) {
@@ -663,21 +539,20 @@ let _bcosFinderPath = 'me';
             <div style="margin-top:.5rem;color:#666;">Powered by Bunny Core</div>
             <div style="color:#666;">© 2014-${new Date().getFullYear()} kissggj123</div>
             <div style="margin-top:.6rem;border-top:1px solid #333;padding-top:.5rem;text-align:left;">
-                <div style="color:#00ff41;font-size:11px;font-weight:bold;margin-bottom:.3rem;">📦 模块化架构 <span style="color:#888;font-weight:normal;">${_BCOS_VER}</span></div>
+                <div style="color:#00ff41;font-size:11px;font-weight:bold;margin-bottom:.3rem;">📦 模块化架构 <span style="color:#888;font-weight:normal;">v7.8.6.9482</span></div>
                 <div style="color:#aaa;font-size:10px;line-height:1.6;">
-                    <div>🏗️ <b style="color:#e0e0e0;">index.html</b> 由 1.5MB 单文件拆分为 <b style="color:#00ff41;">${[...document.querySelectorAll('script[src]')].filter(s=>{try{return new URL(s.src).origin===location.origin}catch(e){return false}}).length} JS + ${[...document.querySelectorAll('link[rel="stylesheet"]')].filter(l=>{try{return new URL(l.href).origin===location.origin}catch(e){return false}}).length} CSS</b> 独立模块 <span style="color:#666;">(实时统计)</span></div>
-                    <div style="margin-top:.25rem;color:#888;">— 实时加载的模块 —</div>
-                    <div>${(() => {
-                        const js = [...document.querySelectorAll('script[src]')].map(s => { try { const u = new URL(s.src); return u.origin === location.origin ? u.pathname.split('/').pop() : null; } catch(e){ return null; } }).filter(Boolean);
-                        const css = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => { try { const u = new URL(l.href); return u.origin === location.origin ? u.pathname.split('/').pop() : null; } catch(e){ return null; } }).filter(Boolean);
-                        const dot = (ok) => `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ok ? '#00ff41' : '#f44'};margin-right:4px;"></span>`;
-                        let h = '<div style="margin-top:.2rem;color:#888;">JS (' + js.length + ')</div><div style="line-height:1.9;">';
-                        h += js.map(n => dot(true) + n).join(' &nbsp; ') + '</div>';
-                        h += '<div style="margin-top:.2rem;color:#888;">CSS (' + css.length + ')</div><div style="line-height:1.9;">';
-                        h += css.map(n => dot(true) + n).join(' &nbsp; ') + '</div>';
-                        return h;
-                    })()}</div>
-                    <div style="margin-top:.25rem;color:#666;font-size:9px;">绿点=已加载 · 详见仓库根目录 MODULES.md</div>
+                    <div>🏗️ <b style="color:#e0e0e0;">index.html</b> 由 1.5MB 单文件拆分为 <b style="color:#00ff41;">19 JS + 6 CSS</b> 独立模块</div>
+                    <div style="margin-top:.25rem;color:#888;">— JS 模块 —</div>
+                    <div>🖥️ screen.js <span style="color:#666;">屏幕检测</span> · 🧩 core.js <span style="color:#666;">核心/配置/状态</span></div>
+                    <div>🎮 game.js <span style="color:#666;">大富翁初始化</span> · 🎨 renderer.js <span style="color:#666;">渲染模块</span></div>
+                    <div>🎲 game-logic-a/b/c.js <span style="color:#666;">游戏逻辑（托管/股票/赌场）</span></div>
+                    <div>🪟 ui.js <span style="color:#666;">UI 模块</span> · 💻 os.js <span style="color:#666;">终端</span> · 🎯 icons.js <span style="color:#666;">图标模块</span></div>
+                    <div>📱 os-apps-a/b/c.js <span style="color:#666;">系统应用</span> · 🖼️ wallpaper-data.js + wallpaper.js <span style="color:#666;">壁纸管理</span></div>
+                    <div>📝 apps.js <span style="color:#666;">应用</span> · ⚙️ ui-systems-a/b/c.js <span style="color:#666;">UI 系统</span></div>
+                    <div style="margin-top:.25rem;color:#888;">— CSS 模块 —</div>
+                    <div>🎨 base.css <span style="color:#666;">基础</span> · 🧱 ui.css <span style="color:#666;">组件</span> · ✨ effects.css <span style="color:#666;">动效</span></div>
+                    <div>🚗 car-lockscreen-a/b.css <span style="color:#666;">车机锁屏</span> · ⭕ rounded-screen.css <span style="color:#666;">圆角屏适配</span></div>
+                    <div style="margin-top:.25rem;color:#666;font-size:9px;">详见仓库根目录 MODULES.md（含 4 处无损提取审计）</div>
                 </div>
             </div>
             <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;border-radius:4px;" onclick="window.open('https://github.com/kissggj123/Bunny-Cockpit-OS','_blank')">🌐 View on GitHub</button></div>
@@ -1149,18 +1024,10 @@ let _bcosFinderPath = 'me';
         var bookmarksBar = _bcosBookmarks.map(function(bm) {
             return '<button class="bcos-bm-btn" data-url="' + bm.url + '" data-type="' + bm.type + '" style="background:#1a1a1a;border:1px solid #333;color:#aaa;cursor:pointer;font-size:10px;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background=\'#2a2a2a\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'#1a1a1a\';this.style.color=\'#aaa\';" onclick="_bcosBrowserNavigate(\'' + bm.url + '\',\'' + bm.type + '\')">' + bm.name + '</button>';
         }).join('');
-        // 复古站点书签
-        const retroBar = _BCOS_RETRO_SITES.map(s =>
-            `<button onclick="_bcosBrowserNavigate('${s.url}','external')" title="${s.desc}" style="background:rgba(124,140,255,.1);border:1px solid rgba(124,140,255,.3);color:#aab6ff;cursor:pointer;font-size:10px;padding:.15rem .4rem;border-radius:6px;white-space:nowrap;">${s.name}</button>`
-        ).join('');
         content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .5rem;font-size:11px;color:#888;border-bottom:1px solid #333;display:flex;align-items:center;gap:.3rem;">' +
-            '<button onclick="_bcosBrowserNavigate(\'bunny://kingdom\',\'internal\')" style="background:none;border:none;cursor:pointer;font-size:13px;" title="首页">🏠</button>' +
-            '<span style="color:#00ff41;">🔒</span><input id="bcos-url-input" value="' + _bcosBrowserCurrentURL + '" onkeydown="if(event.key===\'Enter\')_bcosBrowserGo()" style="flex:1;background:#1a1a1a;border:1px solid #333;padding:.25rem .5rem;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;" placeholder="输入网址或搜索…" />' +
-            '<button onclick="_bcosBrowserGo()" style="background:#007aff;border:none;color:#fff;cursor:pointer;font-size:11px;padding:.25rem .6rem;border-radius:6px;font-weight:600;">前往</button>' +
-            '<button onclick="_bcosBrowserRefresh()" style="background:#1a1a1a;border:1px solid #333;color:#888;cursor:pointer;font-size:11px;padding:.2rem .4rem;border-radius:3px;">⟳</button>' +
+            '<span style="color:#00ff41;">🔒</span><span id="bcos-url-bar" style="flex:1;background:#1a1a1a;padding:.2rem .4rem;border-radius:3px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _bcosBrowserCurrentURL + '</span>' +
+            '<button onclick="_bcosBrowserRefresh()" style="background:#1a1a1a;border:1px solid #333;color:#888;cursor:pointer;font-size:11px;padding:.1rem .3rem;border-radius:3px;">⟳</button>' +
             '</div>' +
-            '<div style="background:#222;padding:.25rem .4rem;border-bottom:1px solid #333;display:flex;gap:.25rem;overflow-x:auto;flex-wrap:nowrap;align-items:center;">' +
-            '<span style="font-size:10px;color:#666;white-space:nowrap;">🕹️ 复古:</span>' + retroBar + '</div>' +
             '<div style="background:#222;padding:.2rem .3rem;border-bottom:1px solid #333;display:flex;gap:.2rem;overflow-x:auto;flex-wrap:nowrap;">' + bookmarksBar + '</div>' +
             '<div id="bcos-browser-view" style="height:calc(100% - 56px);overflow:auto;"></div>';
         const view = document.getElementById('bcos-browser-view');
@@ -1183,13 +1050,6 @@ let _bcosFinderPath = 'me';
         }
     }
     var _bcosAnniversaryTimer = null;
-    // v8.0.1: 真实浏览器 — 支持外部 URL (iframe), 复古站点
-    const _BCOS_RETRO_SITES = [
-        { name: '🕹️ 复古游戏博物馆', url: 'https://archive.org', desc: '互联网档案馆' },
-        { name: '🌐 90年代网络', url: 'https://theoldnet.com', desc: '复古网络体验' },
-        { name: '🎨 像素画廊', url: 'https://pixels.com', desc: '像素艺术' },
-        { name: '📺 复古电视', url: 'https://www.my90stv.com', desc: '90年代电视' },
-    ];
     function _bcosBrowserNavigate(url, type) {
         if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; }
         var oldApplyBar = document.getElementById('bcos-egg-applybar');
@@ -1197,15 +1057,7 @@ let _bcosFinderPath = 'me';
         _bcosBrowserCurrentURL = url;
         var urlBar = document.getElementById('bcos-url-bar');
         if (urlBar) urlBar.textContent = url;
-        // 外部 URL: 用 iframe 加载
-        if (url.indexOf('http://') === 0 || url.indexOf('https://') === 0) {
-            _bcosBrowserHTML = `<div style="height:100%;display:flex;flex-direction:column;background:#0d1117;">
-                <div style="padding:6px 10px;background:rgba(255,193,7,.1);border-bottom:1px solid rgba(255,193,7,.3);font-size:11px;color:#ffc107;">
-                    ⚠️ 外部站点通过 iframe 加载，部分网站可能拒绝嵌入。如无法显示请点击 <a href="${url}" target="_blank" style="color:#58a6ff;">新标签页打开 ↗</a>
-                </div>
-                <iframe src="${url}" style="flex:1;width:100%;border:none;background:#fff;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" title="browser"></iframe>
-            </div>`;
-        } else if (url === 'bunny://kingdom') {
+        if (url === 'bunny://kingdom') {
             _bcosBrowserHTML = _bcosGetDefaultBrowserContent();
         } else {
             _bcosBrowserHTML = _bcosGetBookmarkPage(url);
@@ -1213,24 +1065,6 @@ let _bcosFinderPath = 'me';
         _bcosBrowserRefresh();
         if (url === 'bunny://anniversary') _bcosStartAnniversaryTimer();
     }
-    // 地址栏输入
-    window._bcosBrowserGo = function() {
-        const inp = document.getElementById('bcos-url-input');
-        if (!inp) return;
-        let url = inp.value.trim();
-        if (!url) return;
-        // bunny:// 快捷
-        if (url.indexOf('bunny://') === 0) { _bcosBrowserNavigate(url, 'internal'); return; }
-        // 自动补 https://
-        if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) {
-            // 看起来像域名
-            if (url.includes('.') && !url.includes(' ')) url = 'https://' + url;
-            else { // 搜索
-                url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
-            }
-        }
-        _bcosBrowserNavigate(url, 'external');
-    };
     function _bcosStartAnniversaryTimer() {
         if (_bcosAnniversaryTimer) clearInterval(_bcosAnniversaryTimer);
         _bcosAnniversaryTimer = setInterval(function() {
