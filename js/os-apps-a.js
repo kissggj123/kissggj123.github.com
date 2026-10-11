@@ -991,7 +991,7 @@ function _bcosRefreshStoreIfOpen() {
             monitor: { t: 'System Monitor — bcos', w: 460, h: 360 },
             about: { t: 'About bcos', w: 420, h: 360 },
             browser: { t: 'Browser — bcos', w: 560, h: 420 },
-            me: { t: 'me — File Explorer', w: 400, h: 320 },
+            me: { t: '访达 — me', w: 640, h: 440 },
             texteditor: { t: '📝 Code Studio Pro — 文本代码编辑', w: 720, h: 500 },
             anniversary: { t: '💕 兔可可纪念日 — Anniversary', w: 640, h: 520 },
             monopoly: { t: '🎲 大富翁模拟经营 — Monopoly Kingdom', w: 880, h: 580 },
@@ -1039,7 +1039,7 @@ function _bcosRefreshStoreIfOpen() {
             else if (app === 'monitor') _bcosRenderMonitor(content);
             else if (app === 'about') _bcosRenderAbout(content);
             else if (app === 'browser') _bcosRenderBrowser(content);
-            else if (app === 'me') _bcosRenderMeFolder(content);
+            else if (app === 'me') { _bcosFinderPath = 'me'; _bcosRenderFileManager(content); }
             else if (app === 'texteditor') _bcosRenderTextEditor(content);
             else if (app === 'anniversary') _bcosRenderAnniversaryApp(content);
             else if (app === 'monopoly') _bcosRenderMonopolyApp(content);
@@ -1268,7 +1268,7 @@ function _bcosRefreshStoreIfOpen() {
         const fontScale = localStorage.getItem('fontScale') || '100';
 
         const tabs = [
-            { id: 'wifi', icon: '📶', bg: '#007aff', title: 'Wi-Fi 网络', sub: '无线网络与座舱互联' },
+            { id: 'wifi', icon: '⏱️', bg: '#34c759', title: '启动与延迟', sub: '运行时间与网络测速' },
             { id: 'battery', icon: '🔋', bg: '#34c759', title: '车辆与能耗', sub: '动力电池与座舱续航' },
             { id: 'general', icon: '⚙️', bg: '#8e8e93', title: '通用', sub: '系统偏好、更新与存储' },
             { id: 'appearance', icon: '🎨', bg: '#ff2d55', title: '外观与主题', sub: '桌面氛围主题与强调色' },
@@ -1338,6 +1338,23 @@ function _bcosRefreshStoreIfOpen() {
         });
     };
 
+    window._bcosPingTest = async function() {
+        const el = document.getElementById('bcos-wifi-ping');
+        if (el) el.textContent = '测速中…';
+        const times = [];
+        for (let i = 0; i < 3; i++) {
+            const t0 = performance.now();
+            try { await fetch('js/version.js?_ping=' + Date.now(), { cache: 'no-store' }); times.push(performance.now() - t0); }
+            catch(e) {}
+        }
+        if (el) {
+            if (times.length) {
+                const avg = Math.round(times.reduce((a,b)=>a+b,0) / times.length);
+                const color = avg < 100 ? '#34c759' : avg < 300 ? '#ff9500' : '#ff453a';
+                el.innerHTML = `<span style="color:${color};">${avg} ms</span> <span style="color:#888;font-size:10px;">(${times.map(t=>Math.round(t)).join('/')})</span>`;
+            } else el.textContent = '测速失败';
+        }
+    };
     function _bcosRenderSettingsRightPane() {
         const pane = document.getElementById('bcos-settings-pane');
         if (!pane) return;
@@ -1536,12 +1553,20 @@ function _bcosRefreshStoreIfOpen() {
                 `, '智能双温区座舱恒温系统')}
             `);
         } else if (_bcosSettingsActiveTab === 'wifi') {
-            html += hero('📶', 'Wi-Fi 与车机互联', '智能座舱 5G NSA/SA 双模聚合与高速车载热点');
+            // v8.0.1: WiFi 改为系统启动时间与延迟监控
+            const _bootT = window._bcosBootTime || performance.timeOrigin || Date.now();
+            const _upSec = Math.floor((Date.now() - _bootT) / 1000);
+            const _upStr = Math.floor(_upSec / 3600) + 'h ' + Math.floor((_upSec % 3600) / 60) + 'm ' + (_upSec % 60) + 's';
+            const _navT = performance.timing ? Math.round(performance.timing.loadEventEnd - performance.timing.navigationStart) : '—';
+            html += hero('⏱️', '启动时间与延迟', 'BCOS 内核启动耗时、页面加载与网络延迟实时监控');
             html += card(`
-                ${row('车载 Wi-Fi 热点', '<span style="color:#34c759;font-weight:600;">已连接 · Bunny-Cockpit-5G</span>', 'IP: 192.168.4.1 (5.8 GHz)')}
-                ${row('网络延迟', '<span style="font-family:monospace;color:#34c759;">18 ms (极佳)</span>', '座舱边缘云端链路状态')}
-                ${row('蓝牙互联', '<span style="color:#007aff;">iPhone 16 Pro (免提与音频流)</span>', 'Bluetooth 5.4 低延迟音频传输')}
+                ${row('🚀 系统启动时间', `<span style="font-family:monospace;color:#34c759;font-weight:700;">${_upStr}</span>`, '自 BCOS 内核启动以来的运行时长')}
+                ${row('⚡ 页面加载耗时', `<span style="font-family:monospace;color:#007aff;font-weight:700;">${_navT} ms</span>`, 'navigationStart → loadEventEnd')}
+                ${row('📶 网络延迟', `<span style="font-family:monospace;color:#34c759;font-weight:700;" id="bcos-wifi-ping">测速中…</span>`, '到 GitHub Pages 的实时延迟 <button onclick="_bcosPingTest()" style="background:rgba(0,122,255,.15);border:1px solid rgba(0,122,255,.4);color:#0a84ff;padding:2px 8px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:6px;">重新测速</button>')}
+                ${row('🌐 连接状态', '<span style="color:#34c759;font-weight:600;">● 已连接</span>', (navigator.connection ? navigator.connection.effectiveType + ' · ' + (navigator.connection.downlink || '—') + ' Mbps' : '在线'))}
             `);
+            // 自动测速
+            setTimeout(() => { if (typeof _bcosPingTest === 'function') _bcosPingTest(); }, 300);
         } else if (_bcosSettingsActiveTab === 'about') {
             html += `
             <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 0 18px;">
