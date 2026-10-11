@@ -156,9 +156,16 @@ function _bcosDiagCardHTML() {
 }
 
 function _bcosForceUpdate() {
-    if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 注销 Service Worker\n2. 清空所有缓存\n3. 强制重载页面')) return;
-    if (typeof showToast === 'function') showToast('🔄 正在清除缓存并重启…');
+    if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 通知 Service Worker 强制过期全部缓存\n2. 注销 Service Worker\n3. 强制重载页面')) return;
+    if (typeof showToast === 'function') showToast('🔄 正在强制过期缓存…');
     (async () => {
+        try {
+            // 先让 SW 自己清缓存 (v8.0.8903+)
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'FORCE_EXPIRE' });
+                await new Promise(r => setTimeout(r, 800));
+            }
+        } catch(e) {}
         try {
             if ('serviceWorker' in navigator) {
                 const regs = await navigator.serviceWorker.getRegistrations();
