@@ -1268,6 +1268,14 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v8.0.1.8904', title:'Aurora 内核重构大版本', items:[
+            '[内核] 性能优化：事件委托、防抖节流、内存泄漏修复',
+            '[新增] YumikoToys 上帝模式工具箱：系统级调教',
+            '[新增] 文件管理器支持新建文件夹/文件，localStorage 持久化',
+            '[新增] 设置中详细存储占用分析',
+            '[重构] Monitor 全新 Aurora UI',
+            '[移除] 移动端 Tab 栏选项（已废弃）'
+        ]},
         { ver:'v8.0.8903', title:'Service Worker 强制过期', items:[
             '[修复] 预缓存列表补上 bcos-8.css / app-drawer.css / desktop-modern.css / bcos-8.js，之前 PWA 根本没缓存这四个文件',
             '[新增] SW 支持 FORCE_EXPIRE 消息：客户端可通知 SW 自清全部缓存',
