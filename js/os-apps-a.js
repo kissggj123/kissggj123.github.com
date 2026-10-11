@@ -25,11 +25,13 @@ function _bcosRenderDrawerApps(filter) {
         grid.innerHTML = '<div class="bcos-drawer-empty">没有找到匹配的应用 🐰</div>';
         return;
     }
-    grid.innerHTML = apps.map((a, i) =>
-        `<div class="bcos-drawer-app" style="transition-delay:${Math.min(i * 22, 440)}ms" onclick="_bcosDrawerLaunch('${a.id}')">` +
+    grid.innerHTML = apps.map((a, i) => {
+        const running = typeof _bcos !== 'undefined' && _bcos.wins && !!_bcos.wins[a.id];
+        return `<div class="bcos-drawer-app${running ? ' running' : ''}" style="transition-delay:${Math.min(i * 22, 440)}ms" onclick="_bcosDrawerLaunch('${a.id}')">` +
         `<div class="bcos-drawer-app-icon">${a.icon}</div>` +
-        `<div class="bcos-drawer-app-name">${a.name.replace(/</g, '&lt;')}</div></div>`
-    ).join('');
+        `<div class="bcos-drawer-app-name">${a.name.replace(/</g, '&lt;')}</div>` +
+        (running ? '<div class="bcos-drawer-app-running-dot"></div>' : '') + `</div>`;
+    }).join('');
 }
 function _bcosDrawerFilter(q) { _bcosRenderDrawerApps(q); }
 function _bcosDrawerLaunch(id) {
