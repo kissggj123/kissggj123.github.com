@@ -1270,7 +1270,7 @@ function _bcosResolvePath(path) {
                 <span class="ctx-text">关于 BCOS</span>
             </div>
             <div class="bcos-context-menu-item ctx-danger" onclick="event.stopPropagation();event.preventDefault();closeBcosOS();_bcosHideCtxMenu()">
-                <span class="ctx-icon">⏻</span>
+                <span class="ctx-icon"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-0.12em"><path d="M12 3v8"/><path d="M6.2 6.2a8 8 0 1 0 11.6 0"/></svg></span>
                 <span class="ctx-text">关机 / 返回主页</span>
             </div>
         `;
