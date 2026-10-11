@@ -51,9 +51,9 @@ window._bcosCydiaCheck = async function() {
                             ${u.critical ? '<span style="color:#ff453a;margin-left:6px;">🔴 核心</span>' : ''}
                         </div>
                     </div>
-                    <button onclick="_bcosCydiaInstall('${u.id}')" ${u.staged ? 'disabled' : ''}
-                        style="background:${u.staged ? 'rgba(255,255,255,.05)' : 'rgba(124,140,255,.15)'};border:1px solid rgba(124,140,255,.4);color:${u.staged ? '#666' : '#fff'};padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600;cursor:${u.staged ? 'default' : 'pointer'};white-space:nowrap;">
-                        ${u.staged ? '已下载' : '⬇️ 更新'}
+                    <button onclick="${u.staged ? `_bcosCydiaActivate('${u.id}')` : `_bcosCydiaInstall('${u.id}')`}"
+                        style="background:${u.staged ? 'rgba(52,199,89,.15)' : 'rgba(124,140,255,.15)'};border:1px solid ${u.staged ? 'rgba(52,199,89,.4)' : 'rgba(124,140,255,.4)'};color:${u.staged ? '#34c759' : '#fff'};padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                        ${u.staged ? '⚡ 立即激活' : '⬇️ 更新'}
                     </button>
                 </div>
                 <div id="cydia-prog-${u.id}" style="display:none;margin-top:8px;font-size:11px;color:#aab6ff;">下载中…</div>
@@ -75,6 +75,37 @@ window._bcosCydiaInstall = async function(id) {
         _bcosCydiaCheck();
     } catch(e) {
         if (prog) prog.textContent = '❌ ' + e.message;
+    }
+};
+window._bcosCydiaActivate = async function(id) {
+    if (!confirm(`立即激活 ${id}？\n\n将热替换当前运行的模块，无需重启。\n核心模块建议重启后生效。`)) return;
+    try {
+        const pending = await window._bcosPkgPending();
+        const mod = pending.find(m => m.id === id);
+        if (!mod || !mod.staged) { alert('未找到待激活的模块'); return; }
+        const code = mod.staged.code;
+        const isCSS = mod.file.endsWith('.css');
+        if (isCSS) {
+            // 热替换 CSS: 移除旧 style, 注入新
+            document.querySelectorAll('style[data-bcos-module-css]').forEach(s => s.remove());
+            // 重新注入所有 active CSS (简化: 只注入这一个, 标记)
+            const s = document.createElement('style');
+            s.textContent = code;
+            s.setAttribute('data-bcos-module-css', '1');
+            s.setAttribute('data-module-id', id);
+            document.head.appendChild(s);
+        } else {
+            // 热替换 JS: 重新执行代码 (覆盖全局函数)
+            const s = document.createElement('script');
+            s.textContent = code;
+            document.head.appendChild(s);
+        }
+        // 标记为 active
+        await window._bcosPkgActivateStaged();
+        if (typeof showToast === 'function') showToast(`⚡ ${id} 已热激活`);
+        _bcosCydiaCheck();
+    } catch(e) {
+        alert('激活失败: ' + e.message);
     }
 };
 window._bcosCydiaUpdateAll = async function() {
