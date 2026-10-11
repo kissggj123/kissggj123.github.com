@@ -13,6 +13,7 @@ const RELATIVE_CORE_ASSETS = [
     'css/base.css', 'css/ui.css', 'css/effects.css',
     'css/car-lockscreen-a.css', 'css/car-lockscreen-b.css', 'css/rounded-screen.css',
     'css/desktop-modern.css', 'css/app-drawer.css', 'css/bcos-8.css',
+    'css/aurora-apps.css',
     'js/version.js',
     'js/screen.js',
     'js/core.js', 'js/game.js', 'js/renderer.js',
