@@ -534,3 +534,139 @@ input:focus, textarea:focus, select:focus {
     from { opacity: 0; transform: scale(0.6); }
     to { opacity: 1; transform: scale(1); }
 }
+
+/* ==================== Portrait Redesign v3 ====================
+ * 竖屏三件套重设计: 磁贴风图标 + 紧凑状态栏 + 自适应 Dock
+ * 原则: 不改变 display 模型, 只做视觉增强和尺寸适配
+ */
+@media (max-width: 768px) and (orientation: portrait) {
+
+    /* ---- 1. 桌面图标: WP 磁贴风 (基于 row flex, 4列) ---- */
+    .bcos-desktop-icons {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-content: flex-start !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        left: 12px !important;
+        right: 12px !important;
+        top: 40px !important;
+        max-width: calc(100% - 24px) !important;
+        gap: 10px !important;
+        padding: 0 !important;
+    }
+    .bcos-desktop-icons .bcos-desktop-icon {
+        flex: 0 0 calc((100% - 30px) / 4) !important;
+        width: auto !important;
+        max-width: none !important;
+        min-height: 92px !important;
+        background: rgba(255, 255, 255, 0.09) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        backdrop-filter: blur(14px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.13) !important;
+        border-radius: 14px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 10px 4px 8px !important;
+        margin: 0 !important;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.28) !important;
+    }
+    .bcos-desktop-icons .bcos-desktop-icon:active {
+        transform: scale(0.9) !important;
+        background: rgba(255, 255, 255, 0.16) !important;
+    }
+    .bcos-desktop-icons .bcos-desktop-icon-emoji {
+        font-size: 34px !important;
+        line-height: 1 !important;
+    }
+    .bcos-desktop-icons .bcos-desktop-icon-label {
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        max-width: 100% !important;
+        padding: 0 3px !important;
+        margin-top: 0 !important;
+        line-height: 1.2 !important;
+    }
+    /* me 文件夹: 竖屏固定于底部 Dock 上方居中 */
+    #bcos-desktop-bg > .bcos-desktop-icon {
+        top: auto !important;
+        bottom: 104px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 8px 18px !important;
+        width: auto !important;
+        min-height: 0 !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        backdrop-filter: blur(14px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    }
+    #bcos-desktop-bg > .bcos-desktop-icon .bcos-desktop-icon-emoji {
+        font-size: 28px !important;
+    }
+    #bcos-desktop-bg > .bcos-desktop-icon:active {
+        transform: translateX(-50%) scale(0.92) !important;
+    }
+
+    /* ---- 2. 状态栏: 紧凑不换行 ---- */
+    .bcos-menubar {
+        height: 30px !important;
+        padding: 0 10px !important;
+        gap: 6px !important;
+    }
+    .bcos-menubar-left,
+    .bcos-menubar-right {
+        gap: 8px !important;
+        min-width: 0 !important;
+        flex-shrink: 1 !important;
+    }
+    .bcos-menubar-appname {
+        font-size: 11px !important;
+        max-width: 92px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        flex-shrink: 1 !important;
+    }
+    .bcos-menubar-clock {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+    }
+    .bcos-menubar-status-item {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        padding: 1px 3px !important;
+    }
+
+    /* ---- 3. Dock: 隐藏滚动条, 圆角适配 ---- */
+    .bcos-dock {
+        max-width: calc(100vw - 20px) !important;
+        border-radius: 18px !important;
+        padding: 4px 8px !important;
+        gap: 2px !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+    .bcos-dock::-webkit-scrollbar {
+        display: none !important;
+    }
+    .bcos-dock-item {
+        width: 40px !important;
+        height: 44px !important;
+    }
+    .bcos-dock-icon-box {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 19px !important;
+        border-radius: 10px !important;
+    }
+}
