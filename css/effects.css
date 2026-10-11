@@ -535,43 +535,83 @@ input:focus, textarea:focus, select:focus {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* ==================== Portrait Layout v2 ====================
- * 竖屏: 4 列网格, 图标更大间距更舒展; me 文件夹不再与网格重叠,
- * 改为底部居中独立放置。
+/* ==================== Portrait: Windows Phone Tile Style ====================
+ * 竖屏参考 WP 磁贴: 方形磁贴、紧凑网格、毛玻璃底、图标居中、标签置底。
+ * 仅影响未拖拽的自动排列图标; 已拖拽冻结的绝对定位图标不受影响。
  */
 @media (max-width: 768px) and (orientation: portrait) {
     .bcos-desktop-icons {
-        flex-direction: row !important;
-        flex-wrap: wrap !important;
-        align-content: flex-start !important;
-        justify-content: flex-start !important;
-        align-items: flex-start !important;
-        left: 12px !important;
-        right: 12px !important;
-        max-width: calc(100% - 24px) !important;
-        gap: 18px 8px !important;
-        padding: 12px 4px !important;
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 10px !important;
+        left: 14px !important;
+        right: 14px !important;
+        max-width: calc(100% - 28px) !important;
+        padding: 14px 0 !important;
+        align-content: start !important;
     }
+    /* 磁贴本体 */
     .bcos-desktop-icons .bcos-desktop-icon {
-        flex: 0 0 calc((100% - 24px) / 4) !important;
-        max-width: calc((100% - 24px) / 4) !important;
+        flex: none !important;
         width: auto !important;
+        max-width: none !important;
+        aspect-ratio: 1 / 1 !important;
+        background: rgba(255, 255, 255, 0.10) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 8px 4px !important;
+        margin: 0 !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
     }
-    .bcos-desktop-icon-emoji {
-        font-size: 44px !important;
+    .bcos-desktop-icons .bcos-desktop-icon:hover {
+        transform: scale(1.06) !important;
+        background: rgba(255, 255, 255, 0.18) !important;
+        filter: none !important;
     }
-    /* me 文件夹: 竖屏时移到底部居中, 不再与网格重叠 */
+    .bcos-desktop-icons .bcos-desktop-icon:active {
+        transform: scale(0.92) !important;
+        transition-duration: 0.1s !important;
+    }
+    .bcos-desktop-icons .bcos-desktop-icon-emoji {
+        font-size: 38px !important;
+        line-height: 1 !important;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35)) !important;
+    }
+    .bcos-desktop-icons .bcos-desktop-icon-label {
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        max-width: 100% !important;
+        padding: 0 2px !important;
+        margin-top: 0 !important;
+    }
+    /* me 文件夹: 竖屏时固定在磁贴区下方居中, 不与磁贴重叠 */
     #bcos-desktop-bg > .bcos-desktop-icon {
         top: auto !important;
-        bottom: 96px !important;
+        bottom: 92px !important;
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;
+        background: rgba(255, 255, 255, 0.10) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        border-radius: 10px !important;
+        padding: 8px 16px !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        width: auto !important;
     }
     #bcos-desktop-bg > .bcos-desktop-icon:hover {
-        transform: translateX(-50%) scale(1.14) !important;
+        transform: translateX(-50%) scale(1.06) !important;
     }
     #bcos-desktop-bg > .bcos-desktop-icon:active {
-        transform: translateX(-50%) scale(0.88) !important;
+        transform: translateX(-50%) scale(0.92) !important;
     }
 }
