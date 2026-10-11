@@ -130,6 +130,9 @@ function _bcos8InjectCCToggle() {
 /* ---------- 初始化 (桌面加载后调用) ---------- */
 function _bcos8Init() {
     window._bcosBootTime = Date.now();
+    console.log('[Aurora] v8.1.0 外壳启动, 接管 UI…');
+    // 隐藏 7.8.6 旧桌面 (保留 #bcos-desktop-bg 供壁纸系统使用)
+    // Aurora 菜单栏/窗口/抽屉接管交互
 
     // v8.0.2: 首次启动画面 + 分步初始化
     const _isFirstBoot = !localStorage.getItem('bcos_booted_v1');
@@ -212,3 +215,18 @@ function _bcos8Init() {
     _bcos8RenderCC();
     _bcos8InjectCCToggle();
 }
+
+// v8.1.0: 自动初始化 Aurora 外壳
+(function _bcos8AutoInit() {
+    function _init() {
+        if (typeof _bcos8Init === 'function') {
+            console.log('[Aurora] 自启动 _bcos8Init()');
+            _bcos8Init();
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _init);
+    } else {
+        setTimeout(_init, 100);
+    }
+})();
