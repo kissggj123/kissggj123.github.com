@@ -170,7 +170,7 @@ function _bcosRefreshStoreIfOpen() {
                     <h2 style="margin:0 0 2rem;font-weight:400;color:#aaa;">System Halted.</h2>
                     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
                         <button onclick="tryAutoFullscreen();showBcosOS();" style="padding:10px 24px;background:transparent;color:#fff;border:1px solid #555;border-radius:6px;font-size:15px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">
-                            ⏻ Reboot (重新开机)
+                            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-0.12em"><path d="M12 3v8"/><path d="M6.2 6.2a8 8 0 1 0 11.6 0"/></svg> Reboot (重新开机)
                         </button>
                         <button onclick="navigateTo('home');" style="padding:10px 24px;background:rgba(255,107,157,0.2);color:#ff6b9d;border:1px solid rgba(255,107,157,0.4);border-radius:6px;font-size:15px;cursor:pointer;">
                             🏠 返回经典视图
@@ -577,7 +577,7 @@ function _bcosRefreshStoreIfOpen() {
                     <span>⌨️</span><span>返回纯命令行终端 (Terminal CLI)</span>
                 </div>
                 <div class="bcos-apple-menu-item" onclick="closeBcosOS(); _bcosCloseAppleMenu();">
-                    <span>⏻</span><span>退出 BCOS 返回经典视图 (Exit)</span>
+                    <span><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-0.12em"><path d="M12 3v8"/><path d="M6.2 6.2a8 8 0 1 0 11.6 0"/></svg></span><span>退出 BCOS 返回经典视图 (Exit)</span>
                 </div>
             </div>
 
