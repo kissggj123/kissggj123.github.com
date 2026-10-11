@@ -84,6 +84,8 @@ function _bcos8RenderCC() {
             '<div class="bcos-cc-tile-icon">💻</div><div><div class="bcos-cc-tile-label">终端</div><div class="bcos-cc-tile-sub">bcos@bunny</div></div></div>' +
         '<div class="bcos-cc-tile" onclick="_bcosOpenApp(\'monitor\');_bcos8CloseCC()">' +
             '<div class="bcos-cc-tile-icon">📊</div><div><div class="bcos-cc-tile-label">监视器</div><div class="bcos-cc-tile-sub">系统状态</div></div></div>' +
+        '<div class="bcos-cc-tile" onclick="if(window._bcosFullscreen)window._bcosFullscreen.toggle();_bcos8CloseCC()">' +
+            '<div class="bcos-cc-tile-icon">🖥️</div><div><div class="bcos-cc-tile-label">沉浸全屏</div><div class="bcos-cc-tile-sub">点击切换</div></div></div>' +
         '<div class="bcos-cc-slider-row"><div class="bcos-cc-tile-label" style="margin-bottom:4px">🔆 屏幕亮度</div>' +
             '<input class="bcos-cc-slider" type="range" min="40" max="100" value="100" oninput="document.getElementById(\'bcos-overlay\').style.filter=\'brightness(\'+(this.value/100)+\')\'"></div>' +
         '</div>';
