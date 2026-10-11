@@ -415,7 +415,10 @@ function _bcosResolvePath(path) {
             exit: () => closeBcosOS(),
             logout: () => closeBcosOS(),
             whoami: () => _bcosPrint('bunny'),
-            uname: (args) => { _bcosPrint(args[0] === '-a' ? 'bcos ' + _BCOS_VER + ' (Bunny OS) #177 SMP ' + new Date().toString() + ' x86_64 GNU/Bunny' : 'bcos'); },
+            uname: (args) => {
+                const real = `bcos ${typeof _BCOS_VER !== 'undefined' ? _BCOS_VER : ''} ${(navigator.platform || 'unknown')} ${navigator.hardwareConcurrency || '?'}core`;
+                _bcosPrint(args[0] === '-a' ? real + ' ' + new Date().toString() + ' GNU/Bunny' : 'bcos');
+            },
             date: () => _bcosPrint(new Date().toString()),
             echo: (args) => _bcosPrint(_bcosEscape(args.join(' '))),
             history: () => { _bcos.history.forEach((c, i) => _bcosPrint('  ' + String(i+1).padStart(3) + '  ' + _bcosEscape(c))); },
