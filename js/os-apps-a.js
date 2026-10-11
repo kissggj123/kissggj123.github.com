@@ -1338,6 +1338,19 @@ function _bcosRefreshStoreIfOpen() {
         });
     };
 
+    // About 电池实时检测
+    window._bcosAboutBattery = async function() {
+        const el = document.getElementById('bcos-about-battery');
+        if (!el) return;
+        try {
+            if ('getBattery' in navigator) {
+                const b = await navigator.getBattery();
+                const pct = Math.round(b.level * 100);
+                const chg = b.charging ? '⚡充电中' : '🔋';
+                el.innerHTML = `<span style="color:#fff;font-weight:600;">${chg} ${pct}%</span>`;
+            } else el.textContent = '不支持 Battery API';
+        } catch(e) { el.textContent = '无法读取'; }
+    };
     window._bcosPingTest = async function() {
         const el = document.getElementById('bcos-wifi-ping');
         if (el) el.textContent = '测速中…';
@@ -1579,11 +1592,15 @@ function _bcosRefreshStoreIfOpen() {
                 <div style="font-size:11.5px;color:rgba(242,244,255,.4);margin-top:8px;">Build 20261011 · 全面重构版</div>
             </div>`;
             html += card(`
-                ${row('💻 计算芯片', '<span style="color:#fff;font-weight:600;">Bunny M3 HyperDrive</span>', '8-Core AI · 车载车规级智能计算平台')}
-                ${row('🧠 高速显存', '<span style="color:#fff;font-weight:600;">16 GB LPDDR5X</span>', 'Unified 高带宽硬件加速显存')}
-                ${row('⚙️ 系统内核', '<span style="font-family:ui-monospace,monospace;color:#aab6ff;">BCOS Darwin 24.1.0</span>', 'aarch64 · POSIX 兼容虚拟环境')}
+                ${row('💻 处理器', `<span style="color:#fff;font-weight:600;">${navigator.hardwareConcurrency || '—'} 核心</span>`, 'navigator.hardwareConcurrency 实时读取')}
+                ${row('🧠 设备内存', `<span style="color:#fff;font-weight:600;">${navigator.deviceMemory ? navigator.deviceMemory + ' GB' : '—'}</span>`, 'navigator.deviceMemory 实时读取')}
+                ${row('🎮 图形处理器', `<span style="color:#fff;font-weight:600;font-size:12px;">${typeof _gpuInfo !== 'undefined' && _gpuInfo.renderer ? _bcosEscape(_gpuInfo.renderer.substring(0, 40)) : '—'}</span>`, 'WebGL 实时检测')}
+                ${row('🖥️ 屏幕', `<span style="color:#fff;font-weight:600;">${screen.width}×${screen.height} @${window.devicePixelRatio || 1}x</span>`, '实时分辨率与像素比')}
+                ${row('🌐 平台', `<span style="font-family:ui-monospace,monospace;color:#aab6ff;font-size:12px;">${_bcosEscape(navigator.platform || '—')}</span>`, _bcosEscape((navigator.userAgent || '').split(') ')[0].split('(').pop() || ''))}
+                ${row('🔋 电池', '<span id="bcos-about-battery" style="color:#fff;">检测中…</span>', 'Battery API 实时电量')}
                 ${(function(){ const vi = _bcosVehicleInfo(); return row('🚗 车辆识别', '<span style="color:#fff;font-weight:600;">' + _bcosEscape(vi.nameEn + (vi.edition ? ' · ' + vi.edition : '')) + '</span>', 'VIN: ' + _bcosEscape(vi.vin)); })()}
             `);
+            setTimeout(() => { if (typeof _bcosAboutBattery === 'function') _bcosAboutBattery(); }, 200);
         } else {
             // General
             html += hero('⚙️', '通用偏好', '管理存储空间、软件更新与系统基础首选项');
