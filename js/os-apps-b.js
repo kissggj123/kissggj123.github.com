@@ -539,20 +539,21 @@ let _bcosFinderPath = 'me';
             <div style="margin-top:.5rem;color:#666;">Powered by Bunny Core</div>
             <div style="color:#666;">© 2014-${new Date().getFullYear()} kissggj123</div>
             <div style="margin-top:.6rem;border-top:1px solid #333;padding-top:.5rem;text-align:left;">
-                <div style="color:#00ff41;font-size:11px;font-weight:bold;margin-bottom:.3rem;">📦 模块化架构 <span style="color:#888;font-weight:normal;">v7.8.6.9482</span></div>
+                <div style="color:#00ff41;font-size:11px;font-weight:bold;margin-bottom:.3rem;">📦 模块化架构 <span style="color:#888;font-weight:normal;">${_BCOS_VER}</span></div>
                 <div style="color:#aaa;font-size:10px;line-height:1.6;">
-                    <div>🏗️ <b style="color:#e0e0e0;">index.html</b> 由 1.5MB 单文件拆分为 <b style="color:#00ff41;">19 JS + 6 CSS</b> 独立模块</div>
-                    <div style="margin-top:.25rem;color:#888;">— JS 模块 —</div>
-                    <div>🖥️ screen.js <span style="color:#666;">屏幕检测</span> · 🧩 core.js <span style="color:#666;">核心/配置/状态</span></div>
-                    <div>🎮 game.js <span style="color:#666;">大富翁初始化</span> · 🎨 renderer.js <span style="color:#666;">渲染模块</span></div>
-                    <div>🎲 game-logic-a/b/c.js <span style="color:#666;">游戏逻辑（托管/股票/赌场）</span></div>
-                    <div>🪟 ui.js <span style="color:#666;">UI 模块</span> · 💻 os.js <span style="color:#666;">终端</span> · 🎯 icons.js <span style="color:#666;">图标模块</span></div>
-                    <div>📱 os-apps-a/b/c.js <span style="color:#666;">系统应用</span> · 🖼️ wallpaper-data.js + wallpaper.js <span style="color:#666;">壁纸管理</span></div>
-                    <div>📝 apps.js <span style="color:#666;">应用</span> · ⚙️ ui-systems-a/b/c.js <span style="color:#666;">UI 系统</span></div>
-                    <div style="margin-top:.25rem;color:#888;">— CSS 模块 —</div>
-                    <div>🎨 base.css <span style="color:#666;">基础</span> · 🧱 ui.css <span style="color:#666;">组件</span> · ✨ effects.css <span style="color:#666;">动效</span></div>
-                    <div>🚗 car-lockscreen-a/b.css <span style="color:#666;">车机锁屏</span> · ⭕ rounded-screen.css <span style="color:#666;">圆角屏适配</span></div>
-                    <div style="margin-top:.25rem;color:#666;font-size:9px;">详见仓库根目录 MODULES.md（含 4 处无损提取审计）</div>
+                    <div>🏗️ <b style="color:#e0e0e0;">index.html</b> 由 1.5MB 单文件拆分为 <b style="color:#00ff41;">${[...document.querySelectorAll('script[src]')].filter(s=>{try{return new URL(s.src).origin===location.origin}catch(e){return false}}).length} JS + ${[...document.querySelectorAll('link[rel="stylesheet"]')].filter(l=>{try{return new URL(l.href).origin===location.origin}catch(e){return false}}).length} CSS</b> 独立模块 <span style="color:#666;">(实时统计)</span></div>
+                    <div style="margin-top:.25rem;color:#888;">— 实时加载的模块 —</div>
+                    <div>${(() => {
+                        const js = [...document.querySelectorAll('script[src]')].map(s => { try { const u = new URL(s.src); return u.origin === location.origin ? u.pathname.split('/').pop() : null; } catch(e){ return null; } }).filter(Boolean);
+                        const css = [...document.querySelectorAll('link[rel="stylesheet"]')].map(l => { try { const u = new URL(l.href); return u.origin === location.origin ? u.pathname.split('/').pop() : null; } catch(e){ return null; } }).filter(Boolean);
+                        const dot = (ok) => `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ok ? '#00ff41' : '#f44'};margin-right:4px;"></span>`;
+                        let h = '<div style="margin-top:.2rem;color:#888;">JS (' + js.length + ')</div><div style="line-height:1.9;">';
+                        h += js.map(n => dot(true) + n).join(' &nbsp; ') + '</div>';
+                        h += '<div style="margin-top:.2rem;color:#888;">CSS (' + css.length + ')</div><div style="line-height:1.9;">';
+                        h += css.map(n => dot(true) + n).join(' &nbsp; ') + '</div>';
+                        return h;
+                    })()}</div>
+                    <div style="margin-top:.25rem;color:#666;font-size:9px;">绿点=已加载 · 详见仓库根目录 MODULES.md</div>
                 </div>
             </div>
             <div style="margin-top:.5rem;"><button style="background:#1a1a1a;border:1px solid #00ff41;color:#00ff41;padding:.3rem .6rem;cursor:pointer;font-family:inherit;font-size:11px;border-radius:4px;" onclick="window.open('https://github.com/kissggj123/Bunny-Cockpit-OS','_blank')">🌐 View on GitHub</button></div>
