@@ -305,3 +305,174 @@
         [data-theme="candy"] .bcos-btn { background:linear-gradient(135deg,#FFF8E7,#FF4081); border:1px solid #FF4081; color:#fff; box-shadow:0 2px 12px rgba(255,64,129,.3); }
         [data-theme="matrix"] .bcos-btn { background:linear-gradient(135deg,#000000,#003B00); border:1px solid #00FF41; color:#00FF41; box-shadow:0 0 16px rgba(0,255,65,.4); font-family:'Courier New',monospace; }
     
+/* ==================== Motion Design System v2 ====================
+ * 统一动效语言: 全站一致的 easing / 时长 / 入场动画
+ * 设计原则:  additive only — 只增强不破坏, 所有动画尊重 prefers-reduced-motion
+ */
+
+:root {
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --dur-instant: 0.12s;
+    --dur-fast: 0.2s;
+    --dur-normal: 0.32s;
+    --dur-slow: 0.55s;
+}
+
+/* ---------- 入场关键帧 ---------- */
+@keyframes bcosFadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bcosFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes bcosScaleIn {
+    from { opacity: 0; transform: scale(0.94) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes bcosSlideInRight {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes bcosPopIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    60% { opacity: 1; transform: scale(1.03); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- 视图切换: 内容区淡入上浮 ---------- */
+.view.active {
+    animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) backwards;
+}
+
+/* ---------- 卡片: 交错入场 ---------- */
+.card-grid > .card:nth-child(1) { animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) backwards; }
+.card-grid > .card:nth-child(2) { animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) 0.06s backwards; }
+.card-grid > .card:nth-child(3) { animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) 0.12s backwards; }
+.card-grid > .card:nth-child(4) { animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) 0.18s backwards; }
+.card-grid > .card:nth-child(5) { animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) 0.24s backwards; }
+.card-grid > .card:nth-child(n+6) { animation: bcosFadeUp var(--dur-normal) var(--ease-out-expo) 0.3s backwards; }
+
+/* ---------- 卡片悬停: 更细腻的浮起 ---------- */
+.card {
+    transition: transform var(--dur-fast) var(--ease-out-expo),
+                box-shadow var(--dur-normal) var(--ease-smooth),
+                border-color var(--dur-fast) ease;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px var(--shadow);
+}
+
+/* ---------- 按钮: 按压缩放 + 悬停光泽 ---------- */
+.btn {
+    transition: transform var(--dur-instant) var(--ease-out-expo),
+                background-color var(--dur-fast) ease,
+                filter var(--dur-fast) ease,
+                box-shadow var(--dur-normal) var(--ease-smooth);
+    position: relative;
+    overflow: hidden;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--shadow);
+}
+
+/* ---------- 弹窗: 弹簧入场 ---------- */
+.modal-overlay.show .modal {
+    animation: bcosScaleIn var(--dur-normal) var(--ease-spring) backwards;
+}
+.modal-overlay {
+    animation: bcosFadeIn var(--dur-fast) ease backwards;
+}
+
+/* ---------- 桌面图标: 悬停呼吸 ---------- */
+.bcos-desktop-icon {
+    transition: transform var(--dur-fast) var(--ease-spring),
+                background var(--dur-fast) ease;
+}
+.bcos-desktop-icon:hover {
+    transform: scale(1.08) translateY(-2px);
+}
+.bcos-desktop-icon:active {
+    transform: scale(0.95);
+}
+
+/* ---------- 列表项: 右滑入场 ---------- */
+.bcos-apple-menu-item,
+.bcos-context-menu-item {
+    transition: background var(--dur-instant) ease,
+                transform var(--dur-instant) var(--ease-out-expo);
+}
+.bcos-apple-menu-item:hover,
+.bcos-context-menu-item:hover {
+    transform: translateX(2px);
+}
+
+/* ---------- 输入框: 聚焦光晕 ---------- */
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18);
+    transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+}
+
+/* ---------- 标签页切换 ---------- */
+.tab-item {
+    transition: color var(--dur-fast) ease,
+                background var(--dur-fast) ease,
+                transform var(--dur-instant) var(--ease-out-expo);
+    position: relative;
+}
+.tab-item:active { transform: scale(0.94); }
+
+/* ---------- 开关: 滑动更顺滑 ---------- */
+.toggle {
+    transition: background var(--dur-normal) var(--ease-spring);
+}
+.toggle::after, .toggle-knob {
+    transition: transform var(--dur-normal) var(--ease-spring);
+}
+
+/* ---------- 骨架屏: 优雅加载 ---------- */
+@keyframes bcosShimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+.bcos-skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.1) 50%, rgba(255,255,255,.04) 75%);
+    background-size: 800px 100%;
+    animation: bcosShimmer 1.4s ease infinite;
+    border-radius: 8px;
+}
+
+/* ---------- Toast: 顶部滑入 ---------- */
+@keyframes bcosToastIn {
+    from { opacity: 0; transform: translateY(-16px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.bcos-toast.show {
+    animation: bcosToastIn var(--dur-normal) var(--ease-spring) backwards;
+}
+
+/* ---------- 无障碍: 尊重减少动态偏好 ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ---------- 低性能模式: 已有规则, 补充新动画 ---------- */
+.low-perf .card-grid > .card,
+.low-perf .view.active,
+.low-perf .modal-overlay.show .modal {
+    animation: none !important;
+}
