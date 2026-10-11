@@ -1253,6 +1253,11 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.6.9483', title:'OOBE 引导界面优雅重构、安卓关机图标修复、PWA 强制刷新', items:[
+            '【此改动适用于 index.html】[新增] OOBE 首次引导界面优雅重构：毛玻璃背景模糊、渐变标题文字、悬浮 Emoji 动画、胶囊进度条、上一步/跳过按钮、中英双语标题，告别生硬黑框',
+            '【此改动适用于 index.html】[修复] 安卓等非苹果设备关机图标显示为方框：⏻ (U+23FB) 在安卓字体中缺失，替换为内联 SVG 电源符号，全平台一致渲染（影响：重启按钮、苹果菜单退出项、右键菜单关机项）',
+            '【此改动适用于 index.html】[PWA 强制刷新] Service Worker 缓存升级至 v7.8.6.9483，旧版本缓存强制清理，离线客户端自动更新'
+        ]},
         { ver:'v7.8.6.9482', title:'index.html 模块化重构：18 JS + 6 CSS 独立模块、圆角矩形屏适配、PWA 强制刷新', items:[
             '【此改动适用于 index.html】[新增] 模块化架构：1.5MB 单文件 index.html 拆分为 18 个 JS 模块与 6 个 CSS 模块 —— js/core.js（核心/配置/状态）、js/renderer.js（渲染模块）、js/game-logic-a/b/c.js（游戏逻辑）、js/ui.js（UI 模块）、js/icons.js（图标模块）、js/wallpaper.js（壁纸管理模块）、js/os.js/os-apps-a/b/c.js（系统应用）等，CSS 拆分为 css/base.css / ui.css / effects.css / car-lockscreen-a/b.css，附 MODULES.md 模块说明文档，可维护性质变',
             '【此改动适用于 index.html】[新增] 圆角矩形屏适配模块：新增 css/rounded-screen.css 与 js/screen.js，通过 ?rounded=1 参数或 localStorage 开关启用，为车机中控异形屏提供四角遮罩、侧边栏/任务栏安全内收与弹窗留边；默认零侵入，普通矩形屏无任何视觉变化',
