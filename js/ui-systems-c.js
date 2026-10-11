@@ -1268,6 +1268,12 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v8.0.8903', title:'Service Worker 强制过期', items:[
+            '[修复] 预缓存列表补上 bcos-8.css / app-drawer.css / desktop-modern.css / bcos-8.js，之前 PWA 根本没缓存这四个文件',
+            '[新增] SW 支持 FORCE_EXPIRE 消息：客户端可通知 SW 自清全部缓存',
+            '[优化] CSS/JS 改为网络优先策略，有网时永远拿最新，离线才回退缓存',
+            '[PWA] 缓存升级至 v8.0.8903，旧版本强制清理'
+        ]},
         { ver:'v8.0.8902', title:'版本验证推送', items:[
             '[PWA] Service Worker 缓存升级至 v8.0.8902，旧版本缓存强制清理'
         ]},
