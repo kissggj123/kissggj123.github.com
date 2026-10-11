@@ -85,6 +85,12 @@
         const all = await _getAll();
         return all.filter(m => m.staged);
     };
+    window._bcosPkgSetActive = async function(id, meta, code) {
+        const existing = await _get(id) || { id };
+        await _put({ id, version: meta.version, file: meta.file, desc: meta.desc,
+            active: { code, version: meta.version, downloadedAt: Date.now() },
+            staged: existing.staged || null, updatedAt: Date.now() });
+    };
     window._bcosPkgLoadActive = async function(id) {
         const m = await _get(id);
         if (m && m.active) return m.active.code;
