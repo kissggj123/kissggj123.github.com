@@ -600,7 +600,8 @@ function _bcosRefreshStoreIfOpen() {
         { id: 'texteditor', name: 'Code Studio 代码编辑', icon: '📝' },
         { id: 'logs', name: '控制台运行日志', icon: '📜' },
         { id: 'about', name: '关于这台 BCOS', icon: 'ℹ️' },
-        { id: 'yumiko', name: 'YumikoToys 上帝模式', icon: '🧰' }
+        { id: 'yumiko', name: 'YumikoToys 上帝模式', icon: '🧰' },
+        { id: 'cydia', name: 'BCOS 软件源', icon: '📦' }
     ];
 
     function _bcosRenderDock() {
@@ -997,7 +998,8 @@ function _bcosRefreshStoreIfOpen() {
             monopoly: { t: '🎲 大富翁模拟经营 — Monopoly Kingdom', w: 880, h: 580 },
             settings: { t: '⚙️ 系统设置 — System Settings', w: 720, h: 520 },
             logs: { t: '📜 系统运行日志 — System Logs', w: 680, h: 480 },
-            yumiko: { t: '🧰 YumikoToys — 上帝模式工具箱', w: 640, h: 520 }
+            yumiko: { t: '🧰 YumikoToys — 上帝模式工具箱', w: 640, h: 520 },
+            cydia: { t: '📦 BCOS 软件源 — Cydia', w: 660, h: 560 }
         };
         let cfg = apps[app];
         if (!cfg && app.startsWith('custom_app_')) {
@@ -1046,6 +1048,7 @@ function _bcosRefreshStoreIfOpen() {
             else if (app === 'settings') _bcosRenderSettingsApp(content);
             else if (app === 'logs') _bcosRenderLogsApp(content);
             else if (app === 'yumiko') _bcosRenderYumikoToys(content);
+            else if (app === 'cydia') _bcosRenderCydiaApp(content);
             else if (app === 'appstore') _bcosRenderAppStore(content);
             else if (app === 'calculator') _bcosRenderCalculator(content);
             else if (app === 'weather') _bcosRenderWeather(content);
