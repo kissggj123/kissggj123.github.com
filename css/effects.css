@@ -476,3 +476,24 @@ input:focus, textarea:focus, select:focus {
 .low-perf .modal-overlay.show .modal {
     animation: none !important;
 }
+
+/* ==================== Portrait Phone Layout Fix ====================
+ * 竖屏手机下桌面图标改用横向网格流式布局 (类似手机主屏幕),
+ * 替代原来的纵向 flex 列排, 避免图标挤在左侧、右侧大片空白。
+ * 仅影响未拖拽的自动排列图标; 已拖拽冻结的绝对定位图标不受影响。
+ */
+@media (max-width: 768px) and (orientation: portrait) {
+    .bcos-desktop-icons {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-content: flex-start !important;
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        left: 10px !important;
+        right: 10px !important;
+        max-width: calc(100% - 20px) !important;
+    }
+    .bcos-desktop-icon {
+        flex: 0 0 auto !important;
+    }
+}
