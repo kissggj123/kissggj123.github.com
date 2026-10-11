@@ -20,6 +20,14 @@ function _bcosCollectDrawerApps() {
         const m = oc.match(/_bcosOpenApp\('([\w-]+)'\)/);
         if (m) id = m[1];
         else if (oc.indexOf('showBcosCarLockscreen') >= 0) id = 'carlock';
+        // v8.0.1 修复: JS 赋值的 onclick (el.onclick = ...) 不会出现在 attribute 中, 从 ID 提取
+        if (!id) {
+            const idAttr = el.getAttribute('id') || '';
+            const im = idAttr.match(/^bcos-desk-icon-([\w-]+)$/);
+            if (im) id = im[1];
+        }
+        // 再从内部的 data 属性或文本兜底
+        if (!id && el.dataset && el.dataset.appId) id = el.dataset.appId;
         if (!id || seen.has(id)) return;
         seen.add(id);
         const em = el.querySelector('.bcos-desktop-icon-emoji');
@@ -169,24 +177,29 @@ function _bcosDiagCardHTML() {
 }
 
 async function _bcosDownloadWallpaper(file, name) {
-    if (typeof showToast === 'function') showToast('⬇️ 正在准备大图…');
+    // v8.0.1: 真 OS 逻辑 — 下载全分辨率到内存缓存, 设为壁纸并显示
+    if (typeof showToast === 'function') showToast('⬇️ 正在加载全分辨率壁纸…');
     try {
-        // .opt.jpg 就是 2560px 大图, 直接下载
         const res = await fetch(file, { cache: 'reload' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = (name || 'wallpaper').replace(/\s+/g, '_') + '.jpg';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-        if (typeof showToast === 'function') showToast('✅ 大图已开始下载');
+        const objUrl = URL.createObjectURL(blob);
+        // 存入全局壁纸缓存 (与旧系统 wpBlobCache 一致)
+        if (!window.wpBlobCache) window.wpBlobCache = {};
+        // 释放旧的
+        if (window.wpBlobCache[file] && window.wpBlobCache[file].startsWith('blob:')) {
+            try { URL.revokeObjectURL(window.wpBlobCache[file]); } catch(e) {}
+        }
+        window.wpBlobCache[file] = objUrl;
+        // 设为桌面壁纸 (localStorage 持久化)
+        try { localStorage.setItem('bcosCustomBg', file); } catch(e) {}
+        // 立即应用
+        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        // 刷新设置面板显示选中态
+        if (typeof _bcosRenderSettingsRightPane === 'function') _bcosRenderSettingsRightPane();
+        if (typeof showToast === 'function') showToast('✅ 全分辨率壁纸已设置');
     } catch(e) {
-        // 回退: 新标签页打开
-        window.open(file, '_blank');
+        if (typeof showToast === 'function') showToast('❌ 加载失败: ' + e.message);
     }
 }
 function _bcosForceUpdate() {
@@ -1450,7 +1463,7 @@ function _bcosRefreshStoreIfOpen() {
                     const isActive = (customBg === w.file);
                     wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name} (点击设为壁纸)">
                         <div style="background:rgba(0,0,0,0.65);color:#fff;font-size:9px;padding:2px 4px;position:absolute;bottom:0;width:100%;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.name}</div>
-                        <button onclick="event.stopPropagation(); _bcosDownloadWallpaper('${w.file}', '${w.name.replace(/'/g, "")}')" title="下载 2560px 大图" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;backdrop-filter:blur(4px);">⬇️</button>
+                        <button onclick="event.stopPropagation(); _bcosDownloadWallpaper('${w.file}', '${w.name.replace(/'/g, "")}')" title="加载全分辨率并设为壁纸" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;backdrop-filter:blur(4px);">⬇️</button>
                     </div>`;
                 });
             }
