@@ -30,57 +30,11 @@ function _bcosSaveCustomApps(apps) {
 }
 
 function _bcosSyncDesktopAppIcons() {
-    const desktopIcons = document.querySelector('.bcos-desktop-icons');
-    if (!desktopIcons) return;
-    const installed = _bcosGetInstalledAppIds();
-    const customs = _bcosGetCustomApps();
-    
-    // Check extra apps to inject
-    const extraAppDefs = [
-        { id: 'calculator', name: '计算器', icon: '🧮' },
-        { id: 'weather', name: '天气看板', icon: '🌤️' },
-        { id: 'notes', name: '便签', icon: '📌' },
-        { id: 'radio', name: '兔兔电台', icon: '📻' },
-        { id: 'snake', name: '贪吃蛇', icon: '🐍' },
-        { id: 'paint', name: '像素画板', icon: '🎨' }
-    ];
-
-    extraAppDefs.forEach(app => {
-        let el = document.getElementById('bcos-desk-icon-' + app.id);
-        if (installed.includes(app.id)) {
-            if (!el) {
-                const iconDiv = document.createElement('div');
-                iconDiv.className = 'bcos-desktop-icon';
-                iconDiv.id = 'bcos-desk-icon-' + app.id;
-                iconDiv.onclick = () => _bcosOpenApp(app.id);
-                iconDiv.innerHTML = `<div class="bcos-desktop-icon-emoji">${app.icon}</div><div class="bcos-desktop-icon-label">${_bcosEscape(app.name)}</div>`;
-                desktopIcons.appendChild(iconDiv);
-            }
-        } else {
-            if (el) { if (typeof el.remove === 'function') el.remove(); else if (el.parentNode) el.parentNode.removeChild(el); }
-        }
-    });
-
-    customs.forEach(c => {
-        let el = document.getElementById('bcos-desk-icon-' + c.id);
-        if (installed.includes(c.id)) {
-            if (!el) {
-                const iconDiv = document.createElement('div');
-                iconDiv.className = 'bcos-desktop-icon';
-                iconDiv.id = 'bcos-desk-icon-' + c.id;
-                iconDiv.onclick = () => _bcosOpenApp(c.id);
-                iconDiv.innerHTML = `<div class="bcos-desktop-icon-emoji">${_bcosEscape(c.icon || '📦')}</div><div class="bcos-desktop-icon-label">${_bcosEscape(c.name)}</div>`;
-                desktopIcons.appendChild(iconDiv);
-            }
-        } else {
-            if (el) { if (typeof el.remove === 'function') el.remove(); else if (el.parentNode) el.parentNode.removeChild(el); }
-        }
-    });
-
-    // Tag new icons for the desktop icon manager (drag / rename / delete) and re-apply saved layout
-    if (typeof _bcosTagDesktopIcons === 'function') {
-        _bcosTagDesktopIcons();
-        _bcosApplyDesktopIconState();
+    // v8.0.2: 已移至 desktop.js, 这里转发
+    if (typeof window._bcosDesktopRender === 'function') { /* 由 desktop.js 处理 */ }
+    else {
+        const container = document.querySelector('.bcos-desktop-icons');
+        if (container) container.innerHTML = '';
     }
 }
 
