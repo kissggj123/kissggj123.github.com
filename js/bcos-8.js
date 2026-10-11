@@ -128,6 +128,15 @@ function _bcos8InjectCCToggle() {
 /* ---------- 初始化 (桌面加载后调用) ---------- */
 function _bcos8Init() {
     window._bcosBootTime = Date.now();
+    // v8.0.2: 桌面渲染引擎
+    if (window._bcosDesktopRender) {
+        // 延迟到 DOM 就绪
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => window._bcosDesktopRender());
+        } else {
+            setTimeout(() => window._bcosDesktopRender(), 100);
+        }
+    }
     // A/B 无缝更新: 激活 staged 分区的模块
     if (window._bcosPkgActivateStaged) {
         window._bcosPkgActivateStaged().then(n => {
