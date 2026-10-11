@@ -178,19 +178,32 @@ function _bcos8Init() {
             setTimeout(() => window._bcosDesktopRender(), 100);
         }
     }
-    // A/B 无缝更新: 激活 staged 分区的模块
+    // v8.0.2 fix: 启动完成独立于 A/B, 带超时兜底 + 全程日志
+    console.log('[BCOS Boot] 步骤4: 完成初始化');
+    if (window._bcosBootStep) window._bcosBootStep(4);
+    let _bootDone = false;
+    const _finishBoot = () => {
+        if (_bootDone) return;
+        _bootDone = true;
+        console.log('[BCOS Boot] ✅ 启动完成');
+        if (window._bcosBootDone) window._bcosBootDone();
+    };
+    setTimeout(_finishBoot, 800); // 兜底: 800ms 强制完成
+    // A/B 无缝更新 (不阻塞启动)
     if (window._bcosPkgActivateStaged) {
+        console.log('[BCOS Boot] 检查 A/B 分区…');
         window._bcosPkgActivateStaged().then(n => {
             if (n > 0) {
-                console.log(`[BCOS] A/B 切换: ${n} 个模块已从 staged 激活`);
-                // 提示用户 (如果有 toast)
+                console.log(`[BCOS] A/B 切换: ${n} 个模块已激活`);
                 setTimeout(() => {
                     if (typeof showToast === 'function') showToast(`📦 ${n} 个模块更新已生效`);
                 }, 3000);
-            if (window._bcosBootStep) window._bcosBootStep(4);
-            if (window._bcosBootDone) setTimeout(() => window._bcosBootDone(), 800);
-            }
-        }).catch(() => {});
+            } else console.log('[BCOS Boot] 无待激活模块');
+            _finishBoot();
+        }).catch((e) => { console.warn('[BCOS Boot] A/B 检查失败:', e); _finishBoot(); });
+    } else {
+        console.log('[BCOS Boot] 包管理器未加载, 跳过 A/B');
+        _finishBoot();
     }
     _bcos8ShowBoot();
     _bcos8RenderDeskClock();
