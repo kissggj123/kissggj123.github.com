@@ -1403,7 +1403,7 @@
                 /* Right Edge Radiance (Real Right Border Pixels Illumination) */
                 radial-gradient(ellipse 55% 120% at 105% 50%, var(--wp-edge-right, rgba(255,255,255,0.25)) 0%, rgba(var(--wp-edge-right-rgb, 16,20,34), 0.75) 45%, transparent 85%);
             mix-blend-mode: screen;
-            opacity: 0.96;
+            opacity: 0.45;
             pointer-events: none;
             transition: background 0.6s ease, opacity 0.6s ease;
         }
@@ -1411,8 +1411,12 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, transparent 35%, rgba(10, 14, 24, 0.35) 75%, var(--wp-edge-dominant, rgba(10, 14, 24, 0.85)) 100%);
-            opacity: 0.82;
+            /* Instagram 风: 底部渐变保证文字可读, 四周仅极淡压暗, 中央完全通透 */
+            background:
+                linear-gradient(to top, rgba(6, 8, 15, 0.5) 0%, rgba(6, 8, 15, 0.18) 22%, transparent 42%),
+                linear-gradient(to bottom, rgba(6, 8, 15, 0.22) 0%, transparent 18%),
+                radial-gradient(ellipse 105% 105% at 50% 50%, transparent 68%, rgba(6, 8, 15, 0.28) 100%);
+            opacity: 1;
             pointer-events: none;
         }
         .car-wallpaper-ambient.active {
