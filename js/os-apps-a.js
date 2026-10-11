@@ -1,245 +1,3 @@
-/* ==================== App Drawer / 应用抽屉 ==================== */
-function _bcosCollectDrawerApps() {
-    // 从桌面图标 (已隐藏) 收集应用列表, 保证与系统一致
-    // + 合并 localStorage 中的自定义/商店应用 (确保完整显示)
-    const apps = [];
-    const seen = new Set();
-    // 自定义应用优先 (商店安装的)
-    try {
-        const customs = JSON.parse(localStorage.getItem('bcos_custom_apps') || '[]');
-        customs.forEach(a => {
-            if (a && a.id && !seen.has(a.id)) {
-                seen.add(a.id);
-                apps.push({ id: a.id, icon: a.icon || '📦', name: a.name || a.id, custom: true });
-            }
-        });
-    } catch(e) {}
-    document.querySelectorAll('.bcos-desktop-icons .bcos-desktop-icon').forEach(el => {
-        const oc = el.getAttribute('onclick') || '';
-        let id = '';
-        const m = oc.match(/_bcosOpenApp\('([\w-]+)'\)/);
-        if (m) id = m[1];
-        else if (oc.indexOf('showBcosCarLockscreen') >= 0) id = 'carlock';
-        // v8.0.1 修复: JS 赋值的 onclick (el.onclick = ...) 不会出现在 attribute 中, 从 ID 提取
-        if (!id) {
-            const idAttr = el.getAttribute('id') || '';
-            const im = idAttr.match(/^bcos-desk-icon-([\w-]+)$/);
-            if (im) id = im[1];
-        }
-        // 再从内部的 data 属性或文本兜底
-        if (!id && el.dataset && el.dataset.appId) id = el.dataset.appId;
-        if (!id || seen.has(id)) return;
-        seen.add(id);
-        const em = el.querySelector('.bcos-desktop-icon-emoji');
-        const lb = el.querySelector('.bcos-desktop-icon-label');
-        apps.push({ id, icon: em ? em.innerHTML : '📦', name: lb ? lb.textContent.trim() : id });
-    });
-    return apps;
-}
-function _bcosRenderDrawerApps(filter) {
-    const grid = document.getElementById('bcos-drawer-grid');
-    if (!grid) return;
-    const q = (filter || '').trim().toLowerCase();
-    const apps = _bcosCollectDrawerApps().filter(a =>
-        !q || a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q));
-    if (!apps.length) {
-        grid.innerHTML = '<div class="bcos-drawer-empty">没有找到匹配的应用 🐰</div>';
-        return;
-    }
-    grid.innerHTML = apps.map((a, i) => {
-        const running = typeof _bcos !== 'undefined' && _bcos.wins && !!_bcos.wins[a.id];
-        return `<div class="bcos-drawer-app${running ? ' running' : ''}" style="transition-delay:${Math.min(i * 22, 440)}ms" onclick="_bcosDrawerLaunch('${a.id}')">` +
-        `<div class="bcos-drawer-app-icon">${a.icon}</div>` +
-        `<div class="bcos-drawer-app-name">${a.name.replace(/</g, '&lt;')}</div>` +
-        (running ? '<div class="bcos-drawer-app-running-dot"></div>' : '') + `</div>`;
-    }).join('');
-}
-function _bcosDrawerFilter(q) { _bcosRenderDrawerApps(q); }
-function _bcosDrawerLaunch(id) {
-    _bcosCloseAppDrawer();
-    setTimeout(() => {
-        if (id === 'carlock') { if (typeof showBcosCarLockscreen === 'function') showBcosCarLockscreen(); }
-        else if (typeof _bcosOpenApp === 'function') _bcosOpenApp(id);
-    }, 120);
-}
-function _bcosOpenAppDrawer() {
-    const d = document.getElementById('bcos-app-drawer');
-    if (!d) return;
-    const s = document.getElementById('bcos-drawer-search');
-    if (s) s.value = '';
-    _bcosRenderDrawerApps('');
-    d.classList.add('open');
-    setTimeout(() => { const si = document.getElementById('bcos-drawer-search'); if (si && window.innerWidth > 768) si.focus(); }, 350);
-}
-function _bcosCloseAppDrawer() {
-    const d = document.getElementById('bcos-app-drawer');
-    if (d) d.classList.remove('open');
-}
-function _bcosToggleAppDrawer() {
-    const d = document.getElementById('bcos-app-drawer');
-    if (d && d.classList.contains('open')) _bcosCloseAppDrawer();
-    else _bcosOpenAppDrawer();
-}
-// ESC 关闭抽屉
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        const d = document.getElementById('bcos-app-drawer');
-        if (d && d.classList.contains('open')) _bcosCloseAppDrawer();
-    }
-});
-
-/* ==================== 文件缓存诊断 ==================== */
-const _BCOS_DIAG_FILES = [
-    { f: 'css/bcos-8.css', type: 'css' },
-    { f: 'css/app-drawer.css', type: 'css' },
-    { f: 'css/effects.css', type: 'css' },
-    { f: 'css/desktop-modern.css', type: 'css' },
-    { f: 'css/car-lockscreen-a.css', type: 'css' },
-    { f: 'js/os-apps-a.js', type: 'js' },
-    { f: 'js/bcos-8.js', type: 'js' },
-    { f: 'js/version.js', type: 'js' },
-];
-async function _bcosFileHash(url, fresh) {
-    const u = url + (fresh ? (url.includes('?') ? '&' : '?') + '_t=' + Date.now() : '');
-    const res = await fetch(u, fresh ? { cache: 'no-store' } : {});
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    let h = 5381;
-    for (let i = 0; i < text.length; i++) h = (((h << 5) + h) + text.charCodeAt(i)) >>> 0;
-    return h.toString(16).padStart(8, '0');
-}
-async function _bcosDiagCheck(btn, file, type) {
-    const rowEl = btn.closest('[data-diag-file]');
-    const stEl = rowEl.querySelector('.diag-status');
-    stEl.textContent = '⏳ 检查中…';
-    stEl.style.color = '#aab6ff';
-    try {
-        const [cached, fresh] = await Promise.all([
-            _bcosFileHash(file, false).catch(() => '????????'),
-            _bcosFileHash(file, true).catch(() => '????????'),
-        ]);
-        const same = cached === fresh;
-        rowEl.querySelector('.diag-cached').textContent = cached;
-        rowEl.querySelector('.diag-fresh').textContent = fresh;
-        stEl.textContent = same ? '✅ 一致' : '⚠️ 缓存过期';
-        stEl.style.color = same ? '#34c759' : '#ff9500';
-        rowEl.querySelector('.diag-reload').style.display = same ? 'none' : '';
-    } catch (e) {
-        stEl.textContent = '❌ ' + e.message;
-        stEl.style.color = '#ff453a';
-    }
-}
-function _bcosDiagReload(file, type) {
-    if (type === 'css') {
-        // 热重载 CSS: 替换 link href
-        let done = false;
-        document.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
-            if (l.href.includes(file)) {
-                const u = new URL(l.href, location.href);
-                u.searchParams.set('_force', Date.now());
-                l.href = u.toString();
-                done = true;
-            }
-        });
-        if (done && typeof showToast === 'function') showToast('🔄 ' + file + ' 已强制刷新');
-        else alert('未找到已加载的 ' + file);
-    } else {
-        // JS 需整页重载
-        if (confirm(file + ' 是 JS 文件，需重载整页才能生效。\n\n确定重载吗？')) {
-            const u = new URL(location.href);
-            u.searchParams.set('_force', Date.now());
-            location.href = u.toString();
-        }
-    }
-}
-async function _bcosDiagCheckAll() {
-    const btns = document.querySelectorAll('[data-diag-file] .diag-check');
-    for (const b of btns) { b.click(); await new Promise(r => setTimeout(r, 120)); }
-}
-function _bcosDiagCardHTML() {
-    return `<div style="margin-top:4px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <div style="font-size:13px;font-weight:700;color:#f2f4ff;">📁 资源文件缓存诊断</div>
-            <button onclick="_bcosDiagCheckAll()" style="background:rgba(124,140,255,.15);border:1px solid rgba(124,140,255,.4);color:#aab6ff;padding:.35rem .8rem;border-radius:9px;cursor:pointer;font-size:11.5px;font-weight:700;">🔍 全部检查</button>
-        </div>
-        <div style="font-size:11px;color:rgba(242,244,255,.45);margin-bottom:10px;line-height:1.6;">实时比对浏览器缓存与服务器版本。哈希一致=已是最新；不一致=缓存过期，点 🔄 强制刷新该文件。</div>
-        ${_BCOS_DIAG_FILES.map(d => `
-        <div data-diag-file="${d.f}" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11.5px;flex-wrap:wrap;">
-            <span style="font-family:ui-monospace,monospace;color:#e2e8f0;min-width:170px;">${d.f}</span>
-            <span style="color:rgba(242,244,255,.4);">缓存:<span class="diag-cached" style="font-family:ui-monospace,monospace;color:#94a3b8;">--------</span></span>
-            <span style="color:rgba(242,244,255,.4);">服务器:<span class="diag-fresh" style="font-family:ui-monospace,monospace;color:#94a3b8;">--------</span></span>
-            <span class="diag-status" style="font-weight:600;color:rgba(242,244,255,.4);">待检查</span>
-            <span style="flex:1;"></span>
-            <button class="diag-check" onclick="_bcosDiagCheck(this,'${d.f}','${d.type}')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;padding:.25rem .6rem;border-radius:7px;cursor:pointer;font-size:11px;">🔍</button>
-            <button class="diag-reload" onclick="_bcosDiagReload('${d.f}','${d.type}')" style="display:none;background:rgba(52,199,89,.15);border:1px solid rgba(52,199,89,.45);color:#34c759;padding:.25rem .6rem;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;">🔄 刷新</button>
-        </div>`).join('')}
-    </div>`;
-}
-
-async function _bcosDownloadWallpaper(file, name) {
-    // v8.0.1: 真 OS 逻辑 — 下载全分辨率到内存缓存, 设为壁纸并显示
-    if (typeof showToast === 'function') showToast('⬇️ 正在加载全分辨率壁纸…');
-    try {
-        const res = await fetch(file, { cache: 'reload' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const blob = await res.blob();
-        const objUrl = URL.createObjectURL(blob);
-        // 存入全局壁纸缓存 (与旧系统 wpBlobCache 一致)
-        if (!window.wpBlobCache) window.wpBlobCache = {};
-        // 释放旧的
-        if (window.wpBlobCache[file] && window.wpBlobCache[file].startsWith('blob:')) {
-            try { URL.revokeObjectURL(window.wpBlobCache[file]); } catch(e) {}
-        }
-        window.wpBlobCache[file] = objUrl;
-        // 设为桌面壁纸 (localStorage 持久化)
-        try { localStorage.setItem('bcosCustomBg', file); } catch(e) {}
-        // 立即应用 (新桌面引擎)
-        if (window._bcosDesktopSetWallpaper) window._bcosDesktopSetWallpaper(file);
-        else if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
-        // 刷新设置面板显示选中态
-        if (typeof _bcosRenderSettingsRightPane === 'function') _bcosRenderSettingsRightPane();
-        if (typeof showToast === 'function') showToast('✅ 全分辨率壁纸已设置');
-    } catch(e) {
-        if (typeof showToast === 'function') showToast('❌ 加载失败: ' + e.message);
-    }
-}
-function _bcosForceUpdate() {
-    if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 通知 Service Worker 强制过期全部缓存\n2. 注销 Service Worker\n3. 强制重载页面')) return;
-    if (typeof showToast === 'function') showToast('🔄 正在强制过期缓存…');
-    (async () => {
-        try {
-            // 先让 SW 自己清缓存 (v8.0.8903+)
-            // PWA 下 controller 可能为 null, 用 ready 确保拿到 active worker
-            if ('serviceWorker' in navigator) {
-                try {
-                    const reg = await navigator.serviceWorker.ready;
-                    const sw = reg.active || navigator.serviceWorker.controller;
-                    if (sw) {
-                        sw.postMessage({ type: 'FORCE_EXPIRE' });
-                        await new Promise(r => setTimeout(r, 1000));
-                    }
-                } catch(e) {}
-            }
-        } catch(e) {}
-        try {
-            if ('serviceWorker' in navigator) {
-                const regs = await navigator.serviceWorker.getRegistrations();
-                for (const r of regs) { try { await r.unregister(); } catch(e){} }
-            }
-            if ('caches' in window) {
-                const keys = await caches.keys();
-                for (const k of keys) { try { await caches.delete(k); } catch(e){} }
-            }
-            try { localStorage.removeItem('bcos_oobe_version'); } catch(e){}
-        } catch(e) {}
-        setTimeout(() => {
-            const url = new URL(location.href);
-            url.searchParams.set('_force', Date.now().toString());
-            location.href = url.toString();
-        }, 600);
-    })();
-}
-
 function _bcosRefreshStoreIfOpen() {
         if (!document.getElementById('bcos-store-body')) return;
         const tab = window._bcosStoreCurTab || 'featured';
@@ -295,8 +53,7 @@ function _bcosRefreshStoreIfOpen() {
         const curIdx = wps.findIndex(w => w.file === curBg);
         const nextWp = wps[(curIdx + 1) % wps.length];
         localStorage.setItem('bcosCustomBg', nextWp.file);
-        if (window._bcosDesktopSetWallpaper) window._bcosDesktopSetWallpaper(nextWp.file);
-        else if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
         showToast(`🖼️ 桌面壁纸切换为: ${nextWp.name}`);
     }
 
@@ -389,8 +146,10 @@ function _bcosRefreshStoreIfOpen() {
         _bcos.history = []; _bcos.histIdx = -1; _bcos.mode = 'boot'; _bcos.winZ = 100; _bcos.wins = {}; _bcos.activeWin = null;
         ov.classList.add('active');
         _bcosInitMeFolder();
-        // BCOS 8.0: 旧开机动画已移除, 由 bcos-8.js 的 Aurora 启动屏接管
-        _bcosLaunchDesktop();
+        // Show boot animation, then launch desktop
+        _bcosBootAnimation(ov).then(() => {
+            _bcosLaunchDesktop();
+        });
     }
 
     function closeBcosOS(forceExitFullscreen) {
@@ -411,7 +170,7 @@ function _bcosRefreshStoreIfOpen() {
                     <h2 style="margin:0 0 2rem;font-weight:400;color:#aaa;">System Halted.</h2>
                     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
                         <button onclick="tryAutoFullscreen();showBcosOS();" style="padding:10px 24px;background:transparent;color:#fff;border:1px solid #555;border-radius:6px;font-size:15px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">
-                            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-0.12em"><path d="M12 3v8"/><path d="M6.2 6.2a8 8 0 1 0 11.6 0"/></svg> Reboot (重新开机)
+                            ⏻ Reboot (重新开机)
                         </button>
                         <button onclick="navigateTo('home');" style="padding:10px 24px;background:rgba(255,107,157,0.2);color:#ff6b9d;border:1px solid rgba(255,107,157,0.4);border-radius:6px;font-size:15px;cursor:pointer;">
                             🏠 返回经典视图
@@ -601,24 +360,12 @@ function _bcosRefreshStoreIfOpen() {
         { id: 'monitor', name: '活动监视器', icon: '📊' },
         { id: 'texteditor', name: 'Code Studio 代码编辑', icon: '📝' },
         { id: 'logs', name: '控制台运行日志', icon: '📜' },
-        { id: 'about', name: '关于这台 BCOS', icon: 'ℹ️' },
-        { id: 'yumiko', name: 'YumikoToys 上帝模式', icon: '🧰' },
-        { id: 'cydia', name: 'BCOS 软件源', icon: '📦' }
+        { id: 'about', name: '关于这台 BCOS', icon: 'ℹ️' }
     ];
 
     function _bcosRenderDock() {
         const dock = document.getElementById('bcos-dock');
         if (!dock) return;
-        // Launchpad / 应用抽屉按钮 (固定首位)
-        if (!dock.querySelector('#bcos-dock-__drawer__')) {
-            const lp = document.createElement('div');
-            lp.className = 'bcos-dock-item';
-            lp.id = 'bcos-dock-__drawer__';
-            lp.title = '应用抽屉 (App Drawer)';
-            lp.onclick = () => _bcosToggleAppDrawer();
-            lp.innerHTML = '<div class="bcos-dock-tooltip">应用抽屉</div><div class="bcos-dock-icon-box">🚀</div><div class="bcos-dock-dot"></div>';
-            dock.prepend(lp);
-        }
         const dt = _bcosGetDesktopTheme();
         const installed = typeof _bcosGetInstalledAppIds === 'function' ? _bcosGetInstalledAppIds() : [];
         const customs = typeof _bcosGetCustomApps === 'function' ? _bcosGetCustomApps() : [];
@@ -830,7 +577,7 @@ function _bcosRefreshStoreIfOpen() {
                     <span>⌨️</span><span>返回纯命令行终端 (Terminal CLI)</span>
                 </div>
                 <div class="bcos-apple-menu-item" onclick="closeBcosOS(); _bcosCloseAppleMenu();">
-                    <span><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-0.12em"><path d="M12 3v8"/><path d="M6.2 6.2a8 8 0 1 0 11.6 0"/></svg></span><span>退出 BCOS 返回经典视图 (Exit)</span>
+                    <span>⏻</span><span>退出 BCOS 返回经典视图 (Exit)</span>
                 </div>
             </div>
 
@@ -858,32 +605,11 @@ function _bcosRefreshStoreIfOpen() {
             <div class="bcos-dock-wrap">
                 <div class="bcos-dock" id="bcos-dock"></div>
             </div>
-            <!-- App Drawer / 应用抽屉 -->
-            <div id="bcos-app-drawer" onclick="if(event.target===this)_bcosCloseAppDrawer()">
-                <div class="bcos-drawer-search-wrap">
-                    <input class="bcos-drawer-search" id="bcos-drawer-search" placeholder="搜索应用" autocomplete="off"
-                        oninput="_bcosDrawerFilter(this.value)" onkeydown="if(event.key==='Escape')_bcosCloseAppDrawer()">
-                </div>
-                <div class="bcos-drawer-grid" id="bcos-drawer-grid"></div>
-                <div class="bcos-drawer-hint">点击空白处或按 ESC 关闭 · 双击桌面也可打开</div>
-            </div>
         </div>`;
         _bcosRenderDock();
         _bcosUpdateDock();
-        // 双击桌面空白处打开应用抽屉
-        const _dbg = document.getElementById('bcos-desktop-bg');
-        if (_dbg && !_dbg._drawerDblBound) {
-            _dbg._drawerDblBound = true;
-            _dbg.addEventListener('dblclick', (e) => {
-                if (e.target.closest('.bcos-desktop-icon') || e.target.closest('.bcos-window') ||
-                    e.target.closest('.bcos-dock-wrap') || e.target.closest('#bcos-app-drawer')) return;
-                _bcosOpenAppDrawer();
-            });
-        }
         if (typeof _bcosSyncDesktopAppIcons === 'function') _bcosSyncDesktopAppIcons();
         _bcosUpdateClock();
-        // BCOS 8.0 Aurora shell
-        if (typeof _bcos8Init === 'function') _bcos8Init();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
         const bg = document.getElementById('bcos-desktop-bg');
         if (bg) {
@@ -994,14 +720,12 @@ function _bcosRefreshStoreIfOpen() {
             monitor: { t: 'System Monitor — bcos', w: 460, h: 360 },
             about: { t: 'About bcos', w: 420, h: 360 },
             browser: { t: 'Browser — bcos', w: 560, h: 420 },
-            me: { t: '访达 — me', w: 640, h: 440 },
+            me: { t: 'me — File Explorer', w: 400, h: 320 },
             texteditor: { t: '📝 Code Studio Pro — 文本代码编辑', w: 720, h: 500 },
             anniversary: { t: '💕 兔可可纪念日 — Anniversary', w: 640, h: 520 },
             monopoly: { t: '🎲 大富翁模拟经营 — Monopoly Kingdom', w: 880, h: 580 },
             settings: { t: '⚙️ 系统设置 — System Settings', w: 720, h: 520 },
-            logs: { t: '📜 系统运行日志 — System Logs', w: 680, h: 480 },
-            yumiko: { t: '🧰 YumikoToys — 上帝模式工具箱', w: 640, h: 520 },
-            cydia: { t: '📦 BCOS 软件源 — Cydia', w: 660, h: 560 }
+            logs: { t: '📜 系统运行日志 — System Logs', w: 680, h: 480 }
         };
         let cfg = apps[app];
         if (!cfg && app.startsWith('custom_app_')) {
@@ -1043,14 +767,12 @@ function _bcosRefreshStoreIfOpen() {
             else if (app === 'monitor') _bcosRenderMonitor(content);
             else if (app === 'about') _bcosRenderAbout(content);
             else if (app === 'browser') _bcosRenderBrowser(content);
-            else if (app === 'me') { _bcosFinderPath = 'me'; _bcosRenderFileManager(content); }
+            else if (app === 'me') _bcosRenderMeFolder(content);
             else if (app === 'texteditor') _bcosRenderTextEditor(content);
             else if (app === 'anniversary') _bcosRenderAnniversaryApp(content);
             else if (app === 'monopoly') _bcosRenderMonopolyApp(content);
             else if (app === 'settings') _bcosRenderSettingsApp(content);
             else if (app === 'logs') _bcosRenderLogsApp(content);
-            else if (app === 'yumiko') _bcosRenderYumikoToys(content);
-            else if (app === 'cydia') _bcosRenderCydiaApp(content);
             else if (app === 'appstore') _bcosRenderAppStore(content);
             else if (app === 'calculator') _bcosRenderCalculator(content);
             else if (app === 'weather') _bcosRenderWeather(content);
@@ -1261,8 +983,8 @@ function _bcosRefreshStoreIfOpen() {
         content.style.padding = '0';
         content.style.overflow = 'hidden';
         content.style.height = '100%';
-        content.style.background = 'linear-gradient(160deg, #0d1128 0%, #0a0d20 60%, #080a18 100%)';
-        content.style.color = '#f2f4ff';
+        content.style.background = '#181b26';
+        content.style.color = '#e2e8f0';
 
         const customBg = localStorage.getItem('bcosCustomBg') || '';
         const curAvatar = localStorage.getItem('sidebarAvatar') || 'emoji';
@@ -1273,7 +995,7 @@ function _bcosRefreshStoreIfOpen() {
         const fontScale = localStorage.getItem('fontScale') || '100';
 
         const tabs = [
-            { id: 'wifi', icon: '⏱️', bg: '#34c759', title: '启动与延迟', sub: '运行时间与网络测速' },
+            { id: 'wifi', icon: '📶', bg: '#007aff', title: 'Wi-Fi 网络', sub: '无线网络与座舱互联' },
             { id: 'battery', icon: '🔋', bg: '#34c759', title: '车辆与能耗', sub: '动力电池与座舱续航' },
             { id: 'general', icon: '⚙️', bg: '#8e8e93', title: '通用', sub: '系统偏好、更新与存储' },
             { id: 'appearance', icon: '🎨', bg: '#ff2d55', title: '外观与主题', sub: '桌面氛围主题与强调色' },
@@ -1285,15 +1007,15 @@ function _bcosRefreshStoreIfOpen() {
         content.innerHTML = `
             <div style="display:flex;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;user-select:none;-webkit-user-select:none;">
                 <!-- Left Sidebar -->
-                <div style="width:216px;background:rgba(255,255,255,0.045);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid rgba(255,255,255,0.09);display:flex;flex-direction:column;padding:14px 10px;box-sizing:border-box;flex-shrink:0;">
+                <div style="width:210px;background:rgba(20,24,36,0.96);border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;padding:12px 8px;box-sizing:border-box;flex-shrink:0;">
                     <!-- Search Bar -->
                     <div style="margin-bottom:12px;position:relative;">
-                        <input type="text" id="bcos-settings-search" placeholder="🔍 搜索" oninput="_bcosSettingsFilter(this.value)" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:12px;padding:8px 12px;font-size:12.5px;color:#fff;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(124,140,255,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.14)'">
+                        <input type="text" id="bcos-settings-search" placeholder="🔍 搜索" oninput="_bcosSettingsFilter(this.value)" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 10px;font-size:12px;color:#fff;outline:none;">
                     </div>
 
                     <!-- Apple / Bunny Cockpit Account Card -->
-                    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,rgba(124,140,255,.14),rgba(180,140,255,.08));border:1px solid rgba(255,255,255,0.1);margin-bottom:12px;cursor:pointer;transition:transform .18s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='none'" onclick="_bcosSwitchSettingsTab('about')">
-                        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c8cff,#b48cff 60%,#ff8cc6);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 4px 14px rgba(124,140,255,0.4);">🐰</div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);margin-bottom:12px;cursor:pointer;" onclick="_bcosSwitchSettingsTab('about')">
+                        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff6b9d,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(255,107,157,0.3);">🐰</div>
                         <div style="line-height:1.2;overflow:hidden;">
                             <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">兔可可</div>
                             <div style="font-size:10px;color:#94a3b8;">Cockpit Account</div>
@@ -1303,8 +1025,8 @@ function _bcosRefreshStoreIfOpen() {
                     <!-- Sidebar Categories -->
                     <div id="bcos-settings-nav" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;">
                         ${tabs.map(t => `
-                            <div class="bcos-settings-nav-item ${t.id === _bcosSettingsActiveTab ? 'active' : ''}" id="bcos-set-nav-${t.id}" onclick="_bcosSwitchSettingsTab('${t.id}')" style="display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:11px;cursor:pointer;transition:all .18s;${t.id === _bcosSettingsActiveTab ? 'background:linear-gradient(135deg,#7c8cff,#9a7cff);color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(124,140,255,.35);' : 'color:#aab0d0;'}">
-                                <div style="width:26px;height:26px;border-radius:8px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);">${t.icon}</div>
+                            <div class="bcos-settings-nav-item ${t.id === _bcosSettingsActiveTab ? 'active' : ''}" id="bcos-set-nav-${t.id}" onclick="_bcosSwitchSettingsTab('${t.id}')" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:all 0.15s;${t.id === _bcosSettingsActiveTab ? 'background:#007aff;color:#fff;font-weight:600;' : 'color:#cbd5e1;'}">
+                                <div style="width:24px;height:24px;border-radius:6px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">${t.icon}</div>
                                 <span style="font-size:13px;">${t.title}</span>
                             </div>
                         `).join('')}
@@ -1343,36 +1065,6 @@ function _bcosRefreshStoreIfOpen() {
         });
     };
 
-    // About 电池实时检测
-    window._bcosAboutBattery = async function() {
-        const el = document.getElementById('bcos-about-battery');
-        if (!el) return;
-        try {
-            if ('getBattery' in navigator) {
-                const b = await navigator.getBattery();
-                const pct = Math.round(b.level * 100);
-                const chg = b.charging ? '⚡充电中' : '🔋';
-                el.innerHTML = `<span style="color:#fff;font-weight:600;">${chg} ${pct}%</span>`;
-            } else el.textContent = '不支持 Battery API';
-        } catch(e) { el.textContent = '无法读取'; }
-    };
-    window._bcosPingTest = async function() {
-        const el = document.getElementById('bcos-wifi-ping');
-        if (el) el.textContent = '测速中…';
-        const times = [];
-        for (let i = 0; i < 3; i++) {
-            const t0 = performance.now();
-            try { await fetch('js/version.js?_ping=' + Date.now(), { cache: 'no-store' }); times.push(performance.now() - t0); }
-            catch(e) {}
-        }
-        if (el) {
-            if (times.length) {
-                const avg = Math.round(times.reduce((a,b)=>a+b,0) / times.length);
-                const color = avg < 100 ? '#34c759' : avg < 300 ? '#ff9500' : '#ff453a';
-                el.innerHTML = `<span style="color:${color};">${avg} ms</span> <span style="color:#888;font-size:10px;">(${times.map(t=>Math.round(t)).join('/')})</span>`;
-            } else el.textContent = '测速失败';
-        }
-    };
     function _bcosRenderSettingsRightPane() {
         const pane = document.getElementById('bcos-settings-pane');
         if (!pane) return;
@@ -1385,74 +1077,21 @@ function _bcosRefreshStoreIfOpen() {
         const curTemp = localStorage.getItem('car_cabin_temp') || '22';
         const fontScale = localStorage.getItem('fontScale') || '100';
 
-    // ===== 详细存储占用分析 =====
-    function _bcosStorageDetailHTML() {
-        let items = [];
-        let total = 0;
-        try {
-            for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                const v = localStorage.getItem(k) || '';
-                const bytes = (k.length + v.length) * 2; // UTF-16
-                total += bytes;
-                items.push({ key: k, bytes });
-            }
-        } catch(e) {}
-        items.sort((a, b) => b.bytes - a.bytes);
-        const fmt = (b) => b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(2) + ' MB';
-        // 分类
-        const cats = { '用户文件': 0, '应用数据': 0, '系统设置': 0, '其他': 0 };
-        items.forEach(it => {
-            if (it.key.startsWith('bcos_user_fs')) cats['用户文件'] += it.bytes;
-            else if (it.key.includes('app') || it.key.includes('custom')) cats['应用数据'] += it.bytes;
-            else if (it.key.startsWith('bcos_')) cats['系统设置'] += it.bytes;
-            else cats['其他'] += it.bytes;
-        });
-        const pct = Math.min(100, (total / (5 * 1048576) * 100));
-        const barColor = pct > 80 ? '#ff453a' : pct > 50 ? '#ff9500' : '#34c759';
-        let html = `<div style="margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
-                <span style="color:#f2f4ff;font-weight:600;">${fmt(total)} / ~5 MB</span>
-                <span style="color:${barColor};font-weight:700;">${pct.toFixed(1)}%</span>
-            </div>
-            <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;">
-                <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,${barColor},${barColor}cc);border-radius:4px;transition:width .5s;"></div>
-            </div>
-        </div>`;
-        // 分类
-        html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
-        Object.entries(cats).forEach(([k, v]) => {
-            if (v > 0) html += `<span style="font-size:11px;background:rgba(255,255,255,.06);padding:4px 8px;border-radius:8px;color:#aab0d0;">${k}: ${fmt(v)}</span>`;
-        });
-        html += '</div>';
-        // Top 8
-        html += '<div style="font-size:11px;color:#888;margin-bottom:6px;">占用 Top 8:</div>';
-        items.slice(0, 8).forEach(it => {
-            const pctW = total > 0 ? (it.bytes / total * 100) : 0;
-            html += `<div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);">
-                <span style="font-family:monospace;color:#aab6ff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${it.key}">${it.key}</span>
-                <div style="width:80px;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctW}%;background:#7c8cff;border-radius:3px;"></div></div>
-                <span style="color:#f2f4ff;font-weight:600;min-width:60px;text-align:right;">${fmt(it.bytes)}</span>
-            </div>`;
-        });
-        return html;
-    }
-
-        const card = (inner) => `<div style="background:rgba(255,255,255,0.055);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);">${inner}</div>`;
+        const card = (inner) => `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;margin-bottom:14px;">${inner}</div>`;
         const row = (label, rightControl, desc) => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,0.06);gap:12px;flex-wrap:wrap;">
-                <div style="min-width:0;">
-                    <div style="font-size:13.5px;font-weight:600;color:#f2f4ff;letter-spacing:.01em;">${label}</div>
-                    ${desc ? `<div style="font-size:11.5px;color:rgba(242,244,255,.5);margin-top:3px;line-height:1.5;">${desc}</div>` : ''}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px;flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:13px;font-weight:600;color:#f1f5f9;">${label}</div>
+                    ${desc ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${desc}</div>` : ''}
                 </div>
-                <div style="flex-shrink:0;">${rightControl}</div>
+                <div>${rightControl}</div>
             </div>
         `;
         const hero = (icon, title, desc) => `
-            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 0 18px;">
-                <div style="width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#7c8cff,#b48cff 55%,#ff8cc6);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 12px 32px rgba(124,140,255,0.45), inset 0 1px 0 rgba(255,255,255,0.25);margin-bottom:10px;">${icon}</div>
-                <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:.01em;">${title}</div>
-                <div style="font-size:12.5px;color:rgba(242,244,255,.55);max-width:420px;margin-top:4px;line-height:1.6;">${desc}</div>
+            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 0 16px;">
+                <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#007aff,#5856d6);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(0,122,255,0.35);margin-bottom:8px;">${icon}</div>
+                <div style="font-size:17px;font-weight:700;color:#fff;">${title}</div>
+                <div style="font-size:12px;color:#94a3b8;max-width:400px;margin-top:2px;">${desc}</div>
             </div>
         `;
 
@@ -1496,9 +1135,8 @@ function _bcosRefreshStoreIfOpen() {
                 window.BUILTIN_WALLPAPERS.forEach(w => {
                     const thumbSrc = (window.wpBlobCache && window.wpBlobCache[w.file]) || (window.WP_PLACEHOLDER && window.WP_PLACEHOLDER[w.file]) || w.file;
                     const isActive = (customBg === w.file);
-                    wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosDesktopSetWallpaper) window._bcosDesktopSetWallpaper('${w.file}'); else if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name} (点击设为壁纸)">
+                    wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name}">
                         <div style="background:rgba(0,0,0,0.65);color:#fff;font-size:9px;padding:2px 4px;position:absolute;bottom:0;width:100%;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.name}</div>
-                        <button onclick="event.stopPropagation(); _bcosDownloadWallpaper('${w.file}', '${w.name.replace(/'/g, "")}')" title="加载全分辨率并设为壁纸" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;backdrop-filter:blur(4px);">⬇️</button>
                     </div>`;
                 });
             }
@@ -1515,6 +1153,9 @@ function _bcosRefreshStoreIfOpen() {
 
             html += card(`
                 ${row('🧩 恢复默认桌面图标', `<button onclick="_bcosResetDesktopIcons(); _bcosRenderSettingsRightPane();" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">重置排列</button>`, '重置桌面图标自由拖动位置并恢复网格流式排列')}
+                ${row('📱 移动端 Tab 栏模式', `
+                    <select onchange="if(window.setTabBarMode) setTabBarMode(this.value)" style="background:rgba(0,0,0,0.5);color:#fff;border:1px solid #444;padding:4px 8px;border-radius:6px;font-size:12px;"><option value="always">始终显示</option><option value="auto-collapse">自动折叠</option><option value="hidden">隐藏</option></select>
+                `, '车载中控与移动端浏览器底部快捷导航栏')}
             `);
         } else if (_bcosSettingsActiveTab === 'displays') {
             html += hero('☀️', '显示器与视口', '调整座舱屏幕全局字体缩放与屏幕形态自适应');
@@ -1571,59 +1212,36 @@ function _bcosRefreshStoreIfOpen() {
                 `, '智能双温区座舱恒温系统')}
             `);
         } else if (_bcosSettingsActiveTab === 'wifi') {
-            // v8.0.1: WiFi 改为系统启动时间与延迟监控
-            const _bootT = window._bcosBootTime || performance.timeOrigin || Date.now();
-            const _upSec = Math.floor((Date.now() - _bootT) / 1000);
-            const _upStr = Math.floor(_upSec / 3600) + 'h ' + Math.floor((_upSec % 3600) / 60) + 'm ' + (_upSec % 60) + 's';
-            const _navT = performance.timing ? Math.round(performance.timing.loadEventEnd - performance.timing.navigationStart) : '—';
-            html += hero('⏱️', '启动时间与延迟', 'BCOS 内核启动耗时、页面加载与网络延迟实时监控');
+            html += hero('📶', 'Wi-Fi 与车机互联', '智能座舱 5G NSA/SA 双模聚合与高速车载热点');
             html += card(`
-                ${row('🚀 系统启动时间', `<span style="font-family:monospace;color:#34c759;font-weight:700;">${_upStr}</span>`, '自 BCOS 内核启动以来的运行时长')}
-                ${row('⚡ 页面加载耗时', `<span style="font-family:monospace;color:#007aff;font-weight:700;">${_navT} ms</span>`, 'navigationStart → loadEventEnd')}
-                ${row('📶 网络延迟', `<span style="font-family:monospace;color:#34c759;font-weight:700;" id="bcos-wifi-ping">测速中…</span>`, '到 GitHub Pages 的实时延迟 <button onclick="_bcosPingTest()" style="background:rgba(0,122,255,.15);border:1px solid rgba(0,122,255,.4);color:#0a84ff;padding:2px 8px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:6px;">重新测速</button>')}
-                ${row('🌐 连接状态', '<span style="color:#34c759;font-weight:600;">● 已连接</span>', (navigator.connection ? navigator.connection.effectiveType + ' · ' + (navigator.connection.downlink || '—') + ' Mbps' : '在线'))}
+                ${row('车载 Wi-Fi 热点', '<span style="color:#34c759;font-weight:600;">已连接 · Bunny-Cockpit-5G</span>', 'IP: 192.168.4.1 (5.8 GHz)')}
+                ${row('网络延迟', '<span style="font-family:monospace;color:#34c759;">18 ms (极佳)</span>', '座舱边缘云端链路状态')}
+                ${row('蓝牙互联', '<span style="color:#007aff;">iPhone 16 Pro (免提与音频流)</span>', 'Bluetooth 5.4 低延迟音频传输')}
             `);
-            // 自动测速
-            setTimeout(() => { if (typeof _bcosPingTest === 'function') _bcosPingTest(); }, 300);
         } else if (_bcosSettingsActiveTab === 'about') {
-            html += `
-            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 0 18px;">
-                <div style="font-size:64px;margin-bottom:6px;filter:drop-shadow(0 0 28px rgba(124,140,255,.5));">🐰</div>
-                <div style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#aab6ff,#d8b8ff 50%,#ffb6d9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Bunny Cockpit OS</div>
-                <div style="margin-top:10px;display:inline-flex;align-items:center;gap:8px;background:rgba(124,140,255,.13);border:1px solid rgba(124,140,255,.35);border-radius:20px;padding:6px 16px;">
-                    <span style="font-family:ui-monospace,monospace;font-size:13px;font-weight:700;color:#aab6ff;">${CONFIG.VERSION}</span>
-                    <span style="font-size:11px;color:rgba(242,244,255,.55);">Aurora · Official</span>
-                </div>
-                <div style="font-size:11.5px;color:rgba(242,244,255,.4);margin-top:8px;">Build 20261011 · 全面重构版</div>
-            </div>`;
+            html += hero('ℹ️', '关于本系统', 'Bunny Cockpit OS · 兔可可智能座舱系统');
             html += card(`
-                ${row('💻 处理器', `<span style="color:#fff;font-weight:600;">${navigator.hardwareConcurrency || '—'} 核心</span>`, 'navigator.hardwareConcurrency 实时读取')}
-                ${row('🧠 设备内存', `<span style="color:#fff;font-weight:600;">${navigator.deviceMemory ? navigator.deviceMemory + ' GB' : '—'}</span>`, 'navigator.deviceMemory 实时读取')}
-                ${row('🎮 图形处理器', `<span style="color:#fff;font-weight:600;font-size:12px;">${typeof _gpuInfo !== 'undefined' && _gpuInfo.renderer ? _bcosEscape(_gpuInfo.renderer.substring(0, 40)) : '—'}</span>`, 'WebGL 实时检测')}
-                ${row('🖥️ 屏幕', `<span style="color:#fff;font-weight:600;">${screen.width}×${screen.height} @${window.devicePixelRatio || 1}x</span>`, '实时分辨率与像素比')}
-                ${row('🌐 平台', `<span style="font-family:ui-monospace,monospace;color:#aab6ff;font-size:12px;">${_bcosEscape(navigator.platform || '—')}</span>`, _bcosEscape((navigator.userAgent || '').split(') ')[0].split('(').pop() || ''))}
-                ${row('🔋 电池', '<span id="bcos-about-battery" style="color:#fff;">检测中…</span>', 'Battery API 实时电量')}
-                ${(function(){ const vi = _bcosVehicleInfo(); return row('🚗 车辆识别', '<span style="color:#fff;font-weight:600;">' + _bcosEscape(vi.nameEn + (vi.edition ? ' · ' + vi.edition : '')) + '</span>', 'VIN: ' + _bcosEscape(vi.vin)); })()}
+                ${row('系统版本', '<span style="font-family:monospace;color:#00ff41;font-weight:bold;">' + CONFIG.VERSION + '</span>', 'Build 20261005 · Official Release')}
+                ${row('计算芯片', '<span style="color:#fff;">Bunny M3 HyperDrive (8-Core AI)</span>', '车载车规级智能计算平台')}
+                ${row('高速显存', '<span style="color:#fff;">16 GB LPDDR5X (Unified)</span>', '高带宽硬件加速显存')}
+                ${row('系统内核', '<span style="font-family:monospace;color:#94a3b8;">BCOS Darwin 24.1.0 aarch64</span>', 'POSIX 兼容虚拟环境')}
+                ${(function(){ const vi = _bcosVehicleInfo(); return row('车辆识别', '<span style="color:#fff;">' + _bcosEscape(vi.nameEn + (vi.edition ? ' · ' + vi.edition : '')) + '</span>', 'VIN: ' + _bcosEscape(vi.vin)); })()}
             `);
-            setTimeout(() => { if (typeof _bcosAboutBattery === 'function') _bcosAboutBattery(); }, 200);
         } else {
             // General
             html += hero('⚙️', '通用偏好', '管理存储空间、软件更新与系统基础首选项');
             html += card(`
-                ${row('💾 本地存储详情', `<div style="min-width:280px;max-width:100%;">${_bcosStorageDetailHTML()}</div>`, 'localStorage 实时占用分析 · 点击展开查看明细')}
-                ${row('🔄 软件更新', '<div style="display:flex;flex-direction:column;gap:.45rem;align-items:flex-end;"><span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (' + CONFIG.VERSION + ')</span><button onclick="_bcosForceUpdate()" style="background:rgba(0,122,255,.15);border:1px solid rgba(0,122,255,.45);color:#0a84ff;padding:.4rem .9rem;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;transition:transform .15s;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'none\'">🔄 强制刷新缓存并重启</button></div>', '支持 Service Worker 离线热更新<br>卡顿时可手动强制刷新')}
+                ${row('💾 BCOS 虚拟存储', '<span style="color:#34c759;font-weight:600;">12.8 MB / 512 MB</span>', '包含文稿、离线缓存与应用商店安装包')}
+                ${row('🔄 软件更新', '<span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (' + CONFIG.VERSION + ')</span>', '支持 Service Worker 离线热更新')}
                 ${row('🌐 系统语言', '<span style="color:#fff;">简体中文 (中国大陆)</span>', 'Apple SF Pro / PingFang SC 智能回退')}
                 ${row('⏰ 日期与时间', '<span style="color:#007aff;">网络时间自动对时 (已同步)</span>', '精确到秒，实时更新 Dock 与菜单栏时钟')}
             `);
-            html += card(`${_bcosDiagCardHTML()}`);
         }
 
         pane.innerHTML = html;
     }
 
-    
-
-function _bcosRenderLogsApp(content) {
+    function _bcosRenderLogsApp(content) {
         content.style.padding = '0';
         content.style.overflow = 'auto';
         content.style.height = '100%';
