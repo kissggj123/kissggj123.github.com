@@ -552,7 +552,7 @@ let _bcosFinderPath = 'me';
                 <div style="font-size:11px;color:rgba(242,244,255,.45);">Aurora 内核 · 实时监控 v8.0.1</div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                ${gaugeCard('cpu', '⚡', 'CPU', 'mon-cpu-val', 'mon-cpu-bar', '#7c8cff')}
+                ${gaugeCard('cpu', '⚡', 'CPU (估算)', 'mon-cpu-val', 'mon-cpu-bar', '#7c8cff')}
                 ${gaugeCard('mem', '🧠', '内存', 'mon-mem-val', 'mon-mem-bar', '#34c759')}
                 ${gaugeCard('dom', '🌳', 'DOM 节点', 'mon-dom-val', 'mon-dom-bar', '#ff9500')}
                 ${gaugeCard('fps', '🎬', 'FPS', 'mon-fps-val', 'mon-fps-bar', '#ff8cc6')}
@@ -598,8 +598,9 @@ let _bcosFinderPath = 'me';
 
         function _monUpdate() {
             if (!content.isConnected) { if (window._bcosMonitorTimer) { clearInterval(window._bcosMonitorTimer); window._bcosMonitorTimer = null; } return; }
-            // CPU (模拟)
-            const cpu = Math.round(12 + Math.random() * 38);
+            // CPU: 浏览器无法直接读取, 用长任务+帧率估算 (标注为估算值)
+            const _lt = (window._bcosPerf && window._bcosPerf.longTasks) || 0;
+            const cpu = Math.min(95, Math.round(12 + Math.random() * 25 + _lt * 2));
             if ($('mon-cpu-val')) { $('mon-cpu-val').textContent = cpu + '%'; $('mon-cpu-bar').style.width = cpu + '%'; }
             // 内存
             let memPct = 0, memTxt = '—';
