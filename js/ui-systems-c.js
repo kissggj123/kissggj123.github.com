@@ -1391,7 +1391,6 @@ let trailPoints = [];
     function renderChangelog() {
         const el = document.getElementById('changelog-content');
         if (!el) return;
-        // Deduplicate by version number, keeping the first (most recent) entry
         const seen = new Set();
         const deduped = CHANGELOG.filter(v => {
             if (seen.has(v.ver)) return false;
@@ -1399,14 +1398,25 @@ let trailPoints = [];
             return true;
         });
         const recent = deduped.slice(0, 6);
-        el.innerHTML = recent.map((v, i) => `
-            ${i > 0 ? '<div style="margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);">' : '<div>'}
-                <div style="margin-bottom:.5rem;"><strong style="color:var(--accent);">${v.ver}</strong> — ${v.title}</div>
-                <ul style="margin-left:1.2rem;font-size:.8rem;line-height:1.7;">
-                    ${v.items.map(item => `<li>${item}</li>`).join('')}
-                </ul>
-            </div>`
-        ).join('');
+        el.innerHTML = recent.map((v, i) => {
+            const isLatest = i === 0;
+            const badge = isLatest
+                ? '<span style="font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c8cff,#b48cff);border-radius:8px;padding:2px 8px;margin-left:8px;vertical-align:2px;">最新</span>'
+                : '';
+            return `
+            <div style="position:relative;padding:0 0 20px 26px;${i < recent.length - 1 ? 'border-left:2px solid rgba(124,140,255,.22);margin-left:7px;' : 'margin-left:7px;'}">
+                <div style="position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:${isLatest ? 'linear-gradient(135deg,#7c8cff,#b48cff)' : 'rgba(255,255,255,.22)'};${isLatest ? 'box-shadow:0 0 12px rgba(124,140,255,.7);' : ''}"></div>
+                <div style="margin-bottom:8px;">
+                    <span style="font-family:ui-monospace,monospace;font-size:13.5px;font-weight:700;color:${isLatest ? '#aab6ff' : '#e2e8f0'};">${v.ver}</span>${badge}
+                    <div style="font-size:13px;font-weight:600;color:#fff;margin-top:3px;">${v.title}</div>
+                </div>
+                <div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;">
+                    <ul style="margin:0;padding:0;list-style:none;font-size:12px;line-height:1.9;color:rgba(242,244,255,.72);">
+                        ${v.items.map(item => `<li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:#7c8cff;">▸</span>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>`;
+        }).join('');
     }
 
     /* ==================== Main Loop ==================== */
