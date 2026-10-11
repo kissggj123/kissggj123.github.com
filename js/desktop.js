@@ -26,9 +26,11 @@ function _bcosDesktopRender() {
     _bcosSyncDesktopAppIcons();
 
     // 2. 应用壁纸
+    if (window._bcosBootStep) window._bcosBootStep(2);
     _bcosDesktopApplyWallpaper();
 
     // 3. 渲染 me 文件夹
+    if (window._bcosBootStep) window._bcosBootStep(3);
     _bcosDesktopRenderMe();
 }
 
