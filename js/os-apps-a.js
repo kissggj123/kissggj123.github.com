@@ -1104,8 +1104,8 @@ function _bcosRefreshStoreIfOpen() {
         content.style.padding = '0';
         content.style.overflow = 'hidden';
         content.style.height = '100%';
-        content.style.background = '#181b26';
-        content.style.color = '#e2e8f0';
+        content.style.background = 'linear-gradient(160deg, #0d1128 0%, #0a0d20 60%, #080a18 100%)';
+        content.style.color = '#f2f4ff';
 
         const customBg = localStorage.getItem('bcosCustomBg') || '';
         const curAvatar = localStorage.getItem('sidebarAvatar') || 'emoji';
@@ -1128,15 +1128,15 @@ function _bcosRefreshStoreIfOpen() {
         content.innerHTML = `
             <div style="display:flex;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;user-select:none;-webkit-user-select:none;">
                 <!-- Left Sidebar -->
-                <div style="width:210px;background:rgba(20,24,36,0.96);border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;padding:12px 8px;box-sizing:border-box;flex-shrink:0;">
+                <div style="width:216px;background:rgba(255,255,255,0.045);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid rgba(255,255,255,0.09);display:flex;flex-direction:column;padding:14px 10px;box-sizing:border-box;flex-shrink:0;">
                     <!-- Search Bar -->
                     <div style="margin-bottom:12px;position:relative;">
-                        <input type="text" id="bcos-settings-search" placeholder="🔍 搜索" oninput="_bcosSettingsFilter(this.value)" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 10px;font-size:12px;color:#fff;outline:none;">
+                        <input type="text" id="bcos-settings-search" placeholder="🔍 搜索" oninput="_bcosSettingsFilter(this.value)" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:12px;padding:8px 12px;font-size:12.5px;color:#fff;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(124,140,255,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.14)'">
                     </div>
 
                     <!-- Apple / Bunny Cockpit Account Card -->
-                    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);margin-bottom:12px;cursor:pointer;" onclick="_bcosSwitchSettingsTab('about')">
-                        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff6b9d,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(255,107,157,0.3);">🐰</div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,rgba(124,140,255,.14),rgba(180,140,255,.08));border:1px solid rgba(255,255,255,0.1);margin-bottom:12px;cursor:pointer;transition:transform .18s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='none'" onclick="_bcosSwitchSettingsTab('about')">
+                        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c8cff,#b48cff 60%,#ff8cc6);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 4px 14px rgba(124,140,255,0.4);">🐰</div>
                         <div style="line-height:1.2;overflow:hidden;">
                             <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">兔可可</div>
                             <div style="font-size:10px;color:#94a3b8;">Cockpit Account</div>
@@ -1146,8 +1146,8 @@ function _bcosRefreshStoreIfOpen() {
                     <!-- Sidebar Categories -->
                     <div id="bcos-settings-nav" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;">
                         ${tabs.map(t => `
-                            <div class="bcos-settings-nav-item ${t.id === _bcosSettingsActiveTab ? 'active' : ''}" id="bcos-set-nav-${t.id}" onclick="_bcosSwitchSettingsTab('${t.id}')" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:all 0.15s;${t.id === _bcosSettingsActiveTab ? 'background:#007aff;color:#fff;font-weight:600;' : 'color:#cbd5e1;'}">
-                                <div style="width:24px;height:24px;border-radius:6px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">${t.icon}</div>
+                            <div class="bcos-settings-nav-item ${t.id === _bcosSettingsActiveTab ? 'active' : ''}" id="bcos-set-nav-${t.id}" onclick="_bcosSwitchSettingsTab('${t.id}')" style="display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:11px;cursor:pointer;transition:all .18s;${t.id === _bcosSettingsActiveTab ? 'background:linear-gradient(135deg,#7c8cff,#9a7cff);color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(124,140,255,.35);' : 'color:#aab0d0;'}">
+                                <div style="width:26px;height:26px;border-radius:8px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);">${t.icon}</div>
                                 <span style="font-size:13px;">${t.title}</span>
                             </div>
                         `).join('')}
@@ -1198,21 +1198,21 @@ function _bcosRefreshStoreIfOpen() {
         const curTemp = localStorage.getItem('car_cabin_temp') || '22';
         const fontScale = localStorage.getItem('fontScale') || '100';
 
-        const card = (inner) => `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;margin-bottom:14px;">${inner}</div>`;
+        const card = (inner) => `<div style="background:rgba(255,255,255,0.055);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);">${inner}</div>`;
         const row = (label, rightControl, desc) => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px;flex-wrap:wrap;">
-                <div>
-                    <div style="font-size:13px;font-weight:600;color:#f1f5f9;">${label}</div>
-                    ${desc ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${desc}</div>` : ''}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,0.06);gap:12px;flex-wrap:wrap;">
+                <div style="min-width:0;">
+                    <div style="font-size:13.5px;font-weight:600;color:#f2f4ff;letter-spacing:.01em;">${label}</div>
+                    ${desc ? `<div style="font-size:11.5px;color:rgba(242,244,255,.5);margin-top:3px;line-height:1.5;">${desc}</div>` : ''}
                 </div>
-                <div>${rightControl}</div>
+                <div style="flex-shrink:0;">${rightControl}</div>
             </div>
         `;
         const hero = (icon, title, desc) => `
-            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 0 16px;">
-                <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#007aff,#5856d6);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(0,122,255,0.35);margin-bottom:8px;">${icon}</div>
-                <div style="font-size:17px;font-weight:700;color:#fff;">${title}</div>
-                <div style="font-size:12px;color:#94a3b8;max-width:400px;margin-top:2px;">${desc}</div>
+            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 0 18px;">
+                <div style="width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#7c8cff,#b48cff 55%,#ff8cc6);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 12px 32px rgba(124,140,255,0.45), inset 0 1px 0 rgba(255,255,255,0.25);margin-bottom:10px;">${icon}</div>
+                <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:.01em;">${title}</div>
+                <div style="font-size:12.5px;color:rgba(242,244,255,.55);max-width:420px;margin-top:4px;line-height:1.6;">${desc}</div>
             </div>
         `;
 
@@ -1340,13 +1340,21 @@ function _bcosRefreshStoreIfOpen() {
                 ${row('蓝牙互联', '<span style="color:#007aff;">iPhone 16 Pro (免提与音频流)</span>', 'Bluetooth 5.4 低延迟音频传输')}
             `);
         } else if (_bcosSettingsActiveTab === 'about') {
-            html += hero('ℹ️', '关于本系统', 'Bunny Cockpit OS · 兔可可智能座舱系统');
+            html += `
+            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 0 18px;">
+                <div style="font-size:64px;margin-bottom:6px;filter:drop-shadow(0 0 28px rgba(124,140,255,.5));">🐰</div>
+                <div style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#aab6ff,#d8b8ff 50%,#ffb6d9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Bunny Cockpit OS</div>
+                <div style="margin-top:10px;display:inline-flex;align-items:center;gap:8px;background:rgba(124,140,255,.13);border:1px solid rgba(124,140,255,.35);border-radius:20px;padding:6px 16px;">
+                    <span style="font-family:ui-monospace,monospace;font-size:13px;font-weight:700;color:#aab6ff;">' + CONFIG.VERSION + '</span>
+                    <span style="font-size:11px;color:rgba(242,244,255,.55);">Aurora · Official</span>
+                </div>
+                <div style="font-size:11.5px;color:rgba(242,244,255,.4);margin-top:8px;">Build 20261011 · 全面重构版</div>
+            </div>`;
             html += card(`
-                ${row('系统版本', '<span style="font-family:monospace;color:#00ff41;font-weight:bold;">' + CONFIG.VERSION + '</span>', 'Build 20261005 · Official Release')}
-                ${row('计算芯片', '<span style="color:#fff;">Bunny M3 HyperDrive (8-Core AI)</span>', '车载车规级智能计算平台')}
-                ${row('高速显存', '<span style="color:#fff;">16 GB LPDDR5X (Unified)</span>', '高带宽硬件加速显存')}
-                ${row('系统内核', '<span style="font-family:monospace;color:#94a3b8;">BCOS Darwin 24.1.0 aarch64</span>', 'POSIX 兼容虚拟环境')}
-                ${(function(){ const vi = _bcosVehicleInfo(); return row('车辆识别', '<span style="color:#fff;">' + _bcosEscape(vi.nameEn + (vi.edition ? ' · ' + vi.edition : '')) + '</span>', 'VIN: ' + _bcosEscape(vi.vin)); })()}
+                ${row('💻 计算芯片', '<span style="color:#fff;font-weight:600;">Bunny M3 HyperDrive</span>', '8-Core AI · 车载车规级智能计算平台')}
+                ${row('🧠 高速显存', '<span style="color:#fff;font-weight:600;">16 GB LPDDR5X</span>', 'Unified 高带宽硬件加速显存')}
+                ${row('⚙️ 系统内核', '<span style="font-family:ui-monospace,monospace;color:#aab6ff;">BCOS Darwin 24.1.0</span>', 'aarch64 · POSIX 兼容虚拟环境')}
+                ${(function(){ const vi = _bcosVehicleInfo(); return row('🚗 车辆识别', '<span style="color:#fff;font-weight:600;">' + _bcosEscape(vi.nameEn + (vi.edition ? ' · ' + vi.edition : '')) + '</span>', 'VIN: ' + _bcosEscape(vi.vin)); })()}
             `);
         } else {
             // General
