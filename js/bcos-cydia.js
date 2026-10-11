@@ -15,7 +15,7 @@ function _bcosRenderCydiaApp(content) {
         </div>
         <div id="cydia-list"></div>
         <div style="margin-top:14px;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25);border-radius:12px;padding:12px;font-size:11px;color:#ffc107;line-height:1.6;">
-            💡 <b>A/B 无缝更新</b>：下载的更新存入 B 分区，下次启动时自动切换，无需重装 PWA，更新过程不中断使用。
+            💡 <b>安全热更新</b>：经由 Service Worker 注入覆盖，SW 独立于页面 JS，失败自动回退，不影响启动。刷新即生效，无需重装 PWA。
         </div>
     </div>`;
     _bcosCydiaCheck();
@@ -65,16 +65,43 @@ window._bcosCydiaCheck = async function() {
         if (list) list.innerHTML = '<div style="text-align:center;color:#ff6b62;padding:20px;">无法连接软件源，请检查网络</div>';
     }
 };
+// v8.0.2: 安全的动态注入 — 经由 Service Worker 覆盖缓存
+// 原理: SW 在页面 JS 之外拦截请求, 失败自动回退, 不影响启动链
 window._bcosCydiaInstall = async function(id) {
     const prog = document.getElementById('cydia-prog-' + id);
     if (prog) { prog.style.display = ''; prog.textContent = '⬇️ 下载中…'; }
     try {
         const meta = window._bcosCydiaReg.modules[id];
-        await window._bcosPkgDownload(id, meta);
-        if (typeof showToast === 'function') showToast('✅ ' + id + ' 已下载到 B 分区，重启后生效');
+        // 1. 下载模块代码
+        const res = await fetch(meta.file + '?_t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const code = await res.text();
+        if (prog) prog.textContent = '📦 正在经由 SW 注入…';
+        // 2. 发送给 SW 存入覆盖缓存
+        const reg = await navigator.serviceWorker.ready;
+        const fullUrl = new URL(meta.file, location.href).href;
+        // 等待 SW 确认
+        await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error('SW 超时')), 10000);
+            const handler = (e) => {
+                if (e.data && e.data.type === 'MODULE_OVERRIDDEN' && e.data.url === fullUrl) {
+                    clearTimeout(timeout);
+                    navigator.serviceWorker.removeEventListener('message', handler);
+                    resolve();
+                }
+            };
+            navigator.serviceWorker.addEventListener('message', handler);
+            reg.active.postMessage({ type: 'OVERRIDE_MODULE', url: fullUrl, code });
+        });
+        // 3. 记录版本到 IndexedDB
+        if (window._bcosPkgDownload) {
+            try { await window._bcosPkgDownload(id, meta); } catch(e) {}
+        }
+        if (typeof showToast === 'function') showToast('✅ ' + id + ' 已注入，刷新后生效');
         _bcosCydiaCheck();
     } catch(e) {
         if (prog) prog.textContent = '❌ ' + e.message;
+        if (typeof showToast === 'function') showToast('❌ ' + e.message);
     }
 };
 window._bcosCydiaActivate = async function(id) {
@@ -106,6 +133,19 @@ window._bcosCydiaActivate = async function(id) {
         _bcosCydiaCheck();
     } catch(e) {
         alert('激活失败: ' + e.message);
+    }
+};
+// v8.0.2: 回滚到网络版本
+window._bcosCydiaRollback = async function(id) {
+    if (!confirm(`回滚 ${id} 到服务器版本？\n\n将清除 SW 覆盖缓存。`)) return;
+    try {
+        const meta = window._bcosCydiaReg.modules[id];
+        const reg = await navigator.serviceWorker.ready;
+        const fullUrl = new URL(meta.file, location.href).href;
+        reg.active.postMessage({ type: 'CLEAR_OVERRIDE', url: fullUrl });
+        if (typeof showToast === 'function') showToast('✅ 已回滚，刷新后生效');
+    } catch(e) {
+        alert('回滚失败: ' + e.message);
     }
 };
 window._bcosCydiaUpdateAll = async function() {
