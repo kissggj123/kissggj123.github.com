@@ -28,6 +28,7 @@ const RELATIVE_CORE_ASSETS = [
     'js/bcos-pkg.js',
     'js/bcos-loader.js',
     'js/desktop.js',
+    'js/wallpaper-mgr.js',
     'js/fullscreen.js',
     'js/bcos-cydia.js',
     'modules.json',
