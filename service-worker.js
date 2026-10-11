@@ -205,6 +205,34 @@ self.addEventListener('fetch', (event) => {
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
     if (url.origin !== self.location.origin) return;
 
+    // v8.0.2: 模块热更新覆盖 — 优先 serve Cydia 安装的覆盖版本
+    // 这是安全的: SW 独立于页面 JS, 失败时自动回退到正常流程
+    if (url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
+        event.respondWith(
+            caches.open('bcos-module-overrides-v1').then(cache => cache.match(req.url)).then(override => {
+                if (override) {
+                    console.log('[SW] Serving override:', url.pathname);
+                    return override;
+                }
+                // 无覆盖, 走正常流程 (重新触发 fetch 逻辑)
+                // 注意: 这里不能直接 return fetch, 需要复用下面的逻辑
+                // 简化: 直接 network-first
+                return fetch(req).then(netRes => {
+                    // 顺手更新主缓存
+                    if (netRes && netRes.ok) {
+                        const copy = netRes.clone();
+                        caches.open(CACHE_VERSION).then(cache => cache.put(req, copy)).catch(() => {});
+                    }
+                    return netRes;
+                }).catch(() => {
+                    // 离线回退到缓存
+                    return caches.match(req);
+                });
+            })
+        );
+        return;
+    }
+
     // Force network-first for icon files, manifest and favicon (bypass cache to ensure fresh icons)
     const pathname = url.pathname;
     if (pathname.includes('/icon/') || pathname.endsWith('/favicon.ico') || pathname.endsWith('/manifest.json')) {
@@ -319,6 +347,27 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
     if (!event.data) return;
     if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
+    // v8.0.2: 模块热更新 — 将指定模块代码存入覆盖缓存
+    if (event.data.type === 'OVERRIDE_MODULE') {
+        const { url, code } = event.data;
+        event.waitUntil(
+            caches.open('bcos-module-overrides-v1').then(cache => {
+                const ct = url.endsWith('.css') ? 'text/css' : 'application/javascript';
+                return cache.put(url, new Response(code, { headers: { 'Content-Type': ct } }));
+            }).then(() => {
+                // 通知所有客户端
+                return self.clients.matchAll({ type: 'window' }).then(clients => {
+                    clients.forEach(cl => cl.postMessage({ type: 'MODULE_OVERRIDDEN', url }));
+                });
+            })
+        );
+    }
+    // v8.0.2: 清除模块覆盖 (回退到网络版本)
+    if (event.data.type === 'CLEAR_OVERRIDE') {
+        event.waitUntil(
+            caches.open('bcos-module-overrides-v1').then(cache => cache.delete(event.data.url))
+        );
+    }
     // 强制过期: 清空所有缓存, 通知客户端重载
     if (event.data.type === 'FORCE_EXPIRE') {
         event.waitUntil(
