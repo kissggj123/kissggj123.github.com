@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v8.0.1.8904 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v8.0.1.8904';
+// Service Worker - Bunny CC v7.8.6.9482 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.6.9482';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -12,8 +12,6 @@ const RELATIVE_CORE_ASSETS = [
     'car.css',
     'css/base.css', 'css/ui.css', 'css/effects.css',
     'css/car-lockscreen-a.css', 'css/car-lockscreen-b.css', 'css/rounded-screen.css',
-    'css/desktop-modern.css', 'css/app-drawer.css', 'css/bcos-8.css',
-    'css/aurora-apps.css',
     'js/version.js',
     'js/screen.js',
     'js/core.js', 'js/game.js', 'js/renderer.js',
@@ -22,16 +20,6 @@ const RELATIVE_CORE_ASSETS = [
     'js/os-apps-a.js', 'js/os-apps-b.js', 'js/os-apps-c.js',
     'js/wallpaper-data.js', 'js/wallpaper.js',
     'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js', 'js/ui-systems-c.js',
-    'js/bcos-8.js',
-    'js/kernel-perf.js',
-    'js/yumiko.js',
-    'js/bcos-pkg.js',
-    'js/bcos-loader.js',
-    'js/desktop.js',
-    'js/wallpaper-mgr.js',
-    'js/fullscreen.js',
-    'js/bcos-cydia.js',
-    'modules.json',
     'manifest.json',
     'manifest-car.json',
     'favicon.ico',
@@ -73,14 +61,6 @@ const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).h
 // Old cache versions to force-purge (ensures icon refresh & cache invalidation)
 const OLD_CACHE_PATTERNS = [
     'bunny-cc-v7.8.6.9481', 'bunny-cc-runtime-v7.8.6.9481',
-    'bunny-cc-v7.8.6.9482', 'bunny-cc-runtime-v7.8.6.9482',
-    'bunny-cc-v7.8.6.9483', 'bunny-cc-runtime-v7.8.6.9483',
-    'bunny-cc-v7.8.6.9484', 'bunny-cc-runtime-v7.8.6.9484',
-    'bunny-cc-v7.8.6.9485', 'bunny-cc-runtime-v7.8.6.9485',
-    'bunny-cc-v7.8.6.9486', 'bunny-cc-runtime-v7.8.6.9486',
-    'bunny-cc-v7.8.6.9487', 'bunny-cc-runtime-v7.8.6.9487',
-    'bunny-cc-v8.0.8901', 'bunny-cc-runtime-v8.0.8901',
-    'bunny-cc-v8.0.8902', 'bunny-cc-runtime-v8.0.8902',
     'bunny-cc-v7.8.6.9480', 'bunny-cc-runtime-v7.8.6.9480',
     'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
     'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
@@ -162,7 +142,6 @@ const OLD_CACHE_PATTERNS = [
     'bunny-cc-v5.2.0', 'bunny-cc-runtime-v5.2.0',
     'bunny-cc-v5.1.0', 'bunny-cc-runtime-v5.1.0',
     'bunny-cc-v5.0.0', 'bunny-cc-runtime-v5.0.0',
-    'bunny-cc-v8.0.8903', 'bunny-cc-runtime-v8.0.8903',
 ];
 
 self.addEventListener('install', (event) => {
@@ -206,34 +185,6 @@ self.addEventListener('fetch', (event) => {
     try { url = new URL(req.url); } catch(e) { return; }
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
     if (url.origin !== self.location.origin) return;
-
-    // v8.0.2: 模块热更新覆盖 — 优先 serve Cydia 安装的覆盖版本
-    // 这是安全的: SW 独立于页面 JS, 失败时自动回退到正常流程
-    if (url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
-        event.respondWith(
-            caches.open('bcos-module-overrides-v1').then(cache => cache.match(req.url)).then(override => {
-                if (override) {
-                    console.log('[SW] Serving override:', url.pathname);
-                    return override;
-                }
-                // 无覆盖, 走正常流程 (重新触发 fetch 逻辑)
-                // 注意: 这里不能直接 return fetch, 需要复用下面的逻辑
-                // 简化: 直接 network-first
-                return fetch(req).then(netRes => {
-                    // 顺手更新主缓存
-                    if (netRes && netRes.ok) {
-                        const copy = netRes.clone();
-                        caches.open(CACHE_VERSION).then(cache => cache.put(req, copy)).catch(() => {});
-                    }
-                    return netRes;
-                }).catch(() => {
-                    // 离线回退到缓存
-                    return caches.match(req);
-                });
-            })
-        );
-        return;
-    }
 
     // Force network-first for icon files, manifest and favicon (bypass cache to ensure fresh icons)
     const pathname = url.pathname;
@@ -306,26 +257,6 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // CSS/JS: network-first (强制实时, 避免样式脚本缓存过期)
-    // 其他静态资源: stale-while-revalidate
-    const isCode = pathname.endsWith('.css') || pathname.endsWith('.js');
-    if (isCode) {
-        // 关键: cache:'reload' 绕过浏览器 HTTP 缓存, 强制走网络
-        const netReq = new Request(req.url, { method: 'GET', cache: 'reload' });
-        event.respondWith(
-            fetch(netReq).then(resp => {
-                if (resp && resp.status === 200) {
-                    const clone = resp.clone();
-                    caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                }
-                return resp;
-            }).catch(() => caches.match(req).then(r => {
-                if (r) return r;
-                return caches.match(new URL(req.url.split('?')[0], SCOPE_BASE).href);
-            }))
-        );
-        return;
-    }
     // Static assets: stale-while-revalidate
     event.respondWith(
         caches.match(req).then(cached => {
@@ -347,40 +278,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-    if (!event.data) return;
-    if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
-    // v8.0.2: 模块热更新 — 将指定模块代码存入覆盖缓存
-    if (event.data.type === 'OVERRIDE_MODULE') {
-        const { url, code } = event.data;
-        event.waitUntil(
-            caches.open('bcos-module-overrides-v1').then(cache => {
-                const ct = url.endsWith('.css') ? 'text/css' : 'application/javascript';
-                return cache.put(url, new Response(code, { headers: { 'Content-Type': ct } }));
-            }).then(() => {
-                // 通知所有客户端
-                return self.clients.matchAll({ type: 'window' }).then(clients => {
-                    clients.forEach(cl => cl.postMessage({ type: 'MODULE_OVERRIDDEN', url }));
-                });
-            })
-        );
-    }
-    // v8.0.2: 清除模块覆盖 (回退到网络版本)
-    if (event.data.type === 'CLEAR_OVERRIDE') {
-        event.waitUntil(
-            caches.open('bcos-module-overrides-v1').then(cache => cache.delete(event.data.url))
-        );
-    }
-    // 强制过期: 清空所有缓存, 通知客户端重载
-    if (event.data.type === 'FORCE_EXPIRE') {
-        event.waitUntil(
-            caches.keys().then(names => Promise.all(names.map(n => caches.delete(n))))
-                .then(() => self.clients.matchAll({ type: 'window' }))
-                .then(clients => {
-                    clients.forEach(cl => cl.postMessage({ type: 'SW_FORCE_EXPIRED', version: CACHE_VERSION }));
-                })
-                .then(() => self.skipWaiting())
-        );
-    }
+    if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 // === Push notifications ===
