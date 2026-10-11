@@ -27,6 +27,7 @@ const RELATIVE_CORE_ASSETS = [
     'js/yumiko.js',
     'js/bcos-pkg.js',
     'js/bcos-loader.js',
+    'js/desktop.js',
     'js/bcos-cydia.js',
     'modules.json',
     'manifest.json',
