@@ -101,9 +101,16 @@ function _bcos8RenderCC() {
         }
     });
 }
-function _bcos8InjectCCToggle() {
+function _bcos8InjectCCToggle(retry) {
     const right = document.querySelector('.bcos-menubar-right');
-    if (!right) return;
+    if (!right) {
+        // 菜单栏还没出来，重试 (最多10次)
+        retry = retry || 0;
+        if (retry < 10) {
+            setTimeout(() => _bcos8InjectCCToggle(retry + 1), 500);
+        }
+        return;
+    }
     if (!document.getElementById('bcos-cc-toggle')) {
         const t = document.createElement('div');
         t.id = 'bcos-cc-toggle';
