@@ -7,11 +7,18 @@
     const _origOpen = window._bcosOpenApp;
     window._bcosOpenApp = function(id) {
         console.log('[Window] 打开:', id);
-        // 如果 7.8.6 有实现，优先用它的内容，只套 Aurora 皮肤
+        // 优先 v8.2 应用
+        if (window._bcosV82Apps && window._bcosV82Apps[id]) {
+            const app = window._bcosV82Apps[id];
+            _createWin(id, app.icon + ' ' + app.name, app.render());
+            const w = document.getElementById('win-' + id);
+            if (w && app.onOpen) app.onOpen(w);
+            return;
+        }
+        // 降级到 7.8.6
         if (_origOpen && _origOpen !== window._bcosOpenApp) {
             return _origOpen(id);
         }
-        // 否则创建空窗口
         _createWin(id, id, '<div style="padding:20px;color:#fff">应用: ' + id + '</div>');
     };
     function _createWin(id, title, html) {
