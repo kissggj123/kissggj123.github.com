@@ -956,7 +956,7 @@ function _bcosTeChangeLang(val) {
             const pct = Math.round((_bcosOOBEStep + 1) / steps.length * 100);
             overlay.innerHTML =
                 '<div style="background:linear-gradient(160deg,rgba(28,28,40,.96),rgba(16,16,26,.96));border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2rem 1.8rem 1.6rem;max-width:400px;width:calc(100% - 3rem);text-align:center;color:#e8e8f0;font-family:inherit;box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04),0 0 60px ' + accent + '22;animation:bcosOobeSlideUp .4s cubic-bezier(.2,.9,.3,1.2);">' +
-                '<div style="font-size:52px;animation:bcosOobeFloat 3s ease-in-out infinite;filter:drop-shadow(0 6px 18px ' + accent + '55);">' + s.icon + '</div>' +
+                '<div style="filter:drop-shadow(0 6px 18px ' + accent + '55);">' + '<div style="font-size:52px;animation:bcosOobeFloat 3s ease-in-out infinite;transform:translateZ(0);will-change:transform;">' + s.icon + '</div></div>' +
                 '<h2 style="margin:.6rem 0 .15rem;font-size:1.35rem;font-weight:800;letter-spacing:.02em;background:linear-gradient(120deg,#fff,' + accent + ');-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">' + s.title + '</h2>' +
                 '<div style="font-size:11px;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem;">' + s.en + '</div>' +
                 '<div style="font-size:13px;line-height:1.75;margin-bottom:1.3rem;color:#c9c9d6;">' + s.body + '</div>' +
