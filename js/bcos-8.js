@@ -128,6 +128,18 @@ function _bcos8InjectCCToggle() {
 /* ---------- 初始化 (桌面加载后调用) ---------- */
 function _bcos8Init() {
     window._bcosBootTime = Date.now();
+    // A/B 无缝更新: 激活 staged 分区的模块
+    if (window._bcosPkgActivateStaged) {
+        window._bcosPkgActivateStaged().then(n => {
+            if (n > 0) {
+                console.log(`[BCOS] A/B 切换: ${n} 个模块已从 staged 激活`);
+                // 提示用户 (如果有 toast)
+                setTimeout(() => {
+                    if (typeof showToast === 'function') showToast(`📦 ${n} 个模块更新已生效`);
+                }, 3000);
+            }
+        }).catch(() => {});
+    }
     _bcos8ShowBoot();
     _bcos8RenderDeskClock();
     _bcos8RenderCC();
