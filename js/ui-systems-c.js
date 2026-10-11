@@ -1268,6 +1268,11 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.6.9486', title:'横屏桌面重构、车机壁纸阴影优化', items:[
+            '【此改动适用于 index.html】[新增] 横屏 BCOS 桌面全面重构 (Muse/Meta/Instagram 设计语言)：图标悬浮应用风 + 渐变底座 + 弹簧悬停，顶栏更通透，Dock 更精致，窗口 16px 大圆角',
+            '【此改动适用于 index.html】[优化] 车机锁屏壁纸阴影：去掉重暗角，换成 Instagram 风轻柔处理——底部渐变保证文字可读、四周极淡压暗、中央完全通透，边缘光晕同步减弱',
+            '【此改动适用于 index.html】[PWA 强制刷新] Service Worker 缓存升级至 v7.8.6.9486，旧版本缓存强制清理'
+        ]},
         { ver:'v7.8.6.9485', title:'WP磁贴风竖屏、PWA主动更新检查', items:[
             '【此改动适用于 index.html】[新增] 竖屏桌面图标改为 Windows Phone 磁贴风格：方形毛玻璃磁贴、4列紧凑网格、图标居中标签置底，me文件夹固定于磁贴区下方',
             '【此改动适用于 index.html】[修复] PWA无法触发更新：客户端启动5秒后及每30分钟主动检查Service Worker更新，发现新版立即激活，解决PWA卡在旧版问题',
