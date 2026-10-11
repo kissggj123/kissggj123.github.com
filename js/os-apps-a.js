@@ -1,3 +1,26 @@
+function _bcosForceUpdate() {
+    if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 注销 Service Worker\n2. 清空所有缓存\n3. 强制重载页面')) return;
+    if (typeof showToast === 'function') showToast('🔄 正在清除缓存并重启…');
+    (async () => {
+        try {
+            if ('serviceWorker' in navigator) {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                for (const r of regs) { try { await r.unregister(); } catch(e){} }
+            }
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                for (const k of keys) { try { await caches.delete(k); } catch(e){} }
+            }
+            try { localStorage.removeItem('bcos_oobe_version'); } catch(e){}
+        } catch(e) {}
+        setTimeout(() => {
+            const url = new URL(location.href);
+            url.searchParams.set('_force', Date.now().toString());
+            location.href = url.toString();
+        }, 600);
+    })();
+}
+
 function _bcosRefreshStoreIfOpen() {
         if (!document.getElementById('bcos-store-body')) return;
         const tab = window._bcosStoreCurTab || 'featured';
@@ -1232,7 +1255,7 @@ function _bcosRefreshStoreIfOpen() {
             html += hero('⚙️', '通用偏好', '管理存储空间、软件更新与系统基础首选项');
             html += card(`
                 ${row('💾 BCOS 虚拟存储', '<span style="color:#34c759;font-weight:600;">12.8 MB / 512 MB</span>', '包含文稿、离线缓存与应用商店安装包')}
-                ${row('🔄 软件更新', '<span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (' + CONFIG.VERSION + ')</span>', '支持 Service Worker 离线热更新')}
+                ${row('🔄 软件更新', '<div style="display:flex;flex-direction:column;gap:.45rem;align-items:flex-end;"><span style="color:#34c759;font-weight:600;">✓ 已是最新版本 (' + CONFIG.VERSION + ')</span><button onclick="_bcosForceUpdate()" style="background:rgba(0,122,255,.15);border:1px solid rgba(0,122,255,.45);color:#0a84ff;padding:.4rem .9rem;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;transition:transform .15s;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'none\'">🔄 强制刷新缓存并重启</button></div>', '支持 Service Worker 离线热更新<br>卡顿时可手动强制刷新')}
                 ${row('🌐 系统语言', '<span style="color:#fff;">简体中文 (中国大陆)</span>', 'Apple SF Pro / PingFang SC 智能回退')}
                 ${row('⏰ 日期与时间', '<span style="color:#007aff;">网络时间自动对时 (已同步)</span>', '精确到秒，实时更新 Dock 与菜单栏时钟')}
             `);
