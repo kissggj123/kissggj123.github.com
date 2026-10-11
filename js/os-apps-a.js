@@ -729,6 +729,8 @@ function _bcosRefreshStoreIfOpen() {
         }
         if (typeof _bcosSyncDesktopAppIcons === 'function') _bcosSyncDesktopAppIcons();
         _bcosUpdateClock();
+        // BCOS 8.0 Aurora shell
+        if (typeof _bcos8Init === 'function') _bcos8Init();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
         const bg = document.getElementById('bcos-desktop-bg');
         if (bg) {
