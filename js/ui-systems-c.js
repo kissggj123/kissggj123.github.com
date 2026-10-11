@@ -1268,6 +1268,11 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.6.9487', title:'应用抽屉、桌面图标移除', items:[
+            '【此改动适用于 index.html】[新增] 应用抽屉 (App Drawer)：iOS 应用库 + macOS Launchpad 混合设计，全屏毛玻璃、顶部搜索、应用网格交错入场，Dock 首位 🚀 按钮 / 双击桌面 / ESC 开关',
+            '【此改动适用于 index.html】[移除] 桌面图标完全移除 (me 文件夹除外)，桌面回归干净壁纸，应用统一由抽屉启动',
+            '【此改动适用于 index.html】[PWA 强制刷新] Service Worker 缓存升级至 v7.8.6.9487，旧版本缓存强制清理'
+        ]},
         { ver:'v7.8.6.9486', title:'横屏桌面重构、车机壁纸阴影优化', items:[
             '【此改动适用于 index.html】[新增] 横屏 BCOS 桌面全面重构 (Muse/Meta/Instagram 设计语言)：图标悬浮应用风 + 渐变底座 + 弹簧悬停，顶栏更通透，Dock 更精致，窗口 16px 大圆角',
             '【此改动适用于 index.html】[优化] 车机锁屏壁纸阴影：去掉重暗角，换成 Instagram 风轻柔处理——底部渐变保证文字可读、四周极淡压暗、中央完全通透，边缘光晕同步减弱',
