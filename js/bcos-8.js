@@ -101,13 +101,28 @@ function _bcos8RenderCC() {
 }
 function _bcos8InjectCCToggle() {
     const right = document.querySelector('.bcos-menubar-right');
-    if (!right || document.getElementById('bcos-cc-toggle')) return;
-    const t = document.createElement('div');
-    t.id = 'bcos-cc-toggle';
-    t.title = '控制中心';
-    t.textContent = '🎛️';
-    t.onclick = (e) => { e.stopPropagation(); _bcos8ToggleCC(); };
-    right.prepend(t);
+    if (!right) return;
+    if (!document.getElementById('bcos-cc-toggle')) {
+        const t = document.createElement('div');
+        t.id = 'bcos-cc-toggle';
+        t.title = '控制中心';
+        t.textContent = '🎛️';
+        t.onclick = (e) => { e.stopPropagation(); _bcos8ToggleCC(); };
+        right.prepend(t);
+    }
+    // 应用抽屉入口 (Dock 已移除)
+    if (!document.getElementById('bcos-drawer-toggle')) {
+        const d = document.createElement('div');
+        d.id = 'bcos-drawer-toggle';
+        d.title = '应用抽屉';
+        d.textContent = '🚀';
+        d.style.cssText = 'cursor:pointer;padding:4px 8px;border-radius:9px;font-size:14px;';
+        d.onmouseover = () => d.style.background = 'rgba(255,255,255,.12)';
+        d.onmouseout = () => d.style.background = 'none';
+        d.onclick = (e) => { e.stopPropagation(); _bcosToggleAppDrawer(); };
+        const cc = document.getElementById('bcos-cc-toggle');
+        if (cc) cc.after(d); else right.prepend(d);
+    }
 }
 
 /* ---------- 初始化 (桌面加载后调用) ---------- */
