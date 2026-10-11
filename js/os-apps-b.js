@@ -576,6 +576,13 @@ let _bcosFinderPath = 'me';
                 </div>
                 <div style="margin-top:8px;font-size:11px;color:#aab0d0;">★ ${ts} Stars · Top: ${topLangs.map(([l,c]) => `<span style="color:${_bcosLangColors[l]||'#e0e0e0'};">● ${l}</span>`).join(' ')}</div>
             </div>
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div style="font-size:12px;font-weight:700;color:#f2f4ff;">⚙️ 运行中进程</div>
+                    <button onclick="_bcosMonKillAll()" style="background:rgba(255,69,58,.15);border:1px solid rgba(255,69,58,.4);color:#ff6b62;padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer;">全部结束</button>
+                </div>
+                <div id="mon-proc-list" style="font-size:11.5px;"></div>
+            </div>
             <div style="text-align:center;font-size:10px;color:rgba(242,244,255,.3);">每 2 秒更新 · v8.0.1 Aurora</div>
         </div>`;
 
@@ -610,9 +617,38 @@ let _bcosFinderPath = 'me';
             // FPS
             if ($('mon-fps-val')) { $('mon-fps-val').textContent = _fps; $('mon-fps-bar').style.width = Math.min(100, _fps / 60 * 100) + '%'; }
         }
+        function _monUpdateProcs() {
+            const listEl = document.getElementById('mon-proc-list');
+            if (!listEl || !content.isConnected) return;
+            const wins = (window._bcos && window._bcos.wins) || {};
+            const ids = Object.keys(wins);
+            if (!ids.length) {
+                listEl.innerHTML = '<div style="color:#888;text-align:center;padding:8px;">暂无运行中的窗口</div>';
+                return;
+            }
+            listEl.innerHTML = ids.map(id => {
+                const active = window._bcos.activeWin === id;
+                return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.05);">
+                    <span style="width:8px;height:8px;border-radius:50%;background:${active ? '#34c759' : '#7c8cff'};"></span>
+                    <span style="flex:1;color:#e0e0e0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${id}${active ? ' <span style="font-size:10px;color:#34c759;">● 前台</span>' : ''}</span>
+                    <button onclick="_bcosMonKill('${id}')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#ff8c86;padding:2px 8px;border-radius:6px;font-size:10px;cursor:pointer;">结束</button>
+                </div>`;
+            }).join('');
+        }
+        window._bcosMonKill = function(id) {
+            if (window._bcosCloseWin) window._bcosCloseWin(id);
+            setTimeout(_monUpdateProcs, 300);
+        };
+        window._bcosMonKillAll = function() {
+            if (!confirm('结束所有窗口？')) return;
+            const wins = (window._bcos && window._bcos.wins) || {};
+            Object.keys(wins).forEach(id => { if (window._bcosCloseWin) try { window._bcosCloseWin(id); } catch(e){} });
+            setTimeout(_monUpdateProcs, 300);
+        };
         _monUpdate();
+        _monUpdateProcs();
         if (window._bcosMonitorTimer) clearInterval(window._bcosMonitorTimer);
-        window._bcosMonitorTimer = setInterval(_monUpdate, 2000);
+        window._bcosMonitorTimer = setInterval(() => { _monUpdate(); _monUpdateProcs(); }, 2000);
     }
 
     function _bcosRenderAbout(content) {
@@ -1112,10 +1148,18 @@ let _bcosFinderPath = 'me';
         var bookmarksBar = _bcosBookmarks.map(function(bm) {
             return '<button class="bcos-bm-btn" data-url="' + bm.url + '" data-type="' + bm.type + '" style="background:#1a1a1a;border:1px solid #333;color:#aaa;cursor:pointer;font-size:10px;padding:.15rem .35rem;border-radius:3px;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background=\'#2a2a2a\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'#1a1a1a\';this.style.color=\'#aaa\';" onclick="_bcosBrowserNavigate(\'' + bm.url + '\',\'' + bm.type + '\')">' + bm.name + '</button>';
         }).join('');
+        // 复古站点书签
+        const retroBar = _BCOS_RETRO_SITES.map(s =>
+            `<button onclick="_bcosBrowserNavigate('${s.url}','external')" title="${s.desc}" style="background:rgba(124,140,255,.1);border:1px solid rgba(124,140,255,.3);color:#aab6ff;cursor:pointer;font-size:10px;padding:.15rem .4rem;border-radius:6px;white-space:nowrap;">${s.name}</button>`
+        ).join('');
         content.innerHTML = '<div style="background:#2a2a2a;padding:.3rem .5rem;font-size:11px;color:#888;border-bottom:1px solid #333;display:flex;align-items:center;gap:.3rem;">' +
-            '<span style="color:#00ff41;">🔒</span><span id="bcos-url-bar" style="flex:1;background:#1a1a1a;padding:.2rem .4rem;border-radius:3px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _bcosBrowserCurrentURL + '</span>' +
-            '<button onclick="_bcosBrowserRefresh()" style="background:#1a1a1a;border:1px solid #333;color:#888;cursor:pointer;font-size:11px;padding:.1rem .3rem;border-radius:3px;">⟳</button>' +
+            '<button onclick="_bcosBrowserNavigate(\'bunny://kingdom\',\'internal\')" style="background:none;border:none;cursor:pointer;font-size:13px;" title="首页">🏠</button>' +
+            '<span style="color:#00ff41;">🔒</span><input id="bcos-url-input" value="' + _bcosBrowserCurrentURL + '" onkeydown="if(event.key===\'Enter\')_bcosBrowserGo()" style="flex:1;background:#1a1a1a;border:1px solid #333;padding:.25rem .5rem;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;" placeholder="输入网址或搜索…" />' +
+            '<button onclick="_bcosBrowserGo()" style="background:#007aff;border:none;color:#fff;cursor:pointer;font-size:11px;padding:.25rem .6rem;border-radius:6px;font-weight:600;">前往</button>' +
+            '<button onclick="_bcosBrowserRefresh()" style="background:#1a1a1a;border:1px solid #333;color:#888;cursor:pointer;font-size:11px;padding:.2rem .4rem;border-radius:3px;">⟳</button>' +
             '</div>' +
+            '<div style="background:#222;padding:.25rem .4rem;border-bottom:1px solid #333;display:flex;gap:.25rem;overflow-x:auto;flex-wrap:nowrap;align-items:center;">' +
+            '<span style="font-size:10px;color:#666;white-space:nowrap;">🕹️ 复古:</span>' + retroBar + '</div>' +
             '<div style="background:#222;padding:.2rem .3rem;border-bottom:1px solid #333;display:flex;gap:.2rem;overflow-x:auto;flex-wrap:nowrap;">' + bookmarksBar + '</div>' +
             '<div id="bcos-browser-view" style="height:calc(100% - 56px);overflow:auto;"></div>';
         const view = document.getElementById('bcos-browser-view');
@@ -1138,6 +1182,13 @@ let _bcosFinderPath = 'me';
         }
     }
     var _bcosAnniversaryTimer = null;
+    // v8.0.1: 真实浏览器 — 支持外部 URL (iframe), 复古站点
+    const _BCOS_RETRO_SITES = [
+        { name: '🕹️ 复古游戏博物馆', url: 'https://archive.org', desc: '互联网档案馆' },
+        { name: '🌐 90年代网络', url: 'https://theoldnet.com', desc: '复古网络体验' },
+        { name: '🎨 像素画廊', url: 'https://pixels.com', desc: '像素艺术' },
+        { name: '📺 复古电视', url: 'https://www.my90stv.com', desc: '90年代电视' },
+    ];
     function _bcosBrowserNavigate(url, type) {
         if (_bcosAnniversaryTimer) { clearInterval(_bcosAnniversaryTimer); _bcosAnniversaryTimer = null; }
         var oldApplyBar = document.getElementById('bcos-egg-applybar');
@@ -1145,7 +1196,15 @@ let _bcosFinderPath = 'me';
         _bcosBrowserCurrentURL = url;
         var urlBar = document.getElementById('bcos-url-bar');
         if (urlBar) urlBar.textContent = url;
-        if (url === 'bunny://kingdom') {
+        // 外部 URL: 用 iframe 加载
+        if (url.indexOf('http://') === 0 || url.indexOf('https://') === 0) {
+            _bcosBrowserHTML = `<div style="height:100%;display:flex;flex-direction:column;background:#0d1117;">
+                <div style="padding:6px 10px;background:rgba(255,193,7,.1);border-bottom:1px solid rgba(255,193,7,.3);font-size:11px;color:#ffc107;">
+                    ⚠️ 外部站点通过 iframe 加载，部分网站可能拒绝嵌入。如无法显示请点击 <a href="${url}" target="_blank" style="color:#58a6ff;">新标签页打开 ↗</a>
+                </div>
+                <iframe src="${url}" style="flex:1;width:100%;border:none;background:#fff;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" title="browser"></iframe>
+            </div>`;
+        } else if (url === 'bunny://kingdom') {
             _bcosBrowserHTML = _bcosGetDefaultBrowserContent();
         } else {
             _bcosBrowserHTML = _bcosGetBookmarkPage(url);
@@ -1153,6 +1212,24 @@ let _bcosFinderPath = 'me';
         _bcosBrowserRefresh();
         if (url === 'bunny://anniversary') _bcosStartAnniversaryTimer();
     }
+    // 地址栏输入
+    window._bcosBrowserGo = function() {
+        const inp = document.getElementById('bcos-url-input');
+        if (!inp) return;
+        let url = inp.value.trim();
+        if (!url) return;
+        // bunny:// 快捷
+        if (url.indexOf('bunny://') === 0) { _bcosBrowserNavigate(url, 'internal'); return; }
+        // 自动补 https://
+        if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) {
+            // 看起来像域名
+            if (url.includes('.') && !url.includes(' ')) url = 'https://' + url;
+            else { // 搜索
+                url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
+            }
+        }
+        _bcosBrowserNavigate(url, 'external');
+    };
     function _bcosStartAnniversaryTimer() {
         if (_bcosAnniversaryTimer) clearInterval(_bcosAnniversaryTimer);
         _bcosAnniversaryTimer = setInterval(function() {
