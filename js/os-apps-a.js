@@ -67,6 +67,94 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+/* ==================== 文件缓存诊断 ==================== */
+const _BCOS_DIAG_FILES = [
+    { f: 'css/bcos-8.css', type: 'css' },
+    { f: 'css/app-drawer.css', type: 'css' },
+    { f: 'css/effects.css', type: 'css' },
+    { f: 'css/desktop-modern.css', type: 'css' },
+    { f: 'css/car-lockscreen-a.css', type: 'css' },
+    { f: 'js/os-apps-a.js', type: 'js' },
+    { f: 'js/bcos-8.js', type: 'js' },
+    { f: 'js/version.js', type: 'js' },
+];
+async function _bcosFileHash(url, fresh) {
+    const u = url + (fresh ? (url.includes('?') ? '&' : '?') + '_t=' + Date.now() : '');
+    const res = await fetch(u, fresh ? { cache: 'no-store' } : {});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    let h = 5381;
+    for (let i = 0; i < text.length; i++) h = (((h << 5) + h) + text.charCodeAt(i)) >>> 0;
+    return h.toString(16).padStart(8, '0');
+}
+async function _bcosDiagCheck(btn, file, type) {
+    const rowEl = btn.closest('[data-diag-file]');
+    const stEl = rowEl.querySelector('.diag-status');
+    stEl.textContent = '⏳ 检查中…';
+    stEl.style.color = '#aab6ff';
+    try {
+        const [cached, fresh] = await Promise.all([
+            _bcosFileHash(file, false).catch(() => '????????'),
+            _bcosFileHash(file, true).catch(() => '????????'),
+        ]);
+        const same = cached === fresh;
+        rowEl.querySelector('.diag-cached').textContent = cached;
+        rowEl.querySelector('.diag-fresh').textContent = fresh;
+        stEl.textContent = same ? '✅ 一致' : '⚠️ 缓存过期';
+        stEl.style.color = same ? '#34c759' : '#ff9500';
+        rowEl.querySelector('.diag-reload').style.display = same ? 'none' : '';
+    } catch (e) {
+        stEl.textContent = '❌ ' + e.message;
+        stEl.style.color = '#ff453a';
+    }
+}
+function _bcosDiagReload(file, type) {
+    if (type === 'css') {
+        // 热重载 CSS: 替换 link href
+        let done = false;
+        document.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
+            if (l.href.includes(file)) {
+                const u = new URL(l.href, location.href);
+                u.searchParams.set('_force', Date.now());
+                l.href = u.toString();
+                done = true;
+            }
+        });
+        if (done && typeof showToast === 'function') showToast('🔄 ' + file + ' 已强制刷新');
+        else alert('未找到已加载的 ' + file);
+    } else {
+        // JS 需整页重载
+        if (confirm(file + ' 是 JS 文件，需重载整页才能生效。\n\n确定重载吗？')) {
+            const u = new URL(location.href);
+            u.searchParams.set('_force', Date.now());
+            location.href = u.toString();
+        }
+    }
+}
+async function _bcosDiagCheckAll() {
+    const btns = document.querySelectorAll('[data-diag-file] .diag-check');
+    for (const b of btns) { b.click(); await new Promise(r => setTimeout(r, 120)); }
+}
+function _bcosDiagCardHTML() {
+    return `<div style="margin-top:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-size:13px;font-weight:700;color:#f2f4ff;">📁 资源文件缓存诊断</div>
+            <button onclick="_bcosDiagCheckAll()" style="background:rgba(124,140,255,.15);border:1px solid rgba(124,140,255,.4);color:#aab6ff;padding:.35rem .8rem;border-radius:9px;cursor:pointer;font-size:11.5px;font-weight:700;">🔍 全部检查</button>
+        </div>
+        <div style="font-size:11px;color:rgba(242,244,255,.45);margin-bottom:10px;line-height:1.6;">实时比对浏览器缓存与服务器版本。哈希一致=已是最新；不一致=缓存过期，点 🔄 强制刷新该文件。</div>
+        ${_BCOS_DIAG_FILES.map(d => `
+        <div data-diag-file="${d.f}" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11.5px;flex-wrap:wrap;">
+            <span style="font-family:ui-monospace,monospace;color:#e2e8f0;min-width:170px;">${d.f}</span>
+            <span style="color:rgba(242,244,255,.4);">缓存:<span class="diag-cached" style="font-family:ui-monospace,monospace;color:#94a3b8;">--------</span></span>
+            <span style="color:rgba(242,244,255,.4);">服务器:<span class="diag-fresh" style="font-family:ui-monospace,monospace;color:#94a3b8;">--------</span></span>
+            <span class="diag-status" style="font-weight:600;color:rgba(242,244,255,.4);">待检查</span>
+            <span style="flex:1;"></span>
+            <button class="diag-check" onclick="_bcosDiagCheck(this,'${d.f}','${d.type}')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff;padding:.25rem .6rem;border-radius:7px;cursor:pointer;font-size:11px;">🔍</button>
+            <button class="diag-reload" onclick="_bcosDiagReload('${d.f}','${d.type}')" style="display:none;background:rgba(52,199,89,.15);border:1px solid rgba(52,199,89,.45);color:#34c759;padding:.25rem .6rem;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;">🔄 刷新</button>
+        </div>`).join('')}
+    </div>`;
+}
+
 function _bcosForceUpdate() {
     if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 注销 Service Worker\n2. 清空所有缓存\n3. 强制重载页面')) return;
     if (typeof showToast === 'function') showToast('🔄 正在清除缓存并重启…');
@@ -1367,6 +1455,7 @@ function _bcosRefreshStoreIfOpen() {
                 ${row('🌐 系统语言', '<span style="color:#fff;">简体中文 (中国大陆)</span>', 'Apple SF Pro / PingFang SC 智能回退')}
                 ${row('⏰ 日期与时间', '<span style="color:#007aff;">网络时间自动对时 (已同步)</span>', '精确到秒，实时更新 Dock 与菜单栏时钟')}
             `);
+            html += card(`${_bcosDiagCardHTML()}`);
         }
 
         pane.innerHTML = html;
