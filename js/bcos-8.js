@@ -128,6 +128,47 @@ function _bcos8InjectCCToggle() {
 /* ---------- 初始化 (桌面加载后调用) ---------- */
 function _bcos8Init() {
     window._bcosBootTime = Date.now();
+
+    // v8.0.2: 首次启动画面 + 分步初始化
+    const _isFirstBoot = !localStorage.getItem('bcos_booted_v1');
+    const _bootSteps = [
+        '正在初始化内核…',
+        '正在加载桌面引擎…',
+        '正在应用壁纸…',
+        '正在准备应用抽屉…',
+        '正在完成启动…'
+    ];
+    let _bootOverlay = null;
+    if (_isFirstBoot) {
+        _bootOverlay = document.createElement('div');
+        _bootOverlay.id = 'bcos-first-boot';
+        _bootOverlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#060814;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#aab6ff;font-family:system-ui;';
+        _bootOverlay.innerHTML = '<div style="font-size:64px;margin-bottom:16px;animation:bcos-bounce 1s infinite;">🐰</div>' +
+            '<div style="font-size:22px;font-weight:800;margin-bottom:8px;">Bunny Cockpit OS</div>' +
+            '<div style="font-size:12px;opacity:.6;margin-bottom:20px;">首次启动 · 正在初始化</div>' +
+            '<div style="width:240px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-bottom:12px;">' +
+            '<div id="bcos-boot-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#7c8cff,#b48cff);border-radius:3px;transition:width .4s;"></div></div>' +
+            '<div id="bcos-boot-msg" style="font-size:12px;opacity:.7;"></div>' +
+            '<style>@keyframes bcos-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}</style>';
+        document.body.appendChild(_bootOverlay);
+        window._bcosBootStep = function(i) {
+            const bar = document.getElementById('bcos-boot-bar');
+            const msg = document.getElementById('bcos-boot-msg');
+            if (bar) bar.style.width = ((i + 1) / _bootSteps.length * 100) + '%';
+            if (msg) msg.textContent = _bootSteps[i] || '';
+        };
+        window._bcosBootDone = function() {
+            localStorage.setItem('bcos_booted_v1', '1');
+            if (_bootOverlay) {
+                _bootOverlay.style.opacity = '0';
+                _bootOverlay.style.transition = 'opacity .5s';
+                setTimeout(() => _bootOverlay.remove(), 550);
+            }
+        };
+        // 分步执行
+        window._bcosBootStep(0);
+    }
+    if (window._bcosBootStep) window._bcosBootStep(1);
     // v8.0.2: 桌面渲染引擎
     if (window._bcosDesktopRender) {
         // 延迟到 DOM 就绪
@@ -146,6 +187,8 @@ function _bcos8Init() {
                 setTimeout(() => {
                     if (typeof showToast === 'function') showToast(`📦 ${n} 个模块更新已生效`);
                 }, 3000);
+            if (window._bcosBootStep) window._bcosBootStep(4);
+            if (window._bcosBootDone) setTimeout(() => window._bcosBootDone(), 800);
             }
         }).catch(() => {});
     }
