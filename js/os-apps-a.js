@@ -193,8 +193,9 @@ async function _bcosDownloadWallpaper(file, name) {
         window.wpBlobCache[file] = objUrl;
         // 设为桌面壁纸 (localStorage 持久化)
         try { localStorage.setItem('bcosCustomBg', file); } catch(e) {}
-        // 立即应用
-        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        // 立即应用 (新桌面引擎)
+        if (window._bcosDesktopSetWallpaper) window._bcosDesktopSetWallpaper(file);
+        else if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
         // 刷新设置面板显示选中态
         if (typeof _bcosRenderSettingsRightPane === 'function') _bcosRenderSettingsRightPane();
         if (typeof showToast === 'function') showToast('✅ 全分辨率壁纸已设置');
@@ -294,7 +295,8 @@ function _bcosRefreshStoreIfOpen() {
         const curIdx = wps.findIndex(w => w.file === curBg);
         const nextWp = wps[(curIdx + 1) % wps.length];
         localStorage.setItem('bcosCustomBg', nextWp.file);
-        if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
+        if (window._bcosDesktopSetWallpaper) window._bcosDesktopSetWallpaper(nextWp.file);
+        else if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme();
         showToast(`🖼️ 桌面壁纸切换为: ${nextWp.name}`);
     }
 
@@ -1494,7 +1496,7 @@ function _bcosRefreshStoreIfOpen() {
                 window.BUILTIN_WALLPAPERS.forEach(w => {
                     const thumbSrc = (window.wpBlobCache && window.wpBlobCache[w.file]) || (window.WP_PLACEHOLDER && window.WP_PLACEHOLDER[w.file]) || w.file;
                     const isActive = (customBg === w.file);
-                    wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name} (点击设为壁纸)">
+                    wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosDesktopSetWallpaper) window._bcosDesktopSetWallpaper('${w.file}'); else if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name} (点击设为壁纸)">
                         <div style="background:rgba(0,0,0,0.65);color:#fff;font-size:9px;padding:2px 4px;position:absolute;bottom:0;width:100%;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.name}</div>
                         <button onclick="event.stopPropagation(); _bcosDownloadWallpaper('${w.file}', '${w.name.replace(/'/g, "")}')" title="加载全分辨率并设为壁纸" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;backdrop-filter:blur(4px);">⬇️</button>
                     </div>`;
