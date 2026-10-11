@@ -22,10 +22,8 @@
         return;
     }
     LOG('🚀 动态注入模式启动');
-    // v8.0.2: 立即设置深色背景, 防白屏闪烁
-    document.documentElement.style.background = '#060814';
-    if (document.body) document.body.style.background = '#060814';
-    else document.addEventListener('DOMContentLoaded', () => document.body.style.background = '#060814');
+    // v8.0.2: 不设置 body 背景, 避免盖住 #bg-layer 壁纸
+    // 白屏问题由 CSS 加载解决
 
     function _loadScript(code, id) {
         LOG(`执行 JS 模块: ${id} (${code.length} 字节)`);
