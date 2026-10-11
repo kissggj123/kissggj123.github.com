@@ -1345,7 +1345,7 @@ function _bcosRefreshStoreIfOpen() {
                 <div style="font-size:64px;margin-bottom:6px;filter:drop-shadow(0 0 28px rgba(124,140,255,.5));">🐰</div>
                 <div style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#aab6ff,#d8b8ff 50%,#ffb6d9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Bunny Cockpit OS</div>
                 <div style="margin-top:10px;display:inline-flex;align-items:center;gap:8px;background:rgba(124,140,255,.13);border:1px solid rgba(124,140,255,.35);border-radius:20px;padding:6px 16px;">
-                    <span style="font-family:ui-monospace,monospace;font-size:13px;font-weight:700;color:#aab6ff;">' + CONFIG.VERSION + '</span>
+                    <span style="font-family:ui-monospace,monospace;font-size:13px;font-weight:700;color:#aab6ff;">${CONFIG.VERSION}</span>
                     <span style="font-size:11px;color:rgba(242,244,255,.55);">Aurora · Official</span>
                 </div>
                 <div style="font-size:11.5px;color:rgba(242,244,255,.4);margin-top:8px;">Build 20261011 · 全面重构版</div>
