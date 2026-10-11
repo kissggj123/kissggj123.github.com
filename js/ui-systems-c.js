@@ -1253,6 +1253,12 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.6.9484', title:'Motion Design 动效系统、竖屏布局修复、OOBE 兔子抖动修复', items:[
+            '【此改动适用于 index.html】[新增] Motion Design System v2：全站统一 easing 曲线与时长变量，视图切换淡入上浮、卡片交错入场、弹窗弹簧弹出、按钮按压缩放、输入框聚焦光晕、骨架屏 shimmer，支持 prefers-reduced-motion',
+            '【此改动适用于 index.html】[修复] 竖屏手机桌面图标布局：由纵向 flex 列排改为横向网格流式布局（类似手机主屏幕），解决图标挤在左侧、右侧大片空白的问题',
+            '【此改动适用于 index.html】[修复] PWA 模式 OOBE 兔子 emoji 抽搐：将 drop-shadow 光晕从动画元素剥离至静态父层，动画元素加 GPU 隔离，根除亚像素抖动',
+            '【此改动适用于 index.html】[PWA 强制刷新] Service Worker 缓存升级至 v7.8.6.9484，旧版本缓存强制清理'
+        ]},
         { ver:'v7.8.6.9483', title:'OOBE 引导界面优雅重构、安卓关机图标修复、PWA 强制刷新', items:[
             '【此改动适用于 index.html】[新增] OOBE 首次引导界面优雅重构：毛玻璃背景模糊、渐变标题文字、悬浮 Emoji 动画、胶囊进度条、上一步/跳过按钮、中英双语标题，告别生硬黑框',
             '【此改动适用于 index.html】[修复] 安卓等非苹果设备关机图标显示为方框：⏻ (U+23FB) 在安卓字体中缺失，替换为内联 SVG 电源符号，全平台一致渲染（影响：重启按钮、苹果菜单退出项、右键菜单关机项）',
