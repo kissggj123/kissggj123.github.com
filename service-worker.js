@@ -272,8 +272,10 @@ self.addEventListener('fetch', (event) => {
     // 其他静态资源: stale-while-revalidate
     const isCode = pathname.endsWith('.css') || pathname.endsWith('.js');
     if (isCode) {
+        // 关键: cache:'reload' 绕过浏览器 HTTP 缓存, 强制走网络
+        const netReq = new Request(req.url, { method: 'GET', cache: 'reload' });
         event.respondWith(
-            fetch(req).then(resp => {
+            fetch(netReq).then(resp => {
                 if (resp && resp.status === 200) {
                     const clone = resp.clone();
                     caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
