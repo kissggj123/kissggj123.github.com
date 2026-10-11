@@ -1016,7 +1016,22 @@ let trailPoints = [];
 
     function initPWA() {
         if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
-            navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+            navigator.serviceWorker.register('./service-worker.js').then((reg) => {
+                // Proactive update check: on load + every 30 min (fixes PWA stuck on old version)
+                const checkUpdate = () => { reg.update().catch(() => {}); };
+                setTimeout(checkUpdate, 5000);
+                setInterval(checkUpdate, 30 * 60 * 1000);
+                // When a new SW is found, tell it to activate immediately
+                reg.addEventListener('updatefound', () => {
+                    const nw = reg.installing;
+                    if (!nw) return;
+                    nw.addEventListener('statechange', () => {
+                        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                            nw.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                    });
+                });
+            }).catch(() => {});
             // Listen for SW updates and force reload to clear stale cache
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'SW_UPDATED') {
@@ -1253,6 +1268,11 @@ let trailPoints = [];
 
     /* ==================== Changelog ==================== */
     const CHANGELOG = [
+        { ver:'v7.8.6.9485', title:'WP磁贴风竖屏、PWA主动更新检查', items:[
+            '【此改动适用于 index.html】[新增] 竖屏桌面图标改为 Windows Phone 磁贴风格：方形毛玻璃磁贴、4列紧凑网格、图标居中标签置底，me文件夹固定于磁贴区下方',
+            '【此改动适用于 index.html】[修复] PWA无法触发更新：客户端启动5秒后及每30分钟主动检查Service Worker更新，发现新版立即激活，解决PWA卡在旧版问题',
+            '【此改动适用于 index.html】[PWA 强制刷新] Service Worker 缓存升级至 v7.8.6.9485，旧版本缓存强制清理'
+        ]},
         { ver:'v7.8.6.9484', title:'Motion Design 动效系统、竖屏布局修复、OOBE 兔子抖动修复', items:[
             '【此改动适用于 index.html】[新增] Motion Design System v2：全站统一 easing 曲线与时长变量，视图切换淡入上浮、卡片交错入场、弹窗弹簧弹出、按钮按压缩放、输入框聚焦光晕、骨架屏 shimmer，支持 prefers-reduced-motion',
             '【此改动适用于 index.html】[修复] 竖屏手机桌面图标布局：由纵向 flex 列排改为横向网格流式布局（类似手机主屏幕），解决图标挤在左侧、右侧大片空白的问题',
