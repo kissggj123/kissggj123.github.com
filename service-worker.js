@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v7.8.6.9482 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v7.8.6.9482';
+// Service Worker - Bunny CC v7.8.6.9483 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v7.8.6.9483';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -61,6 +61,7 @@ const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).h
 // Old cache versions to force-purge (ensures icon refresh & cache invalidation)
 const OLD_CACHE_PATTERNS = [
     'bunny-cc-v7.8.6.9481', 'bunny-cc-runtime-v7.8.6.9481',
+    'bunny-cc-v7.8.6.9482', 'bunny-cc-runtime-v7.8.6.9482',
     'bunny-cc-v7.8.6.9480', 'bunny-cc-runtime-v7.8.6.9480',
     'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
     'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
