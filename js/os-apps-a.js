@@ -1,3 +1,70 @@
+/* ==================== App Drawer / 应用抽屉 ==================== */
+function _bcosCollectDrawerApps() {
+    // 从桌面图标 (已隐藏) 收集应用列表, 保证与系统一致
+    const apps = [];
+    document.querySelectorAll('.bcos-desktop-icons .bcos-desktop-icon').forEach(el => {
+        const oc = el.getAttribute('onclick') || '';
+        let id = '';
+        const m = oc.match(/_bcosOpenApp\('([\w-]+)'\)/);
+        if (m) id = m[1];
+        else if (oc.indexOf('showBcosCarLockscreen') >= 0) id = 'carlock';
+        if (!id) return;
+        const em = el.querySelector('.bcos-desktop-icon-emoji');
+        const lb = el.querySelector('.bcos-desktop-icon-label');
+        apps.push({ id, icon: em ? em.innerHTML : '📦', name: lb ? lb.textContent.trim() : id });
+    });
+    return apps;
+}
+function _bcosRenderDrawerApps(filter) {
+    const grid = document.getElementById('bcos-drawer-grid');
+    if (!grid) return;
+    const q = (filter || '').trim().toLowerCase();
+    const apps = _bcosCollectDrawerApps().filter(a =>
+        !q || a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q));
+    if (!apps.length) {
+        grid.innerHTML = '<div class="bcos-drawer-empty">没有找到匹配的应用 🐰</div>';
+        return;
+    }
+    grid.innerHTML = apps.map((a, i) =>
+        `<div class="bcos-drawer-app" style="transition-delay:${Math.min(i * 22, 440)}ms" onclick="_bcosDrawerLaunch('${a.id}')">` +
+        `<div class="bcos-drawer-app-icon">${a.icon}</div>` +
+        `<div class="bcos-drawer-app-name">${a.name.replace(/</g, '&lt;')}</div></div>`
+    ).join('');
+}
+function _bcosDrawerFilter(q) { _bcosRenderDrawerApps(q); }
+function _bcosDrawerLaunch(id) {
+    _bcosCloseAppDrawer();
+    setTimeout(() => {
+        if (id === 'carlock') { if (typeof showBcosCarLockscreen === 'function') showBcosCarLockscreen(); }
+        else if (typeof _bcosOpenApp === 'function') _bcosOpenApp(id);
+    }, 120);
+}
+function _bcosOpenAppDrawer() {
+    const d = document.getElementById('bcos-app-drawer');
+    if (!d) return;
+    const s = document.getElementById('bcos-drawer-search');
+    if (s) s.value = '';
+    _bcosRenderDrawerApps('');
+    d.classList.add('open');
+    setTimeout(() => { const si = document.getElementById('bcos-drawer-search'); if (si && window.innerWidth > 768) si.focus(); }, 350);
+}
+function _bcosCloseAppDrawer() {
+    const d = document.getElementById('bcos-app-drawer');
+    if (d) d.classList.remove('open');
+}
+function _bcosToggleAppDrawer() {
+    const d = document.getElementById('bcos-app-drawer');
+    if (d && d.classList.contains('open')) _bcosCloseAppDrawer();
+    else _bcosOpenAppDrawer();
+}
+// ESC 关闭抽屉
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const d = document.getElementById('bcos-app-drawer');
+        if (d && d.classList.contains('open')) _bcosCloseAppDrawer();
+    }
+});
+
 function _bcosForceUpdate() {
     if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 注销 Service Worker\n2. 清空所有缓存\n3. 强制重载页面')) return;
     if (typeof showToast === 'function') showToast('🔄 正在清除缓存并重启…');
@@ -389,6 +456,16 @@ function _bcosRefreshStoreIfOpen() {
     function _bcosRenderDock() {
         const dock = document.getElementById('bcos-dock');
         if (!dock) return;
+        // Launchpad / 应用抽屉按钮 (固定首位)
+        if (!dock.querySelector('#bcos-dock-__drawer__')) {
+            const lp = document.createElement('div');
+            lp.className = 'bcos-dock-item';
+            lp.id = 'bcos-dock-__drawer__';
+            lp.title = '应用抽屉 (App Drawer)';
+            lp.onclick = () => _bcosToggleAppDrawer();
+            lp.innerHTML = '<div class="bcos-dock-tooltip">应用抽屉</div><div class="bcos-dock-icon-box">🚀</div><div class="bcos-dock-dot"></div>';
+            dock.prepend(lp);
+        }
         const dt = _bcosGetDesktopTheme();
         const installed = typeof _bcosGetInstalledAppIds === 'function' ? _bcosGetInstalledAppIds() : [];
         const customs = typeof _bcosGetCustomApps === 'function' ? _bcosGetCustomApps() : [];
@@ -628,9 +705,28 @@ function _bcosRefreshStoreIfOpen() {
             <div class="bcos-dock-wrap">
                 <div class="bcos-dock" id="bcos-dock"></div>
             </div>
+            <!-- App Drawer / 应用抽屉 -->
+            <div id="bcos-app-drawer" onclick="if(event.target===this)_bcosCloseAppDrawer()">
+                <div class="bcos-drawer-search-wrap">
+                    <input class="bcos-drawer-search" id="bcos-drawer-search" placeholder="搜索应用" autocomplete="off"
+                        oninput="_bcosDrawerFilter(this.value)" onkeydown="if(event.key==='Escape')_bcosCloseAppDrawer()">
+                </div>
+                <div class="bcos-drawer-grid" id="bcos-drawer-grid"></div>
+                <div class="bcos-drawer-hint">点击空白处或按 ESC 关闭 · 双击桌面也可打开</div>
+            </div>
         </div>`;
         _bcosRenderDock();
         _bcosUpdateDock();
+        // 双击桌面空白处打开应用抽屉
+        const _dbg = document.getElementById('bcos-desktop-bg');
+        if (_dbg && !_dbg._drawerDblBound) {
+            _dbg._drawerDblBound = true;
+            _dbg.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.bcos-desktop-icon') || e.target.closest('.bcos-window') ||
+                    e.target.closest('.bcos-dock-wrap') || e.target.closest('#bcos-app-drawer')) return;
+                _bcosOpenAppDrawer();
+            });
+        }
         if (typeof _bcosSyncDesktopAppIcons === 'function') _bcosSyncDesktopAppIcons();
         _bcosUpdateClock();
         _bcos.clockInterval = setInterval(_bcosUpdateClock, 1000);
