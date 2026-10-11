@@ -30,11 +30,57 @@ function _bcosSaveCustomApps(apps) {
 }
 
 function _bcosSyncDesktopAppIcons() {
-    // v8.0.2: 已移至 desktop.js, 这里转发
-    if (typeof window._bcosDesktopRender === 'function') { /* 由 desktop.js 处理 */ }
-    else {
-        const container = document.querySelector('.bcos-desktop-icons');
-        if (container) container.innerHTML = '';
+    const desktopIcons = document.querySelector('.bcos-desktop-icons');
+    if (!desktopIcons) return;
+    const installed = _bcosGetInstalledAppIds();
+    const customs = _bcosGetCustomApps();
+    
+    // Check extra apps to inject
+    const extraAppDefs = [
+        { id: 'calculator', name: '计算器', icon: '🧮' },
+        { id: 'weather', name: '天气看板', icon: '🌤️' },
+        { id: 'notes', name: '便签', icon: '📌' },
+        { id: 'radio', name: '兔兔电台', icon: '📻' },
+        { id: 'snake', name: '贪吃蛇', icon: '🐍' },
+        { id: 'paint', name: '像素画板', icon: '🎨' }
+    ];
+
+    extraAppDefs.forEach(app => {
+        let el = document.getElementById('bcos-desk-icon-' + app.id);
+        if (installed.includes(app.id)) {
+            if (!el) {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bcos-desktop-icon';
+                iconDiv.id = 'bcos-desk-icon-' + app.id;
+                iconDiv.onclick = () => _bcosOpenApp(app.id);
+                iconDiv.innerHTML = `<div class="bcos-desktop-icon-emoji">${app.icon}</div><div class="bcos-desktop-icon-label">${_bcosEscape(app.name)}</div>`;
+                desktopIcons.appendChild(iconDiv);
+            }
+        } else {
+            if (el) { if (typeof el.remove === 'function') el.remove(); else if (el.parentNode) el.parentNode.removeChild(el); }
+        }
+    });
+
+    customs.forEach(c => {
+        let el = document.getElementById('bcos-desk-icon-' + c.id);
+        if (installed.includes(c.id)) {
+            if (!el) {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bcos-desktop-icon';
+                iconDiv.id = 'bcos-desk-icon-' + c.id;
+                iconDiv.onclick = () => _bcosOpenApp(c.id);
+                iconDiv.innerHTML = `<div class="bcos-desktop-icon-emoji">${_bcosEscape(c.icon || '📦')}</div><div class="bcos-desktop-icon-label">${_bcosEscape(c.name)}</div>`;
+                desktopIcons.appendChild(iconDiv);
+            }
+        } else {
+            if (el) { if (typeof el.remove === 'function') el.remove(); else if (el.parentNode) el.parentNode.removeChild(el); }
+        }
+    });
+
+    // Tag new icons for the desktop icon manager (drag / rename / delete) and re-apply saved layout
+    if (typeof _bcosTagDesktopIcons === 'function') {
+        _bcosTagDesktopIcons();
+        _bcosApplyDesktopIconState();
     }
 }
 
@@ -245,13 +291,7 @@ const BCOS_CATALOG = [
     { id: 'notes', name: '桌面便利贴', icon: '📌', cat: 'tools', desc: '多彩随手记便签，自动本地持久化同步与即时编辑', size: '18 KB', featured: true },
     { id: 'radio', name: '兔兔电台 Lo-Fi', icon: '📻', cat: 'games', desc: 'Web Audio 治愈系合成音效（雨声、篝火、咖啡厅）与白噪音', size: '42 KB', featured: true },
     { id: 'snake', name: '复古像素贪吃蛇', icon: '🐍', cat: 'games', desc: '怀旧60FPS像素掌机贪吃蛇，支持键盘方向键与触控摇杆', size: '32 KB', featured: false },
-    { id: 'paint', name: '像素画板 Studio', icon: '🎨', cat: 'games', desc: '16x16 / 24x24 创意像素涂鸦画板，调色盘与 PNG 导出', size: '28 KB', featured: false },
-    { id: 'texteditor', name: '代码工作室 Pro', icon: '💻', cat: 'tools', desc: '轻量代码编辑器，语法高亮、多标签与本地保存', size: '48 KB', featured: true },
-    { id: 'monitor', name: '系统监视器', icon: '📊', cat: 'tools', desc: '实时 CPU / 内存 / 网络 / 仓库状态全景监控', size: '30 KB', featured: false },
-    { id: 'browser', name: '兔兔浏览器', icon: '🌐', cat: 'tools', desc: 'Bunny 内网浏览：王国、Wiki、商店、新闻一站达', size: '40 KB', featured: false },
-    { id: 'anniversary', name: '纪念日时光机', icon: '💕', cat: 'games', desc: '兔可可纪念日：天数统计、时光轴与回忆相册', size: '52 KB', featured: true },
-    { id: 'monopoly', name: '兔兔大富翁', icon: '🎲', cat: 'games', desc: '经典大富翁：掷骰、买地、股票、赌场全玩法', size: '120 KB', featured: true },
-    { id: 'logs', name: '运行日志中心', icon: '📋', cat: 'tools', desc: '系统运行日志实时流、分级过滤与导出', size: '22 KB', featured: false }
+    { id: 'paint', name: '像素画板 Studio', icon: '🎨', cat: 'games', desc: '16x16 / 24x24 创意像素涂鸦画板，调色盘与 PNG 导出', size: '28 KB', featured: false }
 ];
 
 function _bcosRenderAppStore(content) {
@@ -285,21 +325,6 @@ function _bcosShowStoreTab(tabKey) {
     window._bcosStoreCurTab = tabKey;
     const installed = _bcosGetInstalledAppIds();
     const customs = _bcosGetCustomApps();
-    // 批量安装按钮 (精选/工具/游戏 tab)
-    if (['featured','tools','games'].includes(tabKey)) {
-        const _bi = setTimeout(() => {
-            const bodyEl = document.getElementById('bcos-store-body');
-            if (bodyEl && !document.getElementById('bcos-batch-install-btn')) {
-                const btn = document.createElement('button');
-                btn.id = 'bcos-batch-install-btn';
-                btn.textContent = '⚡ 一键安装全部';
-                btn.title = '并行安装当前分类所有未安装应用';
-                btn.style.cssText = 'position:sticky;top:8px;float:right;z-index:5;background:linear-gradient(135deg,#7c8cff,#b48cff);border:none;color:#fff;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(124,140,255,.4);margin:8px;';
-                btn.onclick = () => _bcosInstallAllInTab();
-                bodyEl.prepend(btn);
-            }
-        }, 100);
-    }
 
     if (tabKey === 'studio') {
         body.innerHTML = `
@@ -416,39 +441,6 @@ function _bcosStoreAction(appId, btn) {
     }, 180);
 }
 
-// 批量并行安装: 一次性安装多个应用
-function _bcosInstallMultipleApps(appIds) {
-    const installed = _bcosGetInstalledAppIds();
-    let added = 0;
-    // 并行: 一次性合并 (localStorage 操作是同步原子的)
-    const newIds = [...installed];
-    appIds.forEach(id => {
-        if (!newIds.includes(id)) { newIds.push(id); added++; }
-    });
-    if (added > 0) {
-        _bcosSetInstalledAppIds(newIds);
-        if (typeof showToast === 'function') showToast(`✅ 已并行安装 ${added} 个应用`);
-        // 刷新商店视图
-        if (window._bcosStoreCurTab) _bcosShowStoreTab(window._bcosStoreCurTab);
-    } else {
-        if (typeof showToast === 'function') showToast('ℹ️ 所选应用均已安装');
-    }
-    return added;
-}
-function _bcosInstallAllInTab() {
-    const tabKey = window._bcosStoreCurTab || 'featured';
-    let list = BCOS_CATALOG;
-    if (tabKey === 'featured') list = BCOS_CATALOG.filter(a => a.featured);
-    else if (tabKey === 'tools') list = BCOS_CATALOG.filter(a => a.cat === 'tools');
-    else if (tabKey === 'games') list = BCOS_CATALOG.filter(a => a.cat === 'games');
-    const installed = _bcosGetInstalledAppIds();
-    const toInstall = list.filter(a => !installed.includes(a.id)).map(a => a.id);
-    if (!toInstall.length) {
-        if (typeof showToast === 'function') showToast('ℹ️ 该分类应用已全部安装');
-        return;
-    }
-    _bcosInstallMultipleApps(toInstall);
-}
 function _bcosUninstallApp(appId) {
     if (_bcos.wins[appId]) _bcosCloseWin(appId);
     if (String(appId).indexOf('custom_app_') === 0) {
