@@ -1,14 +1,27 @@
 /* ==================== App Drawer / 应用抽屉 ==================== */
 function _bcosCollectDrawerApps() {
     // 从桌面图标 (已隐藏) 收集应用列表, 保证与系统一致
+    // + 合并 localStorage 中的自定义/商店应用 (确保完整显示)
     const apps = [];
+    const seen = new Set();
+    // 自定义应用优先 (商店安装的)
+    try {
+        const customs = JSON.parse(localStorage.getItem('bcos_custom_apps') || '[]');
+        customs.forEach(a => {
+            if (a && a.id && !seen.has(a.id)) {
+                seen.add(a.id);
+                apps.push({ id: a.id, icon: a.icon || '📦', name: a.name || a.id, custom: true });
+            }
+        });
+    } catch(e) {}
     document.querySelectorAll('.bcos-desktop-icons .bcos-desktop-icon').forEach(el => {
         const oc = el.getAttribute('onclick') || '';
         let id = '';
         const m = oc.match(/_bcosOpenApp\('([\w-]+)'\)/);
         if (m) id = m[1];
         else if (oc.indexOf('showBcosCarLockscreen') >= 0) id = 'carlock';
-        if (!id) return;
+        if (!id || seen.has(id)) return;
+        seen.add(id);
         const em = el.querySelector('.bcos-desktop-icon-emoji');
         const lb = el.querySelector('.bcos-desktop-icon-label');
         apps.push({ id, icon: em ? em.innerHTML : '📦', name: lb ? lb.textContent.trim() : id });
@@ -155,6 +168,27 @@ function _bcosDiagCardHTML() {
     </div>`;
 }
 
+async function _bcosDownloadWallpaper(file, name) {
+    if (typeof showToast === 'function') showToast('⬇️ 正在准备大图…');
+    try {
+        // .opt.jpg 就是 2560px 大图, 直接下载
+        const res = await fetch(file, { cache: 'reload' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = (name || 'wallpaper').replace(/\s+/g, '_') + '.jpg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        if (typeof showToast === 'function') showToast('✅ 大图已开始下载');
+    } catch(e) {
+        // 回退: 新标签页打开
+        window.open(file, '_blank');
+    }
+}
 function _bcosForceUpdate() {
     if (!confirm('确定要强制刷新吗？\n\n将执行：\n1. 通知 Service Worker 强制过期全部缓存\n2. 注销 Service Worker\n3. 强制重载页面')) return;
     if (typeof showToast === 'function') showToast('🔄 正在强制过期缓存…');
@@ -1358,8 +1392,9 @@ function _bcosRefreshStoreIfOpen() {
                 window.BUILTIN_WALLPAPERS.forEach(w => {
                     const thumbSrc = (window.wpBlobCache && window.wpBlobCache[w.file]) || (window.WP_PLACEHOLDER && window.WP_PLACEHOLDER[w.file]) || w.file;
                     const isActive = (customBg === w.file);
-                    wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name}">
+                    wpGrid += `<div onclick="localStorage.setItem('bcosCustomBg', '${w.file}'); if (window._bcosApplyDesktopTheme) window._bcosApplyDesktopTheme(); _bcosRenderSettingsRightPane();" style="cursor:pointer;border-radius:8px;position:relative;overflow:hidden;border:${isActive ? '2px solid #007aff' : '1px solid rgba(255,255,255,0.1)'};aspect-ratio:16/9;background:#222 url(${thumbSrc}) center/cover no-repeat;" title="${w.name} (点击设为壁纸)">
                         <div style="background:rgba(0,0,0,0.65);color:#fff;font-size:9px;padding:2px 4px;position:absolute;bottom:0;width:100%;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${w.name}</div>
+                        <button onclick="event.stopPropagation(); _bcosDownloadWallpaper('${w.file}', '${w.name.replace(/'/g, "")}')" title="下载 2560px 大图" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;backdrop-filter:blur(4px);">⬇️</button>
                     </div>`;
                 });
             }
