@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v8.0.8902 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v8.0.8902';
+// Service Worker - Bunny CC v8.0.8903 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v8.0.8903';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -12,6 +12,7 @@ const RELATIVE_CORE_ASSETS = [
     'car.css',
     'css/base.css', 'css/ui.css', 'css/effects.css',
     'css/car-lockscreen-a.css', 'css/car-lockscreen-b.css', 'css/rounded-screen.css',
+    'css/desktop-modern.css', 'css/app-drawer.css', 'css/bcos-8.css',
     'js/version.js',
     'js/screen.js',
     'js/core.js', 'js/game.js', 'js/renderer.js',
@@ -20,6 +21,7 @@ const RELATIVE_CORE_ASSETS = [
     'js/os-apps-a.js', 'js/os-apps-b.js', 'js/os-apps-c.js',
     'js/wallpaper-data.js', 'js/wallpaper.js',
     'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js', 'js/ui-systems-c.js',
+    'js/bcos-8.js',
     'manifest.json',
     'manifest-car.json',
     'favicon.ico',
@@ -68,6 +70,7 @@ const OLD_CACHE_PATTERNS = [
     'bunny-cc-v7.8.6.9486', 'bunny-cc-runtime-v7.8.6.9486',
     'bunny-cc-v7.8.6.9487', 'bunny-cc-runtime-v7.8.6.9487',
     'bunny-cc-v8.0.8901', 'bunny-cc-runtime-v8.0.8901',
+    'bunny-cc-v8.0.8902', 'bunny-cc-runtime-v8.0.8902',
     'bunny-cc-v7.8.6.9480', 'bunny-cc-runtime-v7.8.6.9480',
     'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
     'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
@@ -264,6 +267,24 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // CSS/JS: network-first (强制实时, 避免样式脚本缓存过期)
+    // 其他静态资源: stale-while-revalidate
+    const isCode = pathname.endsWith('.css') || pathname.endsWith('.js');
+    if (isCode) {
+        event.respondWith(
+            fetch(req).then(resp => {
+                if (resp && resp.status === 200) {
+                    const clone = resp.clone();
+                    caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+                }
+                return resp;
+            }).catch(() => caches.match(req).then(r => {
+                if (r) return r;
+                return caches.match(new URL(req.url.split('?')[0], SCOPE_BASE).href);
+            }))
+        );
+        return;
+    }
     // Static assets: stale-while-revalidate
     event.respondWith(
         caches.match(req).then(cached => {
@@ -285,7 +306,19 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+    if (!event.data) return;
+    if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
+    // 强制过期: 清空所有缓存, 通知客户端重载
+    if (event.data.type === 'FORCE_EXPIRE') {
+        event.waitUntil(
+            caches.keys().then(names => Promise.all(names.map(n => caches.delete(n))))
+                .then(() => self.clients.matchAll({ type: 'window' }))
+                .then(clients => {
+                    clients.forEach(cl => cl.postMessage({ type: 'SW_FORCE_EXPIRED', version: CACHE_VERSION }));
+                })
+                .then(() => self.skipWaiting())
+        );
+    }
 });
 
 // === Push notifications ===
