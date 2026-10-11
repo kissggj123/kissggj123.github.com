@@ -477,10 +477,67 @@ input:focus, textarea:focus, select:focus {
     animation: none !important;
 }
 
-/* ==================== Portrait Phone Layout Fix ====================
- * 竖屏手机下桌面图标改用横向网格流式布局 (类似手机主屏幕),
- * 替代原来的纵向 flex 列排, 避免图标挤在左侧、右侧大片空白。
- * 仅影响未拖拽的自动排列图标; 已拖拽冻结的绝对定位图标不受影响。
+/* ==================== macOS Launchpad-style Desktop Icons ====================
+ * 启动台风格: 居中网格、悬停放大、按压缩小、标签阴影
+ */
+.bcos-desktop-icons {
+    justify-content: center !important;
+    align-content: flex-start !important;
+    padding: 24px 16px !important;
+}
+.bcos-desktop-icon {
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.2s ease !important;
+    cursor: pointer;
+}
+.bcos-desktop-icon:hover {
+    transform: scale(1.14) !important;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+    z-index: 2;
+}
+.bcos-desktop-icon:active {
+    transform: scale(0.88) !important;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    transition-duration: 0.1s !important;
+}
+.bcos-desktop-icon-emoji {
+    font-size: 52px !important;
+    line-height: 1.1 !important;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bcos-desktop-icon-label {
+    color: #fff !important;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85), 0 0 12px rgba(0, 0, 0, 0.4) !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    letter-spacing: 0.01em !important;
+    margin-top: 4px !important;
+    max-width: 88px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+/* 图标入场: 交错浮现 */
+.bcos-desktop-icons .bcos-desktop-icon {
+    animation: bcosIconPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(2) { animation-delay: 0.03s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(3) { animation-delay: 0.06s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(4) { animation-delay: 0.09s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(5) { animation-delay: 0.12s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(6) { animation-delay: 0.15s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(7) { animation-delay: 0.18s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(8) { animation-delay: 0.21s; }
+.bcos-desktop-icons .bcos-desktop-icon:nth-child(n+9) { animation-delay: 0.24s; }
+@keyframes bcosIconPop {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ==================== Portrait Layout v2 ====================
+ * 竖屏: 4 列网格, 图标更大间距更舒展; me 文件夹不再与网格重叠,
+ * 改为底部居中独立放置。
  */
 @media (max-width: 768px) and (orientation: portrait) {
     .bcos-desktop-icons {
@@ -489,11 +546,32 @@ input:focus, textarea:focus, select:focus {
         align-content: flex-start !important;
         justify-content: flex-start !important;
         align-items: flex-start !important;
-        left: 10px !important;
-        right: 10px !important;
-        max-width: calc(100% - 20px) !important;
+        left: 12px !important;
+        right: 12px !important;
+        max-width: calc(100% - 24px) !important;
+        gap: 18px 8px !important;
+        padding: 12px 4px !important;
     }
-    .bcos-desktop-icon {
-        flex: 0 0 auto !important;
+    .bcos-desktop-icons .bcos-desktop-icon {
+        flex: 0 0 calc((100% - 24px) / 4) !important;
+        max-width: calc((100% - 24px) / 4) !important;
+        width: auto !important;
+    }
+    .bcos-desktop-icon-emoji {
+        font-size: 44px !important;
+    }
+    /* me 文件夹: 竖屏时移到底部居中, 不再与网格重叠 */
+    #bcos-desktop-bg > .bcos-desktop-icon {
+        top: auto !important;
+        bottom: 96px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+    }
+    #bcos-desktop-bg > .bcos-desktop-icon:hover {
+        transform: translateX(-50%) scale(1.14) !important;
+    }
+    #bcos-desktop-bg > .bcos-desktop-icon:active {
+        transform: translateX(-50%) scale(0.88) !important;
     }
 }
