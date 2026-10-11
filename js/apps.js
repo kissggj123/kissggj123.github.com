@@ -926,43 +926,58 @@ function _bcosTeChangeLang(val) {
         const lastOOBEVersion = safeGetItem('bcos_oobe_version', '');
         if (lastOOBEVersion === _BCOS_VER) return; // Already seen this version
         const dt = _bcosGetDesktopTheme();
+        const accent = dt.accent || '#FF6B9D';
         const curLog = (typeof CHANGELOG !== 'undefined' && CHANGELOG[0]) ? CHANGELOG[0] : null;
-        const whatsNewHtml = curLog ? ('<div style="background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.5rem .7rem;text-align:left;max-height:135px;overflow-y:auto;font-size:11px;line-height:1.5;margin-top:.6rem;">' +
-            '<div style="font-weight:bold;color:' + dt.accent + ';margin-bottom:.3rem;">🌟 ' + curLog.ver + ' · ' + curLog.title + '</div>' +
-            curLog.items.map(it => '<div style="margin-bottom:.2rem;">' + it + '</div>').join('') +
+        const whatsNewHtml = curLog ? ('<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:.6rem .8rem;text-align:left;max-height:140px;overflow-y:auto;font-size:11px;line-height:1.6;margin-top:.7rem;">' +
+            '<div style="font-weight:700;color:' + accent + ';margin-bottom:.35rem;font-size:12px;">🌟 ' + curLog.ver + ' · ' + curLog.title + '</div>' +
+            curLog.items.map(it => '<div style="margin-bottom:.25rem;opacity:.85;">' + it + '</div>').join('') +
             '</div>') : '';
 
         const steps = [
-            { title: '🐰 Welcome to bcos ' + _BCOS_VER, body: 'You are now running <b style="color:' + dt.accent + ';">Bunny OS</b> ' + _BCOS_VER + '.<br>A Linux-style web operating system in your browser.' + whatsNewHtml },
-            { title: '⌨️ Terminal', body: 'The <b style="color:#00ff41;">Terminal</b> is your command center.<br><br>Type <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">help</code> to see all available commands.<br><br>Try <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">ls</code>, <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">neofetch</code>, or <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">cat YumikoToys</code>.' },
-            { title: '📁 Files', body: 'The <b style="color:#00ff41;">File Manager</b> lets you browse 177 GitHub repositories.<br><br>Click any repo to see details, or double-click to open it on GitHub.<br><br>You can also use <code style="background:#1a1a1a;padding:.1rem .3rem;border-radius:3px;color:#00ff41;">ls</code> in the terminal.' },
-            { title: '🖥️ Desktop', body: 'Your desktop has apps:<br><br>🐰 Terminal &nbsp; 🌸 Files &nbsp; 💖 Monitor<br>🌐 Browser &nbsp; 🎀 About<br><br>Use the <b style="color:' + dt.accent + ';">🐰 bcos</b> button in the taskbar to open the start menu.' },
+            { icon: '🐰', title: '欢迎来到 bcos', en: 'Welcome to Bunny OS ' + _BCOS_VER, body: '运行在浏览器里的 <b style="color:' + accent + ';">Linux 风格网页操作系统</b>。<br>属于兔可可的智能座舱王国，祝你玩得开心。' + whatsNewHtml },
+            { icon: '⌨️', title: '终端', en: 'Terminal', body: '<b style="color:#00ff41;">终端</b>是你的指挥中心。<br><br>输入 <code style="background:rgba(255,255,255,.08);padding:.15rem .45rem;border-radius:6px;color:#00ff41;font-family:monospace;">help</code> 查看所有命令。<br><br>试试 <code style="background:rgba(255,255,255,.08);padding:.15rem .45rem;border-radius:6px;color:#00ff41;font-family:monospace;">ls</code>、<code style="background:rgba(255,255,255,.08);padding:.15rem .45rem;border-radius:6px;color:#00ff41;font-family:monospace;">neofetch</code>。' },
+            { icon: '📁', title: '文件', en: 'Files', body: '<b style="color:#00ff41;">文件管理器</b>收录了 177 个 GitHub 仓库。<br><br>点击查看详情，双击在 GitHub 打开。<br><br>终端里也可以用 <code style="background:rgba(255,255,255,.08);padding:.15rem .45rem;border-radius:6px;color:#00ff41;font-family:monospace;">ls</code> 浏览。' },
+            { icon: '🖥️', title: '桌面', en: 'Desktop', body: '桌面应用一览：<br><br>🐰 终端 &nbsp; 🌸 文件 &nbsp; 💖 监控<br>🌐 浏览器 &nbsp; 🎀 关于<br><br>点击任务栏的 <b style="color:' + accent + ';">🐰 bcos</b> 按钮打开开始菜单。' },
         ];
         _bcosOOBEStep = 0;
         const overlay = document.createElement('div');
         overlay.id = 'bcos-oobe-overlay';
-        overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        overlay.style.cssText = 'position:absolute;inset:0;background:rgba(5,5,12,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:9999;display:flex;align-items:center;justify-content:center;animation:bcosOobeFadeIn .35s ease;';
+        // 注入一次性 keyframes
+        if (!document.getElementById('bcos-oobe-style')) {
+            const st = document.createElement('style');
+            st.id = 'bcos-oobe-style';
+            st.textContent = '@keyframes bcosOobeFadeIn{from{opacity:0}to{opacity:1}}@keyframes bcosOobeSlideUp{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}@keyframes bcosOobeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}';
+            document.head.appendChild(st);
+        }
         function renderStep() {
             const s = steps[_bcosOOBEStep];
             const isLast = _bcosOOBEStep === steps.length - 1;
-            overlay.innerHTML = '<div style="background:#1a1a1a;border:1px solid ' + dt.accent + ';border-radius:8px;padding:1.5rem;max-width:390px;text-align:center;color:#e0e0e0;font-family:inherit;">' +
-                '<h2 style="color:' + dt.accent + ';margin:0 0 .8rem;font-size:1.1rem;">' + s.title + '</h2>' +
-                '<div style="font-size:13px;line-height:1.6;margin-bottom:1rem;">' + s.body + '</div>' +
-                '<div style="display:flex;gap:.3rem;justify-content:center;margin-bottom:.5rem;">' +
-                steps.map((_, i) => '<div style="width:8px;height:8px;border-radius:50%;background:' + (i === _bcosOOBEStep ? dt.accent : '#333') + ';"></div>').join('') +
+            const pct = Math.round((_bcosOOBEStep + 1) / steps.length * 100);
+            overlay.innerHTML =
+                '<div style="background:linear-gradient(160deg,rgba(28,28,40,.96),rgba(16,16,26,.96));border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2rem 1.8rem 1.6rem;max-width:400px;width:calc(100% - 3rem);text-align:center;color:#e8e8f0;font-family:inherit;box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04),0 0 60px ' + accent + '22;animation:bcosOobeSlideUp .4s cubic-bezier(.2,.9,.3,1.2);">' +
+                '<div style="font-size:52px;animation:bcosOobeFloat 3s ease-in-out infinite;filter:drop-shadow(0 6px 18px ' + accent + '55);">' + s.icon + '</div>' +
+                '<h2 style="margin:.6rem 0 .15rem;font-size:1.35rem;font-weight:800;letter-spacing:.02em;background:linear-gradient(120deg,#fff,' + accent + ');-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">' + s.title + '</h2>' +
+                '<div style="font-size:11px;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem;">' + s.en + '</div>' +
+                '<div style="font-size:13px;line-height:1.75;margin-bottom:1.3rem;color:#c9c9d6;">' + s.body + '</div>' +
+                '<div style="height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin-bottom:1.1rem;overflow:hidden;">' +
+                '<div style="height:100%;width:' + pct + '%;border-radius:99px;background:linear-gradient(90deg,' + accent + ',' + accent + 'aa);transition:width .4s ease;"></div></div>' +
+                '<div style="display:flex;gap:.6rem;justify-content:center;">' +
+                (_bcosOOBEStep > 0 ? '<button id="bcos-oobe-back" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#ccc;padding:.55rem 1.1rem;border-radius:12px;cursor:pointer;font-family:inherit;font-size:13px;transition:background .2s;">← 上一步</button>' : '') +
+                '<button id="bcos-oobe-next" style="flex:1;background:linear-gradient(135deg,' + accent + ',' + accent + 'bb);border:none;color:#fff;padding:.55rem 1.4rem;border-radius:12px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;box-shadow:0 6px 20px ' + accent + '44;transition:transform .15s,box-shadow .2s;" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">' + (isLast ? '✨ 开始使用' : '下一步 →') + '</button>' +
                 '</div>' +
-                '<button id="bcos-oobe-next" style="background:' + dt.accent + ';border:none;color:#fff;padding:.4rem 1.2rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:bold;">' + (isLast ? 'Start using bcos' : 'Next →') + '</button>' +
+                '<div id="bcos-oobe-skip" style="margin-top:.8rem;font-size:11px;color:#666;cursor:pointer;transition:color .2s;" onmouseover="this.style.color=\'#999\'" onmouseout="this.style.color=\'#666\'">跳过引导</div>' +
                 '</div>';
-            var nextBtn = overlay && overlay.querySelector ? overlay.querySelector('#bcos-oobe-next') : null;
+            const finish = () => { safeSetItem('bcos_oobe_version', _BCOS_VER); overlay.remove(); };
+            const nextBtn = overlay.querySelector('#bcos-oobe-next');
             if (nextBtn) nextBtn.onclick = () => {
                 _bcosOOBEStep++;
-                if (_bcosOOBEStep >= steps.length) {
-                    safeSetItem('bcos_oobe_version', _BCOS_VER);
-                    overlay.remove();
-                } else {
-                    renderStep();
-                }
+                if (_bcosOOBEStep >= steps.length) finish(); else renderStep();
             };
+            const backBtn = overlay.querySelector('#bcos-oobe-back');
+            if (backBtn) backBtn.onclick = () => { if (_bcosOOBEStep > 0) { _bcosOOBEStep--; renderStep(); } };
+            const skipBtn = overlay.querySelector('#bcos-oobe-skip');
+            if (skipBtn) skipBtn.onclick = finish;
         }
         ov.appendChild(overlay);
         renderStep();
