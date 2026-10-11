@@ -22,6 +22,10 @@
         return;
     }
     LOG('🚀 动态注入模式启动');
+    // v8.0.2: 立即设置深色背景, 防白屏闪烁
+    document.documentElement.style.background = '#060814';
+    if (document.body) document.body.style.background = '#060814';
+    else document.addEventListener('DOMContentLoaded', () => document.body.style.background = '#060814');
 
     function _loadScript(code, id) {
         LOG(`执行 JS 模块: ${id} (${code.length} 字节)`);
@@ -136,7 +140,15 @@
                 }
             }
 
-            LOG('步骤5: 所有模块加载完成, 启动桌面…');
+            LOG('步骤5: 所有模块加载完成, 派发 DOMContentLoaded…');
+            // v8.0.2 fix: 动态注入的模块可能监听 DOMContentLoaded, 手动触发
+            try {
+                const evt = new Event('DOMContentLoaded', { bubbles: true, cancelable: true });
+                document.dispatchEvent(evt);
+                LOG('✅ DOMContentLoaded 已派发');
+            } catch(e) { LOG('⚠️ 派发失败:', e.message); }
+
+            LOG('步骤6: 启动桌面…');
             if (typeof window._bcos8Init === 'function') {
                 LOG('调用 _bcos8Init()');
                 window._bcos8Init();
