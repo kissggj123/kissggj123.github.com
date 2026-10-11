@@ -39,6 +39,16 @@
         s.setAttribute('data-dynamic-module', id);
         document.head.appendChild(s);
         LOG(`✅ CSS 模块已注入: ${id}`);
+        // v8.0.2 fix: base.css 加载后确保 body 有背景 (防白屏)
+        if (id === 'base-css') {
+            setTimeout(() => {
+                const bg = getComputedStyle(document.body).backgroundColor;
+                if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
+                    LOG('⚠️ body 背景透明, 设置兜底深色');
+                    document.body.style.background = '#060814';
+                }
+            }, 100);
+        }
     }
 
     async function _fetchText(url) {
