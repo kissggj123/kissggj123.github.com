@@ -127,6 +127,7 @@ function _bcos8InjectCCToggle() {
 
 /* ---------- 初始化 (桌面加载后调用) ---------- */
 function _bcos8Init() {
+    window._bcosBootTime = Date.now();
     _bcos8ShowBoot();
     _bcos8RenderDeskClock();
     _bcos8RenderCC();
