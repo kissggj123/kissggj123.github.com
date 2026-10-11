@@ -161,9 +161,16 @@ function _bcosForceUpdate() {
     (async () => {
         try {
             // 先让 SW 自己清缓存 (v8.0.8903+)
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'FORCE_EXPIRE' });
-                await new Promise(r => setTimeout(r, 800));
+            // PWA 下 controller 可能为 null, 用 ready 确保拿到 active worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const reg = await navigator.serviceWorker.ready;
+                    const sw = reg.active || navigator.serviceWorker.controller;
+                    if (sw) {
+                        sw.postMessage({ type: 'FORCE_EXPIRE' });
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                } catch(e) {}
             }
         } catch(e) {}
         try {
@@ -333,10 +340,8 @@ function _bcosRefreshStoreIfOpen() {
         _bcos.history = []; _bcos.histIdx = -1; _bcos.mode = 'boot'; _bcos.winZ = 100; _bcos.wins = {}; _bcos.activeWin = null;
         ov.classList.add('active');
         _bcosInitMeFolder();
-        // Show boot animation, then launch desktop
-        _bcosBootAnimation(ov).then(() => {
-            _bcosLaunchDesktop();
-        });
+        // BCOS 8.0: 旧开机动画已移除, 由 bcos-8.js 的 Aurora 启动屏接管
+        _bcosLaunchDesktop();
     }
 
     function closeBcosOS(forceExitFullscreen) {
