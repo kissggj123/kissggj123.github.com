@@ -21,11 +21,20 @@
         LOG('未检测到 ?dynamic=1, 跳过动态注入 (走静态加载)');
         return;
     }
+    // v8.0.2 fix: 防重入 — 合成 DOMContentLoaded 会触发自己的监听
+    if (window._bcosLoaderBooted) {
+        LOG('⚠️ loader 已运行过, 跳过重复启动');
+        return;
+    }
+    window._bcosLoaderBooted = true;
     LOG('🚀 动态注入模式启动');
     // v8.0.2: 不设置 body 背景, 避免盖住 #bg-layer 壁纸
     // 白屏问题由 CSS 加载解决
 
+    const _injected = new Set();
     function _loadScript(code, id) {
+        if (_injected.has(id)) { LOG(`⏭️ 跳过重复注入: ${id}`); return; }
+        _injected.add(id);
         LOG(`执行 JS 模块: ${id} (${code.length} 字节)`);
         const s = document.createElement('script');
         s.textContent = code;
@@ -139,11 +148,12 @@
             }
 
             LOG('步骤5: 所有模块加载完成, 派发 DOMContentLoaded…');
-            // v8.0.2 fix: 动态注入的模块可能监听 DOMContentLoaded, 手动触发
+            // v8.0.2 fix: 先移除自己的监听, 防止合成事件导致重入
             try {
+                document.removeEventListener('DOMContentLoaded', boot);
                 const evt = new Event('DOMContentLoaded', { bubbles: true, cancelable: true });
                 document.dispatchEvent(evt);
-                LOG('✅ DOMContentLoaded 已派发');
+                LOG('✅ DOMContentLoaded 已派发 (已移除自身监听)');
             } catch(e) { LOG('⚠️ 派发失败:', e.message); }
 
             LOG('步骤6: 启动桌面…');
