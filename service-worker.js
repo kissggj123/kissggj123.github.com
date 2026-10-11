@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v8.0.8903 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v8.0.8903';
+// Service Worker - Bunny CC v8.0.1.8904 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v8.0.1.8904';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -23,6 +23,7 @@ const RELATIVE_CORE_ASSETS = [
     'js/wallpaper-data.js', 'js/wallpaper.js',
     'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js', 'js/ui-systems-c.js',
     'js/bcos-8.js',
+    'js/kernel-perf.js',
     'manifest.json',
     'manifest-car.json',
     'favicon.ico',
@@ -153,6 +154,7 @@ const OLD_CACHE_PATTERNS = [
     'bunny-cc-v5.2.0', 'bunny-cc-runtime-v5.2.0',
     'bunny-cc-v5.1.0', 'bunny-cc-runtime-v5.1.0',
     'bunny-cc-v5.0.0', 'bunny-cc-runtime-v5.0.0',
+    'bunny-cc-v8.0.8903', 'bunny-cc-runtime-v8.0.8903',
 ];
 
 self.addEventListener('install', (event) => {
