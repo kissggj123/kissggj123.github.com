@@ -12,10 +12,26 @@
             + '<div style="display:flex;align-items:center;gap:14px">'
             + '<span id="mb-battery" style="font-size:12px;opacity:.9" title="电池">🔋</span>'
             + '<span id="mb-wifi" style="font-size:14px" title="网络">📶</span>'
+            + '<span id="mb-fullscreen" style="cursor:pointer;font-size:14px" title="全屏">⛶</span>'
             + '<span id="mb-launchpad" style="cursor:pointer;font-size:15px" title="Launchpad">🚀</span>'
             + '<span id="mb-clock" style="font-variant-numeric:tabular-nums;font-size:13px"></span></div>';
         document.body.appendChild(bar);
         document.getElementById('mb-launchpad').onclick = function() { BCOS.launchpad.toggle(); };
+        document.getElementById('mb-fullscreen').onclick = function() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen().catch(function(e) {
+                    console.log('[Menubar] 全屏失败', e);
+                });
+            }
+        };
+        // 全屏状态变化时更新图标
+        document.addEventListener('fullscreenchange', function() {
+            const el = document.getElementById('mb-fullscreen');
+            if (el) el.textContent = document.fullscreenElement ? '⛶' : '⛶';
+            if (el) el.style.opacity = document.fullscreenElement ? '1' : '.7';
+        });
         // 电池状态
         try {
             if (navigator.getBattery) {
