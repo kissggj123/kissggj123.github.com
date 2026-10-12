@@ -298,13 +298,13 @@ function fixTop() {
   const h = window.innerHeight, w = window.innerWidth;
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
-  // 横屏宽屏自适应：按 1200x700 基准缩放
   if (w > h && w >= 700) {
-    const s = Math.min(w / 1200, h / 700);
-    const scale = Math.max(1, Math.min(2.2, s));
-    let st = document.getElementById('ws-style');
-    if (!st) { st = document.createElement('style'); st.id = 'ws-style'; document.head.appendChild(st); }
-    st.textContent = '#main .left-col{transform:scale(' + scale + ');transform-origin:center} #main .right-col{transform:scale(' + scale + ');transform-origin:center}';
+    const lc = main.querySelector('.left-col');
+    const cw = (lc ? lc.getBoundingClientRect().width : 300) || 300;
+    const z = Math.max(1, Math.min(1.8, (w * 0.32) / cw));
+    main.style.zoom = z;
+  } else {
+    main.style.zoom = 1;
   }
 }
 fixTop();
