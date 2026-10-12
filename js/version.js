@@ -1,1 +1,1 @@
-window.BCOS_VERSION = 'v8.2.0.9443';
+window.BCOS_VERSION = 'v8.2.0.9444';

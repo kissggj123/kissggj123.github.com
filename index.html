@@ -97,6 +97,20 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #av-picker .emojis div{font-size:24px;text-align:center;padding:6px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.05)}
 #av-picker .emojis div:active{background:rgba(124,140,255,.3)}
 #av-picker .close{margin-top:8px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+
+@media (orientation: landscape) and (min-width: 1200px) {
+  #main{font-size:1.35em}
+  #main .left-col{transform:scale(1.25);transform-origin:center}
+  #main .right-col{transform:scale(1.25);transform-origin:center}
+  #main{gap:80px !important}
+}
+@media (orientation: landscape) and (min-width: 1600px) {
+  #main{font-size:1.6em}
+  #main .left-col{transform:scale(1.45);transform-origin:center}
+  #main .right-col{transform:scale(1.45);transform-origin:center}
+  #main{gap:100px !important}
+}
+
 </style>
 </head>
 <body>
@@ -296,17 +310,10 @@ setTimeout(restoreWallpaper, 300);
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
-  const h = window.innerHeight, w = window.innerWidth;
+  const h = window.innerHeight;
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
-  if (w > h && w >= 700) {
-    const lc = main.querySelector('.left-col');
-    const cw = (lc ? lc.getBoundingClientRect().width : 300) || 300;
-    const z = Math.max(1, Math.min(1.8, (w * 0.32) / cw));
-    main.style.zoom = z;
-  } else {
-    main.style.zoom = 1;
-  }
+  main.style.zoom = 1;
 }
 fixTop();
 window.addEventListener('resize', fixTop);
