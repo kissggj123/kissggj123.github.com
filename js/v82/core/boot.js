@@ -17,6 +17,7 @@
         if (window._bcosMenubarInit) window._bcosMenubarInit();
         if (window._bcosWindowInit) window._bcosWindowInit();
         if (window._bcosDrawerInit) window._bcosDrawerInit();
+        if (window._bcosClockInit) window._bcosClockInit();
         try { localStorage.setItem('bcos_booted_v82', '1'); } catch(e) {}
         console.log('[Boot] ✅ v8.2 启动完成 in ' + (Date.now() - window._bcosBootTime) + 'ms');
     }
