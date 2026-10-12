@@ -30,7 +30,14 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 .target .t b{color:#ffb54d}
 .target .bar{margin-top:10px;height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
 .target .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#7c8cff,#b48cff);transition:width .5s ease}
-.milestones{margin-top:16px;width:min(340px,86vw)}
+.next-panel{margin-top:16px;width:min(340px,86vw);background:rgba(124,140,255,.08);border:1px solid rgba(124,140,255,.2);border-radius:16px;padding:14px}
+.np-title{font-size:13px;font-weight:700;margin-bottom:10px;text-align:left}
+.np-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left}
+.np-item{background:rgba(255,255,255,.05);border-radius:10px;padding:8px 10px;font-size:11px}
+.np-item .k{opacity:.6}
+.np-item .v{font-weight:700;margin-top:2px;font-size:12px}
+.np-item .d{opacity:.5;font-size:10px;margin-top:2px}
+.milestones{margin-top:12px;width:min(340px,86vw)}
 .ms-toggle{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-size:13px;cursor:pointer}
 .ms-list{margin-top:8px;max-height:220px;overflow-y:auto;text-align:left}
 .ms-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -73,8 +80,12 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="t"><span>🎯 <span id="target-label">--</span></span><b id="target-remain">--</b></div>
 <div class="bar"><i id="target-bar" style="width:0%"></i></div>
 </div>
+<div class="next-panel" id="next-panel">
+<div class="np-title">🌱 下一个里程碑</div>
+<div class="np-grid" id="np-grid"></div>
+</div>
 <div class="milestones">
-<button class="ms-toggle" onclick="toggleMS()">🏆 里程碑 <span id="ms-arrow">▼</span></button>
+<button class="ms-toggle" onclick="toggleMS()">🏆 全部里程碑 <span id="ms-arrow">▼</span></button>
 <div class="ms-list" id="ms-list" style="display:none"></div>
 </div>
 <div id="car-app">
@@ -165,7 +176,25 @@ try {
     logo.textContent = av;
   }
 } catch(e) {}
-upd(); setInterval(upd, 100);
+function updNext() {
+  const now = Date.now();
+  const td = (now - START) / 86400000;
+  const items = [
+    {k:'🌱 100天', cycle:100, icon:'🌱'},
+    {k:'🌿 180天', cycle:180, icon:'🌿'},
+    {k:'🍀 300天', cycle:300, icon:'🍀'},
+    {k:'🎉 周年', cycle:365, icon:'🎉'},
+  ];
+  document.getElementById('np-grid').innerHTML = items.map(function(it) {
+    const n = Math.ceil(td / it.cycle);
+    const target = n * it.cycle;
+    const d = new Date(START + target * 86400000);
+    const ds = d.getUTCFullYear() + '-' + String(d.getUTCMonth()+1).padStart(2,'0') + '-' + String(d.getUTCDate()).padStart(2,'0');
+    const label = it.cycle === 365 ? n + '周年' : '第' + n + '个' + it.cycle + '天';
+    return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
+  }).join('');
+}
+upd(); updNext(); setInterval(function(){ upd(); }, 100); setInterval(updNext, 60000);
 function openCar() { document.getElementById('car-app').classList.add('open'); }
 function closeCar() { document.getElementById('car-app').classList.remove('open'); }
 function openAvatarPicker() {
