@@ -17,7 +17,7 @@ body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-seri
 @keyframes spin{to{transform:rotate(360deg)}}
 .days .num{font-size:clamp(56px,16vw,84px) !important;text-shadow:0 0 40px rgba(124,140,255,.5);animation:numGlow 3s ease-in-out infinite}
 @keyframes numGlow{0%,100%{text-shadow:0 0 30px rgba(124,140,255,.4);transform:scale(1)}50%{text-shadow:0 0 60px rgba(124,140,255,.8);transform:scale(1.02)}}
-h1{font-size:clamp(18px,4.5vw,22px) !important}
+h1{font-size:clamp(18px,4.5vw,22px) !important;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .logo{font-size:64px;margin-bottom:12px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 8px 24px rgba(124,140,255,.35));width:88px;height:88px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%}
 .logo img{width:100%;height:100%;object-fit:cover}
 h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradient(90deg,#a8b8ff,#d8b8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -249,7 +249,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9418'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9419'; } catch(e) {}
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
@@ -355,6 +355,8 @@ function setTheme(idx) {
   // 应用主题
   document.getElementById('bg').style.background = t.bg;
   document.getElementById('bg').style.transition = 'background .5s ease';
+  const mask = document.getElementById('bg-mask');
+  if (mask) mask.style.display = 'none';
   document.querySelectorAll('h1').forEach(function(el){
     el.style.background = 'linear-gradient(90deg,' + t.c[0] + ',' + t.c[1] + ')';
     el.style.webkitBackgroundClip = 'text';
@@ -375,6 +377,15 @@ function applyWallpaper(url) {
   try { pos = JSON.parse(localStorage.getItem('bcosBgPos') || '{"x":50,"y":50}'); } catch(e) {}
   bg.style.background = 'url(' + url + ') ' + pos.x + '% ' + pos.y + '% / cover no-repeat';
   bg.style.transition = 'all .5s ease';
+  // 可读性遮罩：确保文字清晰
+  let mask = document.getElementById('bg-mask');
+  if (!mask) {
+    mask = document.createElement('div');
+    mask.id = 'bg-mask';
+    mask.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.25) 40%,rgba(0,0,0,.45) 100%)';
+    bg.parentNode.insertBefore(mask, bg.nextSibling);
+  }
+  mask.style.display = 'block';
   // 长按拖动调整位置
   let dragging = false, sx, sy, ox, oy;
   bg.onpointerdown = function(e){ dragging = true; sx = e.clientX; sy = e.clientY; ox = pos.x; oy = pos.y; bg.setPointerCapture(e.pointerId); };
