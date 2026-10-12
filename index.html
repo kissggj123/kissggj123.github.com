@@ -7,12 +7,11 @@
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-<script src="js/version.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
 #bg{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)}
-#main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}#main{position:relative;z-index:1;height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(8px,2vh,20px);padding-top:calc(max(clamp(8px,2vh,20px), env(safe-area-inset-top)) + 20px);text-align:center;overflow-y:auto;overflow-x:hidden}
+#main{position:relative;z-index:1;min-height:100vh;max-height:100vh;overflow:hidden;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}#main{position:relative;z-index:1;height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(8px,2vh,20px);padding-top:calc(max(clamp(8px,2vh,20px), env(safe-area-inset-top)) + 20px);text-align:center;overflow-y:auto;overflow-x:hidden}
 @media (orientation:portrait){#main{padding-top:calc(env(safe-area-inset-top, 20px) + 44px)}}
 #main::-webkit-scrollbar{width:0}
 .logo{font-size:clamp(48px,10vw,64px) !important;width:clamp(64px,14vw,88px) !important;height:clamp(64px,14vw,88px) !important;position:relative;margin:0 auto !important;display:flex !important;align-items:center;justify-content:center}
@@ -97,29 +96,6 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #av-picker .emojis div{font-size:24px;text-align:center;padding:6px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.05)}
 #av-picker .emojis div:active{background:rgba(124,140,255,.3)}
 #av-picker .close{margin-top:8px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
-
-
-  #main .left-col{transform:scale(1.25);transform-origin:center}
-  #main .right-col{transform:scale(1.25);transform-origin:center}
-  #main{gap:80px !important}
-}
-
-  #main .left-col{transform:scale(1.45);transform-origin:center}
-  #main .right-col{transform:scale(1.45);transform-origin:center}
-  #main{gap:100px !important}
-}
-
-
-/* 真正响应式横屏：流式布局 */
-@media (orientation: landscape) and (min-width: 700px) {
-  #main{flex-direction:row !important;justify-content:space-evenly;align-items:center;width:100vw;max-width:100vw;padding:2vh 4vw;gap:4vw;box-sizing:border-box}
-  #main .left-col{flex:1;max-width:45vw;display:flex;flex-direction:column;align-items:center}
-  #main .right-col{flex:1;max-width:45vw;display:flex;flex-direction:column;align-items:stretch}
-  #main .days .num{font-size:clamp(48px,9vw,140px) !important}
-  #main h1{font-size:clamp(16px,2.5vw,32px) !important}
-  #main .since{font-size:clamp(10px,1.5vw,18px) !important}
-}
-
 </style>
 </head>
 <body>
@@ -319,10 +295,15 @@ setTimeout(restoreWallpaper, 300);
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
-  const h = window.innerHeight;
-  const top = Math.max(60, h * 0.06);
-  main.style.paddingTop = top + 'px';
+  const h = window.innerHeight, w = window.innerWidth;
+  if (w > h) {
+    main.style.paddingTop = '0px'; // 横屏不加顶部留白，靠 align-items 居中
+  } else {
+    const top = Math.max(60, h * 0.06);
+    main.style.paddingTop = top + 'px';
+  }
   main.style.zoom = 1;
+  main.style.boxSizing = 'border-box';
 }
 fixTop();
 window.addEventListener('resize', fixTop);
