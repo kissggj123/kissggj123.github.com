@@ -259,7 +259,15 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9420'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9421'; } catch(e) {}
+// 恢复壁纸
+try {
+  const wpName = localStorage.getItem('bcosBgWp');
+  if (wpName && typeof CAR_WPS !== 'undefined') {
+    const w = CAR_WPS.find(function(x){ return x.name === wpName; });
+    if (w) setTimeout(function(){ applyWallpaper(w.file); }, 200);
+  }
+} catch(e) {}
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
