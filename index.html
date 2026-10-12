@@ -75,6 +75,7 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="unit">DAYS</div>
 </div>
 <div class="voyage"><b id="voy-h">--</b>时 <b id="voy-m">--</b>分 <b id="voy-s">--</b>.<b id="voy-ms" style="font-size:12px;opacity:.7">000</b>秒</div>
+<div class="total-h" id="total-h" style="margin-top:6px;font-size:12px;opacity:.55">🎂 已经到来 <b id="th-h">--</b>小时<b id="th-m">--</b>分钟<b id="th-s">--</b>秒</div>
 <div class="day-progress"><div class="dp-bar"><i id="dp-fill"></i></div><div class="dp-label" id="dp-label"></div></div>
 <div class="target">
 <div class="t"><span>🎯 <span id="target-label">--</span></span><b id="target-remain">--</b></div>
@@ -123,6 +124,12 @@ function upd() {
   document.getElementById('voy-m').textContent = String(m).padStart(2,'0');
   document.getElementById('voy-s').textContent = String(s).padStart(2,'0');
   document.getElementById('voy-ms').textContent = String(Math.floor((now % 1000))).padStart(3,'0');
+  const totalH = Math.floor((now - START) / 3600000);
+  const totalM = Math.floor((now - START) / 60000) % 60;
+  const totalS = Math.floor((now - START) / 1000) % 60;
+  document.getElementById('th-h').textContent = totalH;
+  document.getElementById('th-m').textContent = totalM;
+  document.getElementById('th-s').textContent = totalS;
   // 今日24小时进度
   const dayPct = (now - new Date().setHours(0,0,0,0)) / 86400000 * 100;
   document.getElementById('dp-fill').style.width = dayPct.toFixed(2) + '%';
