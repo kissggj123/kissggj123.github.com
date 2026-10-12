@@ -10,8 +10,10 @@
 body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
 #bg{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)}
 #main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}#main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(12px,3vh,24px);text-align:center;overflow-y:auto}
-.logo{font-size:clamp(48px,10vw,64px) !important;width:clamp(64px,14vw,88px) !important;height:clamp(64px,14vw,88px) !important}
-.days .num{font-size:clamp(56px,16vw,84px) !important}
+.logo{font-size:clamp(48px,10vw,64px) !important;width:clamp(64px,14vw,88px) !important;height:clamp(64px,14vw,88px) !important;position:relative}
+.logo::before{content:'';position:absolute;inset:-8px;border-radius:50%;background:conic-gradient(from 0deg,#7c8cff,#b48cff,#ff6b9d,#7c8cff);animation:spin 4s linear infinite;z-index:-1;filter:blur(8px);opacity:.6}
+@keyframes spin{to{transform:rotate(360deg)}}
+.days .num{font-size:clamp(56px,16vw,84px) !important;text-shadow:0 0 40px rgba(124,140,255,.5)}
 h1{font-size:clamp(18px,4.5vw,22px) !important}
 .logo{font-size:64px;margin-bottom:12px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 8px 24px rgba(124,140,255,.35));width:88px;height:88px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%}
 .logo img{width:100%;height:100%;object-fit:cover}
@@ -63,7 +65,11 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #car-app.open{display:block}
 #car-app iframe{width:100%;height:100%;border:none}
 #car-app .close-btn{position:absolute;top:16px;right:16px;z-index:9001;width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:20px;cursor:pointer;backdrop-filter:blur(8px)}
-#av-picker{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+#av-picker{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#av-picker.open{display:flex;animation:pickerIn .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pickerIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+#av-picker .panel{animation:panelGlow 2s ease-in-out infinite}
+@keyframes panelGlow{0%,100%{box-shadow:0 0 30px rgba(124,140,255,.25)}50%{box-shadow:0 0 50px rgba(124,140,255,.45)}}
 #av-picker.open{display:flex}
 #av-picker .panel{background:#1a1e35;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px;width:min(320px,90vw)}
 #av-picker h3{font-size:15px;margin-bottom:12px}
