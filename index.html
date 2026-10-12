@@ -116,6 +116,7 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 </div>
 </div>
 <div id="ver-tag" style="margin-top:12px;text-align:center;font-size:11px;opacity:.4">v--</div>
+<button onclick="forceUpdate()" style="margin-top:8px;width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,100,100,.4);background:rgba(255,100,100,.1);color:#ff8a80;cursor:pointer;font-size:13px">🔄 强制更新 PWA</button>
 <button onclick="closeThemePicker()" style="margin-top:8px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer">关闭</button>
 </div>
 </div>
@@ -380,6 +381,23 @@ const CAR_WPS = [{"name": "星空原野 · 银河漫步", "file": "wallpaper/Sta
     // 存起来供 setWallpaper 用
     window._wps = wps;
   } catch(e) {}
+}
+function forceUpdate() {
+  if (!confirm('清除缓存并强制更新到最新版？')) return;
+  (async function(){
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        for (const k of keys) await caches.delete(k);
+      }
+      localStorage.removeItem('bcosBgWp');
+    } catch(e) {}
+    location.reload(true);
+  })();
 }
 function closeThemePicker() { document.getElementById('theme-picker').style.display = 'none'; }
 function setTheme(idx) {
