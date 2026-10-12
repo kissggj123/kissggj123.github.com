@@ -23,14 +23,22 @@
                     grid.innerHTML = list.map(function(wp) {
                         const sel = wp.id === curId ? 'outline:2px solid #7c8cff;outline-offset:2px;' : '';
                         const thumb = './' + (wp.file || '');
-                        return '<div class="wp-item" data-id="' + wp.id + '" style="cursor:pointer;border-radius:12px;overflow:hidden;' + sel + '">'
+                        return '<div class="wp-item" data-id="' + wp.id + '" style="cursor:pointer;border-radius:12px;overflow:hidden;position:relative;' + sel + '">'
                             + '<div style="aspect-ratio:16/10;background:url(' + thumb + ') center/cover,#1a2a4a"></div>'
-                            + '<div style="padding:8px;font-size:11px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (wp.name || wp.id) + '</div></div>';
+                            + '<div style="padding:8px;font-size:11px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (wp.name || wp.id) + '</div>'
+                            + '<button class="wp-full" data-id="' + wp.id + '" style="position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:8px;border:none;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-size:14px" title="全屏预览">⛶</button></div>';
                     }).join('') || '<div style="opacity:.5">无壁纸</div>';
                     grid.querySelectorAll('.wp-item').forEach(function(el) {
-                        el.onclick = function() {
+                        el.onclick = function(e) {
+                            if (e.target.classList.contains('wp-full')) return;
                             BCOS.wallpaper.set(el.dataset.id);
-                            show('wallpaper'); // 刷新选中态
+                            show('wallpaper');
+                        };
+                    });
+                    grid.querySelectorAll('.wp-full').forEach(function(btn) {
+                        btn.onclick = function(e) {
+                            e.stopPropagation();
+                            BCOS.wallpaper.previewFullscreen(btn.dataset.id);
                         };
                     });
                 } else if (pane === 'appearance') {

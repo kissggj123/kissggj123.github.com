@@ -1,4 +1,4 @@
-/* Phase 3 - 壁纸引擎 (两阶段: 优化版→原版) */
+/* Phase 3 - 壁纸引擎 (两阶段 + 横竖屏自适应) */
 (function() {
     'use strict';
     BCOS.wallpaper = BCOS.wallpaper || {};
@@ -41,39 +41,44 @@
             if (show) bar.querySelector('.wp-prog-fill').style.width = '5%';
         }
     }
-    // 两阶段加载
+    // 横竖屏自适应：返回合适的 background-size
+    function adaptiveSize(wp) {
+        const isPortraitScreen = window.innerHeight > window.innerWidth;
+        const isLandscapeWp = wp.orientation === 'landscape';
+        if (isPortraitScreen && isLandscapeWp) {
+            return 'auto 100%';  // 竖屏看横图：高度填满，左右可裁
+        }
+        return 'cover';
+    }
     BCOS.wallpaper.apply = async function(id) {
         const list = await BCOS.wallpaper.list();
         const wp = list.find(function(w) { return w.id === id; });
         if (!wp) return;
         const bg = document.getElementById('bcos-desktop-bg');
         if (!bg) return;
-        const optUrl = './' + wp.file;  // 优化版 (opt.jpg)
+        const optUrl = './' + wp.file;
         const dc = wp.edgeColors && wp.edgeColors.dominant ? wp.edgeColors.dominant : '#0B1026';
-        // 阶段0: 主色占位
         bg.style.transition = 'none';
         bg.style.background = dc;
         bg.style.backgroundImage = 'none';
         bg.style.filter = 'blur(24px)';
         bg.style.transform = 'translateZ(0) scale(1.06)';
         showProgress(true);
-        // 阶段1: 优化版 (浏览器渐进式渲染)
         const img1 = new Image();
         img1.onload = function() {
-            // 优化版显示
             bg.style.transition = 'filter .5s ease';
             bg.style.backgroundImage = 'url(' + optUrl + ')';
-            bg.style.backgroundSize = 'cover';
+            bg.style.backgroundSize = adaptiveSize(wp);
             bg.style.backgroundPosition = 'center';
-            bg.style.filter = 'blur(8px)';  // 轻微模糊，表示还在加载高清
-            document.getElementById('bcos-wp-progress').querySelector('.wp-prog-fill').style.width = '60%';
-            // 阶段2: 原版 (这里 opt.jpg 即原版，如有更高清则在此加载)
-            // 目前 opt.jpg 已是最高清，直接去模糊完成
+            bg.style.filter = 'blur(8px)';
+            const pf = document.getElementById('bcos-wp-progress');
+            if (pf) pf.querySelector('.wp-prog-fill').style.width = '60%';
             requestAnimationFrame(function() {
                 bg.style.transition = 'filter .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1)';
                 bg.style.filter = 'blur(0)';
                 bg.style.transform = 'translateZ(0) scale(1)';
-                document.getElementById('bcos-wp-progress').querySelector('.wp-prog-fill').style.width = '100%';
+                const pf2 = document.getElementById('bcos-wp-progress');
+                if (pf2) pf2.querySelector('.wp-prog-fill').style.width = '100%';
             });
             setTimeout(function() { showProgress(false); }, 800);
         };
@@ -85,11 +90,44 @@
         };
         img1.src = optUrl;
     };
+    // 屏幕旋转时重新适配
+    window.addEventListener('resize', function() {
+        try {
+            const id = localStorage.getItem('bcosWallpaperId');
+            const bg = document.getElementById('bcos-desktop-bg');
+            if (id && bg && bg.style.backgroundImage && bg.style.backgroundImage !== 'none') {
+                BCOS.wallpaper.list().then(function(list) {
+                    const wp = list.find(function(w) { return w.id === id; });
+                    if (wp) bg.style.backgroundSize = adaptiveSize(wp);
+                });
+            }
+        } catch(e) {}
+    });
+    // 全屏预览
+    BCOS.wallpaper.previewFullscreen = async function(id) {
+        const list = await BCOS.wallpaper.list();
+        const wp = list.find(function(w) { return w.id === id; });
+        if (!wp) return;
+        let ov = document.getElementById('bcos-wp-fullscreen');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.id = 'bcos-wp-fullscreen';
+            ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;cursor:zoom-out';
+            ov.innerHTML = '<img style="max-width:100%;max-height:100%;object-fit:contain;transform:translateZ(0)">'
+                + '<div style="position:absolute;top:20px;right:20px;color:#fff;font-size:14px;background:rgba(0,0,0,.6);padding:8px 16px;border-radius:10px"></div>';
+            document.body.appendChild(ov);
+            ov.onclick = function() { ov.style.display = 'none'; };
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && ov.style.display === 'flex') ov.style.display = 'none'; });
+        }
+        ov.querySelector('img').src = './' + wp.file;
+        ov.querySelector('div').textContent = wp.name || wp.id;
+        ov.style.display = 'flex';
+    };
     BCOS.wallpaper.restore = async function() {
         try {
             const id = localStorage.getItem('bcosWallpaperId');
             if (id) await BCOS.wallpaper.apply(id);
         } catch(e) {}
     };
-    console.log('[Wallpaper] 两阶段引擎就绪');
+    console.log('[Wallpaper] 两阶段+自适应引擎就绪');
 })();
