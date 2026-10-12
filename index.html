@@ -288,21 +288,10 @@ try {
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
-  const h = window.innerHeight, w = window.innerWidth;
-  // 顶部留白
+  const h = window.innerHeight;
+  // 顶部留白 = 屏幕高度的 6%，最少 60px（避开刘海）
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
-  // 横屏宽屏自适应缩放：基准 1200x700
-  if (w > h && w >= 700) {
-    const s = Math.min(w / 1200, h / 700);
-    const scale = Math.max(1, Math.min(2.2, s));
-    main.style.setProperty('--ws', scale);
-    const st = document.getElementById('ws-style') || (function(){
-      const e = document.createElement('style'); e.id = 'ws-style';
-      document.head.appendChild(e); return e;
-    })();
-    st.textContent = '@media (orientation:landscape) and (min-width:700px){#main .left-col,#main .right-col{transform:scale(var(--ws));transform-origin:center}}';
-  }
 }
 fixTop();
 window.addEventListener('resize', fixTop);
