@@ -306,12 +306,11 @@ async function openThemePicker() {
       + '<div style="width:36px;height:36px;border-radius:50%;margin:0 auto;background:linear-gradient(135deg,' + t.c[0] + ',' + t.c[1] + ');box-shadow:0 0 12px ' + t.c[0] + '66"></div>'
       + '<div style="font-size:10px;margin-top:4px">' + t.e + t.n + '</div></div>';
   }).join('');
-  // 加载壁纸
+  // 直接读 JSON
   try {
     const r = await fetch('./wallpaper/manifest.json');
     const m = await r.json();
-    const seen = {};
-    const wps = (m.wallpapers || []).filter(function(w){ if(seen[w.id]) return false; seen[w.id]=1; return true; }).slice(0,9);
+    const wps = m.wallpapers || [];
     document.getElementById('wp-grid').innerHTML = wps.map(function(w){
       return '<div onclick="setWallpaper(\'' + w.id + '\')" style="cursor:pointer;border-radius:10px;overflow:hidden;position:relative;height:60px;background:#222" title="' + w.name + '">'
         + '<img src="./' + w.file + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\'">'
