@@ -1,5 +1,5 @@
 // Service Worker - Bunny CC v7.8.6.9482 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v8.1.0.8910';
+const CACHE_VERSION = 'v8.2.0-phase23';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 
@@ -29,6 +29,13 @@ const RELATIVE_CORE_ASSETS = [
     'icon/192.png', 'icon/256.png', 'icon/300.png', 'icon/512.png',
     'icon/1024.png', 'icon/icon.png',
     'wallpaper/manifest.json',
+    'js/kernel/boot.js', 'js/kernel/vfs.js',
+    'js/api/bcos.js',
+    'js/shell/desktop.js', 'js/shell/wallpaper.js', 'js/shell/window.js',
+    'js/shell/menubar.js', 'js/shell/launchpad.js',
+    'js/apps/finder.js', 'js/apps/terminal.js', 'js/apps/settings.js', 'js/apps/textedit.js',
+    'css/shell.css',
+    'preview-phase2.html',
     'wallpaper/placeholders.json',
     'wallpaper/Starlight210128.opt.jpg',
     'wallpaper/Starlight210128.min.b64.p1',
