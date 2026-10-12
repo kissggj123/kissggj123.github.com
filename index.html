@@ -308,7 +308,7 @@ async function openThemePicker() {
   }).join('');
   // 直接读 JSON
   try {
-    const r = await fetch('./wallpaper/manifest.json');
+    const r = await fetch('wallpaper/manifest.json?t=' + Date.now());
     const m = await r.json();
     const wps = m.wallpapers || [];
     document.getElementById('wp-grid').innerHTML = wps.map(function(w){
@@ -346,7 +346,7 @@ function setWallpaper(id) {
   if (!w) return;
   closeThemePicker();
   const bg = document.getElementById('bg');
-  bg.style.background = 'url(./' + w.file + ') center/cover no-repeat';
+  bg.style.background = 'url(' + w.file + ') center/cover no-repeat';
   bg.style.transition = 'all .5s ease';
   try { localStorage.setItem('bcosBgWp', id); localStorage.removeItem('bcosTheme'); } catch(e) {}
 }
