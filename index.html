@@ -249,7 +249,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9411'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9412'; } catch(e) {}
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
@@ -358,10 +358,26 @@ function setWallpaper(id) {
   const w = (window._wps || {})[id];
   if (!w) return;
   closeThemePicker();
-  const bg = document.getElementById('bg');
-  bg.style.background = 'url(' + w.file + ') center/cover no-repeat';
-  bg.style.transition = 'all .5s ease';
+  applyWallpaper(w.file);
   try { localStorage.setItem('bcosBgWp', id); localStorage.removeItem('bcosTheme'); } catch(e) {}
+}
+function applyWallpaper(url) {
+  const bg = document.getElementById('bg');
+  let pos = {x:50, y:50};
+  try { pos = JSON.parse(localStorage.getItem('bcosBgPos') || '{"x":50,"y":50}'); } catch(e) {}
+  bg.style.background = 'url(' + url + ') ' + pos.x + '% ' + pos.y + '% / cover no-repeat';
+  bg.style.transition = 'all .5s ease';
+  // 长按拖动调整位置
+  let dragging = false, sx, sy, ox, oy;
+  bg.onpointerdown = function(e){ dragging = true; sx = e.clientX; sy = e.clientY; ox = pos.x; oy = pos.y; bg.setPointerCapture(e.pointerId); };
+  bg.onpointermove = function(e){
+    if (!dragging) return;
+    const r = bg.getBoundingClientRect();
+    pos.x = Math.max(0, Math.min(100, ox + (e.clientX - sx) / r.width * 100));
+    pos.y = Math.max(0, Math.min(100, oy + (e.clientY - sy) / r.height * 100));
+    bg.style.backgroundPosition = pos.x + '% ' + pos.y + '%';
+  };
+  bg.onpointerup = function(){ dragging = false; try { localStorage.setItem('bcosBgPos', JSON.stringify(pos)); } catch(e) {} };
 }
 try {
   const st = localStorage.getItem('bcosTheme');
