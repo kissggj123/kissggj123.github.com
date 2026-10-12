@@ -2,68 +2,42 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Bunny Cockpit OS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>兔可可纪念日 🐰</title>
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="manifest" href="./manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0B1026;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
-#bcos-boot{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1a2a4a 0%,#0B1026 70%)}
-#bcos-boot .logo{font-size:72px;margin-bottom:16px;animation:float 3s ease-in-out infinite;line-height:1}
-#bcos-boot .logo img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(124,140,255,.4)}
-#bcos-boot h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#7c8cff,#b48cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-#bcos-boot .ver{margin-top:8px;font-size:13px;opacity:.5}
-#bcos-boot .memorial{margin-top:20px;font-size:15px;opacity:.9}
-#bcos-boot .memorial b{color:#ffb5ba;font-size:20px}
-#bcos-boot .actions{margin-top:24px;display:flex;gap:12px}
-#bcos-boot .btn{padding:12px 24px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .15s,background .15s}
-#bcos-boot .btn:active{transform:scale(.95)}
-#bcos-boot .btn.primary{background:linear-gradient(90deg,#7c8cff,#b48cff);border:none}
-#bcos-boot .fullscreen{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-size:13px;cursor:pointer;opacity:.8}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+html,body{height:100%;overflow:hidden;background:#000}
+#car-frame{position:fixed;inset:0;width:100%;height:100%;border:none}
+#bcos-hud{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;pointer-events:none;font-size:12px;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.6)}
+#bcos-hud .memorial{background:rgba(0,0,0,.45);padding:6px 12px;border-radius:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#bcos-hud .memorial b{color:#ffb5ba}
+#bcos-hud .actions{pointer-events:auto;display:flex;gap:8px}
+#bcos-hud .btn{padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.45);color:#fff;font-size:12px;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 </style>
 </head>
 <body>
-<div id="bcos-boot">
-<div class="logo" id="bcos-logo">🐰</div>
-<h1>Bunny Cockpit OS</h1>
-<div class="ver" id="bcos-ver">v8.2.0</div>
-<div class="memorial" id="bcos-memorial">🐰 兔可可纪念日 <b id="bcos-days">--</b> 天</div>
+<iframe id="car-frame" src="./car.html" allow="autoplay"></iframe>
+<div id="bcos-hud">
+<div class="memorial">🐰 <b id="bcos-days">--</b> 天</div>
 <div class="actions">
-<button class="btn primary" onclick="location.href='./car.html'">🚗 车机锁屏</button>
-<button class="btn" onclick="location.href='./preview-phase2.html'">🖥️ 进入桌面</button>
+<button class="btn" onclick="document.getElementById('car-frame').src='./preview-phase2.html'">🖥️ 桌面</button>
+<button class="btn" onclick="toggleFS()">⛶</button>
 </div>
 </div>
-<button class="fullscreen" id="bcos-fs" onclick="toggleFS()">⛶ 全屏</button>
 <script src="./js/version.js"></script>
 <script>
+// 纪念日计数
 try {
-  document.getElementById('bcos-ver').textContent = window.BCOS_VERSION || 'v8.2.0';
-} catch(e) {}
-// 纪念日计数 (2024/03/12)
-try {
-  const start = new Date('2024/03/12 00:00:00');
-  const days = Math.floor((Date.now() - start.getTime()) / 86400000);
+  const days = Math.floor((Date.now() - new Date('2024/03/12 00:00:00').getTime()) / 86400000);
   document.getElementById('bcos-days').textContent = days;
 } catch(e) {}
-// 头像 (用户设置的照片或默认兔子)
-try {
-  const av = localStorage.getItem('bcosAvatar');
-  const logo = document.getElementById('bcos-logo');
-  if (av && av.startsWith('data:')) {
-    logo.innerHTML = '<img src="' + av + '">';
-  } else if (av) {
-    logo.textContent = av;
-  }
-} catch(e) {}
-// 全屏
 function toggleFS() {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen().catch(function(){});
 }
 </script>
-<script src="./js/kernel/boot.js"></script>
-<script src="./js/kernel/vfs.js"></script>
 </body>
 </html>
