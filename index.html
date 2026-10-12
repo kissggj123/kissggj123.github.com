@@ -115,7 +115,7 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="panel">
 <h3>🐰 选择头像</h3>
 <div class="emojis" id="av-emojis"></div>
-<label style="display:block;padding:10px;border-radius:10px;background:rgba(124,140,255,.2);text-align:center;cursor:pointer;font-size:13px">📷 上传照片<input type="file" id="av-file" accept="image/*" style="display:none"></label>
+
 <button class="close" onclick="closeAvatarPicker()">关闭</button>
 </div>
 </div>
@@ -195,7 +195,9 @@ function renderMS() {
 try {
   const av = localStorage.getItem('bcosAvatar');
   const logo = document.getElementById('main-logo');
-  if (av && av.startsWith('data:')) {
+  if (av && av.startsWith('photo:')) {
+    logo.innerHTML = '<img src="' + av.slice(6) + '">';
+  } else if (av && av.startsWith('data:')) {
     logo.innerHTML = '<img src="' + av + '">';
   } else if (av) {
     logo.textContent = av;
@@ -223,11 +225,18 @@ upd(); updNext(); setInterval(function(){ upd(); }, 100); setInterval(updNext, 6
 function openCar() { document.getElementById('car-app').classList.add('open'); }
 function closeCar() { document.getElementById('car-app').classList.remove('open'); }
 function openAvatarPicker() {
-  const emojis = ['🐰','🐱','🐶','🦊','🐼','🐨','🦁','🐯','🦄','🐸','🌸','⭐','🎀','🔥','💖','✨'];
-  document.getElementById('av-emojis').innerHTML = emojis.map(function(e){
-    return '<div onclick="setAvatar(\'' + e + '\')">' + e + '</div>';
-  }).join('');
+  document.getElementById('av-emojis').innerHTML =
+    '<div onclick="setAvatarPhoto()" style="grid-column:span 4;text-align:center;padding:10px;background:rgba(124,140,255,.15);border-radius:10px;cursor:pointer">'
+    + '<img src="./dist/Bunny CC_Profile.JPG" style="width:48px;height:48px;border-radius:50%;object-fit:cover"><div style="font-size:11px;margin-top:4px">兔可可照片</div></div>'
+    + '<div onclick="setAvatar(\'🐰\')" style="grid-column:span 4;text-align:center;padding:10px;background:rgba(255,255,255,.05);border-radius:10px;cursor:pointer">'
+    + '<div style="font-size:40px">🐰</div><div style="font-size:11px;margin-top:4px">兔子表情</div></div>';
   document.getElementById('av-picker').classList.add('open');
+}
+function setAvatarPhoto() {
+  const url = './dist/Bunny CC_Profile.JPG';
+  try { localStorage.setItem('bcosAvatar', 'photo:' + url); } catch(e) {}
+  document.getElementById('main-logo').innerHTML = '<img src="' + url + '">';
+  closeAvatarPicker();
 }
 function closeAvatarPicker() { document.getElementById('av-picker').classList.remove('open'); }
 function setAvatar(e) {
@@ -235,17 +244,7 @@ function setAvatar(e) {
   document.getElementById('main-logo').textContent = e;
   closeAvatarPicker();
 }
-document.getElementById('av-file').addEventListener('change', function(e) {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = function(ev) {
-    try { localStorage.setItem('bcosAvatar', ev.target.result); } catch(err) {}
-    document.getElementById('main-logo').innerHTML = '<img src="' + ev.target.result + '">';
-    closeAvatarPicker();
-  };
-  r.readAsDataURL(f);
-});
+
 function setTheme(name) {
   const themes = {
     purple: ['#7c8cff','#b48cff'],
