@@ -7,7 +7,6 @@
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-<script src="js/version.js?v=9438"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
@@ -263,7 +262,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || ''; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9433'; } catch(e) {}
 // URL 后缀 ?wp=01~14 直接指定壁纸
 function getWpParam() {
   try {
@@ -299,13 +298,13 @@ function fixTop() {
   const h = window.innerHeight, w = window.innerWidth;
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
-  // 横屏宽屏自适应：按 1200x700 基准缩放
+  // 横屏宽屏自适应：用 zoom 真实放大布局（基准 1280x720）
   if (w > h && w >= 700) {
-    const s = Math.min(w / 1200, h / 700);
-    const scale = Math.max(1, Math.min(2.2, s));
-    let st = document.getElementById('ws-style');
-    if (!st) { st = document.createElement('style'); st.id = 'ws-style'; document.head.appendChild(st); }
-    st.textContent = '#main .left-col{transform:scale(' + scale + ');transform-origin:center} #main .right-col{transform:scale(' + scale + ');transform-origin:center}';
+    const s = Math.min(w / 1280, h / 720);
+    const z = Math.max(1, Math.min(2.5, s));
+    main.style.zoom = z;
+  } else {
+    main.style.zoom = 1;
   }
 }
 fixTop();
