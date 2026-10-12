@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>BCOS Phase 2+3 预览</title>
+<link rel="stylesheet" href="./css/shell.css">
+<style>
+body{margin:0;background:#0B1026;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
+#preview-banner{position:fixed;bottom:12px;left:12px;z-index:99999;background:rgba(0,0,0,.7);padding:8px 14px;border-radius:10px;font-size:12px;color:#fff}
+</style>
+</head>
+<body>
+<div id="preview-banner">🧪 Phase 2+3 预览 · <a href="./index.html" style="color:#7c8cff">返回主站</a></div>
+<script src="./js/version.js"></script>
+<script src="./js/kernel/boot.js"></script>
+<script src="./js/kernel/vfs.js"></script>
+<script src="./js/api/bcos.js"></script>
+<script src="./js/shell/desktop.js"></script>
+<script src="./js/shell/window.js"></script>
+<script src="./js/shell/menubar.js"></script>
+<script src="./js/shell/launchpad.js"></script>
+<script src="./js/apps/finder.js"></script>
+<script src="./js/apps/terminal.js"></script>
+<script src="./js/apps/settings.js"></script>
+<script src="./js/apps/textedit.js"></script>
+<script>
+// 初始化 Phase 2+3
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    if (BCOS.desktop && BCOS.desktop.init) BCOS.desktop.init();
+    if (BCOS.menubar && BCOS.menubar.init) BCOS.menubar.init();
+    console.log('[Preview] Phase 2+3 已加载');
+  } catch(e) { console.error('[Preview]', e); }
+});
+</script>
+</body>
+</html>
