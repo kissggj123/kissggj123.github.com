@@ -7,7 +7,7 @@
         const bar = document.createElement('div');
         bar.id = 'bcos-menubar';
         bar.innerHTML = '<div style="display:flex;align-items:center;gap:8px">'
-            + '<span style="font-size:16px;filter:drop-shadow(0 2px 6px rgba(124,140,255,.4))">🐰</span>'
+            + '<span id="mb-avatar" style="font-size:16px;filter:drop-shadow(0 2px 6px rgba(124,140,255,.4));display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;overflow:hidden;border-radius:50%">🐰</span>'
             + '<span style="font-weight:700">Bunny Cockpit</span></div>'
             + '<div style="display:flex;align-items:center;gap:14px">'
             + '<span id="mb-battery" style="font-size:12px;opacity:.9" title="电池">🔋</span>'
@@ -55,6 +55,17 @@
             }
         }
         tick(); setInterval(tick, 1000);
-        console.log('[Menubar] 菜单栏+状态栏已就绪');
+        BCOS.menubar.updateAvatar();
+        };
+    BCOS.menubar.updateAvatar = function() {
+        const el = document.getElementById('mb-avatar');
+        if (!el) return;
+        let av = '🐰';
+        try { av = localStorage.getItem('bcosAvatar') || '🐰'; } catch(e) {}
+        if (av.startsWith('data:')) {
+            el.innerHTML = '<img src="' + av + '" style="width:100%;height:100%;object-fit:cover">';
+        } else {
+            el.textContent = av;
+        }
     };
 })();

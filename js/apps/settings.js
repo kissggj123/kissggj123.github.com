@@ -9,6 +9,7 @@
                 + '<div style="width:180px;background:rgba(255,255,255,.04);padding:12px;border-right:1px solid rgba(255,255,255,.08)">'
                 + '<div class="st-nav" data-p="wallpaper" style="padding:10px;border-radius:10px;cursor:pointer;background:rgba(124,140,255,.2)">🖼️ 壁纸</div>'
                 + '<div class="st-nav" data-p="appearance" style="padding:10px;border-radius:10px;cursor:pointer">🎨 外观</div>'
+                + '<div class="st-nav" data-p="avatar" style="padding:10px;border-radius:10px;cursor:pointer">🐰 头像</div>'
                 + '<div class="st-nav" data-p="about" style="padding:10px;border-radius:10px;cursor:pointer">ℹ️ 关于</div></div>'
                 + '<div style="flex:1;padding:20px;overflow:auto" id="st-main"></div></div>';
             const w = BCOS.window.open('settings', '⚙️ 系统设置', html);
@@ -47,6 +48,41 @@
                         + '<div style="flex:1;padding:20px;border-radius:14px;background:rgba(255,255,255,.06);text-align:center;cursor:pointer;border:2px solid #7c8cff"><div style="font-size:32px">🌙</div><div style="margin-top:8px;font-size:13px">深色</div></div>'
                         + '<div style="flex:1;padding:20px;border-radius:14px;background:rgba(255,255,255,.03);text-align:center;opacity:.4"><div style="font-size:32px">☀️</div><div style="margin-top:8px;font-size:13px">浅色 (待开发)</div></div>'
                         + '</div><div style="margin-top:16px;font-size:12px;opacity:.5">Liquid Glass 毛玻璃效果已开启 · GPU 加速</div>';
+                } else if (pane === 'avatar') {
+                    const curAvatar = (() => { try { return localStorage.getItem('bcosAvatar') || '🐰'; } catch(e) { return '🐰'; } })();
+                    const isPhoto = curAvatar.startsWith('data:');
+                    const emojis = ['🐰','🐱','🐶','🦊','🐼','🐨','🦁','🐯','🦄','🐸','🐙','🦋','🌸','⭐','🎀','🔥'];
+                    main.innerHTML = '<h3 style="margin-bottom:16px;font-size:16px">头像设置</h3>'
+                        + '<div style="text-align:center;margin-bottom:20px">'
+                        + (isPhoto
+                            ? '<img src="' + curAvatar + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #7c8cff">'
+                            : '<div style="font-size:64px">' + curAvatar + '</div>')
+                        + '</div>'
+                        + '<div style="margin-bottom:16px"><div style="font-size:13px;opacity:.7;margin-bottom:8px">选择 Emoji</div>'
+                        + '<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px">'
+                        + emojis.map(function(e) { return '<div class="av-emoji" data-e="' + e + '" style="font-size:28px;text-align:center;padding:8px;border-radius:10px;cursor:pointer;background:' + (e === curAvatar ? 'rgba(124,140,255,.3)' : 'rgba(255,255,255,.05)') + '">' + e + '</div>'; }).join('')
+                        + '</div></div>'
+                        + '<div><div style="font-size:13px;opacity:.7;margin-bottom:8px">或上传照片</div>'
+                        + '<label style="display:inline-block;padding:10px 20px;border-radius:10px;background:rgba(124,140,255,.2);cursor:pointer;font-size:13px">📷 选择照片<input type="file" id="av-file" accept="image/*" style="display:none"></label></div>';
+                    main.querySelectorAll('.av-emoji').forEach(function(el) {
+                        el.onclick = function() {
+                            try { localStorage.setItem('bcosAvatar', el.dataset.e); } catch(e) {}
+                            BCOS.menubar.updateAvatar();
+                            show('avatar');
+                        };
+                    });
+                    const fi = main.querySelector('#av-file');
+                    if (fi) fi.onchange = function(e) {
+                        const f = e.target.files[0];
+                        if (!f) return;
+                        const r = new FileReader();
+                        r.onload = function(ev) {
+                            try { localStorage.setItem('bcosAvatar', ev.target.result); } catch(err) {}
+                            BCOS.menubar.updateAvatar();
+                            show('avatar');
+                        };
+                        r.readAsDataURL(f);
+                    };
                 } else {
                     main.innerHTML = '<div style="text-align:center;padding:32px"><div style="font-size:56px">🐰</div><div style="font-size:20px;font-weight:700;margin:12px 0">Bunny Cockpit OS</div><div style="opacity:.5;font-size:13px">' + BCOS.system.version() + '</div><div style="margin-top:16px;font-size:12px;opacity:.4">Phase 2+3 · Aurora</div></div>';
                 }
