@@ -16,8 +16,8 @@
             + '<span class="mb-item" data-app="about" style="cursor:pointer;font-size:13px;opacity:.9">本机</span>'
             + '</div>'
             + '<div style="display:flex;align-items:center;gap:12px;font-size:12px">'
-            + '<span id="mb-fullscreen" style="cursor:pointer;opacity:.85;display:inline-flex" title="全屏"></span>'
-            + '<span id="mb-launchpad" style="cursor:pointer;display:inline-flex" title="Launchpad"></span>'
+            + '<span id="mb-fullscreen" style="cursor:pointer;font-size:14px;opacity:.85" title="全屏">⛶</span>'
+            + '<span id="mb-launchpad" style="cursor:pointer;font-size:15px" title="Launchpad">🚀</span>'
             + '<span id="mb-battery" style="opacity:.9">🔋--%</span>'
             + '<span id="mb-clock" style="font-variant-numeric:tabular-nums;opacity:.9"></span>'
             + '</div>';
@@ -63,13 +63,6 @@
         }
         tick(); setInterval(tick, 1000);
         BCOS.menubar.updateAvatar();
-        // 填充 SF 图标
-        try {
-            if (window.BCOS_ICONS) {
-                document.getElementById('mb-fullscreen').innerHTML = BCOS_ICONS.fullscreen;
-                document.getElementById('mb-launchpad').innerHTML = BCOS_ICONS.rocket;
-            }
-        } catch(e) {}
         console.log('[Menubar] 旧版样式菜单栏已就绪');
     };
     BCOS.menubar.updateAvatar = function() {
