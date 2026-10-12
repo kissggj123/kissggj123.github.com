@@ -260,7 +260,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9423'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9424'; } catch(e) {}
 // 恢复壁纸
 try {
   const wpName = localStorage.getItem('bcosBgWp');
@@ -355,8 +355,8 @@ const CAR_WPS = [{"name": "星空原野 · 银河漫步", "file": "wallpaper/Sta
   // 用 car.html 的 14 张壁纸
   try {
     const wps = CAR_WPS;
-    document.getElementById('wp-grid').innerHTML = wps.map(function(w){
-      return '<div onclick="setWallpaper(\'' + w.id + '\')" style="cursor:pointer;border-radius:10px;overflow:hidden;position:relative;height:60px;background:#222" title="' + w.name + '">'
+    document.getElementById('wp-grid').innerHTML = wps.map(function(w, idx){
+      return '<div onclick="setWallpaper(" + idx + ")" style="cursor:pointer;border-radius:10px;overflow:hidden;position:relative;height:60px;background:#222" title="' + w.name + '">'
         + '<img src="./' + w.file + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\'">'
         + '<div style="position:absolute;bottom:0;left:0;right:0;font-size:9px;padding:2px 4px;background:rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + w.name + '</div></div>';
     }).join('');
@@ -388,9 +388,9 @@ function setTheme(idx) {
   try { localStorage.setItem('bcosTheme', idx); } catch(e) {}
 }
 let _cropWp = null;
-function setWallpaper(id) {
+function setWallpaper(idx) {
   const wps = CAR_WPS || [];
-  const w = wps.find(function(x){ return x.name === id; }) || wps[id];
+  const w = wps[idx];
   if (!w) return;
   // 竖屏打开框选器
   if (window.innerHeight > window.innerWidth) {
