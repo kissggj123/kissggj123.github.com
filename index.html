@@ -298,10 +298,14 @@ function fixTop() {
   const h = window.innerHeight, w = window.innerWidth;
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
-  // 横屏宽屏自适应：用 zoom 真实放大布局（基准 1280x720）
+  // 横屏自适应：按真实屏幕分辨率 + DPI 动态缩放
   if (w > h && w >= 700) {
-    const s = Math.min(w / 1280, h / 720);
-    const z = Math.max(1, Math.min(2.5, s));
+    const sw = screen.width || w, sh = screen.height || h;
+    const dpr = window.devicePixelRatio || 1;
+    // 物理像素
+    const pw = sw * dpr, ph = sh * dpr;
+    // 目标：内容占屏幕宽度的 70%，按 16:9 设计稿比例
+    const z = Math.max(1, Math.min(3, (w / pw) * (pw / 900)));
     main.style.zoom = z;
   } else {
     main.style.zoom = 1;
