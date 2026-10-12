@@ -1,4 +1,4 @@
-/* 内置应用 - 系统设置 (macOS Ventura 风格) */
+/* 内置应用 - 系统设置 (完整功能) */
 (function() {
     'use strict';
     BCOS.apps = BCOS.apps || {};
@@ -12,17 +12,35 @@
                 + '<div class="st-nav" data-p="about" style="padding:10px;border-radius:10px;cursor:pointer">ℹ️ 关于</div></div>'
                 + '<div style="flex:1;padding:20px;overflow:auto" id="st-main"></div></div>';
             const w = BCOS.window.open('settings', '⚙️ 系统设置', html);
-            const show = function(pane) {
+            const show = async function(pane) {
                 const main = w.querySelector('#st-main');
                 w.querySelectorAll('.st-nav').forEach(function(n) { n.style.background = n.dataset.p === pane ? 'rgba(124,140,255,.2)' : 'none'; });
                 if (pane === 'wallpaper') {
-                    main.innerHTML = '<h3 style="margin-bottom:16px">桌面壁纸</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px" id="wp-grid"></div>';
-                    // 占位：实际壁纸列表由 wallpaper 服务提供
-                    main.querySelector('#wp-grid').innerHTML = '<div style="padding:20px;opacity:.5">壁纸服务 Phase 3 接入</div>';
+                    main.innerHTML = '<h3 style="margin-bottom:16px;font-size:16px">桌面壁纸</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px" id="wp-grid"><div style="opacity:.5">加载中...</div></div>';
+                    const list = await BCOS.wallpaper.list();
+                    const grid = main.querySelector('#wp-grid');
+                    const curId = (() => { try { return localStorage.getItem('bcosWallpaperId'); } catch(e) { return null; } })();
+                    grid.innerHTML = list.map(function(wp) {
+                        const sel = wp.id === curId ? 'outline:2px solid #7c8cff;outline-offset:2px;' : '';
+                        const thumb = './' + (wp.file || '');
+                        return '<div class="wp-item" data-id="' + wp.id + '" style="cursor:pointer;border-radius:12px;overflow:hidden;' + sel + '">'
+                            + '<div style="aspect-ratio:16/10;background:url(' + thumb + ') center/cover,#1a2a4a"></div>'
+                            + '<div style="padding:8px;font-size:11px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (wp.name || wp.id) + '</div></div>';
+                    }).join('') || '<div style="opacity:.5">无壁纸</div>';
+                    grid.querySelectorAll('.wp-item').forEach(function(el) {
+                        el.onclick = function() {
+                            BCOS.wallpaper.set(el.dataset.id);
+                            show('wallpaper'); // 刷新选中态
+                        };
+                    });
                 } else if (pane === 'appearance') {
-                    main.innerHTML = '<h3 style="margin-bottom:16px">外观</h3><div style="opacity:.6">深色模式 (默认)<br>Liquid Glass 开启</div>';
+                    main.innerHTML = '<h3 style="margin-bottom:16px;font-size:16px">外观</h3>'
+                        + '<div style="display:flex;gap:12px">'
+                        + '<div style="flex:1;padding:20px;border-radius:14px;background:rgba(255,255,255,.06);text-align:center;cursor:pointer;border:2px solid #7c8cff"><div style="font-size:32px">🌙</div><div style="margin-top:8px;font-size:13px">深色</div></div>'
+                        + '<div style="flex:1;padding:20px;border-radius:14px;background:rgba(255,255,255,.03);text-align:center;opacity:.4"><div style="font-size:32px">☀️</div><div style="margin-top:8px;font-size:13px">浅色 (待开发)</div></div>'
+                        + '</div><div style="margin-top:16px;font-size:12px;opacity:.5">Liquid Glass 毛玻璃效果已开启 · GPU 加速</div>';
                 } else {
-                    main.innerHTML = '<div style="text-align:center;padding:32px"><div style="font-size:48px">🐰</div><div style="font-size:20px;font-weight:700;margin:12px 0">Bunny Cockpit OS</div><div style="opacity:.5">' + BCOS.system.version() + '</div></div>';
+                    main.innerHTML = '<div style="text-align:center;padding:32px"><div style="font-size:56px">🐰</div><div style="font-size:20px;font-weight:700;margin:12px 0">Bunny Cockpit OS</div><div style="opacity:.5;font-size:13px">' + BCOS.system.version() + '</div><div style="margin-top:16px;font-size:12px;opacity:.4">Phase 2+3 · Aurora</div></div>';
                 }
             };
             w.querySelectorAll('.st-nav').forEach(function(n) { n.onclick = function() { show(n.dataset.p); }; });

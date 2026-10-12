@@ -2,18 +2,19 @@
 (function() {
     'use strict';
     BCOS.desktop = BCOS.desktop || {};
-    BCOS.desktop.init = function() {
-        // 壁纸层 (GPU)
+    BCOS.desktop.init = async function() {
         let bg = document.getElementById('bcos-desktop-bg');
         if (!bg) {
             bg = document.createElement('div');
             bg.id = 'bcos-desktop-bg';
             document.body.insertBefore(bg, document.body.firstChild);
         }
-        // 应用壁纸
-        const cur = BCOS.wallpaper.current();
-        if (cur) bg.style.backgroundImage = 'url(' + cur + ')';
-        else bg.style.background = 'linear-gradient(135deg,#0B1026,#1a2a4a)';
+        // 默认渐变
+        bg.style.background = 'linear-gradient(135deg,#0B1026,#1a2a4a)';
+        // 恢复壁纸
+        if (BCOS.wallpaper && BCOS.wallpaper.restore) {
+            try { await BCOS.wallpaper.restore(); } catch(e) {}
+        }
         console.log('[Desktop] Phase 2 桌面已初始化 (GPU)');
     };
 })();
