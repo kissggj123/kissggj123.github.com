@@ -298,10 +298,11 @@ function fixTop() {
   const h = window.innerHeight, w = window.innerWidth;
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
-  // 横屏宽屏自适应：用 zoom 真实放大布局（基准 1280x720）
+  // 横屏自适应：实测内容宽度，动态缩放（无写死基准）
   if (w > h && w >= 700) {
-    const s = Math.min(w / 1280, h / 720);
-    const z = Math.max(1, Math.min(2.5, s));
+    main.style.zoom = 1;
+    const cw = main.getBoundingClientRect().width || 600;
+    const z = Math.max(1, Math.min(3, (w * 0.75) / cw));
     main.style.zoom = z;
   } else {
     main.style.zoom = 1;
