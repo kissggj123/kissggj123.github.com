@@ -9,7 +9,10 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
 #bg{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)}
-#main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}#main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(12px,3vh,24px);text-align:center;overflow-y:auto}
+.logo{font-size:clamp(48px,10vw,64px) !important;width:clamp(64px,14vw,88px) !important;height:clamp(64px,14vw,88px) !important}
+.days .num{font-size:clamp(56px,16vw,84px) !important}
+h1{font-size:clamp(18px,4.5vw,22px) !important}
 .logo{font-size:64px;margin-bottom:12px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 8px 24px rgba(124,140,255,.35));width:88px;height:88px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%}
 .logo img{width:100%;height:100%;object-fit:cover}
 h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradient(90deg,#a8b8ff,#d8b8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -50,6 +53,12 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 .btn.car{background:linear-gradient(135deg,#7c8cff,#b48cff);color:#fff;box-shadow:0 8px 24px rgba(124,140,255,.35)}
 .btn.fs{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#main > *{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) backwards}
+#main > *:nth-child(1){animation-delay:.05s}#main > *:nth-child(2){animation-delay:.1s}
+#main > *:nth-child(3){animation-delay:.15s}#main > *:nth-child(4){animation-delay:.2s}
+#main > *:nth-child(5){animation-delay:.25s}#main > *:nth-child(6){animation-delay:.3s}
+#main > *:nth-child(7){animation-delay:.35s}#main > *:nth-child(8){animation-delay:.4s}
 #car-app{position:fixed;inset:0;z-index:9000;display:none;background:#000}
 #car-app.open{display:block}
 #car-app iframe{width:100%;height:100%;border:none}
@@ -66,8 +75,17 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 </head>
 <body>
 <div id="bg"></div>
+<div style="position:fixed;top:14px;right:14px;z-index:100;display:flex;gap:8px">
+<button onclick="setTheme('purple')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#7c8cff,#b48cff);cursor:pointer" title="紫"></button>
+<button onclick="setTheme('pink')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#ff6b9d,#ffb5ba);cursor:pointer" title="粉"></button>
+<button onclick="setTheme('blue')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#0ea5e9,#7dd3fc);cursor:pointer" title="蓝"></button>
+<button onclick="setTheme('green')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#4caf50,#a5d6a7);cursor:pointer" title="绿"></button>
+</div>
 <div id="main">
+<div style="position:relative">
 <div class="logo" id="main-logo" onclick="openAvatarPicker()" style="cursor:pointer" title="点击更换头像">🐰</div>
+<div onclick="openAvatarPicker()" style="position:absolute;bottom:0;right:-8px;width:28px;height:28px;border-radius:50%;background:#7c8cff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)">✏️</div>
+</div>
 <h1>兔可可相伴虚拟纪元</h1>
 <div class="since">SINCE 2024.03.12</div>
 <div class="days">
@@ -228,6 +246,28 @@ document.getElementById('av-file').addEventListener('change', function(e) {
   };
   r.readAsDataURL(f);
 });
+function setTheme(name) {
+  const themes = {
+    purple: ['#7c8cff','#b48cff'],
+    pink: ['#ff6b9d','#ffb5ba'],
+    blue: ['#0ea5e9','#7dd3fc'],
+    green: ['#4caf50','#a5d6a7']
+  };
+  const t = themes[name] || themes.purple;
+  document.documentElement.style.setProperty('--t1', t[0]);
+  document.documentElement.style.setProperty('--t2', t[1]);
+  try { localStorage.setItem('bcosTheme', name); } catch(e) {}
+  // 应用到渐变元素
+  document.querySelectorAll('h1').forEach(function(el){
+    el.style.background = 'linear-gradient(90deg,' + t[0] + ',' + t[1] + ')';
+    el.style.webkitBackgroundClip = 'text';
+  });
+}
+// 恢复主题
+try {
+  const st = localStorage.getItem('bcosTheme');
+  if (st) setTimeout(function(){ setTheme(st); }, 100);
+} catch(e) {}
 function toggleFS() {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen().catch(function(){});
