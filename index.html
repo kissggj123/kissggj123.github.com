@@ -89,11 +89,13 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 </head>
 <body>
 <div id="bg"></div>
-<div style="position:fixed;top:14px;right:14px;z-index:100;display:flex;gap:8px">
-<button onclick="setTheme('purple')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#7c8cff,#b48cff);cursor:pointer" title="紫"></button>
-<button onclick="setTheme('pink')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#ff6b9d,#ffb5ba);cursor:pointer" title="粉"></button>
-<button onclick="setTheme('blue')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#0ea5e9,#7dd3fc);cursor:pointer" title="蓝"></button>
-<button onclick="setTheme('green')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#4caf50,#a5d6a7);cursor:pointer" title="绿"></button>
+<button onclick="openThemePicker()" style="position:fixed;top:14px;right:14px;z-index:100;width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);backdrop-filter:blur(8px);cursor:pointer;font-size:18px" title="主题">🎨</button>
+<div id="theme-picker" style="position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(12px)">
+<div style="background:#1a1e35;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px;width:min(360px,92vw);max-height:70vh;overflow-y:auto">
+<h3 style="font-size:15px;margin-bottom:12px;text-align:center">🎨 选择主题</h3>
+<div id="theme-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+<button onclick="closeThemePicker()" style="margin-top:12px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer">关闭</button>
+</div>
 </div>
 <div id="main">
 <div class="left-col">
@@ -265,27 +267,66 @@ function setAvatar(e) {
   closeAvatarPicker();
 }
 
-function setTheme(name) {
-  const themes = {
-    purple: ['#7c8cff','#b48cff'],
-    pink: ['#ff6b9d','#ffb5ba'],
-    blue: ['#0ea5e9','#7dd3fc'],
-    green: ['#4caf50','#a5d6a7']
-  };
-  const t = themes[name] || themes.purple;
-  document.documentElement.style.setProperty('--t1', t[0]);
-  document.documentElement.style.setProperty('--t2', t[1]);
-  try { localStorage.setItem('bcosTheme', name); } catch(e) {}
-  // 应用到渐变元素
-  document.querySelectorAll('h1').forEach(function(el){
-    el.style.background = 'linear-gradient(90deg,' + t[0] + ',' + t[1] + ')';
-    el.style.webkitBackgroundClip = 'text';
-  });
+const THEMES = [
+{n:'星空紫',e:'🔮',c:['#7c8cff','#b48cff'],bg:'radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)'},
+{n:'樱花粉',e:'🌸',c:['#ff6b9d','#ffb5ba'],bg:'radial-gradient(ellipse at 30% 20%,#4a1a2a 0%,#1a0a12 60%,#0d0608 100%)'},
+{n:'海洋蓝',e:'🌊',c:['#0ea5e9','#7dd3fc'],bg:'radial-gradient(ellipse at 30% 20%,#0a2a4a 0%,#060a1a 60%,#04060d 100%)'},
+{n:'薄荷绿',e:'🌿',c:['#4caf50','#a5d6a7'],bg:'radial-gradient(ellipse at 30% 20%,#0a3a1a 0%,#061a0a 60%,#030d06 100%)'},
+{n:'落日橙',e:'🌅',c:['#ff9800','#ffcc80'],bg:'radial-gradient(ellipse at 30% 20%,#4a2a0a 0%,#1a1006 60%,#0d0803 100%)'},
+{n:'熔岩红',e:'🔥',c:['#f44336','#ff8a80'],bg:'radial-gradient(ellipse at 30% 20%,#4a0a0a 0%,#1a0606 60%,#0d0303 100%)'},
+{n:'极光绿',e:'🌌',c:['#00e676','#69f0ae'],bg:'radial-gradient(ellipse at 30% 20%,#0a3a2a 0%,#061a14 60%,#030d0a 100%)'},
+{n:'薰衣草',e:'💜',c:['#9c27b0','#ce93d8'],bg:'radial-gradient(ellipse at 30% 20%,#2a0a3a 0%,#120614 60%,#0a030d 100%)'},
+{n:'柠檬黄',e:'🍋',c:['#ffeb3b','#fff59d'],bg:'radial-gradient(ellipse at 30% 20%,#3a320a 0%,#161206 60%,#0d0a03 100%)'},
+{n:'冰雪白',e:'❄️',c:['#e0e0e0','#ffffff'],bg:'radial-gradient(ellipse at 30% 20%,#2a2e3a 0%,#12141a 60%,#0a0b0d 100%)'},
+{n:'曜石黑',e:'🖤',c:['#424242','#9e9e9e'],bg:'radial-gradient(ellipse at 30% 20%,#1a1a1a 0%,#0a0a0a 60%,#000000 100%)'},
+{n:'珊瑚橙',e:'🪸',c:['#ff7043','#ffab91'],bg:'radial-gradient(ellipse at 30% 20%,#3a1a0a 0%,#160a06 60%,#0d0603 100%)'},
+{n:'孔雀蓝',e:'🦚',c:['#00bcd4','#80deea'],bg:'radial-gradient(ellipse at 30% 20%,#0a2e32 0%,#061416 60%,#030a0b 100%)'},
+{n:'玫瑰金',e:'🌹',c:['#e91e63','#f48fb1'],bg:'radial-gradient(ellipse at 30% 20%,#3a0a1e 0%,#16060c 60%,#0d0306 100%)'},
+{n:'葡萄紫',e:'🍇',c:['#673ab7','#b39ddb'],bg:'radial-gradient(ellipse at 30% 20%,#1e0a3a 0%,#0c0616 60%,#06030d 100%)'},
+{n:'青瓷',e:'🏺',c:['#009688','#80cbc4'],bg:'radial-gradient(ellipse at 30% 20%,#0a2e2a 0%,#061614 60%,#030b0a 100%)'},
+{n:'琥珀',e:'🧡',c:['#ffc107','#ffe082'],bg:'radial-gradient(ellipse at 30% 20%,#3a2e0a 0%,#161206 60%,#0d0a03 100%)'},
+{n:'樱桃红',e:'🍒',c:['#d32f2f','#ef9a9a'],bg:'radial-gradient(ellipse at 30% 20%,#3a0a0a 0%,#160606 60%,#0d0303 100%)'},
+{n:'天青',e:'🌤️',c:['#03a9f4','#81d4fa'],bg:'radial-gradient(ellipse at 30% 20%,#0a2a3a 0%,#061216 60%,#030a0d 100%)'},
+{n:'彩虹',e:'🌈',c:['#ff4081','#7c4dff'],bg:'radial-gradient(ellipse at 30% 20%,#2a0a2e 0%,#120614 60%,#0a030d 100%)'}
+];
+function openThemePicker() {
+  document.getElementById('theme-grid').innerHTML = THEMES.map(function(t, i) {
+    return '<div onclick="setTheme(' + i + ')" style="text-align:center;cursor:pointer;padding:8px;border-radius:12px;background:rgba(255,255,255,.05)" title="' + t.n + '">'
+      + '<div style="width:36px;height:36px;border-radius:50%;margin:0 auto;background:linear-gradient(135deg,' + t.c[0] + ',' + t.c[1] + ');box-shadow:0 0 12px ' + t.c[0] + '66"></div>'
+      + '<div style="font-size:10px;margin-top:4px">' + t.e + t.n + '</div></div>';
+  }).join('');
+  document.getElementById('theme-picker').style.display = 'flex';
 }
-// 恢复主题
+function closeThemePicker() { document.getElementById('theme-picker').style.display = 'none'; }
+function setTheme(idx) {
+  const t = THEMES[idx] || THEMES[0];
+  closeThemePicker();
+  // 切换特效：闪光
+  const flash = document.createElement('div');
+  flash.style.cssText = 'position:fixed;inset:0;z-index:9999;background:' + t.c[0] + ';opacity:.3;pointer-events:none;transition:opacity .5s';
+  document.body.appendChild(flash);
+  setTimeout(function(){ flash.style.opacity = '0'; }, 50);
+  setTimeout(function(){ flash.remove(); }, 600);
+  // 应用主题
+  document.getElementById('bg').style.background = t.bg;
+  document.getElementById('bg').style.transition = 'background .5s ease';
+  document.querySelectorAll('h1').forEach(function(el){
+    el.style.background = 'linear-gradient(90deg,' + t.c[0] + ',' + t.c[1] + ')';
+    el.style.webkitBackgroundClip = 'text';
+    el.style.transition = 'all .5s ease';
+  });
+  try { localStorage.setItem('bcosTheme', idx); } catch(e) {}
+}
 try {
   const st = localStorage.getItem('bcosTheme');
-  if (st) setTimeout(function(){ setTheme(st); }, 100);
+  if (st !== null) setTimeout(function(){ 
+    const t = THEMES[parseInt(st)] || THEMES[0];
+    document.getElementById('bg').style.background = t.bg;
+    document.querySelectorAll('h1').forEach(function(el){
+      el.style.background = 'linear-gradient(90deg,' + t.c[0] + ',' + t.c[1] + ')';
+      el.style.webkitBackgroundClip = 'text';
+    });
+  }, 100);
 } catch(e) {}
 function toggleFS() {
   if (document.fullscreenElement) document.exitFullscreen();
