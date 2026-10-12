@@ -61,9 +61,12 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 /* 横屏：左右两栏 */
 @media (orientation: landscape) and (min-width: 700px) {
   #main{flex-direction:row !important;justify-content:center;gap:clamp(24px,5vw,64px);align-items:center}
-  #main .left-col{display:flex;flex-direction:column;align-items:center}
-  #main .right-col{display:flex;flex-direction:column;align-items:center;max-width:380px}
+  #main .left-col{display:flex;flex-direction:column;align-items:center;animation:floatY 6s ease-in-out infinite}
+  #main .right-col{display:flex;flex-direction:column;align-items:center;max-width:380px;animation:floatY 6s ease-in-out 1s infinite}
   .days .num{font-size:clamp(64px,10vw,96px) !important}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .target,.next-panel{transition:transform .3s ease, box-shadow .3s ease}
+  .target:hover,.next-panel:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 8px 32px rgba(124,140,255,.25)}
 }
 #main > *{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) backwards}
 #main > *:nth-child(1){animation-delay:.05s}#main > *:nth-child(2){animation-delay:.1s}
