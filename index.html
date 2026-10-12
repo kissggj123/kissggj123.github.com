@@ -23,6 +23,12 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 .target .t b{color:#ffb54d}
 .target .bar{margin-top:10px;height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
 .target .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#7c8cff,#b48cff);transition:width .5s ease}
+.milestones{margin-top:16px;width:min(340px,86vw)}
+.ms-toggle{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-size:13px;cursor:pointer}
+.ms-list{margin-top:8px;max-height:220px;overflow-y:auto;text-align:left}
+.ms-item{display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ms-item.done{opacity:.45}
+.ms-item .d{color:#ffb54d}
 .actions{margin-top:32px;display:flex;gap:14px}
 .btn{padding:14px 32px;border-radius:16px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s}
 .btn:active{transform:scale(.95)}
@@ -50,6 +56,10 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="t"><span>🎯 <span id="target-label">--</span></span><b id="target-remain">--</b></div>
 <div class="bar"><i id="target-bar" style="width:0%"></i></div>
 </div>
+<div class="milestones">
+<button class="ms-toggle" onclick="toggleMS()">🏆 里程碑 <span id="ms-arrow">▼</span></button>
+<div class="ms-list" id="ms-list" style="display:none"></div>
+</div>
 <div id="car-app">
 <button class="close-btn" onclick="closeCar()">✕</button>
 <iframe src="./car.html"></iframe>
@@ -71,7 +81,7 @@ const MILESTONES = [
 function upd() {
   const now = Date.now();
   const totalDays = (now - START) / 86400000;
-  document.getElementById('days-num').textContent = Math.floor(totalDays);
+  document.getElementById('days-num').textContent = totalDays.toFixed(3);
   const h = Math.floor(totalDays * 24) % 24, m = Math.floor(totalDays * 1440) % 60, s = Math.floor(totalDays * 86400) % 60;
   document.getElementById('voy-h').textContent = h;
   document.getElementById('voy-m').textContent = String(m).padStart(2,'0');
@@ -85,6 +95,24 @@ function upd() {
     document.getElementById('target-remain').textContent = '还有 ' + Math.ceil(nx.days - totalDays) + ' 天';
     document.getElementById('target-bar').style.width = pct + '%';
   }
+}
+function toggleMS() {
+  const l = document.getElementById('ms-list');
+  const a = document.getElementById('ms-arrow');
+  const show = l.style.display === 'none';
+  l.style.display = show ? 'block' : 'none';
+  a.textContent = show ? '▲' : '▼';
+  if (show) renderMS();
+}
+function renderMS() {
+  const now = Date.now();
+  const totalDays = (now - START) / 86400000;
+  const l = document.getElementById('ms-list');
+  l.innerHTML = MILESTONES.map(function(m) {
+    const done = totalDays >= m.days;
+    const remain = done ? '✅' : '剩 ' + Math.ceil(m.days - totalDays) + ' 天';
+    return '<div class="ms-item' + (done ? ' done' : '') + '"><span>' + (done ? '🏆 ' : '⏳ ') + m.label + '</span><span class="d">' + remain + '</span></div>';
+  }).join('');
 }
 upd(); setInterval(upd, 1000);
 function openCar() { document.getElementById('car-app').classList.add('open'); }
