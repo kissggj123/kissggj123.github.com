@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>兔可可纪念日 🐰</title>
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
@@ -107,11 +109,8 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div style="font-size:12px;opacity:.6;margin-bottom:8px;text-align:left">🖼️ 壁纸背景</div>
 <div id="wp-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
 <div id="wp-crop" style="display:none;position:fixed;inset:0;z-index:9600;background:#000">
-<img id="wp-crop-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
-<div id="wp-frame" style="position:absolute;border:2px solid #7c8cff;box-shadow:0 0 0 9999px rgba(0,0,0,.6);cursor:move;touch-action:none">
-<div style="position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap;color:#fff">拖动选择显示区域</div>
-</div>
-<div style="position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:12px">
+<img id="wp-crop-img" style="max-width:100%">
+<div style="position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:9601">
 <button onclick="confirmCrop()" style="padding:12px 32px;border-radius:12px;border:none;background:#7c8cff;color:#fff;font-weight:700">确定</button>
 <button onclick="closeCrop()" style="padding:12px 32px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">取消</button>
 </div>
@@ -260,7 +259,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9424'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9425'; } catch(e) {}
 // 恢复壁纸
 try {
   const wpName = localStorage.getItem('bcosBgWp');
@@ -402,39 +401,40 @@ function setWallpaper(idx) {
     try { localStorage.setItem('bcosBgWp', w.name); localStorage.removeItem('bcosTheme'); } catch(e) {}
   }
 }
+let _cropper = null;
 function openCrop(url) {
-  document.getElementById('wp-crop-img').src = url;
   document.getElementById('wp-crop').style.display = 'block';
-  // 框选框为竖屏比例
-  const frame = document.getElementById('wp-frame');
-  const fw = Math.min(window.innerWidth * 0.8, window.innerHeight * 0.5 * 0.56);
-  const fh = fw / 0.56;
-  frame.style.width = fw + 'px';
-  frame.style.height = fh + 'px';
-  frame.style.left = (window.innerWidth - fw) / 2 + 'px';
-  frame.style.top = (window.innerHeight - fh) / 2 + 'px';
-  // 拖动
-  let dx, dy, sl, st;
-  frame.onpointerdown = function(e){ dx = e.clientX; dy = e.clientY; sl = frame.offsetLeft; st = frame.offsetTop; frame.setPointerCapture(e.pointerId); };
-  frame.onpointermove = function(e){
-    if (dx === undefined) return;
-    frame.style.left = Math.max(0, Math.min(window.innerWidth - fw, sl + e.clientX - dx)) + 'px';
-    frame.style.top = Math.max(0, Math.min(window.innerHeight - fh, st + e.clientY - dy)) + 'px';
-  };
-  frame.onpointerup = function(){ dx = undefined; };
-}
-function closeCrop() { document.getElementById('wp-crop').style.display = 'none'; }
-function confirmCrop() {
-  const frame = document.getElementById('wp-frame');
   const img = document.getElementById('wp-crop-img');
-  // 计算百分比位置
-  const px = (frame.offsetLeft + frame.offsetWidth/2) / window.innerWidth * 100;
-  const py = (frame.offsetTop + frame.offsetHeight/2) / window.innerHeight * 100;
+  img.src = url;
+  if (_cropper) _cropper.destroy();
+  img.onload = function() {
+    _cropper = new Cropper(img, {
+      aspectRatio: 9/16,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 0.8,
+      guides: true,
+      center: true
+    });
+  };
+}
+function closeCrop() {
+  document.getElementById('wp-crop').style.display = 'none';
+  if (_cropper) { _cropper.destroy(); _cropper = null; }
+}
+function confirmCrop() {
+  if (_cropper) {
+    const data = _cropper.getData();
+    const imgData = _cropper.getImageData();
+    // 计算中心点百分比
+    const px = (data.x + data.width/2) / imgData.naturalWidth * 100;
+    const py = (data.y + data.height/2) / imgData.naturalHeight * 100;
+    try { localStorage.setItem('bcosBgPos', JSON.stringify({x:px, y:py})); } catch(e) {}
+  }
   closeCrop(); closeThemePicker();
   applyWallpaper(_cropWp.file);
   try {
     localStorage.setItem('bcosBgWp', _cropWp.name);
-    localStorage.setItem('bcosBgPos', JSON.stringify({x:px, y:py}));
     localStorage.removeItem('bcosTheme');
   } catch(e) {}
 }
