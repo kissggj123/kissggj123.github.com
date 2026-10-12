@@ -1,0 +1,71 @@
+/* BCOS Shell - macOS Tahoe Liquid Glass */
+:root {
+  --glass-bg: rgba(20, 24, 44, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-blur: blur(40px) saturate(180%);
+  --radius-win: 22px;
+  --radius-btn: 10px;
+}
+/* 菜单栏 - macOS 通顶毛玻璃 */
+#bcos-menubar {
+  position: fixed; top: 0; left: 0; right: 0; height: 34px; z-index: 9000;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+  background: var(--glass-bg); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border); color: #fff; font-size: 13px;
+  transform: translateZ(0); /* GPU */
+}
+/* 桌面壁纸层 */
+#bcos-desktop-bg {
+  position: fixed; inset: 0; z-index: -5;
+  background-size: cover; background-position: center;
+  transform: translateZ(0); will-change: transform;
+}
+/* 窗口 - Liquid Glass */
+.bcos-window {
+  position: fixed; z-index: 100;
+  display: flex; flex-direction: column;
+  border-radius: var(--radius-win); overflow: hidden;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  transform: translateZ(0); /* GPU 加速拖动 */
+}
+.bcos-window .win-titlebar {
+  display: flex; align-items: center; padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  cursor: move; user-select: none;
+}
+.bcos-window .win-traffic { display: flex; gap: 8px; margin-right: 12px; }
+.bcos-window .win-traffic i {
+  width: 12px; height: 12px; border-radius: 50%; cursor: pointer;
+}
+.bcos-window .win-traffic .close { background: #ff5f57; }
+.bcos-window .win-traffic .min { background: #febc2e; }
+.bcos-window .win-traffic .max { background: #28c840; }
+/* Launchpad 式应用抽屉 */
+#bcos-launchpad {
+  position: fixed; inset: 0; z-index: 8000; display: none;
+  background: rgba(8, 10, 24, 0.6);
+  -webkit-backdrop-filter: blur(60px) saturate(150%); backdrop-filter: blur(60px) saturate(150%);
+}
+#bcos-launchpad.open { display: flex; flex-direction: column; align-items: center; padding: 80px 20px; }
+#bcos-launchpad .lp-search input {
+  width: 300px; padding: 12px 20px; border-radius: 14px;
+  border: 1px solid var(--glass-border); background: rgba(255,255,255,.08);
+  color: #fff; font-size: 15px; outline: none; margin-bottom: 32px;
+}
+#bcos-launchpad .lp-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 24px; max-width: 800px; width: 100%; overflow-y: auto;
+}
+#bcos-launchpad .lp-app {
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; padding: 16px; border-radius: 18px;
+  transition: transform .15s ease, background .15s ease;
+  transform: translateZ(0);
+}
+#bcos-launchpad .lp-app:hover { background: rgba(255,255,255,.08); transform: translateZ(0) scale(1.05); }
+#bcos-launchpad .lp-app:active { transform: translateZ(0) scale(0.95); }
+#bcos-launchpad .lp-icon { font-size: 52px; margin-bottom: 8px; filter: drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
+#bcos-launchpad .lp-label { color: #fff; font-size: 13px; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
