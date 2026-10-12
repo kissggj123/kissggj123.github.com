@@ -5,19 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Bunny Cockpit OS</title>
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<link rel="manifest" href="./manifest.json">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0B1026;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
+body{background:#0B1026;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
 #bcos-boot{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1a2a4a 0%,#0B1026 70%)}
-#bcos-boot .logo{font-size:72px;margin-bottom:16px;animation:float 3s ease-in-out infinite;line-height:1}
-#bcos-boot h1{font-size:24px;font-weight:700;background:linear-gradient(90deg,#7c8cff,#b48cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-#bcos-boot .ver{margin-top:8px;font-size:13px;opacity:.5}
-#bcos-boot .memorial{margin-top:20px;font-size:15px;opacity:.9}
-#bcos-boot .memorial b{color:#ffb5ba;font-size:20px}
-#bcos-boot .actions{margin-top:24px;display:flex;gap:12px}
-#bcos-boot .btn{padding:12px 24px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;cursor:pointer}
-#bcos-boot .btn.primary{background:linear-gradient(90deg,#7c8cff,#b48cff);border:none}
+#bcos-boot .logo{font-size:72px;margin-bottom:16px;animation:float 3s ease-in-out infinite}
+#bcos-boot h1{font-size:28px;font-weight:700;background:linear-gradient(90deg,#7c8cff,#b48cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#bcos-boot .ver{margin-top:8px;font-size:14px;opacity:.5}
+#bcos-boot .memorial{margin-top:28px;font-size:22px;font-weight:700;color:#ff6b7a;letter-spacing:.05em}
+#bcos-boot .memorial small{display:block;margin-top:8px;font-size:14px;font-weight:400;color:#fff;opacity:.7}
+#bcos-boot .bottom{position:fixed;bottom:40px;left:0;right:0;display:flex;justify-content:space-between;padding:0 40px}
+#bcos-boot .btn{padding:14px 28px;border:none;background:none;color:#ff6b7a;font-size:22px;font-weight:700;cursor:pointer}
+#bcos-boot .btn.fs{color:#ffb54d}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 </style>
 </head>
@@ -26,10 +25,10 @@ body{background:#0B1026;color:#fff;font-family:-apple-system,system-ui,sans-seri
 <div class="logo">🐰</div>
 <h1>Bunny Cockpit OS</h1>
 <div class="ver" id="bcos-ver">v8.2.0</div>
-<div class="memorial">🐰 兔可可纪念日 <b id="bcos-days">--</b> 天</div>
-<div class="actions">
-<button class="btn primary" onclick="location.href='./car.html'">🚗 车机锁屏</button>
-<button class="btn" onclick="location.href='./preview-phase2.html'">🖥️ 进入桌面</button>
+<div class="memorial">兔可可纪念日<small>🐰 <b id="bcos-days">--</b> 天</small></div>
+<div class="bottom">
+<button class="btn" onclick="location.href='./car.html'">车机锁屏</button>
+<button class="btn fs" onclick="toggleFS()">进入全屏</button>
 </div>
 </div>
 <script src="./js/version.js"></script>
@@ -39,6 +38,10 @@ try {
   const days = Math.floor((Date.now() - new Date('2024/03/12 00:00:00').getTime()) / 86400000);
   document.getElementById('bcos-days').textContent = days;
 } catch(e) {}
+function toggleFS() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(function(){});
+}
 </script>
 </body>
 </html>
