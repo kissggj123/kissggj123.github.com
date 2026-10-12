@@ -40,12 +40,20 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #car-app.open{display:block}
 #car-app iframe{width:100%;height:100%;border:none}
 #car-app .close-btn{position:absolute;top:16px;right:16px;z-index:9001;width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:20px;cursor:pointer;backdrop-filter:blur(8px)}
+#av-picker{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+#av-picker.open{display:flex}
+#av-picker .panel{background:#1a1e35;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px;width:min(320px,90vw)}
+#av-picker h3{font-size:15px;margin-bottom:12px}
+#av-picker .emojis{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:12px}
+#av-picker .emojis div{font-size:24px;text-align:center;padding:6px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.05)}
+#av-picker .emojis div:active{background:rgba(124,140,255,.3)}
+#av-picker .close{margin-top:8px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
 </style>
 </head>
 <body>
 <div id="bg"></div>
 <div id="main">
-<div class="logo" id="main-logo">🐰</div>
+<div class="logo" id="main-logo" onclick="openAvatarPicker()" style="cursor:pointer" title="点击更换头像">🐰</div>
 <h1>兔可可相伴虚拟纪元</h1>
 <div class="since">SINCE 2024.03.12</div>
 <div class="days">
@@ -64,6 +72,14 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div id="car-app">
 <button class="close-btn" onclick="closeCar()">✕</button>
 <iframe src="./car.html"></iframe>
+</div>
+<div id="av-picker">
+<div class="panel">
+<h3>🐰 选择头像</h3>
+<div class="emojis" id="av-emojis"></div>
+<label style="display:block;padding:10px;border-radius:10px;background:rgba(124,140,255,.2);text-align:center;cursor:pointer;font-size:13px">📷 上传照片<input type="file" id="av-file" accept="image/*" style="display:none"></label>
+<button class="close" onclick="closeAvatarPicker()">关闭</button>
+</div>
 </div>
 <div class="actions">
 <button class="btn car" onclick="openCar()">🚗 车机锁屏</button>
@@ -128,6 +144,30 @@ try {
 upd(); setInterval(upd, 1000);
 function openCar() { document.getElementById('car-app').classList.add('open'); }
 function closeCar() { document.getElementById('car-app').classList.remove('open'); }
+function openAvatarPicker() {
+  const emojis = ['🐰','🐱','🐶','🦊','🐼','🐨','🦁','🐯','🦄','🐸','🌸','⭐','🎀','🔥','💖','✨'];
+  document.getElementById('av-emojis').innerHTML = emojis.map(function(e){
+    return '<div onclick="setAvatar(\'' + e + '\')">' + e + '</div>';
+  }).join('');
+  document.getElementById('av-picker').classList.add('open');
+}
+function closeAvatarPicker() { document.getElementById('av-picker').classList.remove('open'); }
+function setAvatar(e) {
+  try { localStorage.setItem('bcosAvatar', e); } catch(err) {}
+  document.getElementById('main-logo').textContent = e;
+  closeAvatarPicker();
+}
+document.getElementById('av-file').addEventListener('change', function(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = function(ev) {
+    try { localStorage.setItem('bcosAvatar', ev.target.result); } catch(err) {}
+    document.getElementById('main-logo').innerHTML = '<img src="' + ev.target.result + '">';
+    closeAvatarPicker();
+  };
+  r.readAsDataURL(f);
+});
 function toggleFS() {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen().catch(function(){});
