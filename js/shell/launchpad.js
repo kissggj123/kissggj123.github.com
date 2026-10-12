@@ -2,12 +2,12 @@
 (function() {
     'use strict';
     const APPS = [
-        {id:'finder', icon:'📁', name:'Finder'},
-        {id:'terminal', icon:'💻', name:'终端'},
-        {id:'settings', icon:'⚙️', name:'系统设置'},
-        {id:'textedit', icon:'📝', name:'文本编辑'},
-        {id:'calculator', icon:'🧮', name:'计算器'},
-        {id:'about', icon:'🎀', name:'关于本机'},
+        {id:'finder', icon:'folder', name:'Finder'},
+        {id:'terminal', icon:'terminal', name:'终端'},
+        {id:'settings', icon:'gear', name:'系统设置'},
+        {id:'textedit', icon:'doc', name:'文本编辑'},
+        {id:'calculator', icon:'calc', name:'计算器'},
+        {id:'about', icon:'info', name:'关于本机'},
     ];
     BCOS.launchpad = BCOS.launchpad || {};
     BCOS.launchpad.toggle = function() {
@@ -38,7 +38,8 @@
         q = (q || '').toLowerCase();
         const apps = APPS.filter(function(a) { return !q || a.name.toLowerCase().includes(q); });
         grid.innerHTML = apps.map(function(a) {
-            return '<div class="lp-app" data-id="' + a.id + '"><div class="lp-icon">' + a.icon + '</div><div class="lp-label">' + a.name + '</div></div>';
+            const ic = (window.BCOS_ICONS && BCOS_ICONS[a.icon]) ? BCOS_ICONS[a.icon].replace('width="16" height="16"', 'width="44" height="44"') : a.icon;
+            return '<div class="lp-app" data-id="' + a.id + '"><div class="lp-icon" style="color:#7c8cff">' + ic + '</div><div class="lp-label">' + a.name + '</div></div>';
         }).join('');
         grid.querySelectorAll('.lp-app').forEach(function(el) {
             el.addEventListener('click', function() {
