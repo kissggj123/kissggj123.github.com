@@ -259,12 +259,12 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9427'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9428'; } catch(e) {}
 // 恢复壁纸
 try {
   const wpName = localStorage.getItem('bcosBgWp');
   if (wpName && typeof CAR_WPS !== 'undefined') {
-    const w = CAR_WPS.find(function(x){ return x.name === wpName; });
+    const w = (window._wps || []).find(function(x){ return x.name === wpName; });
     if (w) setTimeout(function(){ applyWallpaper(w.file); }, 200);
   }
 } catch(e) {}
@@ -363,10 +363,13 @@ async function openThemePicker() {
       + '<div style="width:36px;height:36px;border-radius:50%;margin:0 auto;background:linear-gradient(135deg,' + t.c[0] + ',' + t.c[1] + ');box-shadow:0 0 12px ' + t.c[0] + '66"></div>'
       + '<div style="font-size:10px;margin-top:4px">' + t.e + t.n + '</div></div>';
   }).join('');
-const CAR_WPS = [{"name": "星空原野 · 银河漫步", "file": "wallpaper/Starlight210128.opt.jpg"}, {"name": "梦幻插画 · 浪漫次元", "file": "wallpaper/1126942.opt.jpg"}, {"name": "兔可可 · 纯真雪白", "file": "wallpaper/IMG_2833.opt.jpg"}, {"name": "原野星辉 · 宁静之夜", "file": "wallpaper/1204143.opt.jpg"}, {"name": "相伴日常 · 甜蜜时光", "file": "wallpaper/177002252600796.opt.jpg"}, {"name": "温暖守候 · 兔兔温情", "file": "wallpaper/177002254500-200.opt.jpg"}, {"name": "双人成行 · 奇幻冒险", "file": "wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg"}, {"name": "双人成行 · 携手同行", "file": "wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg"}, {"name": "唯美意境 · 梦幻霞光", "file": "wallpaper/61b5bd7f37541.opt.jpg"}, {"name": "绚丽晨曦 · 光影随行", "file": "wallpaper/61b5bd7f375412.opt.jpg"}, {"name": "旅途风景 · 旷野纪行", "file": "wallpaper/8736.opt.jpg"}, {"name": "深邃星云 · 苍穹之境", "file": "wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg"}, {"name": "空洞骑士 · 圣巢幽光", "file": "wallpaper/hollow_knight.opt.jpg"}, {"name": "空洞骑士 · 泪水之城", "file": "wallpaper/hollow_knight_2.opt.jpg"}];
-  // 用 car.html 的 14 张壁纸
+
+  // 直接读 manifest.json（28 张，与 car.html 一致）
   try {
-    const wps = CAR_WPS;
+    const r = await fetch('wallpaper/manifest.json?t=' + Date.now());
+    const m = await r.json();
+    const wps = m.wallpapers || [];
+    window._wps = wps;
     document.getElementById('wp-grid').innerHTML = wps.map(function(w, idx){
       return '<div onclick="setWallpaper(" + idx + ")" style="cursor:pointer;border-radius:10px;overflow:hidden;position:relative;height:60px;background:#222" title="' + w.name + '">'
         + '<img src="./' + w.file + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\'">'
@@ -401,7 +404,7 @@ function setTheme(idx) {
 }
 let _cropWp = null;
 function setWallpaper(idx) {
-  const wps = CAR_WPS || [];
+  const wps = window._wps || [];
   const w = wps[idx];
   if (!w) return;
   // 竖屏打开框选器
