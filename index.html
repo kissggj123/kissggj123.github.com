@@ -96,6 +96,16 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #av-picker .emojis div{font-size:24px;text-align:center;padding:6px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.05)}
 #av-picker .emojis div:active{background:rgba(124,140,255,.3)}
 #av-picker .close{margin-top:8px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+
+/* 横屏响应式：纯 CSS，无 JS */
+@media (orientation: landscape) {
+  #main{flex-direction:row;justify-content:center;align-items:center;gap:5vw;width:100%;min-height:100vh;padding:0 5vw;box-sizing:border-box}
+  .left-col{flex:0 1 auto}
+  .right-col{flex:0 1 auto;min-width:280px}
+  .days .num{font-size:min(12vw,120px)}
+  h1{font-size:min(3vw,28px)}
+}
+
 </style>
 </head>
 <body>
@@ -296,14 +306,11 @@ setTimeout(restoreWallpaper, 300);
 function fixTop() {
   const main = document.getElementById('main');
   const h = window.innerHeight, w = window.innerWidth;
-  if (w > h) {
-    main.style.paddingTop = '0px'; // 横屏不加顶部留白，靠 align-items 居中
+  if (w <= h) {
+    main.style.paddingTop = Math.max(60, h * 0.06) + 'px';
   } else {
-    const top = Math.max(60, h * 0.06);
-    main.style.paddingTop = top + 'px';
+    main.style.paddingTop = '0';
   }
-  main.style.zoom = 1;
-  main.style.boxSizing = 'border-box';
 }
 fixTop();
 window.addEventListener('resize', fixTop);
