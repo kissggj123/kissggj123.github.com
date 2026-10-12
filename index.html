@@ -96,6 +96,22 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #av-picker .emojis div{font-size:24px;text-align:center;padding:6px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.05)}
 #av-picker .emojis div:active{background:rgba(124,140,255,.3)}
 #av-picker .close{margin-top:8px;width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+
+/* 主题特效 */
+#bg{transition:background .6s ease}
+#bg.fx-twinkle::after{content:'';position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 40% 70%,#fff,transparent),radial-gradient(2px 2px at 60% 20%,#fff,transparent);animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+#bg.fx-lava::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(244,67,54,.25),transparent 60%);animation:lavaPulse 2.5s ease-in-out infinite}
+@keyframes lavaPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+#bg.fx-aurora::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(0,230,118,.12) 50%,transparent 70%);background-size:200% 100%;animation:auroraMove 6s linear infinite}
+@keyframes auroraMove{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#bg.fx-rainbow::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,64,129,.08),rgba(124,77,255,.08),rgba(3,169,244,.08));background-size:300% 300%;animation:rainbowShift 8s ease infinite}
+@keyframes rainbowShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#bg.fx-snow::after{content:'❄';position:absolute;top:-5%;left:10%;font-size:20px;opacity:.4;animation:snowFall 8s linear infinite}
+@keyframes snowFall{0%{top:-5%;transform:rotate(0)}100%{top:105%;transform:rotate(360deg)}}
+#bg.fx-wave::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent,transparent 40px,rgba(14,165,233,.03) 40px,rgba(14,165,233,.03) 42px);animation:waveMove 4s linear infinite}
+@keyframes waveMove{0%{transform:translateY(0)}100%{transform:translateY(42px)}}
+
 </style>
 </head>
 <body>
@@ -106,10 +122,8 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <h3 style="font-size:15px;margin-bottom:12px;text-align:center">🎨 选择主题</h3>
 <div style="font-size:12px;opacity:.6;margin-bottom:8px;text-align:left">🎨 主题色</div>
 <div id="theme-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
-<!-- 壁纸选择暂时禁用
 <div style="font-size:12px;opacity:.6;margin-bottom:8px;text-align:left">🖼️ 壁纸背景</div>
 <div id="wp-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
--->
 <div id="wp-crop" style="display:none;position:fixed;inset:0;z-index:9600;background:#000">
 <img id="wp-crop-img" style="max-width:100%">
 <div style="position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:9601">
@@ -262,43 +276,33 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9433'; } catch(e) {}
-// URL 后缀 ?wp=01~14 直接指定壁纸
-function getWpParam() {
-  try {
-    const m = location.search.match(/[?&]wp=(\d{1,2})/);
-    if (m) { const n = parseInt(m[1]); if (n >= 1 && n <= 28) return n - 1; }
-  } catch(e) {}
-  return -1;
-}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9432'; } catch(e) {}
 // 恢复壁纸
-async function restoreWallpaper() {
-  try {
-    const wpIdx = getWpParam();
-    let wps = window._wps;
-    if (!wps || !wps.length) {
-      const r = await fetch('wallpaper/manifest.json?t=' + Date.now());
-      const m = await r.json();
-      wps = m.wallpapers || [];
-      window._wps = wps;
-    }
-    let w = null;
-    if (wpIdx >= 0 && wps[wpIdx]) w = wps[wpIdx];
-    else {
-      const wpName = localStorage.getItem('bcosBgWp');
-      if (wpName) w = wps.find(function(x){ return x.name === wpName; });
-    }
-    if (w) applyWallpaper(w.file);
-  } catch(e) {}
-}
-setTimeout(restoreWallpaper, 300);
+try {
+  const wpName = localStorage.getItem('bcosBgWp');
+  if (wpName && typeof CAR_WPS !== 'undefined') {
+    const w = CAR_WPS.find(function(x){ return x.name === wpName; });
+    if (w) setTimeout(function(){ applyWallpaper(w.file); }, 200);
+  }
+} catch(e) {}
 // 动态顶部间距：根据屏幕高度计算
 function fixTop() {
   const main = document.getElementById('main');
-  const h = window.innerHeight;
-  // 顶部留白 = 屏幕高度的 6%，最少 60px（避开刘海）
+  const h = window.innerHeight, w = window.innerWidth;
+  // 顶部留白
   const top = Math.max(60, h * 0.06);
   main.style.paddingTop = top + 'px';
+  // 横屏宽屏自适应缩放：基准 1200x700
+  if (w > h && w >= 700) {
+    const s = Math.min(w / 1200, h / 700);
+    const scale = Math.max(1, Math.min(2.2, s));
+    main.style.setProperty('--ws', scale);
+    const st = document.getElementById('ws-style') || (function(){
+      const e = document.createElement('style'); e.id = 'ws-style';
+      document.head.appendChild(e); return e;
+    })();
+    st.textContent = '@media (orientation:landscape) and (min-width:700px){#main .left-col,#main .right-col{transform:scale(var(--ws));transform-origin:center}}';
+  }
 }
 fixTop();
 window.addEventListener('resize', fixTop);
@@ -364,26 +368,26 @@ function setAvatar(e) {
 }
 
 const THEMES = [
-{n:'星空紫',e:'🔮',c:['#7c8cff','#b48cff'],bg:'radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)'},
-{n:'樱花粉',e:'🌸',c:['#ff6b9d','#ffb5ba'],bg:'radial-gradient(ellipse at 30% 20%,#4a1a2a 0%,#1a0a12 60%,#0d0608 100%)'},
-{n:'海洋蓝',e:'🌊',c:['#0ea5e9','#7dd3fc'],bg:'radial-gradient(ellipse at 30% 20%,#0a2a4a 0%,#060a1a 60%,#04060d 100%)'},
-{n:'薄荷绿',e:'🌿',c:['#4caf50','#a5d6a7'],bg:'radial-gradient(ellipse at 30% 20%,#0a3a1a 0%,#061a0a 60%,#030d06 100%)'},
-{n:'落日橙',e:'🌅',c:['#ff9800','#ffcc80'],bg:'radial-gradient(ellipse at 30% 20%,#4a2a0a 0%,#1a1006 60%,#0d0803 100%)'},
-{n:'熔岩红',e:'🔥',c:['#f44336','#ff8a80'],bg:'radial-gradient(ellipse at 30% 20%,#4a0a0a 0%,#1a0606 60%,#0d0303 100%)'},
-{n:'极光绿',e:'🌌',c:['#00e676','#69f0ae'],bg:'radial-gradient(ellipse at 30% 20%,#0a3a2a 0%,#061a14 60%,#030d0a 100%)'},
-{n:'薰衣草',e:'💜',c:['#9c27b0','#ce93d8'],bg:'radial-gradient(ellipse at 30% 20%,#2a0a3a 0%,#120614 60%,#0a030d 100%)'},
-{n:'柠檬黄',e:'🍋',c:['#ffeb3b','#fff59d'],bg:'radial-gradient(ellipse at 30% 20%,#3a320a 0%,#161206 60%,#0d0a03 100%)'},
-{n:'冰雪白',e:'❄️',c:['#e0e0e0','#ffffff'],bg:'radial-gradient(ellipse at 30% 20%,#2a2e3a 0%,#12141a 60%,#0a0b0d 100%)'},
-{n:'曜石黑',e:'🖤',c:['#424242','#9e9e9e'],bg:'radial-gradient(ellipse at 30% 20%,#1a1a1a 0%,#0a0a0a 60%,#000000 100%)'},
-{n:'珊瑚橙',e:'🪸',c:['#ff7043','#ffab91'],bg:'radial-gradient(ellipse at 30% 20%,#3a1a0a 0%,#160a06 60%,#0d0603 100%)'},
-{n:'孔雀蓝',e:'🦚',c:['#00bcd4','#80deea'],bg:'radial-gradient(ellipse at 30% 20%,#0a2e32 0%,#061416 60%,#030a0b 100%)'},
-{n:'玫瑰金',e:'🌹',c:['#e91e63','#f48fb1'],bg:'radial-gradient(ellipse at 30% 20%,#3a0a1e 0%,#16060c 60%,#0d0306 100%)'},
-{n:'葡萄紫',e:'🍇',c:['#673ab7','#b39ddb'],bg:'radial-gradient(ellipse at 30% 20%,#1e0a3a 0%,#0c0616 60%,#06030d 100%)'},
-{n:'青瓷',e:'🏺',c:['#009688','#80cbc4'],bg:'radial-gradient(ellipse at 30% 20%,#0a2e2a 0%,#061614 60%,#030b0a 100%)'},
-{n:'琥珀',e:'🧡',c:['#ffc107','#ffe082'],bg:'radial-gradient(ellipse at 30% 20%,#3a2e0a 0%,#161206 60%,#0d0a03 100%)'},
-{n:'樱桃红',e:'🍒',c:['#d32f2f','#ef9a9a'],bg:'radial-gradient(ellipse at 30% 20%,#3a0a0a 0%,#160606 60%,#0d0303 100%)'},
-{n:'天青',e:'🌤️',c:['#03a9f4','#81d4fa'],bg:'radial-gradient(ellipse at 30% 20%,#0a2a3a 0%,#061216 60%,#030a0d 100%)'},
-{n:'彩虹',e:'🌈',c:['#ff4081','#7c4dff'],bg:'radial-gradient(ellipse at 30% 20%,#2a0a2e 0%,#120614 60%,#0a030d 100%)'}
+{n:'星空紫',e:'🔮',c:['#7c8cff','#b48cff'],bg:'radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)',fx:'twinkle'},
+{n:'樱花粉',e:'🌸',c:['#ff6b9d','#ffb5ba'],bg:'radial-gradient(ellipse at 30% 20%,#4a1a2a 0%,#1a0a12 60%,#0d0608 100%)',fx:'petal'},
+{n:'海洋蓝',e:'🌊',c:['#0ea5e9','#7dd3fc'],bg:'radial-gradient(ellipse at 30% 20%,#0a2a4a 0%,#060a1a 60%,#04060d 100%)',fx:'wave'},
+{n:'薄荷绿',e:'🌿',c:['#4caf50','#a5d6a7'],bg:'radial-gradient(ellipse at 30% 20%,#0a3a1a 0%,#061a0a 60%,#030d06 100%)',fx:'fresh'},
+{n:'落日橙',e:'🌅',c:['#ff9800','#ffcc80'],bg:'radial-gradient(ellipse at 30% 20%,#4a2a0a 0%,#1a1006 60%,#0d0803 100%)',fx:'sunset'},
+{n:'熔岩红',e:'🔥',c:['#f44336','#ff8a80'],bg:'radial-gradient(ellipse at 30% 20%,#4a0a0a 0%,#1a0606 60%,#0d0303 100%)',fx:'lava'},
+{n:'极光绿',e:'🌌',c:['#00e676','#69f0ae'],bg:'radial-gradient(ellipse at 30% 20%,#0a3a2a 0%,#061a14 60%,#030d0a 100%)',fx:'aurora'},
+{n:'薰衣草',e:'💜',c:['#9c27b0','#ce93d8'],bg:'radial-gradient(ellipse at 30% 20%,#2a0a3a 0%,#120614 60%,#0a030d 100%)',fx:'lavender'},
+{n:'柠檬黄',e:'🍋',c:['#ffeb3b','#fff59d'],bg:'radial-gradient(ellipse at 30% 20%,#3a320a 0%,#161206 60%,#0d0a03 100%)',fx:'lemon'},
+{n:'冰雪白',e:'❄️',c:['#e0e0e0','#ffffff'],bg:'radial-gradient(ellipse at 30% 20%,#2a2e3a 0%,#12141a 60%,#0a0b0d 100%)',fx:'snow'},
+{n:'曜石黑',e:'🖤',c:['#424242','#9e9e9e'],bg:'radial-gradient(ellipse at 30% 20%,#1a1a1a 0%,#0a0a0a 60%,#000000 100%)',fx:'obsidian'},
+{n:'珊瑚橙',e:'🪸',c:['#ff7043','#ffab91'],bg:'radial-gradient(ellipse at 30% 20%,#3a1a0a 0%,#160a06 60%,#0d0603 100%)',fx:'coral'},
+{n:'孔雀蓝',e:'🦚',c:['#00bcd4','#80deea'],bg:'radial-gradient(ellipse at 30% 20%,#0a2e32 0%,#061416 60%,#030a0b 100%)',fx:'peacock'},
+{n:'玫瑰金',e:'🌹',c:['#e91e63','#f48fb1'],bg:'radial-gradient(ellipse at 30% 20%,#3a0a1e 0%,#16060c 60%,#0d0306 100%)',fx:'rose'},
+{n:'葡萄紫',e:'🍇',c:['#673ab7','#b39ddb'],bg:'radial-gradient(ellipse at 30% 20%,#1e0a3a 0%,#0c0616 60%,#06030d 100%)',fx:'grape'},
+{n:'青瓷',e:'🏺',c:['#009688','#80cbc4'],bg:'radial-gradient(ellipse at 30% 20%,#0a2e2a 0%,#061614 60%,#030b0a 100%)',fx:'celadon'},
+{n:'琥珀',e:'🧡',c:['#ffc107','#ffe082'],bg:'radial-gradient(ellipse at 30% 20%,#3a2e0a 0%,#161206 60%,#0d0a03 100%)',fx:'amber'},
+{n:'樱桃红',e:'🍒',c:['#d32f2f','#ef9a9a'],bg:'radial-gradient(ellipse at 30% 20%,#3a0a0a 0%,#160606 60%,#0d0303 100%)',fx:'cherry'},
+{n:'天青',e:'🌤️',c:['#03a9f4','#81d4fa'],bg:'radial-gradient(ellipse at 30% 20%,#0a2a3a 0%,#061216 60%,#030a0d 100%)',fx:'sky'},
+{n:'彩虹',e:'🌈',c:['#ff4081','#7c4dff'],bg:'radial-gradient(ellipse at 30% 20%,#2a0a2e 0%,#120614 60%,#0a030d 100%)',fx:'rainbow'}
 ];
 async function openThemePicker() {
   document.getElementById('theme-picker').style.display = 'flex';
@@ -433,8 +437,11 @@ function setTheme(idx) {
   setTimeout(function(){ flash.style.opacity = '0'; }, 50);
   setTimeout(function(){ flash.remove(); }, 600);
   // 应用主题
-  document.getElementById('bg').style.background = t.bg;
-  document.getElementById('bg').style.transition = 'background .5s ease';
+  const bg = document.getElementById('bg');
+  bg.style.background = t.bg;
+  bg.style.transition = 'background .5s ease';
+  bg.className = 'fx-' + (t.fx || 'twinkle');
+  document.getElementById('bg').id = 'bg';
   const mask = document.getElementById('bg-mask');
   if (mask) mask.style.display = 'none';
   document.querySelectorAll('h1').forEach(function(el){
