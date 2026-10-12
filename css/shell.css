@@ -80,3 +80,32 @@
 #bcos-launchpad .lp-app:hover { background: var(--aurora-glass); transform: translateZ(0) scale(1.05); }
 #bcos-launchpad .lp-icon { font-size: 44px; margin-bottom: 6px; filter: drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
 #bcos-launchpad .lp-label { color: var(--aurora-text); font-size: 12px; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+
+/* 窗口打开动画 */
+@keyframes winIn {
+  from { opacity: 0; transform: translate(-50%,-48%) translateZ(0) scale(.96); }
+  to { opacity: 1; transform: translate(-50%,-50%) translateZ(0) scale(1); }
+}
+.bcos-window { animation: winIn .28s cubic-bezier(.2,.9,.25,1.2); }
+/* Launchpad 打开动画 */
+@keyframes lpIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+#bcos-launchpad.open { animation: lpIn .25s ease; }
+#bcos-launchpad .lp-app { animation: lpAppIn .3s cubic-bezier(.2,.9,.3,1.2) backwards; }
+#bcos-launchpad .lp-app:nth-child(1){animation-delay:.02s} #bcos-launchpad .lp-app:nth-child(2){animation-delay:.04s}
+#bcos-launchpad .lp-app:nth-child(3){animation-delay:.06s} #bcos-launchpad .lp-app:nth-child(4){animation-delay:.08s}
+#bcos-launchpad .lp-app:nth-child(5){animation-delay:.1s} #bcos-launchpad .lp-app:nth-child(6){animation-delay:.12s}
+@keyframes lpAppIn {
+  from { opacity: 0; transform: translateY(16px) scale(.9) translateZ(0); }
+  to { opacity: 1; transform: translateY(0) scale(1) translateZ(0); }
+}
+/* 菜单栏图标悬停 */
+#mb-launchpad { transition: transform .15s ease; display:inline-block; }
+#mb-launchpad:hover { transform: scale(1.2) translateZ(0); }
+/* 滚动条美化 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.28); }
