@@ -57,6 +57,13 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 .btn.fs{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* 横屏：左右两栏 */
+@media (orientation: landscape) and (min-width: 700px) {
+  #main{flex-direction:row !important;justify-content:center;gap:clamp(24px,5vw,64px);align-items:center}
+  #main .left-col{display:flex;flex-direction:column;align-items:center}
+  #main .right-col{display:flex;flex-direction:column;align-items:center;max-width:380px}
+  .days .num{font-size:clamp(64px,10vw,96px) !important}
+}
 #main > *{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) backwards}
 #main > *:nth-child(1){animation-delay:.05s}#main > *:nth-child(2){animation-delay:.1s}
 #main > *:nth-child(3){animation-delay:.15s}#main > *:nth-child(4){animation-delay:.2s}
@@ -89,6 +96,7 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <button onclick="setTheme('green')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#4caf50,#a5d6a7);cursor:pointer" title="绿"></button>
 </div>
 <div id="main">
+<div class="left-col">
 <div class="logo" id="main-logo" onclick="openAvatarPicker()" style="cursor:pointer" title="点击更换头像">🐰</div>
 <h1>兔可可相伴虚拟纪元</h1>
 <div class="since">SINCE 2024.03.12</div>
@@ -97,6 +105,8 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="unit">DAYS</div>
 </div>
 <div class="voyage"><b id="voy-h">--</b>时 <b id="voy-m">--</b>分 <b id="voy-s">--</b>.<b id="voy-ms" style="font-size:12px;opacity:.7">000</b>秒</div>
+</div>
+<div class="right-col">
 <div class="total-h" id="total-h" style="margin-top:6px;font-size:12px;opacity:.55">🎂 已经到来 <b id="th-h">--</b>小时<b id="th-m">--</b>分钟<b id="th-s">--</b>秒</div>
 <div class="day-progress"><div class="dp-bar"><i id="dp-fill"></i></div><div class="dp-label" id="dp-label"></div></div>
 <div class="target">
@@ -126,6 +136,7 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="actions">
 <button class="btn car" onclick="openCar()">🚗 车机锁屏</button>
 <button class="btn fs" onclick="toggleFS()">⛶ 全屏</button>
+</div>
 </div>
 </div>
 <script>
