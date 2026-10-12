@@ -259,7 +259,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9425'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9426'; } catch(e) {}
 // 恢复壁纸
 try {
   const wpName = localStorage.getItem('bcosBgWp');
@@ -284,6 +284,14 @@ function openCar() {
   const app = document.getElementById('car-app');
   app.classList.add('open');
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ app.classList.add('show'); }); });
+  // 下滑退出手势（顶部下滑）
+  let sy = 0;
+  app.ontouchstart = function(e){ sy = e.touches[0].clientY; };
+  app.ontouchmove = function(e){
+    const dy = e.touches[0].clientY - sy;
+    // 从顶部下滑超过 100px 则退出
+    if (sy < 80 && dy > 100) { closeCar(); }
+  };
   // 自动全屏
   const el = document.getElementById('car-app');
   if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
