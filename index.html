@@ -2,10 +2,87 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0;url=./car.html">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>兔可可纪念日 🐰</title>
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0c1a;color:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden;min-height:100vh}
+#bg{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,#1a2a5a 0%,#0a0c1a 60%,#060814 100%)}
+#main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.logo{font-size:64px;margin-bottom:12px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 8px 24px rgba(124,140,255,.35))}
+h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradient(90deg,#a8b8ff,#d8b8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.since{margin-top:6px;font-size:11px;opacity:.45;letter-spacing:.15em}
+.days{margin-top:28px}
+.days .num{font-size:84px;font-weight:900;line-height:1;background:linear-gradient(180deg,#fff,#a8b8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.days .unit{font-size:14px;opacity:.5;letter-spacing:.3em;margin-top:4px}
+.voyage{margin-top:16px;font-size:13px;opacity:.65;font-variant-numeric:tabular-nums}
+.voyage b{color:#7c8cff}
+.target{margin-top:24px;width:min(340px,86vw);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px 16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.target .t{font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.target .t b{color:#ffb54d}
+.target .bar{margin-top:10px;height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
+.target .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#7c8cff,#b48cff);transition:width .5s ease}
+.actions{margin-top:32px;display:flex;gap:14px}
+.btn{padding:14px 32px;border-radius:16px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s}
+.btn:active{transform:scale(.95)}
+.btn.car{background:linear-gradient(135deg,#7c8cff,#b48cff);color:#fff;box-shadow:0 8px 24px rgba(124,140,255,.35)}
+.btn.fs{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+</style>
 </head>
 <body>
-<script>location.href = './car.html';</script>
+<div id="bg"></div>
+<div id="main">
+<div class="logo">🐰</div>
+<h1>兔可可相伴虚拟纪元</h1>
+<div class="since">SINCE 2024.03.12</div>
+<div class="days">
+<div class="num" id="days-num">--</div>
+<div class="unit">DAYS</div>
+</div>
+<div class="voyage">累计航程 <b id="voy-h">--</b>时 <b id="voy-m">--</b>分 <b id="voy-s">--</b>秒</div>
+<div class="target">
+<div class="t"><span>🎯 <span id="target-label">--</span></span><b id="target-remain">--</b></div>
+<div class="bar"><i id="target-bar" style="width:0%"></i></div>
+</div>
+<div class="actions">
+<button class="btn car" onclick="location.href='./car.html'">🚗 车机锁屏</button>
+<button class="btn fs" onclick="toggleFS()">⛶ 全屏</button>
+</div>
+</div>
+<script>
+const START = new Date('2024/03/12 00:00:00').getTime();
+const MILESTONES = [
+  {days:100,label:'100天纪念'},{days:180,label:'180天纪念'},{days:300,label:'300天纪念'},
+  {days:365,label:'一周年'},{days:500,label:'500天纪念'},{days:730,label:'两周年'},
+  {days:1000,label:'1000天纪念 · 千日里程碑'},{days:1095,label:'三周年'},{days:1461,label:'四周年'},
+  {days:1500,label:'1500天纪念'},{days:1826,label:'五周年'},{days:2000,label:'2000天纪念'},
+  {days:3652,label:'十周年'},{days:10000,label:'万日之约'}
+];
+function upd() {
+  const now = Date.now();
+  const totalDays = (now - START) / 86400000;
+  document.getElementById('days-num').textContent = Math.floor(totalDays);
+  const h = Math.floor(totalDays * 24) % 24, m = Math.floor(totalDays * 1440) % 60, s = Math.floor(totalDays * 86400) % 60;
+  document.getElementById('voy-h').textContent = h;
+  document.getElementById('voy-m').textContent = String(m).padStart(2,'0');
+  document.getElementById('voy-s').textContent = String(s).padStart(2,'0');
+  const nx = MILESTONES.find(function(x){ return totalDays < x.days; });
+  if (nx) {
+    const prev = MILESTONES[MILESTONES.indexOf(nx) - 1];
+    const base = prev ? prev.days : 0;
+    const pct = Math.min(100, (totalDays - base) / (nx.days - base) * 100);
+    document.getElementById('target-label').textContent = nx.label;
+    document.getElementById('target-remain').textContent = '还有 ' + Math.ceil(nx.days - totalDays) + ' 天';
+    document.getElementById('target-bar').style.width = pct + '%';
+  }
+}
+upd(); setInterval(upd, 1000);
+function toggleFS() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(function(){});
+}
+</script>
 </body>
 </html>
