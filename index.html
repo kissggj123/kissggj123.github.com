@@ -76,7 +76,9 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 #main > *:nth-child(3){animation-delay:.15s}#main > *:nth-child(4){animation-delay:.2s}
 #main > *:nth-child(5){animation-delay:.25s}#main > *:nth-child(6){animation-delay:.3s}
 #main > *:nth-child(7){animation-delay:.35s}#main > *:nth-child(8){animation-delay:.4s}
-#car-app{position:fixed;inset:0;z-index:9000;display:none;background:#000}
+#car-app{position:fixed;inset:0;z-index:9000;display:none;background:#000;opacity:0;transform:scale(.95);transition:opacity .35s cubic-bezier(.2,.8,.2,1), transform .35s cubic-bezier(.2,.8,.2,1)}
+#car-app.open{display:block}
+#car-app.show{opacity:1;transform:scale(1)}
 #car-app.open{display:block}
 #car-app iframe{width:100%;height:100%;border:none}
 #car-app .close-btn{position:absolute;top:16px;right:16px;z-index:9001;width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:20px;cursor:pointer;backdrop-filter:blur(8px)}
@@ -259,7 +261,7 @@ function updNext() {
     return '<div class="np-item"><div class="k">' + it.k + '</div><div class="v">' + ds + '</div><div class="d">' + label + '</div></div>';
   }).join('');
 }
-try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9421'; } catch(e) {}
+try { document.getElementById('ver-tag').textContent = window.BCOS_VERSION || 'v8.2.0.9422'; } catch(e) {}
 // 恢复壁纸
 try {
   const wpName = localStorage.getItem('bcosBgWp');
@@ -281,14 +283,18 @@ window.addEventListener('resize', fixTop);
 window.addEventListener('orientationchange', function(){ setTimeout(fixTop, 300); });
 upd(); updNext(); setInterval(function(){ upd(); }, 100); setInterval(updNext, 60000);
 function openCar() {
-  document.getElementById('car-app').classList.add('open');
+  const app = document.getElementById('car-app');
+  app.classList.add('open');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ app.classList.add('show'); }); });
   // 自动全屏
   const el = document.getElementById('car-app');
   if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
   else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
 }
 function closeCar() {
-  document.getElementById('car-app').classList.remove('open');
+  const app = document.getElementById('car-app');
+  app.classList.remove('show');
+  setTimeout(function(){ app.classList.remove('open'); }, 350);
   if (document.fullscreenElement) document.exitFullscreen().catch(function(){});
 }
 function openAvatarPicker() {
