@@ -29,6 +29,10 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 .btn.car{background:linear-gradient(135deg,#7c8cff,#b48cff);color:#fff;box-shadow:0 8px 24px rgba(124,140,255,.35)}
 .btn.fs{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#car-app{position:fixed;inset:0;z-index:9000;display:none;background:#000}
+#car-app.open{display:block}
+#car-app iframe{width:100%;height:100%;border:none}
+#car-app .close-btn{position:absolute;top:16px;right:16px;z-index:9001;width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:20px;cursor:pointer;backdrop-filter:blur(8px)}
 </style>
 </head>
 <body>
@@ -46,8 +50,12 @@ h1{font-size:22px;font-weight:800;letter-spacing:.08em;background:linear-gradien
 <div class="t"><span>🎯 <span id="target-label">--</span></span><b id="target-remain">--</b></div>
 <div class="bar"><i id="target-bar" style="width:0%"></i></div>
 </div>
+<div id="car-app">
+<button class="close-btn" onclick="closeCar()">✕</button>
+<iframe src="./car.html"></iframe>
+</div>
 <div class="actions">
-<button class="btn car" onclick="location.href='./car.html'">🚗 车机锁屏</button>
+<button class="btn car" onclick="openCar()">🚗 车机锁屏</button>
 <button class="btn fs" onclick="toggleFS()">⛶ 全屏</button>
 </div>
 </div>
@@ -79,6 +87,8 @@ function upd() {
   }
 }
 upd(); setInterval(upd, 1000);
+function openCar() { document.getElementById('car-app').classList.add('open'); }
+function closeCar() { document.getElementById('car-app').classList.remove('open'); }
 function toggleFS() {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen().catch(function(){});
