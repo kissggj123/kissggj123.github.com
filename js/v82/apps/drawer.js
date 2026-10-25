@@ -42,17 +42,26 @@
             d.id = 'bcos-app-drawer';
             d.innerHTML = '<div class="drawer-search"><input id="drawer-q" placeholder="搜索应用..." autocomplete="off"></div><div class="drawer-grid" id="drawer-grid"></div>';
             document.body.appendChild(d);
-            const q = document.getElementById('drawer-q');
-            if (q) q.addEventListener('input', function(e){ window._bcosRenderDrawerApps(e.target.value); });
-            d.addEventListener('click', function(e){ if (e.target === d) window._bcosCloseAppDrawer(); });
+            _bindDrawer(d);
         } else if (!document.getElementById('drawer-grid')) {
             // 旧系统已创建但结构不同, 重建内容
             d.innerHTML = '<div class="drawer-search"><input id="drawer-q" placeholder="搜索应用..." autocomplete="off"></div><div class="drawer-grid" id="drawer-grid"></div>';
-            const q = document.getElementById('drawer-q');
-            if (q) q.addEventListener('input', function(e){ window._bcosRenderDrawerApps(e.target.value); });
-            d.addEventListener('click', function(e){ if (e.target === d) window._bcosCloseAppDrawer(); });
+            _bindDrawer(d);
         }
         return d;
+    }
+    // 事件委托绑定 (一次绑定, 重渲染不丢失; 防重复)
+    function _bindDrawer(d) {
+        if (d._bcosDelegated) return;
+        d._bcosDelegated = true;
+        const q = document.getElementById('drawer-q');
+        if (q) q.addEventListener('input', function(e){ window._bcosRenderDrawerApps(e.target.value); });
+        d.addEventListener('click', function(e){ if (e.target === d) window._bcosCloseAppDrawer(); });
+        const grid = document.getElementById('drawer-grid');
+        if (grid) grid.addEventListener('click', function(e){
+            const el = e.target.closest('.drawer-app');
+            if (el) window._bcosDrawerLaunch(el.getAttribute('data-id'));
+        });
     }
     window._bcosToggleAppDrawer = function() {
         const d = _ensureDrawerElement();
@@ -87,14 +96,6 @@
             html += '<div class="drawer-app" data-id="' + a.id + '"><div class="drawer-icon">' + a.icon + '</div><div class="drawer-label">' + a.name + '</div></div>';
         }
         grid.innerHTML = html;
-        const els = grid.querySelectorAll('.drawer-app');
-        for (let i=0; i<els.length; i++) {
-            (function(el){
-                el.addEventListener('click', function(){
-                    window._bcosDrawerLaunch(el.getAttribute('data-id'));
-                });
-            })(els[i]);
-        }
         console.log('[Drawer] rendered ' + apps.length + ' apps');
     };
     window._bcosDrawerLaunch = function(id) {

@@ -1,7 +1,9 @@
-// Service Worker - Bunny CC v7.8.6.9482 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v8.1.0.8910';
+// Service Worker - Bunny CC v9.0.0 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v9.0.1.9601';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
+// 🔥 热更新覆盖缓存: 独立于版本缓存, 永不自动清除 (回滚需显式 CLEAR_OVERRIDE)
+const OVERRIDE_CACHE = 'bunny-cc-overrides-v9';
 
 // GitHub Pages scope resolution (supports custom domains, github.io root, and repo subpaths)
 const SCOPE_BASE = self.registration ? self.registration.scope : self.location.href.replace(/service-worker\.js.*$/, '');
@@ -20,6 +22,21 @@ const RELATIVE_CORE_ASSETS = [
     'js/os-apps-a.js', 'js/os-apps-b.js', 'js/os-apps-c.js',
     'js/wallpaper-data.js', 'js/wallpaper.js',
     'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js', 'js/ui-systems-c.js',
+    'js/bcos.js', 'js/bcos-pkg.js', 'js/bcos-bootstrap.js',
+    'modules.json', 'modules-v81.json',
+    'css/v82.css',
+    'js/v82/core/loader.js', 'js/v82/core/vfs.js', 'js/v82/core/personalize.js',
+    'js/v82/core/boot.js', 'js/v82/core/theme.js', 'js/v82/core/desktop.js',
+    'js/v82/core/menubar.js', 'js/v82/core/window.js', 'js/v82/core/clock.js',
+    'js/v82/core/fullscreen.js',
+    'js/v82/apps/drawer.js', 'js/v82/apps/install.js', 'js/v82/apps/settings.js',
+    'js/v82/apps/wp-picker.js', 'js/v82/apps/cydia-ui.js', 'js/v82/apps/app-cydia.js',
+    'js/v82/apps/app-settings.js', 'js/v82/apps/app-terminal.js', 'js/v82/apps/app-files.js',
+    'js/v82/apps/app-browser.js', 'js/v82/apps/app-monitor.js', 'js/v82/apps/app-calculator.js',
+    'js/v82/apps/app-notes.js', 'js/v82/apps/app-about.js', 'js/v82/apps/app-logs.js',
+    'js/v82/apps/app-appstore.js', 'js/v82/apps/app-anniversary.js', 'js/v82/apps/app-texteditor.js',
+    'js/v82/apps/app-monopoly.js', 'js/v82/apps/app-me.js', 'js/v82/apps/app-music.js',
+    'js/v82/apps/app-weather.js',
     'manifest.json',
     'manifest-car.json',
     'favicon.ico',
@@ -158,8 +175,8 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((names) => Promise.all(
             names.map(n => {
-                // Delete any cache that isn't the current version
-                if (n !== CACHE_NAME && n !== RUNTIME_CACHE) {
+                // Delete any cache that isn't the current version (OVERRIDE_CACHE 永久保留)
+                if (n !== CACHE_NAME && n !== RUNTIME_CACHE && n !== OVERRIDE_CACHE) {
                     return caches.delete(n);
                 }
                 return null;
@@ -186,19 +203,26 @@ self.addEventListener('fetch', (event) => {
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
     if (url.origin !== self.location.origin) return;
 
+    // 🔥 热更新: 模块覆盖缓存拥有最高优先级 (SW 独立于页面, 失败自动回退)
+    event.respondWith(
+        caches.open(OVERRIDE_CACHE).then(c => c.match(req)).then(overridden => {
+            if (overridden) return overridden;
+            return _handleFetch(req, url.pathname);
+        })
+    );
+});
+
+function _handleFetch(req, pathname) {
+
     // Force network-first for icon files, manifest and favicon (bypass cache to ensure fresh icons)
-    const pathname = url.pathname;
     if (pathname.includes('/icon/') || pathname.endsWith('/favicon.ico') || pathname.endsWith('/manifest.json')) {
-        event.respondWith(
-            fetch(req).then(resp => {
-                if (resp && resp.status === 200) {
-                    const clone = resp.clone();
-                    caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                }
-                return resp;
-            }).catch(() => caches.match(req).then(r => r || new Response('', { status: 504, statusText: 'Gateway Timeout' })))
-        );
-        return;
+        return fetch(req).then(resp => {
+            if (resp && resp.status === 200) {
+                const clone = resp.clone();
+                caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+            }
+            return resp;
+        }).catch(() => caches.match(req).then(r => r || new Response('', { status: 504, statusText: 'Gateway Timeout' })));
     }
 
     // Navigation requests: Fast network-with-timeout (1500ms) with instant cache fallback
@@ -206,8 +230,7 @@ self.addEventListener('fetch', (event) => {
     // By timing out after 1.5s and immediately serving the cached index/car HTML,
     // we eliminate the white-screen freeze completely while allowing background updates!
     if (req.mode === 'navigate') {
-        event.respondWith(
-            new Promise((resolve) => {
+        return new Promise((resolve) => {
                 let resolved = false;
                 const timeoutId = setTimeout(async () => {
                     if (!resolved) {
@@ -252,33 +275,70 @@ self.addEventListener('fetch', (event) => {
                         resolve(new Response('Offline - No cache available', { status: 503 }));
                     }
                 });
+            });
+    }
+
+    // Static assets: stale-while-revalidate
+    return caches.match(req).then(cached => {
+        if (cached) {
+            fetch(req).then(resp => {
+                if (resp && resp.status === 200)
+                    caches.open(RUNTIME_CACHE).then(c => c.put(req, resp.clone()));
+            }).catch(() => {});
+            return cached;
+        }
+        return fetch(req).then(resp => {
+            if (!resp || resp.status !== 200) return resp;
+            const clone = resp.clone();
+            caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+            return resp;
+        });
+    });
+}
+
+self.addEventListener('message', (event) => {
+    const d = event.data || {};
+    if (d.type === 'SKIP_WAITING') { self.skipWaiting(); return; }
+
+    // 🔥 热更新: 页面请求覆盖某模块 URL (存入 OVERRIDE_CACHE, 立即对后续 fetch 生效)
+    if (d.type === 'OVERRIDE_MODULE' && d.url && typeof d.code === 'string') {
+        event.waitUntil(
+            caches.open(OVERRIDE_CACHE).then(c => c.put(
+                d.url,
+                new Response(d.code, {
+                    status: 200,
+                    headers: { 'Content-Type': d.contentType || 'application/javascript', 'X-BCOS-Override': '1' }
+                })
+            )).then(() => {
+                console.log('[SW] 🔥 模块已覆盖:', d.url);
+                if (event.source) event.source.postMessage({ type: 'MODULE_OVERRIDDEN', url: d.url });
+            }).catch(err => {
+                console.error('[SW] 覆盖失败:', d.url, err);
+                if (event.source) event.source.postMessage({ type: 'MODULE_OVERRIDE_FAILED', url: d.url, error: String(err) });
             })
         );
         return;
     }
 
-    // Static assets: stale-while-revalidate
-    event.respondWith(
-        caches.match(req).then(cached => {
-            if (cached) {
-                fetch(req).then(resp => {
-                    if (resp && resp.status === 200)
-                        caches.open(RUNTIME_CACHE).then(c => c.put(req, resp.clone()));
-                }).catch(() => {});
-                return cached;
-            }
-            return fetch(req).then(resp => {
-                if (!resp || resp.status !== 200) return resp;
-                const clone = resp.clone();
-                caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                return resp;
-            });
-        })
-    );
-});
+    // 回滚: 清除某模块的覆盖缓存, 恢复服务器版本
+    if (d.type === 'CLEAR_OVERRIDE' && d.url) {
+        event.waitUntil(
+            caches.open(OVERRIDE_CACHE).then(c => c.delete(d.url)).then(() => {
+                console.log('[SW] ↩️ 已回滚:', d.url);
+                if (event.source) event.source.postMessage({ type: 'OVERRIDE_CLEARED', url: d.url });
+            })
+        );
+        return;
+    }
 
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+    // 查询当前覆盖列表
+    if (d.type === 'LIST_OVERRIDES') {
+        event.waitUntil(
+            caches.open(OVERRIDE_CACHE).then(c => c.keys()).then(keys => {
+                if (event.source) event.source.postMessage({ type: 'OVERRIDE_LIST', urls: keys.map(k => k.url) });
+            })
+        );
+    }
 });
 
 // === Push notifications ===

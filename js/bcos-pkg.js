@@ -91,9 +91,10 @@
             active: { code, version: meta.version, downloadedAt: Date.now() },
             staged: existing.staged || null, updatedAt: Date.now() });
     };
-    window._bcosPkgLoadActive = async function(id) {
+    window._bcosPkgLoadActive = async function(id, meta) {
         const m = await _get(id);
-        if (m && m.active) return m.active.code;
+        // 版本校验: 缓存版本与注册表不一致时返回 null, 触发网络刷新后重存 (热更新链关键)
+        if (m && m.active && (!meta || m.version === meta.version)) return m.active.code;
         return null;
     };
     window._bcosPkgInitInstalled = async function(registry) {

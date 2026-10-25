@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- VERSION: v8.2.0.9500 -->
+    <!-- VERSION: v9.0.1.9601 | BCOS Kernel: 模块化+热更新+动态注入 (index-v82-static.html 为静态完整版兜底) -->
     <title>兔可可王国 · bcos 虚拟系统 🐰</title>
     <meta name="description" content="兔可可王国 · bcos 虚拟操作系统 + 智能座舱车机锁屏 + 大富翁模拟经营 + 纪念日流转">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -26,7 +26,6 @@
     <noscript>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap">
     </noscript>
-    <link rel="stylesheet" href="./car.css">
     <!-- PWA -->
     <meta name="theme-color" content="#FFF0F5">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -82,12 +81,8 @@
         })();
     </script>
         <script src="./js/screen.js"></script>
-    <link rel="stylesheet" href="./css/base.css">
-    <link rel="stylesheet" href="./css/ui.css">
-    <link rel="stylesheet" href="./css/effects.css">
-    <link rel="stylesheet" href="./css/car-lockscreen-a.css">
-    <link rel="stylesheet" href="./css/car-lockscreen-b.css">
-    <link rel="stylesheet" href="./css/rounded-screen.css">
+    <script src="./js/bcos.js?v=9.0.1.9601"></script>
+    <script src="./js/bcos-pkg.js?v=9.0.1.9601"></script>
     <script>
         // Apply theme immediately before paint to prevent flash/black screen
         (function() {
@@ -113,10 +108,14 @@
             } catch(e) {}
         })();
     </script>
-    <link rel="stylesheet" href="./css/bcos-8.css?v=8.2.0.9500">
-    <link rel="stylesheet" href="./css/app-drawer.css?v=8.2.0.9500">
-    <link rel="stylesheet" href="./css/aurora-apps.css?v=8.2.0.9500">
 </head>
+    <!-- BCOS v9 启动屏 (bootstrap 完成后自动移除) -->
+    <div id="bcos-splash" style="position:fixed;inset:0;z-index:999999;background:linear-gradient(135deg,#0B1026 0%,#1a2a4a 55%,#0B1026 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease;">
+        <div style="font-size:56px;animation:bcosSplashPulse 1.2s ease-in-out infinite;">🐰</div>
+        <div style="margin-top:14px;color:#f2f4ff;font-size:15px;font-weight:800;letter-spacing:2px;">BCOS v9</div>
+        <div id="bcos-splash-text" style="margin-top:6px;color:#8892b0;font-size:11px;">启动中…</div>
+    </div>
+    <style>@keyframes bcosSplashPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.85}}#bcos-splash.done{opacity:0;pointer-events:none;}</style>
 <body>
     <div id="bg-layer"></div>
     <div id="bg-pattern"></div>
@@ -159,7 +158,7 @@
             <div class="sidebar-logo" onclick="handleLogoClick()" title="点击7次解锁上帝模式入口...">
                 <span class="bunny-icon" id="sidebar-avatar-container">🐰</span>
                 <div class="title">兔可可王国</div>
-                <div class="subtitle">v8.2.0.9500</div>
+                <div class="subtitle">v9.0.1.9601</div>
                 <div class="sidebar-pin" id="sidebar-pin" onclick="event.stopPropagation(); toggleSidebarPin()" title="锁定/解锁自动折叠">📌</div>
             </div>
             <div class="god-indicator" id="god-indicator">✨ 上帝模式已激活</div>
@@ -472,7 +471,7 @@
                     <div class="card-title">ℹ️ 关于版本</div>
                     <div id="about-version" style="font-size:.85rem;color:var(--text2);line-height:1.8;cursor:pointer;user-select:none;" onclick="handleAboutClick()">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v8.2.0.9500</span></span>
+                            <span><strong style="color:var(--accent);">兔可可之城</strong> <span id="about-ver">v9.0.1.9601</span></span>
                             <span style="font-size:.7rem;">🐰</span>
                         </div>
                         <div style="margin-top:.3rem;font-size:.75rem;">大富翁王国扩展版 · 6区域1248格超大地图</div>
@@ -514,73 +513,15 @@
         </div>
     </div>
 
-        <script src="./js/version.js"></script>
-        <script src="./js/core.js"></script>
-    <script src="./js/game.js"></script>
-    <script src="./js/renderer.js"></script>
-    <script src="./js/game-logic-a.js"></script>
-    <script src="./js/game-logic-b.js"></script>
-    <script src="./js/game-logic-c.js"></script>
-    <script src="./js/ui.js"></script>
-    <script src="./js/os.js"></script>
-    <script src="./js/icons.js"></script>
-    <script src="./js/os-apps-a.js"></script>
-    <script src="./js/os-apps-b.js"></script>
-    <script src="./js/os-apps-c.js"></script>
-    <script src="./js/wallpaper-data.js"></script>
-    <script src="./js/wallpaper.js"></script>
-    <script src="./js/apps.js"></script>
-    <script src="./js/ui-systems-a.js"></script>
-    <script src="./js/ui-systems-b.js"></script>
-    <script src="./js/ui-systems-c.js"></script>
     <!-- v8.1.0 Aurora UI 组件 (8.0 移植, 稳定版) -->
-    <script src="./js/bcos-8.js"></script>
-    <script src="./js/desktop.js"></script>
-    <script src="./js/drawer.js"></script>
-    <script src="./js/fullscreen.js"></script>
-    <script src="./js/yumiko.js"></script>
-    <script src="./js/wallpaper-810.js"></script>
-    <script src="./js/drawer-810.js"></script>
-    <script src="./js/app-install-810.js"></script>
     <!-- v8.1.0 Cydia 包管理 (A/B 无缝更新) -->
-    <script src="./js/bcos-pkg.js"></script>
-    <script src="./js/bcos-cydia.js"></script>
+
 
 
 
     <!-- v8.2 完整版 -->
-    <link rel="stylesheet" href="./css/v82.css">
-    <script src="./js/v82/core/loader.js"></script>
-    <script src="./js/v82/core/vfs.js"></script>
-    <script src="./js/v82/core/personalize.js"></script>
-    <script src="./js/v82/core/boot.js"></script>
-    <script src="./js/v82/core/theme.js"></script>
-    <script src="./js/v82/core/desktop.js"></script>
-    <script src="./js/v82/core/menubar.js"></script>
-    <script src="./js/v82/core/window.js"></script>
-    <script src="./js/v82/core/clock.js"></script>
-    <script src="./js/v82/core/fullscreen.js"></script>
-    <script src="./js/v82/apps/drawer.js"></script>
-    <script src="./js/v82/apps/install.js"></script>
-    <script src="./js/v82/apps/settings.js"></script>
-    <script src="./js/v82/apps/wp-picker.js"></script>
-    <script src="./js/v82/apps/cydia-ui.js"></script>
-    <script src="./js/v82/apps/app-settings.js"></script>
-    <script src="./js/v82/apps/app-terminal.js"></script>
-    <script src="./js/v82/apps/app-files.js"></script>
-    <script src="./js/v82/apps/app-browser.js"></script>
-    <script src="./js/v82/apps/app-monitor.js"></script>
-    <script src="./js/v82/apps/app-calculator.js"></script>
-    <script src="./js/v82/apps/app-notes.js"></script>
-    <script src="./js/v82/apps/app-about.js"></script>
-    <script src="./js/v82/apps/app-logs.js"></script>
-    <script src="./js/v82/apps/app-appstore.js"></script>
-    <script src="./js/v82/apps/app-anniversary.js"></script>
-    <script src="./js/v82/apps/app-texteditor.js"></script>
-    <script src="./js/v82/apps/app-monopoly.js"></script>
-    <script src="./js/v82/apps/app-me.js"></script>
-    <script src="./js/v82/apps/app-music.js"></script>
-    <script src="./js/v82/apps/app-weather.js"></script>
 
+    <!-- BCOS v9 编排器: 注册表驱动动态加载全部模块 (IndexedDB A/B 缓存 → SW 覆盖 → 网络) -->
+    <script src="./js/bcos-bootstrap.js?v=9.0.1.9601"></script>
 </body>
 </html>

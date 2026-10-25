@@ -4,12 +4,18 @@
     const DEFAULT_BG = 'linear-gradient(135deg,#0B1026 0%,#1a2a4a 50%,#0B1026 100%)';
     function _ensureBg() {
         let bg = document.getElementById('bcos-desktop-bg');
-        if (!bg) {
-            bg = document.createElement('div');
-            bg.id = 'bcos-desktop-bg';
-            bg.style.cssText = 'position:fixed;inset:0;z-index:-5;background-size:cover;background-position:center;background-repeat:no-repeat;';
-            document.body.insertBefore(bg, document.body.firstChild);
-        }
+        // 校验已存在元素: 必须是 body 直接子节点且 position:fixed
+        // (旧桌面容器内嵌套的同 ID 元素仅带 background 内联样式, 容器隐藏时 0×0 不可见)
+        if (bg && bg.parentElement === document.body && bg.style.position === 'fixed') return bg;
+        if (bg) bg.removeAttribute('id'); // 让出 ID, 旧元素原地保留不影响旧桌面结构
+        bg = document.createElement('div');
+        bg.id = 'bcos-desktop-bg';
+        bg.className = 'bcos-desktop-wallpaper';
+        bg.style.cssText = 'position:fixed;inset:0;z-index:-5;background-size:cover;background-position:center;background-repeat:no-repeat;';
+        document.body.insertBefore(bg, document.body.firstChild);
+        // 迁移误挂进隐藏容器的组件 (如 Aurora 桌面时钟)
+        const clock = document.getElementById('bcos-desk-clock');
+        if (clock && clock.parentElement !== bg) bg.appendChild(clock);
         return bg;
     }
     // 使用 !important 设置背景, 确保覆盖 CSS 规则 (如 bcos-8.css 的 radial-gradient)

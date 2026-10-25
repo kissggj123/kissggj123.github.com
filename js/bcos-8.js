@@ -223,13 +223,18 @@ function _bcos8Init() {
     _bcos8InjectCCToggle();
 }
 
-// v8.1.0: 自动初始化 Aurora 外壳
+// v9: 自动初始化 Aurora 外壳 (bootstrap 动态模式下交给 _bcos8AutoInitHook, 保持时序一致)
 (function _bcos8AutoInit() {
     function _init() {
         if (typeof _bcos8Init === 'function') {
             console.log('[Aurora] 自启动 _bcos8Init()');
             _bcos8Init();
         }
+    }
+    if (window.__BCOS_BOOTSTRAP__) {
+        // 动态注入模式: 挂钩子供 bootstrap 在合成 DOMContentLoaded 后按序调用
+        window._bcos8AutoInitHook = _init;
+        return;
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', _init);

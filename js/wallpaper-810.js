@@ -3,14 +3,16 @@
     'use strict';
     function _ensureBg() {
         let bg = document.getElementById('bcos-desktop-bg');
-        if (!bg) {
-            bg = document.createElement('div');
-            bg.id = 'bcos-desktop-bg';
-            bg.className = 'bcos-desktop-wallpaper';
-            bg.style.cssText = 'position:fixed;inset:0;z-index:-5;background:linear-gradient(135deg,#0B1026 0%,#1a2a4a 50%,#0B1026 100%);background-size:cover;background-position:center;background-repeat:no-repeat;';
-            document.body.insertBefore(bg, document.body.firstChild);
-            console.log('[WP810] #bcos-desktop-bg created');
-        }
+        // 必须是 body 直接子节点且 position:fixed, 否则重建
+        // (旧桌面容器内嵌套的同 ID 元素容器隐藏时 0×0 不可见)
+        if (bg && bg.parentElement === document.body && bg.style.position === 'fixed') return bg;
+        if (bg) bg.removeAttribute('id');
+        bg = document.createElement('div');
+        bg.id = 'bcos-desktop-bg';
+        bg.className = 'bcos-desktop-wallpaper';
+        bg.style.cssText = 'position:fixed;inset:0;z-index:-5;background:linear-gradient(135deg,#0B1026 0%,#1a2a4a 50%,#0B1026 100%);background-size:cover;background-position:center;background-repeat:no-repeat;';
+        document.body.insertBefore(bg, document.body.firstChild);
+        console.log('[WP810] #bcos-desktop-bg created');
         return bg;
     }
     window._bcosApplyDesktopTheme = function() {
