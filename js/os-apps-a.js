@@ -702,6 +702,7 @@ function _bcosRefreshStoreIfOpen() {
     }
 
     function _bcosOpenApp(app) {
+        if (window.BCOS) BCOS.event.emit('app:opened', { id: app, legacy: true });
         if (app === 'carlock' || app === 'car' || app === 'lock') {
             showBcosCarLockscreen();
             return;

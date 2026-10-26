@@ -149,17 +149,27 @@ const Loader = {
     },
     /** 网络强刷取文本 (绕过缓存, 用于检查更新) */
     text(url) { return _fetchText(url, true); },
-    /** 从注册表引导整个系统 (动态模式主入口) */
+    /** 从注册表引导整个系统 (动态模式主入口; 支持页面分节: modules.json pages 按 pathname 匹配) */
     bootFromRegistry() {
         return _fetchText(REGISTRY_URL).then(function(txt) {
             const reg = JSON.parse(txt);
             window._bcosRegistry = reg;
             console.log('[BCOS.loader] 注册表 v' + reg.version + ' · ' + Object.keys(reg.modules).length + ' 模块');
+            // 页面分节: 如 car.html 用 carLoadOrder/carCssOrder, 其余页面用默认 loadOrder/cssOrder
+            let jsKey = 'loadOrder', cssKey = 'cssOrder';
+            const pageKey = location.pathname.split('/').pop() || 'index.html';
+            if (reg.pages && reg.pages[pageKey]) {
+                const pc = reg.pages[pageKey];
+                jsKey = pc.loadOrder || jsKey;
+                cssKey = pc.cssOrder || cssKey;
+                reg._pageCfg = pc;
+                console.log('[BCOS.loader] 页面分节:', pageKey, '→', jsKey + '/' + cssKey);
+            }
             // 预登记所有模块
             Object.keys(reg.modules).forEach(function(k) { ModuleRegistry.record(k, reg.modules[k]); });
             // CSS 先行
-            const cssOrder = reg.cssOrder || [];
-            const jsOrder = reg.loadOrder || [];
+            const cssOrder = reg[cssKey] || [];
+            const jsOrder = reg[jsKey] || [];
             return cssOrder.reduce(function(p, id) {
                 const m = reg.modules[id];
                 return p.then(function() { return m ? Loader.css(id, m.file) : null; });

@@ -1,5 +1,5 @@
 // Service Worker - Bunny CC v9.0.0 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v9.0.1.9601';
+const CACHE_VERSION = 'v9.1.0.9700';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 // 🔥 热更新覆盖缓存: 独立于版本缓存, 永不自动清除 (回滚需显式 CLEAR_OVERRIDE)
@@ -30,7 +30,8 @@ const RELATIVE_CORE_ASSETS = [
     'js/v82/core/menubar.js', 'js/v82/core/window.js', 'js/v82/core/clock.js',
     'js/v82/core/fullscreen.js',
     'js/v82/apps/drawer.js', 'js/v82/apps/install.js', 'js/v82/apps/settings.js',
-    'js/v82/apps/wp-picker.js', 'js/v82/apps/cydia-ui.js', 'js/v82/apps/app-cydia.js',
+    'js/v82/apps/wp-picker.js', 'js/v82/apps/app-cydia.js',
+    'js/car-app-a.js', 'js/car-app-b.js',
     'js/v82/apps/app-settings.js', 'js/v82/apps/app-terminal.js', 'js/v82/apps/app-files.js',
     'js/v82/apps/app-browser.js', 'js/v82/apps/app-monitor.js', 'js/v82/apps/app-calculator.js',
     'js/v82/apps/app-notes.js', 'js/v82/apps/app-about.js', 'js/v82/apps/app-logs.js',

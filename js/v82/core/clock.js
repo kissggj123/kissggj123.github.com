@@ -7,7 +7,10 @@
         c.id = 'bcos-desk-clock';
         c.style.cssText = 'position:fixed;top:50px;right:20px;z-index:5;color:#fff;text-align:right;pointer-events:none;text-shadow:0 2px 12px rgba(0,0,0,.5);';
         c.innerHTML = '<div id="bcos-clock-time" style="font-size:42px;font-weight:200;letter-spacing:2px"></div><div id="bcos-clock-date" style="font-size:13px;opacity:.8"></div>';
-        document.body.appendChild(c);
+        // 优先挂入壁纸层 (与 theme.js _ensureBg 迁移逻辑一致, 避免游离于壁纸层外)
+        const bg = document.getElementById('bcos-desktop-bg');
+        if (bg && bg.parentElement === document.body) bg.appendChild(c);
+        else document.body.appendChild(c);
         _tick();
         setInterval(_tick, 1000);
     };

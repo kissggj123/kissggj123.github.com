@@ -750,6 +750,7 @@ function initCardSystem() {
     document.addEventListener('DOMContentLoaded', initTabBarMode);
 
     function navigateTo(view) {
+        if (window.BCOS) BCOS.event.emit('view:changed', { view: view });
         closeModal(); // Close any open modals when switching views
         currentView = view;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -883,6 +884,7 @@ function initCardSystem() {
 
     /* ==================== Toast & Loading ==================== */
     function showToast(msg, type = 'info') {
+        if (window.BCOS) BCOS.event.emit('ui:toast', { msg: msg, type: type });
         const lockEl = document.getElementById('bcos-car-lockscreen');
         if (lockEl && lockEl.style.display !== 'none' && typeof showCarToast === 'function') {
             showCarToast(msg);

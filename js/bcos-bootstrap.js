@@ -53,9 +53,10 @@ async function _boot() {
         // 1. A/B 无缝更新: 上次下载的 staged 模块切换为 active
         try { if (window._bcosPkgActivateStaged) { const n = await window._bcosPkgActivateStaged(); if (n > 0) console.log('[Bootstrap] A/B 切换:', n, '个模块已激活'); } } catch (e) { console.warn('[Bootstrap] A/B 检查失败:', e); }
 
-        // 2. 注册表驱动动态加载全部模块
+        // 2. 注册表驱动动态加载全部模块 (含页面分节判定)
         _splash('加载系统模块…');
         await BCOS.loader.bootFromRegistry();
+        const pageCfg = (window._bcosRegistry && window._bcosRegistry._pageCfg) || null;
         console.log('[Bootstrap] 模块加载完成 in ' + (Date.now() - _t0) + 'ms');
 
         // 3. 合成 DOMContentLoaded — 动态注入的模块错过了真实事件
@@ -66,11 +67,14 @@ async function _boot() {
             document.dispatchEvent(evt);
         } catch (e) { console.warn('[Bootstrap] 合成 DCL 失败:', e); }
 
-        // 4. Aurora 外壳 (bcos-8.js 自启动被 bootstrap 接管, 此处按静态模式时序手动触发)
-        if (window._bcos8AutoInitHook) { try { window._bcos8AutoInitHook(); } catch (e) { console.error('[Bootstrap] Aurora 启动失败:', e); } }
-
-        // 5. v82 初始化链 (theme → desktop → menubar → window → drawer → clock)
-        BCOS.kernel.initChain();
+        // 4. 页面专属初始化 (car.html 等分节页面跳过 Aurora 外壳与 v82 桌面链)
+        if (!pageCfg || pageCfg.aurora !== false) {
+            if (window._bcos8AutoInitHook) { try { window._bcos8AutoInitHook(); } catch (e) { console.error('[Bootstrap] Aurora 启动失败:', e); } }
+        }
+        if (!pageCfg || pageCfg.initChain !== false) {
+            // 5. v82 初始化链 (theme → desktop → menubar → window → drawer → clock)
+            BCOS.kernel.initChain();
+        }
 
         // 6. 就绪
         BCOS.kernel.markReady('dynamic');
