@@ -52,8 +52,9 @@
         } else {
             _setBg(bg, 'url(' + customBg + ') center/cover no-repeat');
         }
-        // 如果有 b64 数据, 异步加载高清 blob 替换
-        if (wp && wp.b64 && window.loadWallpaperBlob) {
+        // v9.1.1: 异步加载高清 blob 替换占位图 (不再依赖 wp.b64 —
+        // loadWallpaperBlob 自带 IDB缓存/b64分片/直链三路数据源, 壁纸数据重构后 b64 常为空)
+        if (wp && window.loadWallpaperBlob) {
             if (window.wpBlobCache && window.wpBlobCache[wp.file]) {
                 _setBg(bg, 'url(' + window.wpBlobCache[wp.file] + ') center/cover no-repeat');
                 return;

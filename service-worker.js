@@ -1,5 +1,5 @@
-// Service Worker - Bunny CC v9.0.0 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v9.1.0.9700';
+﻿// Service Worker - Bunny CC v9.0.0 (GitHub Pages & Custom Domain Optimized)
+const CACHE_VERSION = 'v9.1.1.9701';
 const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
 // 🔥 热更新覆盖缓存: 独立于版本缓存, 永不自动清除 (回滚需显式 CLEAR_OVERRIDE)
