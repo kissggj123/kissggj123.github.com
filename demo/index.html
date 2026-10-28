@@ -118,6 +118,7 @@ button{font-family:inherit;cursor:pointer;border:none}
     <button onclick="UI.codex()">📖 图鉴</button>
     <button onclick="UI.ach()">🏆 成就</button>
     <button onclick="UI.bag()">🎒 角色</button>
+    <button onclick="UI.charge()" style="background:var(--gold);color:#5a3a00;font-weight:700">💰 充值</button>
     <button onclick="UI.settings()">⚙️</button>
   </div>
   <div id="dialog">
@@ -163,12 +164,20 @@ button{font-family:inherit;cursor:pointer;border:none}
   <div class="row"><button class="btn-alt" onclick="UI.close('mShop')">离开</button></div>
 </div></div>
 
+<!-- 充值中心 -->
+<div class="modal" id="mCharge"><div class="card">
+  <h3>💰 充值中心</h3>
+  <div class="sub">所有充值均可 100% 免单 · 支付后立即到账</div>
+  <div class="body" id="chargeList" style="text-align:left"></div>
+  <div class="row"><button class="btn-alt" onclick="UI.close('mCharge')">关闭</button></div>
+</div></div>
+
 <!-- 收银台 -->
 <div class="modal" id="mPay"><div class="card" style="max-width:380px">
-  <h3 style="text-align:left;border-bottom:2px solid var(--accent2);padding-bottom:8px">🧧 超级氪金礼包</h3>
+  <h3 style="text-align:left;border-bottom:2px solid var(--accent2);padding-bottom:8px" id="payTitle">🧧 超级氪金礼包</h3>
   <div class="sub" style="text-align:left">订单号：<span id="payNo" style="font-family:Consolas"></span> · 商户：兔可可档案馆</div>
   <div class="body" style="text-align:center">
-    <div style="font-size:12px;color:var(--dim)">HP+500 / 攻+50 / 防+50 / 三色钥匙各3</div>
+    <div style="font-size:12px;color:var(--dim)" id="payDesc">HP+500 / 攻+50 / 防+50 / 三色钥匙各3</div>
     <div id="price">¥ 648.00</div>
     <div id="free">FREE 🎉</div>
     <div id="paySpin"></div>
@@ -235,7 +244,21 @@ const EQUIPS = {
   k1:{name:'传说中的机械键盘',atk:15,slot:'weapon',rarity:2,icon:'⌨️'},
   k2:{name:'Bug 之王残刃',atk:25,def:5,slot:'weapon',rarity:3,icon:'🗡️'},
   s1:{name:'防烧屏镀膜',def:8,slot:'armor',rarity:1,icon:'🛡️'},
-  a1:{name:'幸运胡萝卜吊坠',slot:'accessory',effect:{gemBonus:1},rarity:2,icon:'🥕'}
+  a1:{name:'幸运胡萝卜吊坠',slot:'accessory',effect:{gemBonus:1},rarity:2,icon:'🥕'},
+  n1:{name:'胡萝卜短剑',atk:8,slot:'weapon',rarity:1,icon:'🥖'},
+  n2:{name:'兔耳发带',def:6,slot:'armor',rarity:1,icon:'🎀'},
+  n3:{name:'月光护符',slot:'accessory',effect:{gemBonus:1},rarity:2,icon:'🌙'},
+  S1:{name:'Bug 之王冠冕',atk:30,def:10,slot:'armor',rarity:3,icon:'👑'}
+};
+const GACHA_POOL = ['n1','n2','n3','k1','a1','k2','S1'];
+const GACHA_RATE = [[1,60],[2,30],[3,10]]; // [稀有度, 权重]
+const SKUS = {
+  c6:  {name:'🥕 首充礼包', price:'¥ 6.00',   num:6,   icon:'🥕', buff:()=>{G.gem+=30;G.keys.y+=2;},    desc:'宝石×30 + 黄钥匙×2'},
+  c30: {name:'🧧 小月卡',    price:'¥ 30.00',  num:30,  icon:'🧧', buff:()=>{G.gem+=150;},               desc:'宝石×150'},
+  c98: {name:'🎫 大月卡',    price:'¥ 98.00',  num:98,  icon:'🎫', buff:()=>{G.gem+=500;Gacha.give(2);}, desc:'宝石×500 + 稀有装备×1'},
+  c328:{name:'💎 至尊礼包',  price:'¥ 328.00', num:328, icon:'💎', buff:()=>{G.gem+=1800;G.keys.y+=3;G.keys.b+=3;Gacha.give(3);}, desc:'宝石×1800 + 三色钥匙 + 史诗装备×1'},
+  c648:{name:'🧧 超级氪金礼包', price:'¥ 648.00', num:648, icon:'🧧', buff:()=>{G.hp+=500;G.atk+=50;G.def+=50;G.keys.y+=3;G.keys.b+=3;G.gem+=3000;}, desc:'HP+500 攻+50 防+50 三色钥匙 宝石×3000'},
+  box: {name:'🎁 神秘装备箱 ×1', price:'¥ 88.00', num:88, icon:'🎁', isBox:true, desc:'按概率开出装备（普通60/稀有30/史诗10）'}
 };
 const REPO_URL = 'https://github.com/kissggj123/';
 const ACHS = {
@@ -256,7 +279,7 @@ function newGame(ng){
     cycle: prev ? prev.cycle+1 : 1, floor:0, pos:null,
     hp:1000, atk:60, def:40, gem:0, xp:0, keys:{y:1,b:0},
     equip:{weapon:null,armor:null,accessory:null}, skills:[], cds:{},
-    flags:{}, achs:{}, codex:[], killed:{}, seen:{},
+    flags:{}, achs:{}, codex:[], killed:{}, seen:{}, gachaLog:[], gachaSeq:0,
     name: prev?prev.name:'访客', cls:null,
     ai:{baseUrl:localStorage.getItem('bcos_ai_baseUrl')||'https://api.qnaigc.com',
         model:localStorage.getItem('bcos_ai_model')||'qiniu/conatus-free',
@@ -307,6 +330,24 @@ const UI = {
     for(const s of G.skills) h+='<span class="badge">⚡ '+s.name+'：'+s.desc+'</span>';
     h+='</div>';
     $('infoTitle').textContent='🎒 角色面板'; $('infoBody').innerHTML=h; $('mInfo').classList.add('show');
+  },
+  charge(){
+    let h='<div style="font-size:12px;color:var(--dim);margin-bottom:6px">💰 充值挡位（均可 100% 免单）</div>';
+    for(const k in SKUS){ const s=SKUS[k]; if(k==='box')continue;
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:5px 0;gap:6px">'+
+        '<span style="font-size:13px"><b>'+s.name+'</b><br><span style="font-size:11px;color:var(--dim)">'+s.desc+'</span></span>'+
+        '<button class="btn-main" data-sku="'+k+'" style="background:var(--gold);color:#5a3a00;white-space:nowrap">'+s.price+'</button></div>'; }
+    const box=SKUS.box;
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 4px;padding:10px;background:var(--panel2);border-radius:10px;gap:6px">'+
+      '<span style="font-size:13px"><b>'+box.name+'</b><br><span style="font-size:11px;color:var(--dim)">'+box.desc+'</span></span>'+
+      '<button class="btn-main" data-sku="box" style="background:linear-gradient(135deg,#7b5cff,#ff6b9d);color:#fff;white-space:nowrap">'+box.price+'</button></div>';
+    const log=(G.gachaLog||[]).slice(0,8);
+    h+='<div style="margin-top:10px;font-size:12px;color:var(--dim)">📜 抽取日志'+(log.length?'（最近 '+log.length+' 条）':'')+'</div>'+
+      '<div style="font-family:Consolas,monospace;font-size:11px;line-height:1.9;margin-top:4px">'+
+      (log.length? log.map(l=>'· '+l).join('<br>') : '暂无记录，去开一箱试试？')+'</div>';
+    $('chargeList').innerHTML=h;
+    document.querySelectorAll('[data-sku]').forEach(b=>b.onclick=()=>{ UI.close('mCharge'); Checkout.open(b.dataset.sku); });
+    $('mCharge').classList.add('show');
   },
   settings(){
     $('infoTitle').textContent='⚙️ AI 设置（可选）';
@@ -522,7 +563,8 @@ const Events = {
       ['','普通','稀有','史诗'][e.rarity]+'</span>';
     const btns=$('evBtns'); btns.innerHTML='';
     const ok=document.createElement('button'); ok.className='btn-main'; ok.textContent='装备！';
-    ok.onclick=()=>{ G.equip[e.slot]=e; setTile(this.cur.x,this.cur.y,'.'); G.pos={x:this.cur.x,y:this.cur.y};
+    ok.onclick=()=>{ G.equip[e.slot]=e;
+      if(fromTile){ setTile(this.cur.x,this.cur.y,'.'); G.pos={x:this.cur.x,y:this.cur.y}; }
       UI.close('mEvent'); toast('已装备 '+e.icon+e.name); save(); renderMap(); };
     btns.append(ok); $('mEvent').classList.add('show');
   },
@@ -538,6 +580,43 @@ const Events = {
       const text=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
       if(text) setTimeout(()=>toast('🐰 AI点评：'+String(text).slice(0,60)),800);
     }catch(e){ /* 静默 */ }
+  }
+};
+
+/* ==================== 开箱抽装备 ==================== */
+const Gacha = {
+  pickTier(){ const r=Math.random()*100; return r<10?3 : r<40?2 : 1; },
+  logLine(prefix,e){
+    G.gachaLog=(G.gachaLog||[]);
+    G.gachaSeq=(G.gachaSeq||0)+1;
+    G.gachaLog.unshift('#'+G.gachaSeq+' '+prefix+' '+e.icon+' '+e.name+' · '+['','普通','稀有','史诗'][e.rarity]);
+    if(G.gachaLog.length>20)G.gachaLog.length=20;
+  },
+  roll(){ // 按概率抽取
+    const tier=this.pickTier();
+    const pool=GACHA_POOL.filter(id=>EQUIPS[id].rarity===tier);
+    const id=pool[Math.floor(Math.random()*pool.length)];
+    this.logLine('开箱开出',EQUIPS[id]);
+    this.showResult(id); save();
+  },
+  give(minTier){ // 充值直赠：稀有度≥minTier 随机
+    const pool=GACHA_POOL.filter(id=>EQUIPS[id].rarity>=minTier);
+    const id=pool[Math.floor(Math.random()*pool.length)];
+    this.logLine('充值赠品',EQUIPS[id]);
+    this.showResult(id); save();
+  },
+  showResult(id){
+    const e=EQUIPS[id];
+    $('evIcon').textContent=e.icon; $('evName').textContent=(e.rarity===3?'✨✨ 金光一闪！':'开箱获得！');
+    $('evBody').innerHTML='<div class="badge rarity'+e.rarity+'">'+e.name+'</div><br>'+
+      (e.atk?'攻 +'+e.atk+'　':'')+(e.def?'防 +'+e.def:'')+
+      '<br><span style="font-size:12px;color:var(--dim)">品质：'+['','普通','稀有','史诗'][e.rarity]+'</span>';
+    const btns=$('evBtns'); btns.innerHTML='';
+    const ok=document.createElement('button'); ok.className='btn-main'; ok.textContent='装备！';
+    ok.onclick=()=>{ G.equip[e.slot]=e; UI.close('mEvent'); toast('已装备 '+e.icon+e.name); save(); renderMap(); };
+    const later=document.createElement('button'); later.className='btn-alt'; later.textContent='收进图鉴';
+    later.onclick=()=>UI.close('mEvent');
+    btns.append(ok,later); $('mEvent').classList.add('show');
   }
 };
 
@@ -569,9 +648,13 @@ const Shop = {
   }
 };
 const Checkout = {
-  channel:'rabbit',
-  open(){
+  channel:'rabbit', sku:'c648',
+  open(skuId){
+    this.sku = SKUS[skuId] ? skuId : 'c648';
+    const s = SKUS[this.sku];
     this.channel='rabbit';
+    $('payTitle').textContent = s.name;
+    $('payDesc').textContent = s.desc;
     $('payNo').textContent='BC'+Date.now().toString(36).toUpperCase()+Math.floor(Math.random()*900+100);
     const p=$('price'); p.className=''; p.style.cssText='font-size:34px;font-weight:800';
     $('free').style.display='none'; $('paySpin').style.display='none'; $('payMsg').textContent='';
@@ -586,7 +669,7 @@ const Checkout = {
         b.classList.add('sel'); Checkout.channel=id; };
       btns.appendChild(b);
     }
-    const pay=document.createElement('button'); pay.className='btn-pay'; pay.textContent='立即支付 ¥648.00';
+    const pay=document.createElement('button'); pay.className='btn-pay'; pay.textContent='立即支付 '+s.price;
     pay.onclick=()=>this.pay(pay); btns.appendChild(pay);
     $('mPay').classList.add('show');
   },
@@ -605,7 +688,9 @@ const Checkout = {
     },2000);
   },
   success(){
-    G.hp+=500; G.atk+=50; G.def+=50; G.keys.y+=3; G.keys.b+=3;
+    const s=SKUS[this.sku];
+    if(s.isBox){ Gacha.roll(); }
+    else { s.buff(); }
     ach('whale'); save(); renderMap();
     confetti();
     setTimeout(()=>{
@@ -650,7 +735,8 @@ console.log('%c🐰 兔可可的魔塔档案馆%c\nTOWER.cheat 已挂载 —— 
 /* ==================== 二周目 ==================== */
 function startNG(){
   const keep={cycle:G.cycle,hp:G.hp,atk:G.atk,def:G.def,gem:G.gem,xp:G.xp,keys:G.keys,
-    equip:G.equip,skills:G.skills,cds:G.cds,achs:G.achs,codex:G.codex,killed:G.killed,name:G.name,ai:G.ai};
+    equip:G.equip,skills:G.skills,cds:G.cds,achs:G.achs,codex:G.codex,killed:G.killed,name:G.name,ai:G.ai,
+    gachaLog:G.gachaLog,gachaSeq:G.gachaSeq};
   G=newGame(true); Object.assign(G,keep); G.cycle=keep.cycle+1; G.floor=0; G.pos=null;
   // 二周目职业：档案幽灵主题
   if(G.ai.key){ summonClass(true); } else { G.cls={name:'档案幽灵',desc:'二周目限定：档案馆里游荡的前代访客。',
