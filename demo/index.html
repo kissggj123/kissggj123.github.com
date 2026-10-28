@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>兔可可的魔塔档案馆 · Demo</title>
+<style>
+:root{
+  --bg:#2a1f2e; --panel:#fff0f6; --panel2:#ffe3ef; --ink:#5a2a44; --dim:#a3708c;
+  --accent:#ff6b9d; --accent2:#ff9ec3; --good:#3fc380; --warn:#ffb347; --bad:#ff5a76;
+  --blue:#5aa9ff; --gold:#ffc94d; --tile:#fbe4ee; --tile2:#f7d6e4; --wall:#e8a9c4;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+  display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:manipulation}
+button{font-family:inherit;cursor:pointer;border:none}
+/* ---------- boot CRT ---------- */
+#boot{position:fixed;inset:0;background:#000;color:#33ff66;font-family:Consolas,monospace;
+  padding:24px;font-size:14px;line-height:1.8;z-index:50;white-space:pre-wrap}
+#boot .cur{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+/* ---------- layout ---------- */
+#game{display:none;flex-direction:column;align-items:center;width:100%;max-width:760px;
+  height:100%;padding:6px;gap:6px}
+#status{width:100%;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+  background:var(--panel);border-radius:12px;padding:6px 8px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#status .st{background:var(--panel2);border-radius:8px;padding:3px 8px;white-space:nowrap}
+#status .st b{color:var(--accent)}
+#floorTag{background:var(--accent);color:#fff;border-radius:8px;padding:3px 10px}
+#mapWrap{flex:0 0 auto;position:relative;background:var(--panel);border-radius:12px;padding:5px;
+  box-shadow:0 4px 16px rgba(0,0,0,.35)}
+#map{display:grid;grid-template-columns:repeat(15,var(--ts));grid-auto-rows:var(--ts)}
+:root{--ts:34px}
+@media(max-width:560px){:root{--ts:min(22px,(100vw - 28px)/15)}}
+.tile{width:var(--ts);height:var(--ts);display:flex;align-items:center;justify-content:center;
+  font-size:calc(var(--ts)*.62);position:relative;user-select:none}
+.tile.f{background:var(--tile)}
+.tile.f:nth-child(2n){background:var(--tile2)}
+.tile.w{background:var(--wall);border-radius:4px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.45)}
+.tile.hero{background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent);z-index:2}
+.tile.item{cursor:pointer}
+.tile.door-y{background:var(--gold);border-radius:6px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.tile.door-b{background:var(--blue);border-radius:6px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.tile.portal{background:linear-gradient(135deg,#7b5cff,#33ffcc);border-radius:6px;cursor:pointer;animation:pulse 2s infinite}
+@keyframes pulse{50%{filter:brightness(1.35)}}
+/* ---------- dialog ---------- */
+#dialog{width:100%;min-height:96px;background:var(--panel);border-radius:12px;padding:10px 12px 10px 56px;
+  position:relative;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer}
+#dialog .face{position:absolute;left:8px;top:8px;width:40px;height:40px;background:var(--panel2);
+  border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
+#dialog .name{font-size:12px;color:var(--accent);font-weight:700}
+#dialog .txt{font-size:14px;line-height:1.55;min-height:44px}
+#dialog .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#dialog .opts button{background:var(--accent);color:#fff;border-radius:8px;padding:5px 12px;font-size:13px}
+#dialog .opts button.alt{background:#e8b7cc;color:#5a2a44}
+#dialog .hint{position:absolute;right:10px;bottom:4px;font-size:10px;color:var(--dim)}
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(30,10,25,.72);display:none;align-items:center;
+  justify-content:center;z-index:30;padding:14px}
+.modal.show{display:flex}
+.card{background:var(--panel);border-radius:16px;padding:18px;max-width:420px;width:100%;
+  text-align:center;animation:pop .25s ease}
+@keyframes pop{from{transform:scale(.8);opacity:0}}
+.card h3{color:var(--accent);margin-bottom:8px}
+.card .sub{font-size:13px;color:var(--dim);margin-bottom:10px}
+.card .body{font-size:14px;line-height:1.7;text-align:left;margin-bottom:12px}
+.card .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.card .row button{border-radius:10px;padding:8px 16px;font-size:14px}
+.btn-main{background:var(--accent);color:#fff}
+.btn-alt{background:#e8d5de;color:var(--ink)}
+.btn-gh{background:#24292e;color:#fff}
+.badge{display:inline-block;background:var(--accent2);color:#7a2850;border-radius:6px;
+  padding:1px 8px;font-size:12px;margin:2px}
+.rarity2{box-shadow:0 0 10px var(--blue)}
+.rarity3{box-shadow:0 0 14px var(--gold);border:2px solid var(--gold)}
+/* battle preview */
+.bp{display:flex;justify-content:space-around;margin:10px 0;font-size:13px}
+.bp .col{background:var(--panel2);border-radius:10px;padding:8px 14px;min-width:110px}
+.bp .mono{font-family:Consolas,monospace;font-size:12px;color:var(--dim);margin-top:4px;line-height:1.6}
+/* ---------- checkout ---------- */
+#price{font-size:30px;font-weight:800;color:var(--ink);transition:all .4s}
+#price.strike{text-decoration:line-through;color:var(--dim);font-size:22px}
+#free{display:none;font-size:26px;font-weight:900;color:var(--good);animation:pop .4s ease}
+#paySpin{display:none;margin:10px auto;width:26px;height:26px;border:3px solid var(--accent2);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:40;display:none}
+/* ---------- toast / achievement ---------- */
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+  border-radius:10px;padding:8px 18px;font-size:14px;opacity:0;transition:.3s;z-index:45;pointer-events:none}
+#toast.show{opacity:1}
+.ach{background:linear-gradient(135deg,var(--gold),#ffe9a8);color:#7a4a00}
+/* ---------- dpad ---------- */
+#dpad{display:none;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(2,44px);gap:4px;margin-bottom:6px}
+#dpad button{background:var(--panel);border-radius:10px;font-size:18px;color:var(--ink)}
+@media(pointer:coarse){#dpad{display:grid}}
+#menuBtns{display:flex;gap:6px;font-size:12px}
+#menuBtns button{background:var(--panel2);border-radius:8px;padding:4px 10px;color:var(--ink)}
+#fade{position:fixed;inset:0;background:var(--bg);opacity:0;pointer-events:none;transition:.4s;z-index:20}
+</style>
+</head>
+<body>
+
+<div id="boot"></div>
+<div id="fade"></div>
+
+<div id="game">
+  <div id="status"></div>
+  <div id="mapWrap"><div id="map"></div></div>
+  <div id="menuBtns">
+    <button onclick="UI.codex()">📖 图鉴</button>
+    <button onclick="UI.ach()">🏆 成就</button>
+    <button onclick="UI.bag()">🎒 角色</button>
+    <button onclick="UI.settings()">⚙️</button>
+  </div>
+  <div id="dialog">
+    <div class="face">🐰</div>
+    <div class="name">兔可可</div>
+    <div class="txt" id="dlgTxt"></div>
+    <div class="opts" id="dlgOpts"></div>
+    <div class="hint">点击继续 ▾</div>
+  </div>
+  <div id="dpad">
+    <span></span><button onclick="Game.tryMove(0,-1)">↑</button><span></span>
+    <button onclick="Game.tryMove(-1,0)">←</button><button onclick="Game.tryMove(0,1)">↓</button><button onclick="Game.tryMove(1,0)">→</button>
+  </div>
+</div>
+
+<!-- 战斗预览 -->
+<div class="modal" id="mBattle"><div class="card">
+  <h3>⚔️ 遭遇 <span id="bName"></span></h3>
+  <div class="bp">
+    <div class="col">玩家<div class="mono" id="bMe"></div></div>
+    <div class="col" id="bFoeCol"><span id="bFoe"></span><div class="mono" id="bCalc"></div></div>
+  </div>
+  <div id="bSkill"></div>
+  <div class="row">
+    <button class="btn-main" id="bGo">开战</button>
+    <button class="btn-alt" onclick="UI.close('mBattle')">撤退</button>
+  </div>
+</div></div>
+
+<!-- 项目事件卡 -->
+<div class="modal" id="mEvent"><div class="card" id="evCard">
+  <h3 id="evIcon">📦</h3>
+  <div class="sub" id="evName"></div>
+  <div class="body" id="evBody"></div>
+  <div class="row" id="evBtns"></div>
+</div></div>
+
+<!-- 商店 -->
+<div class="modal" id="mShop"><div class="card">
+  <h3>🛒 兔可可商店</h3>
+  <div class="sub">宝石：<b id="shopGem">0</b> · XP：<b id="shopXp">0</b></div>
+  <div class="body" id="shopList"></div>
+  <div class="row"><button class="btn-alt" onclick="UI.close('mShop')">离开</button></div>
+</div></div>
+
+<!-- 模拟收银台 -->
+<div class="modal" id="mPay"><div class="card">
+  <h3>💳 兔可可收银台</h3>
+  <div class="sub">订单号：<span id="payNo" style="font-family:Consolas"></span></div>
+  <div class="body" style="text-align:center">
+    <div>超级氪金礼包 ×1</div>
+    <div style="font-size:12px;color:var(--dim);margin:4px 0">HP+500 / 攻+50 / 防+50 / 三色钥匙各3</div>
+    <div id="price">¥ 648.00</div>
+    <div id="free">FREE 🎉</div>
+    <div id="paySpin"></div>
+    <div id="payMsg" style="font-size:13px;color:var(--dim)">本收银台为整活模拟，不会收取任何真实货币</div>
+  </div>
+  <div class="row" id="payBtns"></div>
+</div></div>
+
+<!-- 图鉴/成就/角色/设置 共用 -->
+<div class="modal" id="mInfo"><div class="card">
+  <h3 id="infoTitle"></h3>
+  <div class="body" id="infoBody" style="max-height:50vh;overflow:auto"></div>
+  <div class="row"><button class="btn-alt" onclick="UI.close('mInfo')">关闭</button></div>
+</div></div>
+
+<!-- 通关结算 -->
+<div class="modal" id="mEnd"><div class="card">
+  <h3>🏁 通关结算</h3>
+  <div class="body" id="endBody" style="text-align:center"></div>
+  <div class="row" id="endBtns"></div>
+</div></div>
+
+<div id="toast"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+'use strict';
+/* ==================== 数据 ==================== */
+const MAPS = [
+[ '###############',
+  '#S.....Y...1.g#',
+  '#.##...#.###..#',
+  '#.ka...g.#2..h#',
+  '#.#...###.##..#',
+  '#.b.B.#E..#.T.#',
+  '#...k.#...#...#',
+  '#..g..#####..3#',
+  '#.###.....c.g.#',
+  '#N....Y...##l.#',
+  '###############' ],
+[ '###############',
+  '#.....#...g..b#',
+  '#.....#.....Y.#',
+  '#.###.#.###.#.#',
+  '#.#h..B.#M..#.#',
+  '#.#.###.###.#.#',
+  '#...a...E...#l#',
+  '###############' ]
+];
+const MONSTERS = {
+  a:{name:'内存泄漏史莱姆',hp:200,atk:50,def:10,xp:30,drop:{key:'y',p:.5},icon:'🟢'},
+  b:{name:'404 幽灵',hp:350,atk:72,def:25,xp:60,drop:{gem:3},icon:'👻'},
+  c:{name:'NullPointerException',hp:550,atk:95,def:40,xp:100,drop:{gem:4},icon:'😈'},
+  M:{name:'Bug 之王',hp:1200,atk:130,def:60,xp:500,drop:{equip:'k2'},boss:true,icon:'👑'}
+};
+const EVENTS = {
+  '1':{type:'repo',repo:'Bunny-Cockpit-OS',icon:'🚗',lore:'兔可可王国的车机锁屏系统，一切的开始。为新能源车座舱大屏而设计，也是这座档案馆的第一块记忆碎片。'},
+  '2':{type:'repo',repo:'YumikoToys',icon:'🧸',lore:'AI 桌宠玩具系列，会撒娇也会顶嘴。据说夜深时会偷偷整理主人的 commit 历史。'},
+  '3':{type:'repo',repo:'DarkSouls_Work',icon:'🔥',lore:'上着班写黑魂同人战斗系统。受苦是会传染的，代码也是。'},
+  E:{type:'equip',equip:'k1'},
+  N:{type:'shop'}
+};
+const EQUIPS = {
+  k1:{name:'传说中的机械键盘',atk:15,slot:'weapon',rarity:2,icon:'⌨️'},
+  k2:{name:'Bug 之王残刃',atk:25,def:5,slot:'weapon',rarity:3,icon:'🗡️'},
+  s1:{name:'防烧屏镀膜',def:8,slot:'armor',rarity:1,icon:'🛡️'},
+  a1:{name:'幸运胡萝卜吊坠',slot:'accessory',effect:{gemBonus:1},rarity:2,icon:'🥕'}
+};
+const REPO_URL = 'https://github.com/kissggj123/';
+const ACHS = {
+  first:{name:'初来乍到',desc:'看完第一个项目'},
+  codex3:{name:'图鉴收藏家',desc:'收录 3 个项目'},
+  whale:{name:'💎 氪金玩家',desc:'完成一次模拟支付'},
+  clear:{name:'🏁 一周目通关',desc:'击败 Bug 之王'},
+  cheat:{name:'⌨ 开挂的人生',desc:'使用控制台作弊'}
+};
+const FALLBACK_CLASS = {name:'兔可可',desc:'档案管理员本兔，均衡型，绒毛护体。',hp:1000,atk:60,def:40,
+  skill:{name:'护体绒毛',type:'passive',desc:'每场战斗首回合免伤'}};
+
+/* ==================== 状态 ==================== */
+let G = null;
+function newGame(ng){
+  const prev = ng ? G : null;
+  return {
+    cycle: prev ? prev.cycle+1 : 1, floor:0, pos:null,
+    hp:1000, atk:60, def:40, gem:0, xp:0, keys:{y:1,b:0},
+    equip:{weapon:null,armor:null,accessory:null}, skills:[], cds:{},
+    flags:{}, achs:{}, codex:[], killed:{}, seen:{},
+    name: prev?prev.name:'访客', cls:null,
+    ai:{baseUrl:'https://api.qnaigc.com',model:'qiniu/conatus-free',key:localStorage.getItem('bcos_ai_key')||''}
+  };
+}
+function save(){ try{localStorage.setItem('rpg_demo_save',JSON.stringify(G));}catch(e){} }
+function load(){ try{const s=localStorage.getItem('rpg_demo_save'); return s?JSON.parse(s):null;}catch(e){return null;} }
+
+function totalAtk(){ let a=G.atk; for(const s of ['weapon','armor','accessory']){const e=G.equip[s]; if(e&&e.atk)a+=e.atk;} return a; }
+function totalDef(){ let d=G.def; for(const s of ['weapon','armor','accessory']){const e=G.equip[s]; if(e&&e.def)d+=e.def;} return d; }
+function maxHp(){ let h=G.hp; return h; } // hp 即当前上限简化
+function monsterScale(){ return 1+0.5*(G.cycle-1); }
+
+/* ==================== UI 基础 ==================== */
+const $ = id=>document.getElementById(id);
+function toast(msg,cls){ const t=$('toast'); t.textContent=msg; t.className='show '+(cls||'');
+  clearTimeout(t._tm); t._tm=setTimeout(()=>t.className='',2400); }
+function ach(id){ if(G.achs[id])return; G.achs[id]=true; toast('🏆 解锁成就「'+ACHS[id].name+'」','ach'); save(); }
+
+const UI = {
+  close(id){ $(id).classList.remove('show'); },
+  codex(){
+    $('infoTitle').textContent='📖 项目图鉴 ('+G.codex.length+'/3)';
+    let h=G.codex.length?'':'<div style="color:var(--dim)">还是空的，去开宝箱吧</div>';
+    for(const r of G.codex) h+='<div style="margin-bottom:8px"><span class="badge">'+r.icon+' '+r.name+'</span>'+
+      '<div style="font-size:12px;color:var(--dim)">'+r.desc+'</div></div>';
+    $('infoBody').innerHTML=h; $('mInfo').classList.add('show');
+  },
+  ach(){
+    $('infoTitle').textContent='🏆 成就墙';
+    let h=''; for(const k in ACHS){ const got=G.achs[k];
+      h+='<div style="margin-bottom:6px;opacity:'+(got?1:.4)+'">'+(got?'✅':'⬜')+' <b>'+ACHS[k].name+'</b> <span style="font-size:12px;color:var(--dim)">'+ACHS[k].desc+'</span></div>'; }
+    $('infoBody').innerHTML=h; $('mInfo').classList.add('show');
+  },
+  bag(){
+    const c=G.cls||FALLBACK_CLASS;
+    let h='<div style="text-align:center;margin-bottom:8px"><b style="font-size:16px">'+c.name+'</b> · '+G.name+
+      ' · '+G.cycle+'周目</div><div style="font-size:12px;color:var(--dim);text-align:center;margin-bottom:8px">'+c.desc+'</div>';
+    h+='<div>❤️ '+G.hp+'　⚔️ '+totalAtk()+'　🛡️ '+totalDef()+'　💎 '+G.gem+'　⭐ XP '+G.xp+'</div>';
+    h+='<div style="margin-top:6px">🔑 黄×'+G.keys.y+'　🔵 蓝×'+G.keys.b+'</div>';
+    h+='<div style="margin-top:8px"><b>装备</b><br>';
+    for(const s of ['weapon','armor','accessory']){ const e=G.equip[s];
+      h+= e? '<span class="badge rarity'+e.rarity+'">'+e.icon+' '+e.name+(e.atk?' 攻+'+e.atk:'')+(e.def?' 防+'+e.def:'')+'</span>'
+           : '<span class="badge">空('+s+')</span>'; }
+    h+='</div><div style="margin-top:8px"><b>技能</b><br>';
+    h+= c.skill?'<span class="badge">'+(c.skill.type==='passive'?'🛡️被动':'⚡主动')+' '+c.skill.name+'：'+c.skill.desc+'</span>':'';
+    for(const s of G.skills) h+='<span class="badge">⚡ '+s.name+'：'+s.desc+'</span>';
+    h+='</div>';
+    $('infoTitle').textContent='🎒 角色面板'; $('infoBody').innerHTML=h; $('mInfo').classList.add('show');
+  },
+  settings(){
+    $('infoTitle').textContent='⚙️ AI 设置（可选）';
+    $('infoBody').innerHTML='<div style="font-size:12px;color:var(--dim);margin-bottom:8px">'+
+      '填入 OpenAI 兼容网关 Key 可解锁「AI 即兴点评」。Key 仅存本机 localStorage。不填也能玩完整游戏。</div>'+
+      'Key：<input id="aiKey" style="width:100%;padding:6px;border-radius:8px;border:1px solid #ccc" value="'+(G.ai.key||'')+'">'+
+      '<div style="font-size:11px;color:var(--dim);margin-top:4px">当前端点：'+G.ai.baseUrl+' · '+G.ai.model+'</div>';
+    $('mInfo').classList.add('show');
+    $('aiKey').addEventListener('change',e=>{ G.ai.key=e.target.value.trim();
+      localStorage.setItem('bcos_ai_key',G.ai.key); toast(G.ai.key?'✅ AI 增强':'已清除 Key'); save(); });
+  }
+};
+
+/* ==================== 对话引擎（打字机） ==================== */
+const Dlg = {
+  q:[], typing:false, done:null,
+  say(lines,opts,done){ this.q=lines.slice(); this._opts=opts||null; this.done=done||null; this.next(); },
+  next(){
+    if(!this.q.length){
+      if(this._opts){ this.renderOpts(this._opts); return; }
+      if(this.done){ const d=this.done; this.done=null; d(); }
+      return;
+    }
+    const item=this.q.shift();
+    if(typeof item==='function'){ item(); this.next(); return; }
+    this.type(item);
+  },
+  type(text){
+    this.typing=true; const el=$('dlgTxt'); el.textContent=''; let i=0;
+    const tm=setInterval(()=>{ el.textContent=text.slice(0,++i);
+      if(i>=text.length){ clearInterval(tm); this.typing=false; } },18);
+    el._full=text;
+  },
+  skip(){ if(this.typing){ $('dlgTxt').textContent=$('dlgTxt')._full; this.typing=false; const t=$('dlgTxt')._full; }
+    else this.next(); },
+  renderOpts(opts){
+    const box=$('dlgOpts'); box.innerHTML='';
+    for(const o of opts){ const b=document.createElement('button');
+      b.textContent=o[0]; if(o[2])b.className='alt';
+      b.onclick=e=>{ e.stopPropagation(); box.innerHTML=''; o[1](); };
+      box.appendChild(b); }
+  }
+};
+$('dialog').addEventListener('click',()=>{ if(Dlg.typing) Dlg.skip(); else if(!Dlg.q.length&&!$('dlgOpts').children.length&&Dlg.done) Dlg.next(); else Dlg.skip(); });
+
+/* ==================== 地图渲染 ==================== */
+const TILES={ '#':'w','.':'f',S:'f',T:'f',g:'f item',h:'f item',k:'f item',l:'f item',
+  Y:'door-y',B:'door-b',M:'f',a:'f',b:'f',c:'f','1':'f item','2':'f item','3':'f item',E:'f item',N:'f item' };
+const ICONS={ S:'',g:'💎',h:'🍓',k:'🔑',l:'🗝️','1':'📦','2':'📦','3':'📦',E:'🎁',N:'🛒',T:'🌀',
+  a:'🟢',b:'👻',c:'😈',M:'👑',Y:'',B:'' };
+function renderMap(){
+  const m=MAPS[G.floor], el=$('map'); el.innerHTML='';
+  for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++){
+    const ch=m[y][x], d=document.createElement('div');
+    let cls=TILES[ch]||'f', ic=ICONS[ch]||'';
+    if(G.pos&&G.pos.x===x&&G.pos.y===y){ cls='hero'; ic='🐰'; }
+    d.className='tile '+cls; d.textContent=ic;
+    if(ch==='N') d.title='商店';
+    el.appendChild(d);
+  }
+  renderStatus();
+}
+function renderStatus(){
+  $('status').innerHTML=
+    '<span class="st" id="floorTag">'+(G.floor===0?'1F 教学层':'2F Boss 层')+' · '+G.cycle+'周目</span>'+
+    '<span class="st">❤️ <b>'+G.hp+'</b></span>'+
+    '<span class="st">⚔️ <b>'+totalAtk()+'</b></span>'+
+    '<span class="st">🛡️ <b>'+totalDef()+'</b></span>'+
+    '<span class="st">🔑<b>'+G.keys.y+'</b> 🗝️<b>'+G.keys.b+'</b></span>'+
+    '<span class="st">💎<b>'+G.gem+'</b></span>'+
+    '<span class="st">⭐<b>'+G.xp+'</b></span>'+
+    '<span class="st">📖<b>'+G.codex.length+'/3</b></span>';
+}
+
+/* ==================== 移动与交互 ==================== */
+function tileAt(x,y){ const m=MAPS[G.floor]; return (m[y]&&m[y][x])||'#'; }
+function setTile(x,y,ch){ const r=MAPS[G.floor]; r[y]=r[y].substring(0,x)+ch+r[y].substring(x+1); }
+
+const Game = {
+  tryMove(dx,dy){
+    if(!G||!G.pos)return;
+    if($('mBattle').classList.contains('show')||$('mEvent').classList.contains('show')||$('mPay').classList.contains('show'))return;
+    const nx=G.pos.x+dx, ny=G.pos.y+dy, ch=tileAt(nx,ny);
+    if(ch==='#')return;
+    if(ch==='Y'||ch==='B'){
+      const k=ch==='Y'?'y':'b';
+      if(G.keys[k]>0){ G.keys[k]--; setTile(nx,ny,'.'); toast('使用'+(k==='y'?'黄':'蓝')+'钥匙开门'); }
+      else{ toast('需要'+(k==='y'?'黄':'蓝')+'钥匙！'); return; }
+      save(); renderMap(); return;
+    }
+    if(MONSTERS[ch]){ Battle.preview(nx,ny,ch); return; }
+    if(EVENTS[ch]){ Events.trigger(nx,ny,ch); return; }
+    if(ch==='T'){ Game.ascend(); return; }
+    if(ch==='g'){ G.gem+=2+((G.equip.accessory&&G.equip.accessory.effect.gemBonus)||0); setTile(nx,ny,'.'); toast('💎 宝石 +2'); }
+    if(ch==='h'){ G.hp+=250; setTile(nx,ny,'.'); toast('🍓 HP +250'); }
+    if(ch==='k'){ G.keys.y++; setTile(nx,ny,'.'); toast('🔑 黄钥匙 +1'); }
+    if(ch==='l'){ G.keys.b++; setTile(nx,ny,'.'); toast('🗝️ 蓝钥匙 +1'); }
+    G.pos={x:nx,y:ny}; save(); renderMap();
+  },
+  ascend(){
+    if(G.floor>=MAPS.length-1){ return; }
+    UI.fadeIn(()=>{
+      G.floor++; G.pos=Game.findTile('T')||{x:1,y:1};
+      if(G.floor===1){
+        Dlg.say(['二层到了……这层的空气有点冷。','👑 楼最深处坐着「Bug 之王」——传说它吞掉了无数个 commit。准备好了就去挑战吧！',
+          '（提示：打开宝箱、吃宝石变强后再去；打不过可以在商店买属性）'],null,()=>{});
+      }
+      renderMap();
+    });
+  },
+  findTile(ch){ const m=MAPS[G.floor];
+    for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++) if(m[y][x]===ch)return{x,y}; return null; },
+  fadeIn(mid){ const f=$('fade'); f.style.opacity=1; setTimeout(()=>{ mid(); f.style.opacity=0; },420); },
+  victory(){
+    ach('clear');
+    const next=()=>{ $('endBtns').innerHTML='';
+      $('endBody').innerHTML='<div style="font-size:40px">🏆</div>恭喜，'+G.name+'！Bug 之王已讨伐！<br><br>'+
+        '<b>统计</b><br>周目：'+G.cycle+'<br>XP：'+G.xp+'<br>图鉴收录：'+G.codex.length+'/3<br>成就：'+
+        Object.keys(G.achs).length+'/'+Object.keys(ACHS).length;
+      const b1=document.createElement('button'); b1.className='btn-main'; b1.textContent='🌀 进入第'+(G.cycle+1)+'周目（继承属性，怪物×'+(1+0.5*G.cycle).toFixed(1)+'）';
+      b1.onclick=()=>{ UI.close('mEnd'); startNG(); };
+      const b2=document.createElement('button'); b2.className='btn-alt'; b2.textContent='重新开始';
+      b2.onclick=()=>{ localStorage.removeItem('rpg_demo_save'); location.reload(); };
+      $('endBtns').append(b1,b2); $('mEnd').classList.add('show'); };
+    Game.fadeIn(()=>{ renderMap();
+      Dlg.say(['呜哇——Bug 之王倒下了！','这座档案馆的记忆碎片全部苏醒了。它们会永远记得今天来的访客。'],null,next); });
+  }
+};
+
+/* ==================== 战斗 ==================== */
+const Battle = {
+  cur:null,
+  preview(x,y,ch){
+    const m=MONSTERS[ch], sc=monsterScale();
+    const foe={name:m.name,hp:Math.round(m.hp*sc),atk:Math.round(m.atk*sc),def:Math.round(m.def*sc),xp:Math.round(m.xp*sc)};
+    this.cur={x,y,ch,foe};
+    // 模拟结算（被动首回合免伤）
+    const sim=(skipFirst)=>{
+      let myhp=G.hp,foehp=foe.hp,round=0,hurt=0;
+      const myAtk=totalAtk(),myDef=totalDef();
+      while(foehp>0&&myhp>0){ round++;
+        foehp-=Math.max(myAtk-foe.def,0);
+        if(!(round===1&&skipFirst)) { const dmg=Math.max(foe.atk-myDef,0); myhp-=dmg; hurt+=dmg; } }
+      return {win:foehp<=0,hurt,round};
+    };
+    const r=sim(true); const rNo=sim(false);
+    $('bName').textContent=m.icon+' '+m.name+(G.cycle>1?' (×'+sc+')':'');
+    $('bMe').innerHTML='❤️'+G.hp+' ⚔️'+totalAtk()+' 🛡️'+totalDef();
+    $('bFoe').innerHTML='❤️'+foe.hp+' ⚔️'+foe.atk+' 🛡️'+foe.def;
+    $('bCalc').innerHTML=r.win?('预计受伤 -'+r.hurt+'（'+r.round+'回合）'):('<span style="color:var(--bad)">打不过！预计重伤</span>');
+    $('bGo').style.display=r.win?'':'none';
+    $('bGo').onclick=()=>this.fight();
+    $('mBattle').classList.add('show');
+  },
+  fight(){
+    const {x,y,ch,foe}=this.cur; UI.close('mBattle');
+    let myhp=G.hp,foehp=foe.hp,round=0;
+    const myAtk=totalAtk(),myDef=totalDef(),firstFree=(G.cls&&G.cls.skill&&G.cls.skill.name==='护体绒毛');
+    while(foehp>0&&myhp>0){ round++;
+      foehp-=Math.max(myAtk-foe.def,0);
+      if(!(round===1&&firstFree)) myhp-=Math.max(foe.atk-myDef,0); }
+    G.hp=Math.max(1,myhp); G.xp+=foe.xp; G.killed[ch]=(G.killed[ch]||0)+1;
+    setTile(x,y,'.'); G.pos={x,y};
+    let msg=m0=>m0;
+    const drops=[];
+    const m=MONSTERS[ch];
+    if(m.drop&&m.drop.key&&Math.random()<m.drop.p){ G.keys.y++; drops.push('🔑 黄钥匙'); }
+    if(m.drop&&m.drop.gem){ G.gem+=m.drop.gem; drops.push('💎 宝石×'+m.drop.gem); }
+    if(m.drop&&m.drop.equip){ Events.giveEquip(m.drop.equip); }
+    toast('⚔️ 击败'+m.name+'！XP+'+foe.xp+(drops.length?'　'+drops.join(' '):''));
+    save(); renderMap();
+    if(m.boss) setTimeout(()=>Game.victory(),600);
+  }
+};
+
+/* ==================== 事件：宝箱/商店 ==================== */
+const Events = {
+  cur:null,
+  trigger(x,y,ch){
+    this.cur={x,y,ch};
+    if(ch==='N'){ Shop.open(); return; }
+    if(ch==='E'){ this.giveEquip('k1',true); return; }
+    const ev=EVENTS[ch];
+    $('evIcon').textContent=ev.icon+' '+ev.repo;
+    $('evName').textContent='拾取记忆碎片';
+    $('evBody').innerHTML='<i style="color:var(--dim)">'+ev.lore+'</i>';
+    const btns=$('evBtns'); btns.innerHTML='';
+    const gh=document.createElement('button'); gh.className='btn-gh'; gh.textContent='🔗 GitHub';
+    gh.onclick=()=>window.open(REPO_URL+ev.repo,'_blank');
+    const take=document.createElement('button'); take.className='btn-main'; take.textContent='收录图鉴';
+    take.onclick=()=>{ this.collect(ev); };
+    btns.append(gh,take); $('mEvent').classList.add('show');
+    this.aiComment(ev.repo, ev.lore);
+  },
+  collect(ev){
+    if(!G.codex.find(c=>c.name===ev.repo)){
+      G.codex.push({name:ev.repo,icon:ev.icon,desc:ev.lore});
+      G.xp+=80; toast('📖 收录「'+ev.repo+'」 XP+80');
+      ach(G.codex.length>=3?'codex3':'first');
+    }
+    setTile(this.cur.x,this.cur.y,'.'); G.pos={x:this.cur.x,y:this.cur.y};
+    UI.close('mEvent'); save(); renderMap();
+  },
+  giveEquip(id,fromTile){
+    const e=EQUIPS[id]; if(!e)return;
+    $('evIcon').textContent=e.icon; $('evName').textContent='获得装备！';
+    $('evBody').innerHTML='<div class="badge rarity'+e.rarity+'">'+e.name+'</div><br>'+
+      (e.atk?'攻 +'+e.atk+'　':'')+(e.def?'防 +'+e.def:'')+'<br><span style="font-size:12px;color:var(--dim)">品质：'+
+      ['','普通','稀有','史诗'][e.rarity]+'</span>';
+    const btns=$('evBtns'); btns.innerHTML='';
+    const ok=document.createElement('button'); ok.className='btn-main'; ok.textContent='装备！';
+    ok.onclick=()=>{ G.equip[e.slot]=e; setTile(this.cur.x,this.cur.y,'.'); G.pos={x:this.cur.x,y:this.cur.y};
+      UI.close('mEvent'); toast('已装备 '+e.icon+e.name); save(); renderMap(); };
+    btns.append(ok); $('mEvent').classList.add('show');
+  },
+  async aiComment(repo,lore){
+    if(!G.ai.key) return;
+    try{
+      const res=await fetch(G.ai.baseUrl+'/v1/chat/completions',{method:'POST',
+        headers:{'Authorization':'Bearer '+G.ai.key,'Content-Type':'application/json'},
+        body:JSON.stringify({stream:false,model:G.ai.model,messages:[
+          {role:'system',content:'你是兔可可，一只可爱的AI兔子档案管理员。用一两句话吐槽这个开源项目，语气俏皮。直接输出内容。'},
+          {role:'user',content:'项目：'+repo+'。简介：'+lore}]}),signal:AbortSignal.timeout(15000)});
+      const j=await res.json();
+      const text=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+      if(text) setTimeout(()=>toast('🐰 AI点评：'+String(text).slice(0,60)),800);
+    }catch(e){ /* 静默 */ }
+  }
+};
+
+/* ==================== 商店 + 模拟支付 ==================== */
+const Shop = {
+  open(){
+    $('shopGem').textContent=G.gem; $('shopXp').textContent=G.xp;
+    const rows=[
+      ['⚔️ 攻击 +5','💎20',()=>{G.gem-=20;G.atk+=5;}],
+      ['🛡️ 防御 +5','💎20',()=>{G.gem-=20;G.def+=5;}],
+      ['🔑 黄钥匙 ×1','💎10',()=>{G.gem-=10;G.keys.y++;}],
+      ['⚡ 学习「Debug重击」（主动：无视50%怪防，冷却3场）','⭐100',()=>{ if(!G.skills.find(s=>s.name==='Debug重击')){G.skills.push({name:'Debug重击',desc:'无视50%怪防，冷却3场'});G.cds['Debug重击']=0;} }]
+    ];
+    let h='';
+    for(let i=0;i<rows.length;i++){
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0;gap:6px">'+
+        '<span style="flex:1;text-align:left;font-size:13px">'+rows[i][0]+'</span>'+
+        '<button class="btn-main" data-buy="'+i+'" '+(i===3&&G.skills.find(s=>s.name==='Debug重击')?'disabled style="opacity:.5"':'')+'>'+rows[i][1]+'</button></div>';
+    }
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 4px;padding-top:8px;border-top:2px dashed var(--accent2)">'+
+      '<span style="text-align:left;font-size:13px;font-weight:700">🧧 超级氪金礼包<br><span style="font-size:11px;color:var(--dim)">HP+500 攻+50 防+50 三色钥匙</span></span>'+
+      '<button class="btn-main" id="buy648" style="background:var(--gold);color:#5a3a00">¥648</button></div>';
+    $('shopList').innerHTML=h;
+    for(let i=0;i<rows.length;i++){ const b=document.querySelector('[data-buy="'+i+'"]');
+      b.onclick=()=>{ if(G.gem<20&&i<3||i===3&&G.xp<100){toast('不够啦，去攒攒～');return;}
+        rows[i][2](); toast('✅ 购买成功'); Shop.open(); save(); renderMap(); }; }
+    $('buy648').onclick=()=>{ UI.close('mShop'); Checkout.open(); };
+    $('mShop').classList.add('show');
+  }
+};
+const Checkout = {
+  open(){
+    $('payNo').textContent='BC'+Date.now().toString(36).toUpperCase()+Math.floor(Math.random()*900+100);
+    const p=$('price'); p.className=''; p.textContent='¥ 648.00'; p.style.cssText='font-size:30px;font-weight:800';
+    $('free').style.display='none'; $('paySpin').style.display='none';
+    $('payMsg').style.display='';
+    const btns=$('payBtns'); btns.innerHTML='';
+    for(const [label,cls] of [['🐰 兔可可币','btn-main'],['🥕 胡萝卜信用卡','btn-main'],['🌙 月光宝盒钱包','btn-main']]){
+      const b=document.createElement('button'); b.className=cls; b.textContent=label;
+      b.onclick=()=>this.pay(label); btns.appendChild(b);
+    }
+    $('mPay').classList.add('show');
+  },
+  pay(channel){
+    $('payMsg').style.display='none';
+    const btns=$('payBtns'); btns.innerHTML='';
+    $('paySpin').style.display='block';
+    setTimeout(()=>{
+      $('paySpin').style.display='none';
+      const p=$('price'); p.classList.add('strike');
+      setTimeout(()=>{ $('free').style.display='block'; this.success(); },600);
+    },1200);
+  },
+  success(){
+    G.hp+=500; G.atk+=50; G.def+=50; G.keys.y+=3; G.keys.b+=3;
+    ach('whale'); save(); renderMap();
+    confetti();
+    setTimeout(()=>{
+      const btns=$('payBtns'); btns.innerHTML='';
+      const b1=document.createElement('button'); b1.className='btn-main'; b1.textContent='🎉 已到账！';
+      b1.onclick=()=>UI.close('mPay');
+      const b2=document.createElement('button'); b2.className='btn-gh'; b2.textContent='⭐ 顺手 Star 作者';
+      b2.onclick=()=>window.open('https://github.com/kissggj123','_blank');
+      btns.append(b1,b2);
+    },1400);
+  }
+};
+
+/* ==================== 彩带 ==================== */
+function confetti(){
+  const cv=$('confetti'); cv.style.display='block'; cv.width=innerWidth; cv.height=innerHeight;
+  const ctx=cv.getContext('2d'); const parts=[];
+  for(let i=0;i<80;i++)parts.push({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*14,vy:Math.random()*-12-4,
+    c:['#ff6b9d','#ffc94d','#5aa9ff','#3fc380'][i%4],r:Math.random()*6+3,life:60});
+  let n=0; const tm=setInterval(()=>{ ctx.clearRect(0,0,cv.width,cv.height); let alive=0;
+    for(const p of parts){ p.x+=p.vx;p.y+=p.vy;p.vy+=.4;p.life--; if(p.life>0)alive++;
+      ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); }
+    if(!alive||++n>90){ clearInterval(tm); ctx.clearRect(0,0,cv.width,cv.height); cv.style.display='none'; } },33);
+}
+
+/* ==================== 作弊 API ==================== */
+window.TOWER={cheat:{
+  get state(){return JSON.parse(JSON.stringify({...G,clsName:G.cls&&G.cls.name}));},
+  god(){G.hp=99999;G.atk=999;G.def=999;toast(' Cheat ON');ach('cheat');save();renderMap();},
+  hp(n){G.hp=n||99999;ach('cheat');save();renderMap();},
+  atk(n){G.atk=n||200;ach('cheat');save();renderMap();},
+  def(n){G.def=n||200;ach('cheat');save();renderMap();},
+  key(n){G.keys.y=n||9;G.keys.b=n||9;ach('cheat');save();renderMap();},
+  xp(n){G.xp=n||1000;ach('cheat');save();renderMap();},
+  tp(f){G.floor=f||0;G.pos=Game.findTile('S')||Game.findTile('T')||{x:1,y:1};ach('cheat');save();renderMap();},
+  pay(){Checkout.open();ach('cheat');},
+  win(){ach('cheat');Game.victory();}
+}};
+console.log('%c🐰 兔可可的魔塔档案馆%c\nTOWER.cheat 已挂载 —— 按 F12 的你是被选中的访客\n试试 TOWER.cheat.god() / TOWER.cheat.win()',
+  'font-size:20px;background:#ff6b9d;color:#fff;padding:4px 10px;border-radius:6px','color:#ff6b9d');
+
+/* ==================== 二周目 ==================== */
+function startNG(){
+  const keep={cycle:G.cycle,hp:G.hp,atk:G.atk,def:G.def,gem:G.gem,xp:G.xp,keys:G.keys,
+    equip:G.equip,skills:G.skills,cds:G.cds,achs:G.achs,codex:G.codex,killed:G.killed,name:G.name,ai:G.ai};
+  G=newGame(true); Object.assign(G,keep); G.cycle=keep.cycle+1; G.floor=0; G.pos=null;
+  // 二周目职业：档案幽灵主题
+  if(G.ai.key){ summonClass(true); } else { G.cls={name:'档案幽灵',desc:'二周目限定：档案馆里游荡的前代访客。',
+    hp:1100,atk:70,def:45,skill:{name:'相位穿行',type:'passive',desc:'每场战斗首回合免伤'}};
+    enterFloor1(); }
+  save();
+}
+
+/* ==================== 职业召唤 ==================== */
+function summonClass(ng){
+  const card=document.createElement('div'); card.className='card'; card.id='summonCard';
+  card.innerHTML='<h3>✨ 召唤职业档案</h3><div class="sub">正在从档案馆检索你的角色…</div>'+
+    '<div id="sumBody" style="min-height:60px;font-size:14px;color:var(--dim)">…</div>';
+  const wrap=document.createElement('div'); wrap.className='modal show'; wrap.id='mSummon'; wrap.appendChild(card);
+  document.body.appendChild(wrap);
+  const finish=(c)=>{ G.cls=c; wrap.remove();
+    Dlg.say(['叮——你的职业档案生成好了！','【'+c.name+'】'+c.desc,'技能：'+c.skill.name+'（'+c.skill.desc+'）'],null,enterFloor1); };
+  if(!G.ai.key){ setTimeout(()=>finish(ng?{name:'档案幽灵',desc:'二周目限定：档案馆里游荡的前代访客。',
+    hp:1100,atk:70,def:45,skill:{name:'相位穿行',type:'passive',desc:'每场战斗首回合免伤'}}:FALLBACK_CLASS),900); return; }
+  // AI 生成职业
+  $('sumBody').textContent='兔可可正在请求 AI 撰写你的命运…';
+  fetch(G.ai.baseUrl+'/v1/chat/completions',{method:'POST',
+    headers:{'Authorization':'Bearer '+G.ai.key,'Content-Type':'application/json'},
+    body:JSON.stringify({stream:false,model:G.ai.model,response_format:{type:'json_object'},messages:[
+      {role:'system',content:'为魔塔小游戏生成一个随机玩家职业。只输出JSON：{"name":"职业名(8字内,可爱玩梗)","desc":"一句话档案(30字内)","hp":700到1000整数,"atk":50到75整数,"def":25到55整数,"skillName":"技能名","skillDesc":"技能效果一句话(15字内)","skillType":"passive或active"}。'+(ng?'主题必须是档案馆幽灵/CRT悬疑风。':'主题随机但必须可爱。')},
+      {role:'user',content:'生成一个职业'}]}),signal:AbortSignal.timeout(20000)})
+  .then(r=>r.json()).then(j=>{
+    const o=JSON.parse(j.choices[0].message.content);
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,Math.round(v)||a));
+    finish({name:String(o.name).slice(0,12),desc:String(o.desc).slice(0,60),
+      hp:clamp(o.hp,600,1100),atk:clamp(o.atk,45,80),def:clamp(o.def,20,60),
+      skill:{name:String(o.skillName||'神秘天赋').slice(0,10),type:o.skillType==='active'?'active':'passive',desc:String(o.skillDesc||'效果未知').slice(0,30)}});
+  }).catch(()=>{ toast('AI 走神了，使用兜底职业'); finish(ng?{name:'档案幽灵',desc:'二周目限定：档案馆里游荡的前代访客。',
+    hp:1100,atk:70,def:45,skill:{name:'相位穿行',type:'passive',desc:'每场战斗首回合免伤'}}:FALLBACK_CLASS); });
+}
+
+/* ==================== 开场流程 ==================== */
+function enterFloor1(){
+  G.hp=G.cls.hp; G.atk=G.cls.atk; G.def=G.cls.def;
+  Game.fadeIn(()=>{
+    $('mSummon')&&$('mSummon').remove();
+    G.pos=Game.findTile('S');
+    renderMap();
+    const intro=G.cycle>1?
+      ['欢迎回来，'+G.name+'。','这一次，档案馆的灯光是冷的。怪物们也变强了（×'+monsterScale()+'）——但你的力量被完整继承了。','去揭开上次没说完的故事吧。']
+      :['欢迎来到「兔可可的魔塔档案馆」，'+G.name+'！','这里收藏着铲屎官写过的每一个项目。打开宝箱、阅读记忆碎片，就能把它们收录进你的图鉴！',
+        '绿色的是怪物，金色的是门——钥匙要省着用哦。右下角的 🌀 楼梯通往下一层。'];
+    Dlg.say(intro,null,()=>{ save(); });
+  });
+}
+
+function bootSequence(){
+  const lines=[
+    'BUNNY_TOWER BIOS v1.0 ......... OK',
+    'MEM CHECK 640K ................ OK',
+    'LOADING ARCHIVE ............... 3 FILES',
+    'WALLPAPER DRIVER .............. SKIPPED (PINK)',
+    '',
+    'WELCOME TO BUNNY TOWER.',
+    'PRESS ANY KEY_'
+  ];
+  const el=$('boot'); let i=0;
+  const tm=setInterval(()=>{
+    if(i<lines.length){ el.innerHTML=lines.slice(0,++i).join('\n')+'<span class="cur">█</span>'; }
+    else{ clearInterval(tm); el.innerHTML=lines.join('\n')+'<span class="cur">█</span>';
+      const go=()=>{ removeEventListener('keydown',go); removeEventListener('pointerdown',go);
+        $('boot').style.display='none'; $('game').style.display='flex'; mainMenu(); };
+      addEventListener('keydown',go); addEventListener('pointerdown',go); }
+  },260);
+}
+
+function mainMenu(){
+  const saved=load();
+  if(saved&&saved.cycle){ G=saved; renderMap();
+    Dlg.say(['欢迎回来，'+G.name+'！存档已恢复（'+G.cycle+'周目 · '+(G.floor===0?'1F':'2F')+'）。'],[
+      ['继续冒险',()=>{}],['重新开始（清空存档）',()=>{localStorage.removeItem('rpg_demo_save');location.reload();},true]
+    ]); return; }
+  G=newGame(false);
+  Dlg.say(['RSS 探测完成。检测到新访客接入。','我是兔可可，这座魔塔档案馆的管理员。在正式参观之前——'],[
+    ['召唤我的职业',()=>summonClass(false)],
+    ['随便玩玩（跳过职业）',()=>{G.cls=FALLBACK_CLASS;enterFloor1();},true]
+  ]);
+}
+
+bootSequence();
+</script>
+</body>
+</html>
