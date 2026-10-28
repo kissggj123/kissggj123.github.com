@@ -85,6 +85,12 @@ button{font-family:inherit;cursor:pointer;border:none}
 #paySpin{display:none;margin:10px auto;width:26px;height:26px;border:3px solid var(--accent2);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.chan{display:flex;justify-content:space-between;align-items:center;background:#fff;
+  border:2px solid #eee;border-radius:10px;padding:10px 12px;width:100%;color:var(--ink);text-align:left}
+.chan.sel{border-color:var(--accent);background:var(--panel2)}
+.chan .radio{width:16px;height:16px;border:2px solid #ccc;border-radius:50%;display:inline-block;flex:0 0 auto}
+.chan.sel .radio{border-color:var(--accent);background:radial-gradient(circle,var(--accent) 40%,transparent 45%)}
+.btn-pay{background:#07c160;color:#fff;border-radius:12px;padding:12px;font-size:16px;font-weight:700;width:100%}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;display:none}
 /* ---------- toast / achievement ---------- */
 #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
@@ -157,19 +163,18 @@ button{font-family:inherit;cursor:pointer;border:none}
   <div class="row"><button class="btn-alt" onclick="UI.close('mShop')">离开</button></div>
 </div></div>
 
-<!-- 模拟收银台 -->
-<div class="modal" id="mPay"><div class="card">
-  <h3>💳 兔可可收银台</h3>
-  <div class="sub">订单号：<span id="payNo" style="font-family:Consolas"></span></div>
+<!-- 收银台 -->
+<div class="modal" id="mPay"><div class="card" style="max-width:380px">
+  <h3 style="text-align:left;border-bottom:2px solid var(--accent2);padding-bottom:8px">🧧 超级氪金礼包</h3>
+  <div class="sub" style="text-align:left">订单号：<span id="payNo" style="font-family:Consolas"></span> · 商户：兔可可档案馆</div>
   <div class="body" style="text-align:center">
-    <div>超级氪金礼包 ×1</div>
-    <div style="font-size:12px;color:var(--dim);margin:4px 0">HP+500 / 攻+50 / 防+50 / 三色钥匙各3</div>
+    <div style="font-size:12px;color:var(--dim)">HP+500 / 攻+50 / 防+50 / 三色钥匙各3</div>
     <div id="price">¥ 648.00</div>
     <div id="free">FREE 🎉</div>
     <div id="paySpin"></div>
-    <div id="payMsg" style="font-size:13px;color:var(--dim)">本收银台为整活模拟，不会收取任何真实货币</div>
+    <div id="payMsg" style="min-height:20px;font-size:13px;color:var(--dim)"></div>
   </div>
-  <div class="row" id="payBtns"></div>
+  <div class="row" id="payBtns" style="flex-direction:column;align-items:stretch;gap:8px"></div>
 </div></div>
 
 <!-- 图鉴/成就/角色/设置 共用 -->
@@ -253,7 +258,9 @@ function newGame(ng){
     equip:{weapon:null,armor:null,accessory:null}, skills:[], cds:{},
     flags:{}, achs:{}, codex:[], killed:{}, seen:{},
     name: prev?prev.name:'访客', cls:null,
-    ai:{baseUrl:'https://api.qnaigc.com',model:'qiniu/conatus-free',key:localStorage.getItem('bcos_ai_key')||''}
+    ai:{baseUrl:localStorage.getItem('bcos_ai_baseUrl')||'https://api.qnaigc.com',
+        model:localStorage.getItem('bcos_ai_model')||'qiniu/conatus-free',
+        key:localStorage.getItem('bcos_ai_key')||''}
   };
 }
 function save(){ try{localStorage.setItem('rpg_demo_save',JSON.stringify(G));}catch(e){} }
@@ -304,12 +311,16 @@ const UI = {
   settings(){
     $('infoTitle').textContent='⚙️ AI 设置（可选）';
     $('infoBody').innerHTML='<div style="font-size:12px;color:var(--dim);margin-bottom:8px">'+
-      '填入 OpenAI 兼容网关 Key 可解锁「AI 即兴点评」。Key 仅存本机 localStorage。不填也能玩完整游戏。</div>'+
-      'Key：<input id="aiKey" style="width:100%;padding:6px;border-radius:8px;border:1px solid #ccc" value="'+(G.ai.key||'')+'">'+
-      '<div style="font-size:11px;color:var(--dim);margin-top:4px">当前端点：'+G.ai.baseUrl+' · '+G.ai.model+'</div>';
+      '填入 OpenAI 兼容网关 Key 可解锁 AI 职业召唤与即兴点评。Key 仅存本机 localStorage。不填也能玩完整游戏。</div>'+
+      '<label style="font-size:12px">API Key</label><input id="aiKey" style="width:100%;padding:6px;border-radius:8px;border:1px solid #ccc;margin:2px 0 8px" value="'+(G.ai.key||'')+'" placeholder="sk-...">'+
+      '<label style="font-size:12px">OpenAI BaseURL</label><input id="aiUrl" style="width:100%;padding:6px;border-radius:8px;border:1px solid #ccc;margin:2px 0 8px" value="'+G.ai.baseUrl+'">'+
+      '<label style="font-size:12px">Model ID</label><input id="aiModel" style="width:100%;padding:6px;border-radius:8px;border:1px solid #ccc;margin:2px 0 8px" value="'+G.ai.model+'">'+
+      '<div style="font-size:11px;color:var(--dim)">实际请求端点：'+G.ai.baseUrl+'/v1/chat/completions</div>';
     $('mInfo').classList.add('show');
-    $('aiKey').addEventListener('change',e=>{ G.ai.key=e.target.value.trim();
-      localStorage.setItem('bcos_ai_key',G.ai.key); toast(G.ai.key?'✅ AI 增强':'已清除 Key'); save(); });
+    const bind=(id,k)=>{ $(id).addEventListener('change',e=>{ G.ai[k]=e.target.value.trim();
+      localStorage.setItem('bcos_ai_'+k,G.ai[k]); }); };
+    bind('aiKey','key'); bind('aiUrl','baseUrl'); bind('aiModel','model');
+    $('aiKey').addEventListener('change',()=>{ toast(G.ai.key?'✅ AI 增强已开启':'已清除 Key'); save(); });
   }
 };
 
@@ -558,27 +569,40 @@ const Shop = {
   }
 };
 const Checkout = {
+  channel:'rabbit',
   open(){
+    this.channel='rabbit';
     $('payNo').textContent='BC'+Date.now().toString(36).toUpperCase()+Math.floor(Math.random()*900+100);
-    const p=$('price'); p.className=''; p.textContent='¥ 648.00'; p.style.cssText='font-size:30px;font-weight:800';
-    $('free').style.display='none'; $('paySpin').style.display='none';
-    $('payMsg').style.display='';
+    const p=$('price'); p.className=''; p.style.cssText='font-size:34px;font-weight:800';
+    $('free').style.display='none'; $('paySpin').style.display='none'; $('payMsg').textContent='';
     const btns=$('payBtns'); btns.innerHTML='';
-    for(const [label,cls] of [['🐰 兔可可币','btn-main'],['🥕 胡萝卜信用卡','btn-main'],['🌙 月光宝盒钱包','btn-main']]){
-      const b=document.createElement('button'); b.className=cls; b.textContent=label;
-      b.onclick=()=>this.pay(label); btns.appendChild(b);
+    const chans=[['rabbit','🐰 兔可可币','可用余额 ¥ 1,048,576.00'],
+                 ['carrot','🥕 胡萝卜信用卡','储蓄卡 · 尾号 8848'],
+                 ['moon','🌙 月光宝盒钱包','人脸支付 · 极速到账']];
+    for(const [id,name,sub] of chans){
+      const b=document.createElement('button'); b.className='chan'+(id==='rabbit'?' sel':'');
+      b.innerHTML='<span><b>'+name+'</b><br><span style="font-size:11px;color:var(--dim)">'+sub+'</span></span><span class="radio"></span>';
+      b.onclick=()=>{ document.querySelectorAll('.chan').forEach(x=>x.classList.remove('sel'));
+        b.classList.add('sel'); Checkout.channel=id; };
+      btns.appendChild(b);
     }
+    const pay=document.createElement('button'); pay.className='btn-pay'; pay.textContent='立即支付 ¥648.00';
+    pay.onclick=()=>this.pay(pay); btns.appendChild(pay);
     $('mPay').classList.add('show');
   },
-  pay(channel){
-    $('payMsg').style.display='none';
-    const btns=$('payBtns'); btns.innerHTML='';
+  pay(btn){
+    const names={rabbit:'兔可可币',carrot:'胡萝卜信用卡',moon:'月光宝盒钱包'};
+    $('payBtns').querySelectorAll('button').forEach(b=>b.style.pointerEvents='none');
+    btn.style.opacity=.7;
+    $('payMsg').textContent='正在跳转到 '+names[this.channel]+' …';
     $('paySpin').style.display='block';
+    setTimeout(()=>{ $('payMsg').textContent='支付处理中，请稍候…'; },900);
     setTimeout(()=>{
       $('paySpin').style.display='none';
       const p=$('price'); p.classList.add('strike');
-      setTimeout(()=>{ $('free').style.display='block'; this.success(); },600);
-    },1200);
+      setTimeout(()=>{ $('free').style.display='block';
+        $('payMsg').textContent='支付成功，礼包已发放至背包 🎉'; this.success(); },600);
+    },2000);
   },
   success(){
     G.hp+=500; G.atk+=50; G.def+=50; G.keys.y+=3; G.keys.b+=3;
@@ -586,12 +610,12 @@ const Checkout = {
     confetti();
     setTimeout(()=>{
       const btns=$('payBtns'); btns.innerHTML='';
-      const b1=document.createElement('button'); b1.className='btn-main'; b1.textContent='🎉 已到账！';
+      const b1=document.createElement('button'); b1.className='btn-main'; b1.textContent='🎉 已到账，返回游戏';
       b1.onclick=()=>UI.close('mPay');
       const b2=document.createElement('button'); b2.className='btn-gh'; b2.textContent='⭐ 顺手 Star 作者';
       b2.onclick=()=>window.open('https://github.com/kissggj123','_blank');
       btns.append(b1,b2);
-    },1400);
+    },1500);
   }
 };
 
