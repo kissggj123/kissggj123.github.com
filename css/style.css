@@ -1,0 +1,664 @@
+/* ============================================================
+   兔可可的魔塔档案馆 · 主样式表
+   Bunny Tower Archive — style.css
+   ------------------------------------------------------------
+   双皮肤支持：
+     · 粉彩治愈（一周目 NG1）—— body 或 body.pink（默认）
+     · CRT 荧光绿（二周目 NG2）—— body.crt
+   所有颜色均走 CSS 变量，切换皮肤只改变量不改结构。
+   ============================================================ */
+
+/* ============================================================
+   §0  皮肤变量定义
+   ============================================================ */
+
+/* —— 皮肤一：粉彩治愈（默认） —— */
+:root{
+  --bg:#2a1f2e;        /* 页面底色：深紫 */
+  --panel:#fff0f6;     /* 面板底色：浅粉 */
+  --panel2:#ffe3ef;    /* 次级面板：粉 */
+  --ink:#5a2a44;       /* 正文墨色：深莓 */
+  --dim:#a3708c;       /* 次要文字：灰粉 */
+  --accent:#ff6b9d;    /* 主强调色：玫红 */
+  --accent2:#ff9ec3;   /* 次强调色：浅玫红 */
+  --good:#3fc380;      /* 正向：绿 */
+  --warn:#ffb347;      /* 警示：橙 */
+  --bad:#ff5a76;       /* 危险：红 */
+  --blue:#5aa9ff;      /* 蓝（蓝门/蓝宝石） */
+  --gold:#ffc94d;      /* 金（黄门/金币） */
+  --tile:#fbe4ee;      /* 地板格 A */
+  --tile2:#f7d6e4;     /* 地板格 B（棋盘交错） */
+  --wall:#e8a9c4;      /* 墙体 */
+}
+
+/* —— 皮肤二：CRT 荧光绿（二周目档案馆暗线） —— */
+body.crt{
+  --bg:#0a0a0a;        /* 纯黑底 */
+  --panel:#0d1a0d;     /* 极暗绿面板 */
+  --panel2:#112211;    /* 次级暗绿面板 */
+  --ink:#33ff66;       /* 荧光绿正文 */
+  --dim:#1a8c33;       /* 暗绿次要文字 */
+  --accent:#33ff66;    /* 主强调：荧光绿 */
+  --accent2:#22cc44;   /* 次强调：中绿 */
+  --good:#33ff66;      /* 正向：绿 */
+  --warn:#ffcc33;      /* 警示：琥珀 */
+  --bad:#ff3333;       /* 危险：红 */
+  --blue:#33aaff;      /* 蓝 */
+  --gold:#ffcc33;      /* 金/琥珀 */
+  --tile:#0d1a0d;      /* 地板 A：暗绿 */
+  --tile2:#112211;     /* 地板 B：稍亮暗绿 */
+  --wall:#1a3a1a;      /* 墙体：深绿 */
+}
+
+/* ============================================================
+   §1  重置与基础
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:linear-gradient(168deg,#ffeef5 0%,#ffdde9 45%,#ffc9dc 100%) fixed;
+  color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  overflow:hidden;
+  touch-action:manipulation;
+}
+button{font-family:inherit;cursor:pointer;border:none}
+
+/* ============================================================
+   §2  开机 CRT 画面
+   —— 固定全屏黑底 + 绿色等宽字 + 闪烁光标
+   ============================================================ */
+#boot{
+  position:fixed;inset:0;
+  background:#000;
+  color:#33ff66;
+  font-family:"Courier New",monospace;
+  font-size:14px;line-height:1.6;
+  padding:24px;
+  z-index:50;
+  white-space:pre-wrap;
+  overflow:hidden;
+}
+#boot .cur{
+  display:inline-block;
+  width:8px;height:1em;
+  background:#33ff66;
+  vertical-align:middle;
+  animation:blink 1s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* ============================================================
+   §3  主布局
+   ============================================================ */
+#game{
+  display:flex;flex-direction:column;
+  width:100%;max-width:760px;
+  height:100%;
+  padding:6px;gap:6px;
+  overflow:hidden;
+}
+
+/* —— 顶部状态栏 —— */
+#status{
+  display:flex;flex-direction:row;
+  flex-wrap:wrap;gap:4px;
+  align-items:center;
+}
+#status .st{
+  background:var(--panel);
+  color:var(--ink);
+  border-radius:8px;
+  padding:3px 8px;
+  font-size:12px;font-weight:700;
+  white-space:nowrap;
+}
+
+/* —— 楼层标签 —— */
+#floorTag{
+  background:var(--accent);
+  color:#fff;
+  border-radius:8px;
+  padding:3px 10px;
+  font-size:12px;font-weight:700;
+}
+
+/* —— 地图容器 —— */
+#mapWrap{
+  display:flex;justify-content:center;
+  overflow:auto;
+  flex:1 1 auto;
+  background:rgba(255,255,255,.55);
+  border-radius:16px;
+  padding:10px;
+  box-shadow:0 8px 28px rgba(255,107,157,.16),inset 0 0 0 1px rgba(255,255,255,.65);
+}
+#map{
+  --ts:34px;
+  display:grid;
+  grid-template-columns:repeat(15,var(--ts));
+  grid-auto-rows:var(--ts);
+  gap:0;
+}
+
+/* ============================================================
+   §4  地块类型（正式版比 demo 更多地块）
+   ============================================================ */
+.tile{
+  width:var(--ts);height:var(--ts);
+  display:flex;align-items:center;justify-content:center;
+  font-size:calc(var(--ts)*.62);
+  position:relative;
+  user-select:none;
+}
+
+/* 地板（棋盘交错） */
+.tile.f{background:var(--tile)}
+.tile.f:nth-child(2n){background:var(--tile2)}
+
+/* 墙体 */
+.tile.w{
+  background:var(--wall);
+  border-radius:4px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.45);
+}
+
+/* 英雄（玩家） */
+.tile.hero{
+  background:var(--accent);
+  border-radius:50%;
+  box-shadow:0 0 8px var(--accent);
+  z-index:2;
+}
+
+/* 可拾取道具 */
+.tile.item{cursor:pointer}
+
+/* 门：黄(Y)/蓝(D)/红(R) */
+.tile.door-y{
+  background:var(--gold);
+  border-radius:6px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);
+}
+.tile.door-b{
+  background:var(--blue);
+  border-radius:6px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);
+}
+.tile.door-r{
+  background:var(--bad);
+  border-radius:6px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);
+}
+
+/* 传送门 T */
+.tile.portal{
+  background:linear-gradient(135deg,#7b5cff,#33ffcc);
+  border-radius:6px;
+  cursor:pointer;
+  animation:pulse 2s infinite;
+}
+
+/* NPC N */
+/* NPC 兔可可：粉边对话卡 + 💬 气泡角标（与玩家英雄圆点区分） */
+.tile.npc{
+  background:var(--panel);
+  border:2px solid var(--accent);
+  border-radius:10px;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(255,107,157,.35);
+}
+.tile.npc::after{
+  content:'💬';
+  position:absolute;top:-7px;right:-7px;
+  font-size:calc(var(--ts)*.34);
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.18));
+}
+
+/* 商店 $ */
+.tile.shop{
+  background:var(--gold);
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* 车辆传送门 P */
+.tile.car{
+  background:linear-gradient(135deg,#ff6b9d,#33ff66);
+  border-radius:6px;
+  cursor:pointer;
+  animation:pulse 3s infinite;
+}
+
+@keyframes pulse{50%{filter:brightness(1.35)}}
+
+/* ============================================================
+   §5  对话框
+   ============================================================ */
+#dialog{
+  background:var(--panel);
+  border:2px solid var(--accent);
+  border-radius:12px;
+  padding:10px 12px;
+  display:flex;flex-direction:row;gap:10px;
+  align-items:flex-start;
+  min-height:80px;
+}
+#dialog .face{
+  width:48px;height:48px;flex:0 0 auto;
+  border-radius:8px;
+  background:var(--panel2);
+  border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+}
+#dialog .name{
+  font-weight:700;font-size:13px;
+  color:var(--accent);
+  margin-bottom:2px;
+}
+#dialog .txt{
+  font-size:13px;line-height:1.5;
+  color:var(--ink);
+  flex:1 1 auto;
+  min-height:1.5em;
+}
+#dialog .opts{
+  display:flex;flex-direction:column;gap:4px;
+  margin-top:6px;
+}
+#dialog .opts button{
+  background:var(--panel2);
+  color:var(--ink);
+  border-radius:6px;
+  padding:5px 10px;
+  font-size:12px;text-align:left;
+}
+#dialog .opts button:hover{background:var(--accent);color:#fff}
+#dialog .hint{
+  font-size:11px;color:var(--dim);
+  margin-top:4px;
+}
+
+/* ============================================================
+   §6  弹窗与卡片通用
+   —— 战斗预览 / 事件卡 / 商店 / 充值中心 / 结算支付 / 信息面板 / 结局
+   ============================================================ */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;justify-content:center;
+  z-index:40;
+  padding:16px;
+}
+.modal.show{display:flex}
+.card{
+  background:var(--panel);
+  border:2px solid var(--accent);
+  border-radius:14px;
+  padding:16px;
+  max-width:420px;width:100%;
+  max-height:80vh;overflow-y:auto;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+}
+.card h3{
+  font-size:15px;color:var(--accent);
+  margin-bottom:8px;
+}
+.card p{font-size:13px;line-height:1.5;margin-bottom:6px}
+
+/* —— 按钮族 —— */
+.btn-main{
+  background:var(--accent);color:#fff;
+  border-radius:8px;padding:8px 16px;
+  font-size:13px;font-weight:700;
+}
+.btn-main:hover{filter:brightness(1.1)}
+.btn-alt{
+  background:var(--panel2);color:var(--ink);
+  border:1px solid var(--dim);
+  border-radius:8px;padding:8px 16px;
+  font-size:13px;
+}
+.btn-alt:hover{border-color:var(--accent)}
+.btn-gh{
+  background:transparent;color:var(--dim);
+  border-radius:8px;padding:8px 16px;
+  font-size:13px;
+}
+.btn-gh:hover{color:var(--ink)}
+
+/* —— 徽章 / 稀有度 —— */
+.badge{
+  display:inline-block;
+  background:var(--panel2);
+  color:var(--ink);
+  border-radius:6px;
+  padding:2px 6px;
+  font-size:11px;font-weight:700;
+}
+.rarity2{
+  border:1px solid var(--blue);
+  box-shadow:0 0 6px rgba(90,169,255,.4);
+}
+.rarity3{
+  border:1px solid var(--gold);
+  box-shadow:0 0 8px rgba(255,201,77,.5);
+}
+
+/* ============================================================
+   §7  战斗预览（.bp）
+   —— 双列：玩家 vs 敌人
+   ============================================================ */
+.bp{
+  display:flex;flex-direction:row;gap:8px;
+  justify-content:space-between;
+}
+.bp .col{
+  flex:1 1 0;
+  background:var(--panel2);
+  border-radius:10px;
+  padding:8px;
+}
+.bp .col h4{
+  font-size:12px;color:var(--accent);
+  margin-bottom:4px;
+}
+.bp .col .row{
+  display:flex;justify-content:space-between;
+  font-size:12px;line-height:1.6;
+}
+.bp .vs{
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:var(--dim);
+  padding:0 4px;
+}
+
+/* ============================================================
+   §8  结算 / 支付
+   ============================================================ */
+#price{
+  font-size:18px;font-weight:700;
+  color:var(--ink);
+}
+#price .strike{
+  text-decoration:line-through;
+  color:var(--dim);
+}
+#free{
+  color:var(--good);
+  font-weight:700;
+}
+#paySpin{
+  display:inline-block;
+  width:16px;height:16px;
+  border:2px solid var(--dim);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chan{
+  display:flex;flex-direction:column;gap:6px;
+}
+.chan .chan-btn{
+  background:var(--panel2);
+  color:var(--ink);
+  border:1px solid var(--dim);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:12px;text-align:left;
+  cursor:pointer;
+}
+.chan .chan-btn.sel{
+  border-color:var(--accent);
+  background:var(--accent);
+  color:#fff;
+}
+.btn-pay{
+  background:var(--good);color:#fff;
+  border-radius:8px;padding:8px 16px;
+  font-size:13px;font-weight:700;
+  width:100%;
+}
+
+/* ============================================================
+   §9  轻提示与成就
+   ============================================================ */
+#toast{
+  position:fixed;top:48px;left:50%;
+  transform:translateX(-50%) translateY(-20px);
+  background:var(--panel);
+  color:var(--ink);
+  border:1px solid var(--accent);
+  border-radius:8px;
+  padding:8px 14px;
+  font-size:12px;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;
+  z-index:55;
+}
+#toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+#toast.ach{
+  border-color:var(--gold);
+  background:var(--panel);
+  box-shadow:0 0 12px rgba(255,201,77,.4);
+}
+#toast.ach .ach-icon{font-size:18px;margin-right:4px}
+#toast.ach .ach-title{font-weight:700;color:var(--gold)}
+
+/* ============================================================
+   §10 方向键（仅触屏）
+   ============================================================ */
+#dpad{
+  display:none;
+  position:fixed;bottom:12px;right:12px;
+  grid-template-columns:repeat(3,40px);
+  grid-template-rows:repeat(3,40px);
+  gap:4px;
+  z-index:30;
+}
+#dpad button{
+  background:var(--panel);
+  border:1px solid var(--accent);
+  border-radius:8px;
+  color:var(--accent);
+  font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+#dpad .up   {grid-column:2;grid-row:1}
+#dpad .left {grid-column:1;grid-row:2}
+#dpad .right{grid-column:3;grid-row:2}
+#dpad .down {grid-column:2;grid-row:3}
+
+@media(pointer:coarse){
+  #dpad{display:grid}
+}
+
+/* ============================================================
+   §11 菜单按钮组
+   ============================================================ */
+#menuBtns{
+  display:flex;flex-direction:row;gap:4px;
+  flex-wrap:wrap;
+}
+#menuBtns button{
+  background:var(--panel);
+  color:var(--ink);
+  border:1px solid var(--dim);
+  border-radius:8px;
+  padding:4px 10px;
+  font-size:12px;
+}
+#menuBtns button:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+/* ============================================================
+   §12 淡入淡出遮罩
+   ============================================================ */
+#fade{
+  position:fixed;inset:0;
+  background:#ffd6e6;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s;
+  z-index:45;
+}
+#fade.show{opacity:1;pointer-events:auto}
+
+/* ============================================================
+   §13 彩纸庆祝画布
+   ============================================================ */
+#confetti{
+  position:fixed;inset:0;
+  display:none;
+  pointer-events:none;
+  z-index:58;
+}
+
+/* ============================================================
+   §14 CRT 皮肤专属覆盖
+   ============================================================ */
+
+/* CRT：英雄格仍用 --accent（绿）+ 发光 */
+body.crt .tile.hero{
+  background:var(--accent);
+  box-shadow:0 0 10px var(--accent),0 0 20px var(--accent2);
+}
+
+/* CRT：墙体更暗的绿 */
+body.crt .tile.w{
+  background:var(--wall);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.5),inset 0 2px 0 rgba(51,255,102,.15);
+}
+
+/* CRT：纯黑页面底 */
+body.crt{background:#0a0a0a}
+
+/* CRT：面板极暗绿底 */
+body.crt .modal{background:rgba(0,0,0,.7)}
+
+/* CRT：地图容器与 NPC 回归终端风 */
+body.crt #mapWrap{background:transparent;padding:0;border-radius:0;box-shadow:none}
+body.crt .tile.npc{box-shadow:0 0 8px rgba(51,255,102,.35)}
+body.crt .tile.npc::after{filter:none}
+body.crt #fade{background:#0a0a0a}
+body.crt .card{
+  background:var(--panel);
+  border-color:var(--accent);
+  box-shadow:0 0 12px rgba(51,255,102,.15);
+}
+
+/* CRT：正文荧光绿 */
+body.crt .card p,
+body.crt .bp .col .row,
+body.crt #dialog .txt{color:var(--ink)}
+
+/* CRT：对话框立绘边框绿 */
+body.crt #dialog{
+  border-color:var(--accent);
+}
+body.crt #dialog .face{
+  border-color:var(--accent);
+  background:#000;
+}
+
+/* CRT：所有强调色统一绿 */
+body.crt .btn-main{background:var(--accent);color:#000}
+body.crt #floorTag{background:var(--accent);color:#000}
+body.crt #status .st{background:#000;border:1px solid var(--dim);color:var(--ink)}
+
+/* CRT：扫描线叠加效果 */
+body.crt::after{
+  content:"";
+  position:fixed;inset:0;
+  pointer-events:none;
+  z-index:59;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.12) 3px,
+    rgba(0,0,0,0) 4px
+  );
+  opacity:.5;
+}
+
+/* ============================================================
+   §15 皮肤切换按钮
+   ============================================================ */
+#skinToggle{
+  position:fixed;top:8px;right:8px;
+  z-index:60;
+  background:var(--panel);
+  border:1px solid var(--accent);
+  border-radius:8px;
+  padding:4px 10px;
+  font-size:12px;
+  color:var(--accent);
+  cursor:pointer;
+  opacity:.7;
+  transition:opacity .2s;
+}
+#skinToggle:hover{opacity:1}
+
+/* ============================================================
+   §16 图鉴弹窗（180 项目列表）
+   ============================================================ */
+.codex-item{
+  display:flex;gap:8px;
+  padding:6px 8px;
+  border-radius:8px;
+  margin:2px 0;
+  align-items:flex-start;
+}
+.codex-item:hover{background:var(--panel2)}
+.codex-item .ci-icon{
+  font-size:20px;
+  flex:0 0 auto;
+}
+.codex-item .ci-body{flex:1}
+.codex-item .ci-name{
+  font-weight:700;
+  font-size:13px;
+}
+.codex-item .ci-desc{
+  font-size:11px;
+  color:var(--dim);
+  line-height:1.4;
+}
+.codex-item .ci-link{
+  font-size:11px;
+  color:var(--accent);
+}
+.codex-item.seen{opacity:.6}
+
+/* ============================================================
+   §17 AI 召唤卡动画
+   ============================================================ */
+#mSummon .card{
+  animation:summonGlow 1s ease;
+}
+@keyframes summonGlow{
+  0%{box-shadow:0 0 30px var(--accent),0 0 60px var(--accent2)}
+  100%{box-shadow:none}
+}
+
+/* ============================================================
+   §18 响应式：移动端地块尺寸自适应
+   ============================================================ */
+@media(max-width:600px){
+  #map{
+    --ts:min(22px,(100vw - 28px)/15);
+  }
+  #game{padding:4px;gap:4px}
+  .card{padding:12px}
+  #dpad button{width:36px;height:36px}
+}

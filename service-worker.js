@@ -1,398 +1,188 @@
-﻿// Service Worker - Bunny CC v9.0.0 (GitHub Pages & Custom Domain Optimized)
-const CACHE_VERSION = 'v9.1.1.9701';
-const CACHE_NAME = `bunny-cc-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `bunny-cc-runtime-${CACHE_VERSION}`;
-// 🔥 热更新覆盖缓存: 独立于版本缓存, 永不自动清除 (回滚需显式 CLEAR_OVERRIDE)
-const OVERRIDE_CACHE = 'bunny-cc-overrides-v9';
+/* =========================================================================
+ * service-worker.js — v10「魔塔档案馆」重构版
+ * 职责变更：
+ *   · 旧版：预缓存整个 bcos 站点（100+ 资产）
+ *   · 新版：仅缓存 car.html（车机锁屏）依赖闭包；新站（魔塔 RPG）路径
+ *           全部 passthrough —— 不拦截、不缓存，保证游戏资产永远最新。
+ *   · 保留 OVERRIDE 热更新机制（car 模块 override）与 push 通知。
+ * ========================================================================= */
+'use strict';
 
-// GitHub Pages scope resolution (supports custom domains, github.io root, and repo subpaths)
-const SCOPE_BASE = self.registration ? self.registration.scope : self.location.href.replace(/service-worker\.js.*$/, '');
-const RELATIVE_CORE_ASSETS = [
-    '',
-    'index.html',
-    'car.html',
-    'car.css',
-    'css/base.css', 'css/ui.css', 'css/effects.css',
-    'css/car-lockscreen-a.css', 'css/car-lockscreen-b.css', 'css/rounded-screen.css',
-    'js/version.js',
-    'js/screen.js',
-    'js/core.js', 'js/game.js', 'js/renderer.js',
-    'js/game-logic-a.js', 'js/game-logic-b.js', 'js/game-logic-c.js',
-    'js/ui.js', 'js/os.js', 'js/icons.js',
-    'js/os-apps-a.js', 'js/os-apps-b.js', 'js/os-apps-c.js',
-    'js/wallpaper-data.js', 'js/wallpaper.js',
-    'js/apps.js', 'js/ui-systems-a.js', 'js/ui-systems-b.js', 'js/ui-systems-c.js',
-    'js/bcos.js', 'js/bcos-pkg.js', 'js/bcos-bootstrap.js',
-    'modules.json', 'modules-v81.json',
-    'css/v82.css',
-    'js/v82/core/loader.js', 'js/v82/core/vfs.js', 'js/v82/core/personalize.js',
-    'js/v82/core/boot.js', 'js/v82/core/theme.js', 'js/v82/core/desktop.js',
-    'js/v82/core/menubar.js', 'js/v82/core/window.js', 'js/v82/core/clock.js',
-    'js/v82/core/fullscreen.js',
-    'js/v82/apps/drawer.js', 'js/v82/apps/install.js', 'js/v82/apps/settings.js',
-    'js/v82/apps/wp-picker.js', 'js/v82/apps/app-cydia.js',
-    'js/car-app-a.js', 'js/car-app-b.js',
-    'js/v82/apps/app-settings.js', 'js/v82/apps/app-terminal.js', 'js/v82/apps/app-files.js',
-    'js/v82/apps/app-browser.js', 'js/v82/apps/app-monitor.js', 'js/v82/apps/app-calculator.js',
-    'js/v82/apps/app-notes.js', 'js/v82/apps/app-about.js', 'js/v82/apps/app-logs.js',
-    'js/v82/apps/app-appstore.js', 'js/v82/apps/app-anniversary.js', 'js/v82/apps/app-texteditor.js',
-    'js/v82/apps/app-monopoly.js', 'js/v82/apps/app-me.js', 'js/v82/apps/app-music.js',
-    'js/v82/apps/app-weather.js',
-    'manifest.json',
-    'manifest-car.json',
-    'favicon.ico',
-    'dist/Bunny CC_Profile.JPG',
-    'icon/16.png', 'icon/32.png', 'icon/48.png', 'icon/64.png',
-    'icon/72.png', 'icon/96.png', 'icon/128.png', 'icon/144.png',
-    'icon/192.png', 'icon/256.png', 'icon/300.png', 'icon/512.png',
-    'icon/1024.png', 'icon/icon.png',
-    'wallpaper/manifest.json',
-    'wallpaper/placeholders.json',
-    'wallpaper/Starlight210128.opt.jpg',
-    'wallpaper/Starlight210128.min.b64.p1',
-    'wallpaper/Starlight210128.min.b64.p2',
-    'wallpaper/Starlight210128.min.b64.p3',
-    'wallpaper/Starlight210128.min.b64.p4',
-    'wallpaper/1126942.opt.jpg',
-    'wallpaper/1126942.min.b64.p1',
-    'wallpaper/1126942.min.b64.p2',
-    'wallpaper/1126942.min.b64.p3',
-    'wallpaper/IMG_2833.opt.jpg',
-    'wallpaper/IMG_2833.min.b64.p1',
-    'wallpaper/IMG_2833.min.b64.p2',
-    'wallpaper/IMG_2833.min.b64.p3',
-    'wallpaper/IMG_2833.min.b64.p4',
-    'wallpaper/1204143.opt.jpg',
-    'wallpaper/177002252600796.opt.jpg',
-    'wallpaper/177002254500-200.opt.jpg',
-    'wallpaper/2560x1600-61829-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg',
-    'wallpaper/2560x1600-61834-May-It-Takes-Two-Cody-It-Takes-TwoCody-It-Takes.opt.jpg',
-    'wallpaper/61b5bd7f37541.opt.jpg',
-    'wallpaper/61b5bd7f375412.opt.jpg',
-    'wallpaper/8736.opt.jpg',
-    'wallpaper/9f794a9a-d3cb-46ec-9dcd-6bbfc0bff027.opt.jpg',
-    'wallpaper/hollow_knight.opt.jpg',
-    'wallpaper/hollow_knight_2.opt.jpg',
-];
-const CORE_ASSETS = RELATIVE_CORE_ASSETS.map(path => new URL(path, SCOPE_BASE).href);
+const VER = 'v10.0.0.rpg1';
+const CACHE_NAME = 'bunny-car-' + VER;
+const RUNTIME_CACHE = 'bunny-car-rt-' + VER;
+const OVERRIDE_CACHE = 'bunny-cc-overrides-v9';   /* 沿用旧热更新缓存（永不自动清除） */
 
-// Old cache versions to force-purge (ensures icon refresh & cache invalidation)
-const OLD_CACHE_PATTERNS = [
-    'bunny-cc-v7.8.6.9481', 'bunny-cc-runtime-v7.8.6.9481',
-    'bunny-cc-v7.8.6.9480', 'bunny-cc-runtime-v7.8.6.9480',
-    'bunny-cc-v7.8.4.9430', 'bunny-cc-runtime-v7.8.4.9430',
-    'bunny-cc-v7.8.4.9420', 'bunny-cc-runtime-v7.8.4.9420',
-    'bunny-cc-v7.8.3.9393', 'bunny-cc-runtime-v7.8.3.9393',
-    'bunny-cc-v7.8.3.9392', 'bunny-cc-runtime-v7.8.3.9392',
-    'bunny-cc-v7.8.3.9391', 'bunny-cc-runtime-v7.8.3.9391',
-    'bunny-cc-v7.8.3.9390', 'bunny-cc-runtime-v7.8.3.9390',
-    'bunny-cc-v7.8.1.9367', 'bunny-cc-runtime-v7.8.1.9367',
-    'bunny-cc-v7.8.1.9366', 'bunny-cc-runtime-v7.8.1.9366',
-    'bunny-cc-v7.8.1.9365', 'bunny-cc-runtime-v7.8.1.9365',
-    'bunny-cc-v7.8.1.9364', 'bunny-cc-runtime-v7.8.1.9364',
-    'bunny-cc-v7.8.1.9363', 'bunny-cc-runtime-v7.8.1.9363',
-    'bunny-cc-v7.8.1.9362', 'bunny-cc-runtime-v7.8.1.9362',
-    'bunny-cc-v7.8.1.9361', 'bunny-cc-runtime-v7.8.1.9361',
-    'bunny-cc-v7.8.1.9360', 'bunny-cc-runtime-v7.8.1.9360',
-    'bunny-cc-v7.8.1.9359', 'bunny-cc-runtime-v7.8.1.9359',
-    'bunny-cc-v7.8.1.9358', 'bunny-cc-runtime-v7.8.1.9358',
-    'bunny-cc-v7.8.1.9357', 'bunny-cc-runtime-v7.8.1.9357',
-    'bunny-cc-v7.8.1.9356', 'bunny-cc-runtime-v7.8.1.9356',
-    'bunny-cc-v7.8.1.9355', 'bunny-cc-runtime-v7.8.1.9355',
-    'bunny-cc-v7.8.1.9354', 'bunny-cc-runtime-v7.8.1.9354',
-    'bunny-cc-v7.8.1.9353', 'bunny-cc-runtime-v7.8.1.9353',
-    'bunny-cc-v7.8.1.9352', 'bunny-cc-runtime-v7.8.1.9352',
-    'bunny-cc-v7.8.1.9351', 'bunny-cc-runtime-v7.8.1.9351',
-    'bunny-cc-v7.8.1.9350', 'bunny-cc-runtime-v7.8.1.9350',
-    'bunny-cc-v7.8.1.9349', 'bunny-cc-runtime-v7.8.1.9349',
-    'bunny-cc-v7.8.1.9348', 'bunny-cc-runtime-v7.8.1.9348',
-    'bunny-cc-v7.8.1.9347', 'bunny-cc-runtime-v7.8.1.9347',
-    'bunny-cc-v7.8.0.9320', 'bunny-cc-runtime-v7.8.0.9320',
-    'bunny-cc-v7.8.1.9346', 'bunny-cc-runtime-v7.8.1.9346',
-    'bunny-cc-v7.8.0.9320', 'bunny-cc-runtime-v7.8.0.9320',
-    'bunny-cc-v7.8.0.9321', 'bunny-cc-runtime-v7.8.0.9321',
-    'bunny-cc-v7.8.0.9322', 'bunny-cc-runtime-v7.8.0.9322',
-    'bunny-cc-v7.8.0.9323', 'bunny-cc-runtime-v7.8.0.9323',
-    'bunny-cc-v7.8.0.9324', 'bunny-cc-runtime-v7.8.0.9324',
-    'bunny-cc-v7.8.0.9325', 'bunny-cc-runtime-v7.8.0.9325',
-    'bunny-cc-v7.8.0.9326', 'bunny-cc-runtime-v7.8.0.9326',
-    'bunny-cc-v7.8.0.9327', 'bunny-cc-runtime-v7.8.0.9327',
-    'bunny-cc-v7.8.1.9328', 'bunny-cc-runtime-v7.8.1.9328',
-    'bunny-cc-v7.8.1.9329', 'bunny-cc-runtime-v7.8.1.9329',
-    'bunny-cc-v7.8.1.9330', 'bunny-cc-runtime-v7.8.1.9330',
-    'bunny-cc-v7.8.1.9333', 'bunny-cc-runtime-v7.8.1.9333',
-    'bunny-cc-v7.8.1.9334', 'bunny-cc-runtime-v7.8.1.9334',
-    'bunny-cc-v7.8.1.9338', 'bunny-cc-runtime-v7.8.1.9338',
-    'bunny-cc-v7.8.1.9342', 'bunny-cc-runtime-v7.8.1.9342',
-    'bunny-cc-v7.8.1.9343', 'bunny-cc-runtime-v7.8.1.9343',
-    'bunny-cc-v7.8.1.9344', 'bunny-cc-runtime-v7.8.1.9344',
-    'bunny-cc-v7.8.1.9345', 'bunny-cc-runtime-v7.8.1.9345',
-    'bunny-cc-v7.8.1.9341', 'bunny-cc-runtime-v7.8.1.9341',
-    'bunny-cc-v7.8.1.9340', 'bunny-cc-runtime-v7.8.1.9340',
-    'bunny-cc-v7.8.1.9339', 'bunny-cc-runtime-v7.8.1.9339',
-    'bunny-cc-v7.8.1.9337', 'bunny-cc-runtime-v7.8.1.9337',
-    'bunny-cc-v7.8.1.9336', 'bunny-cc-runtime-v7.8.1.9336',
-    'bunny-cc-v7.8.1.9335', 'bunny-cc-runtime-v7.8.1.9335',
-    'bunny-cc-v7.8.1.9332', 'bunny-cc-runtime-v7.8.1.9332',
-    'bunny-cc-v7.8.1.9331', 'bunny-cc-runtime-v7.8.1.9331',
-    'bunny-cc-v7.7.2.9312', 'bunny-cc-runtime-v7.7.2.9312',
-    'bunny-cc-v7.7.2.9305', 'bunny-cc-runtime-v7.7.2.9305',
-    'bunny-cc-v7.7.2.9306', 'bunny-cc-runtime-v7.7.2.9306',
-    'bunny-cc-v7.7.2.9307', 'bunny-cc-runtime-v7.7.2.9307',
-    'bunny-cc-v7.7.2.9308', 'bunny-cc-runtime-v7.7.2.9308',
-    'bunny-cc-v7.7.2.9310', 'bunny-cc-runtime-v7.7.2.9310',
-    'bunny-cc-v7.7.2.9311', 'bunny-cc-runtime-v7.7.2.9311',
-    'bunny-cc-v7.7.2.9309', 'bunny-cc-runtime-v7.7.2.9309',
-    'bunny-cc-v7.7.1', 'bunny-cc-runtime-v7.7.1',
-    'bunny-cc-v7.7.0', 'bunny-cc-runtime-v7.7.0',
-    'bunny-cc-v7.6.0', 'bunny-cc-runtime-v7.6.0',
-    'bunny-cc-v7.5.0', 'bunny-cc-runtime-v7.5.0',
-    'bunny-cc-v7.4.0', 'bunny-cc-runtime-v7.4.0',
-    'bunny-cc-v7.3.0', 'bunny-cc-runtime-v7.3.0',
-    'bunny-cc-v7.2.0', 'bunny-cc-runtime-v7.2.0',
-    'bunny-cc-v7.1.0', 'bunny-cc-runtime-v7.1.0',
-    'bunny-cc-v7.0.0', 'bunny-cc-runtime-v7.0.0',
-    'bunny-cc-v6.4.0', 'bunny-cc-runtime-v6.4.0',
-    'bunny-cc-v6.3.0', 'bunny-cc-runtime-v6.3.0',
-    'bunny-cc-v6.2.0', 'bunny-cc-runtime-v6.2.0',
-    'bunny-cc-v6.1.0', 'bunny-cc-runtime-v6.1.0',
-    'bunny-cc-v6.0.0', 'bunny-cc-runtime-v6.0.0',
-    'bunny-cc-v5.2.0', 'bunny-cc-runtime-v5.2.0',
-    'bunny-cc-v5.1.0', 'bunny-cc-runtime-v5.1.0',
-    'bunny-cc-v5.0.0', 'bunny-cc-runtime-v5.0.0',
+/* car.html 依赖闭包（仅此列表预缓存） */
+const CAR_CORE_ASSETS = [
+  './',
+  './car.html',
+  './car.css',
+  './modules.json',
+  './manifest-car.json',
+  './favicon.ico',
+  './js/bcos.js',
+  './js/bcos-pkg.js',
+  './js/bcos-bootstrap.js',
+  './js/screen.js',
+  './js/version.js',
+  './js/car-app-a.js',
+  './js/car-app-b.js',
+  './icon/192.png',
+  './icon/512.png',
+  './wallpaper/manifest.json'
 ];
 
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return Promise.allSettled(
-                CORE_ASSETS.map(url => cache.add(url).catch(() => {}))
-            );
-        }).then(() => self.skipWaiting())
-    );
-});
+/* car 运行时允许缓存的路径前缀（stale-while-revalidate） */
+const CAR_RUNTIME_PREFIXES = [
+  '/wallpaper/',
+  '/icon/',
+  '/js/screen',
+  '/js/version',
+  '/js/car-app-',
+  '/js/bcos',
+  '/car.css',
+  '/modules.json'
+];
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((names) => Promise.all(
-            names.map(n => {
-                // Delete any cache that isn't the current version (OVERRIDE_CACHE 永久保留)
-                if (n !== CACHE_NAME && n !== RUNTIME_CACHE && n !== OVERRIDE_CACHE) {
-                    return caches.delete(n);
-                }
-                return null;
-            })
-        )).then(() => {
-            // Force-claim all clients to activate new SW immediately
-            return self.clients.claim();
-        }).then(() => {
-            // Notify all clients to reload for fresh content
-            return self.clients.matchAll({ type: 'window' });
-        }).then((clients) => {
-            clients.forEach(client => {
-                client.postMessage({ type: 'SW_UPDATED', version: CACHE_VERSION });
-            });
-        })
-    );
-});
-
-self.addEventListener('fetch', (event) => {
-    const req = event.request;
-    if (req.method !== 'GET') return;
-    let url;
-    try { url = new URL(req.url); } catch(e) { return; }
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
-    if (url.origin !== self.location.origin) return;
-
-    // 🔥 热更新: 模块覆盖缓存拥有最高优先级 (SW 独立于页面, 失败自动回退)
-    event.respondWith(
-        caches.open(OVERRIDE_CACHE).then(c => c.match(req)).then(overridden => {
-            if (overridden) return overridden;
-            return _handleFetch(req, url.pathname);
-        })
-    );
-});
-
-function _handleFetch(req, pathname) {
-
-    // Force network-first for icon files, manifest and favicon (bypass cache to ensure fresh icons)
-    if (pathname.includes('/icon/') || pathname.endsWith('/favicon.ico') || pathname.endsWith('/manifest.json')) {
-        return fetch(req).then(resp => {
-            if (resp && resp.status === 200) {
-                const clone = resp.clone();
-                caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-            }
-            return resp;
-        }).catch(() => caches.match(req).then(r => r || new Response('', { status: 504, statusText: 'Gateway Timeout' })));
-    }
-
-    // Navigation requests: Fast network-with-timeout (1500ms) with instant cache fallback
-    // In mainland China without proxy, GitHub Pages connections often stall for 15-30s.
-    // By timing out after 1.5s and immediately serving the cached index/car HTML,
-    // we eliminate the white-screen freeze completely while allowing background updates!
-    if (req.mode === 'navigate') {
-        return new Promise((resolve) => {
-                let resolved = false;
-                const timeoutId = setTimeout(async () => {
-                    if (!resolved) {
-                        resolved = true;
-                        const cached = await caches.match(req);
-                        if (cached) return resolve(cached);
-                        const fallbackUrl = (pathname.endsWith('car.html') || pathname.includes('/car'))
-                            ? new URL('car.html', SCOPE_BASE).href
-                            : new URL('index.html', SCOPE_BASE).href;
-                        const fallback = await caches.match(fallbackUrl);
-                        if (fallback) return resolve(fallback);
-                        const rootFallback = await caches.match(SCOPE_BASE);
-                        if (rootFallback) return resolve(rootFallback);
-                    }
-                }, 1500);
-
-                fetch(req).then(resp => {
-                    clearTimeout(timeoutId);
-                    if (!resolved) {
-                        resolved = true;
-                        const clone = resp.clone();
-                        caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                        resolve(resp);
-                    } else {
-                        // Background update runtime cache
-                        const clone = resp.clone();
-                        caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-                    }
-                }).catch(async (err) => {
-                    clearTimeout(timeoutId);
-                    if (!resolved) {
-                        resolved = true;
-                        const cached = await caches.match(req);
-                        if (cached) return resolve(cached);
-                        const fallbackUrl = (pathname.endsWith('car.html') || pathname.includes('/car'))
-                            ? new URL('car.html', SCOPE_BASE).href
-                            : new URL('index.html', SCOPE_BASE).href;
-                        const fallback = await caches.match(fallbackUrl);
-                        if (fallback) return resolve(fallback);
-                        const rootFallback = await caches.match(SCOPE_BASE);
-                        if (rootFallback) return resolve(rootFallback);
-                        resolve(new Response('Offline - No cache available', { status: 503 }));
-                    }
-                });
-            });
-    }
-
-    // Static assets: stale-while-revalidate
-    return caches.match(req).then(cached => {
-        if (cached) {
-            fetch(req).then(resp => {
-                if (resp && resp.status === 200)
-                    caches.open(RUNTIME_CACHE).then(c => c.put(req, resp.clone()));
-            }).catch(() => {});
-            return cached;
-        }
-        return fetch(req).then(resp => {
-            if (!resp || resp.status !== 200) return resp;
-            const clone = resp.clone();
-            caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
-            return resp;
-        });
-    });
+/* ---- 新站（魔塔 RPG）资产：一律直通，绝不缓存 ---- */
+function isNewSiteAsset(url) {
+  const p = url.pathname;
+  return p === '/' || p === '/index.html' ||
+    p.startsWith('/css/') ||
+    p.startsWith('/data/') ||
+    p.startsWith('/tools/') ||
+    /\/js\/(engine|story|ai)\.js$/.test(p);
 }
 
-self.addEventListener('message', (event) => {
-    const d = event.data || {};
-    if (d.type === 'SKIP_WAITING') { self.skipWaiting(); return; }
-
-    // 🔥 热更新: 页面请求覆盖某模块 URL (存入 OVERRIDE_CACHE, 立即对后续 fetch 生效)
-    if (d.type === 'OVERRIDE_MODULE' && d.url && typeof d.code === 'string') {
-        event.waitUntil(
-            caches.open(OVERRIDE_CACHE).then(c => c.put(
-                d.url,
-                new Response(d.code, {
-                    status: 200,
-                    headers: { 'Content-Type': d.contentType || 'application/javascript', 'X-BCOS-Override': '1' }
-                })
-            )).then(() => {
-                console.log('[SW] 🔥 模块已覆盖:', d.url);
-                if (event.source) event.source.postMessage({ type: 'MODULE_OVERRIDDEN', url: d.url });
-            }).catch(err => {
-                console.error('[SW] 覆盖失败:', d.url, err);
-                if (event.source) event.source.postMessage({ type: 'MODULE_OVERRIDE_FAILED', url: d.url, error: String(err) });
-            })
-        );
-        return;
-    }
-
-    // 回滚: 清除某模块的覆盖缓存, 恢复服务器版本
-    if (d.type === 'CLEAR_OVERRIDE' && d.url) {
-        event.waitUntil(
-            caches.open(OVERRIDE_CACHE).then(c => c.delete(d.url)).then(() => {
-                console.log('[SW] ↩️ 已回滚:', d.url);
-                if (event.source) event.source.postMessage({ type: 'OVERRIDE_CLEARED', url: d.url });
-            })
-        );
-        return;
-    }
-
-    // 查询当前覆盖列表
-    if (d.type === 'LIST_OVERRIDES') {
-        event.waitUntil(
-            caches.open(OVERRIDE_CACHE).then(c => c.keys()).then(keys => {
-                if (event.source) event.source.postMessage({ type: 'OVERRIDE_LIST', urls: keys.map(k => k.url) });
-            })
-        );
-    }
+/* ==================== install ==================== */
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(c => Promise.allSettled(CAR_CORE_ASSETS.map(a => c.add(a))))
+      .then(() => self.skipWaiting())
+  );
 });
 
-// === Push notifications ===
-self.addEventListener('push', (event) => {
-    let data = { title: '🐰 兔可可王国', body: '你有一条新消息' };
+/* ==================== activate ==================== */
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.map(n => {
+      /* 保留：当前缓存 + 运行时 + 热更新覆盖 */
+      if (n === CACHE_NAME || n === RUNTIME_CACHE || n === OVERRIDE_CACHE) return;
+      /* 清掉：旧版全量站缓存（bunny-cc-v*）与旧版本 car 缓存 */
+      return caches.delete(n);
+    }));
+    await self.clients.claim();
+  })());
+});
+
+/* ==================== fetch ==================== */
+self.addEventListener('fetch', event => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+
+  /* 新站资产：直通（不 respondWith → 浏览器直接走网络，零缓存干扰） */
+  if (url.origin === location.origin && isNewSiteAsset(url)) return;
+
+  /* 跨域请求：直通 */
+  if (url.origin !== location.origin) return;
+
+  /* 热更新覆盖最高优先级（仅对 car 资产生效） */
+  event.respondWith((async () => {
+    const override = await caches.open(OVERRIDE_CACHE).then(c => c.match(req));
+    if (override) return override;
+
+    /* 导航请求：network-first（1500ms 超时）+ 缓存兜底 */
+    if (req.mode === 'navigate') {
+      try {
+        const net = await Promise.race([
+          fetch(req),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 1500))
+        ]);
+        return net;
+      } catch (e) {
+        const cache = await caches.open(CACHE_NAME);
+        return (await cache.match('./car.html')) || (await cache.match('./')) || Response.error();
+      }
+    }
+
+    /* car 静态资产：stale-while-revalidate */
+    const isCarAsset = CAR_RUNTIME_PREFIXES.some(p => url.pathname.includes(p)) ||
+      CAR_CORE_ASSETS.some(a => url.pathname.endsWith(a.replace('./', '/')));
+    if (isCarAsset) {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(req);
+      const netPromise = fetch(req).then(res => {
+        if (res && res.ok) { cache.put(req, res.clone()); }
+        return res;
+      }).catch(() => null);
+      if (cached) { event.waitUntil(netPromise); return cached; }
+      const net = await netPromise;
+      if (net) return net;
+      const rt = await caches.open(RUNTIME_CACHE);
+      return (await rt.match(req)) || Response.error();
+    }
+
+    /* 其余同源请求：网络优先，成功则入运行时缓存（兜底） */
     try {
-        if (event.data) data = event.data.json();
-    } catch(e) {
-        if (event.data) data.body = event.data.text();
+      const res = await fetch(req);
+      if (res && res.ok && url.pathname.startsWith('/wallpaper/')) {
+        const rt = await caches.open(RUNTIME_CACHE);
+        rt.put(req, res.clone());
+      }
+      return res;
+    } catch (e) {
+      const rt = await caches.open(RUNTIME_CACHE);
+      return (await rt.match(req)) || Response.error();
     }
-    const iconUrl = new URL('icon/192.png', SCOPE_BASE).href;
-    const badgeUrl = new URL('icon/96.png', SCOPE_BASE).href;
-    event.waitUntil(
-        self.registration.showNotification(data.title || '🐰 兔可可王国', {
-            body: data.body,
-            icon: iconUrl,
-            badge: badgeUrl,
-            tag: data.tag || 'bunny-cc-push',
-            vibrate: [200, 100, 200],
-            data: { url: data.url ? new URL(data.url, SCOPE_BASE).href : SCOPE_BASE },
-        })
-    );
+  })());
 });
 
-// === Notification click — focus or open the app ===
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    const targetUrl = (event.notification.data && event.notification.data.url) || SCOPE_BASE;
-    event.waitUntil(
-        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
-            // Focus existing window if found
-            for (const client of clients) {
-                if (client.url.includes(self.location.origin)) {
-                    return client.focus();
-                }
-            }
-            // Otherwise open new window
-            return self.clients.openWindow(targetUrl);
-        })
-    );
+/* ==================== message：SKIP_WAITING / 热更新 ==================== */
+self.addEventListener('message', event => {
+  const data = event.data || {};
+  if (data.type === 'SKIP_WAITING') self.skipWaiting();
+
+  if (data.type === 'OVERRIDE_MODULE' && data.path && data.content !== undefined) {
+    event.waitUntil((async () => {
+      const cache = await caches.open(OVERRIDE_CACHE);
+      const res = new Response(data.content, { headers: { 'Content-Type': data.mime || 'application/javascript' } });
+      await cache.put(data.path, res);
+      const cs = await self.clients.matchAll({ includeUncontrolled: true });
+      cs.forEach(c => c.postMessage({ type: 'OVERRIDE_APPLIED', path: data.path }));
+    })());
+  }
+
+  if (data.type === 'CLEAR_OVERRIDE' && data.path) {
+    event.waitUntil(caches.open(OVERRIDE_CACHE).then(c => c.delete(data.path)));
+  }
+
+  if (data.type === 'LIST_OVERRIDES') {
+    event.waitUntil((async () => {
+      const cache = await caches.open(OVERRIDE_CACHE);
+      const keys = await cache.keys();
+      const cs = await self.clients.matchAll({ includeUncontrolled: true });
+      cs.forEach(c => c.postMessage({ type: 'OVERRIDE_LIST', paths: keys.map(k => k.url) }));
+    })());
+  }
 });
 
-// === Periodic background sync (if supported) — refresh cache for offline ===
-self.addEventListener('periodicsync', (event) => {
-    if (event.tag === 'bunny-cc-refresh') {
-        event.waitUntil(
-            caches.open(RUNTIME_CACHE).then((cache) => {
-                return Promise.allSettled(
-                    CORE_ASSETS.map(url => fetch(url).then(resp => {
-                        if (resp && resp.status === 200) cache.put(url, resp.clone());
-                    }).catch(() => {}))
-                );
-            })
-        );
-    }
+/* ==================== push / notificationclick ==================== */
+self.addEventListener('push', event => {
+  let payload = { title: '兔可可档案馆', body: '有新的记忆碎片掉落了！' };
+  try { if (event.data) payload = Object.assign(payload, event.data.json()); } catch (e) { }
+  event.waitUntil(self.registration.showNotification(payload.title, {
+    body: payload.body, icon: './icon/192.png', badge: './icon/192.png', tag: 'bunny-tower'
+  }));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+    for (const c of cs) { if ('focus' in c) return c.focus(); }
+    return self.clients.openWindow('./');
+  }));
 });

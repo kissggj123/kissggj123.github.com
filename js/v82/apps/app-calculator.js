@@ -1,7 +1,0 @@
-/* v8.2 app-calculator.js - 计算器 */
-(function(){'use strict';
-window._bcosAppCalc={id:'calculator',name:'计算器',icon:'🧮',
-render:function(){return '<div style="padding:16px"><div id="calc-d" style="font-size:32px;text-align:right;padding:12px;background:rgba(0,0,0,.3);border-radius:12px;color:#fff;margin-bottom:12px;min-height:48px">0</div><div id="calc-b" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div></div>';},
-onOpen:function(win){const d=win.querySelector('#calc-d');const b=win.querySelector('#calc-b');let cur='0',op=null,prev=null;const keys=['C','±','%','÷','7','8','9','×','4','5','6','-','1','2','3','+','0','.','='];b.innerHTML=keys.map(function(k){return '<button data-k="'+k+'" style="padding:16px;font-size:18px;border-radius:12px;border:none;background:rgba(255,255,255,.1);color:#fff;cursor:pointer">'+k+'</button>';}).join('');b.querySelectorAll('button').forEach(function(btn){btn.onclick=function(){const k=btn.getAttribute('data-k');if(k==='C'){cur='0';op=null;prev=null;}else if(k==='='){if(op&&prev!==null){cur=String(_calc(prev,parseFloat(cur),op));op=null;prev=null;}}else if('÷×-+%'.includes(k)){op=k;prev=parseFloat(cur);cur='0';}else{cur=cur==='0'?k:cur+k;}d.textContent=cur;};});}};
-function _calc(a,b,op){if(op==='÷')return b!==0?a/b:0;if(op==='×')return a*b;if(op==='-')return a-b;if(op==='+')return a+b;if(op==='%')return a%b;return b;}
-if(!window._bcosV82Apps)window._bcosV82Apps={};window._bcosV82Apps['calculator']=window._bcosAppCalc;console.log('[App] calculator 已注册');})();
